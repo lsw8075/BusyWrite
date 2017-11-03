@@ -12,3 +12,8 @@ coverage.xml
 # Django :
 *.pyc
 __ pycache __
+
+# System Files
+.DS_Store
+Thumbs.db
+.vscode
