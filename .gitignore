@@ -1,0 +1,14 @@
+# IDEs and editors
+/.idea
+*.iml
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+.vscode
+
+# System Files
+.DS_Store
+Thumbs.db
