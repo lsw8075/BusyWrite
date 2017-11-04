@@ -7,5 +7,3 @@ export class NoteService {
   constructor() { }
 
 }
-
-export { Note };

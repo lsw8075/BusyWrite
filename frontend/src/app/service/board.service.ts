@@ -7,5 +7,3 @@ export class BoardService {
   constructor() { }
 
 }
-
-export { Board };

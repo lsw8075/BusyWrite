@@ -6,5 +6,3 @@ export class CommentService {
   constructor() { }
 
 }
-
-export { Comment };

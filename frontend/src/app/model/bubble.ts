@@ -1,12 +1,20 @@
 import { Note } from './note';
 
+export enum BubbleType {
+  leafBubble,
+  internalBubble,
+  suggestBubble
+}
+
 export interface Bubble {
   id: number;
+  type: BubbleType;
   comments: Array<number>;
 }
 
 export class LeafBubble implements Bubble {
   id: number;
+  type: BubbleType;
   content: string;
   location: number;
   owner: number;
@@ -17,8 +25,7 @@ export class LeafBubble implements Bubble {
   comments: Array<number>;
 
   constructor() {
-    // must initialize all attributes
-    throw new Error('not implemented');
+    this.type = BubbleType.leafBubble;
   }
 
   public noteToLeafBubble(note: Note): LeafBubble {
@@ -29,6 +36,7 @@ export class LeafBubble implements Bubble {
 
 export class InternalBubble implements Bubble {
   id: number;
+  type: BubbleType;
   location: number;
   editLock: boolean;
 
@@ -39,12 +47,14 @@ export class InternalBubble implements Bubble {
 
   constructor() {
     // must initialize all attributes
+    this.type = BubbleType.internalBubble;
     throw new Error('not implemented');
   }
 }
 
 export class SuggestBubble implements Bubble {
   id: number;
+  type: BubbleType;
   content: string;
   location: number;
 
@@ -52,6 +62,7 @@ export class SuggestBubble implements Bubble {
 
   constructor() {
     // must initialize all attributes
+    this.type = BubbleType.suggestBubble;
     throw new Error('not implemented');
   }
 

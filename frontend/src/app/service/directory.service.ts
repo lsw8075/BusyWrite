@@ -6,5 +6,3 @@ export class DirectoryService {
   constructor() { }
 
 }
-
-export { FileSystemEntity };

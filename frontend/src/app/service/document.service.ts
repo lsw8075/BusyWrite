@@ -7,5 +7,3 @@ export class DocumentService {
   constructor() { }
 
 }
-
-export { FileSystemEntity };

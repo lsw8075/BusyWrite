@@ -7,5 +7,3 @@ export class AlarmService {
   constructor() { }
 
 }
-
-export { Alarm };

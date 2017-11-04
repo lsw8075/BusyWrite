@@ -23,7 +23,6 @@ import { DocumentDetailPageComponent } from './document-detail-page/document-det
 
 import { ViewBoardComponent } from './document-detail-page/view-board/view-board.component';
 import { BubbleListViewComponent } from './document-detail-page/view-board/bubble-list-view/bubble-list-view.component';
-import { BubbleHierarchyViewComponent } from './document-detail-page/view-board/bubble-hierarchy-view/bubble-hierarchy-view.component';
 import { BubbleMenuComponent } from './document-detail-page/view-board/bubble-menu/bubble-menu.component';
 import { PreviewComponent } from './document-detail-page/view-board/preview/preview.component';
 import { BubbleDetailViewComponent } from './document-detail-page/view-board/bubble-detail-view/bubble-detail-view.component';
@@ -52,6 +51,8 @@ import { DocumentService } from './service/document.service';
 import { NoteService } from './service/note.service';
 
 
+import { TabViewModule } from 'primeng/primeng';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -67,7 +68,6 @@ import { NoteService } from './service/note.service';
     InvitationAcceptanceComponent,
     ViewBoardComponent,
     BubbleListViewComponent,
-    BubbleHierarchyViewComponent,
     BubbleMenuComponent,
     PreviewComponent,
     EditBoardComponent,
@@ -85,6 +85,7 @@ import { NoteService } from './service/note.service';
     AppRoutingModule,
     BrowserModule,
     HttpModule,
+    TabViewModule
   ],
   providers: [
     {provide: APP_BASE_HREF, useValue: '/'},

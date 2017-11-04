@@ -7,5 +7,3 @@ export class AuthenticationService {
   constructor() { }
 
 }
-
-export { User };
