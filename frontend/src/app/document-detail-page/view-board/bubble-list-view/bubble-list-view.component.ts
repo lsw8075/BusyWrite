@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-
+import { BubbleService } from '../view-board.component';
 @Component({
   selector: 'app-bubble-list-view',
   templateUrl: './bubble-list-view.component.html',

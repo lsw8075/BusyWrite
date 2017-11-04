@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-
+import { AlarmService } from '../alarm-page.component';
 @Component({
   selector: 'app-invitation-acceptance',
   templateUrl: './invitation-acceptance.component.html',

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { BubbleService, BoardService } from '../document-detail-page.component';
 
 @Component({
   selector: 'app-view-board',
@@ -13,3 +14,6 @@ export class ViewBoardComponent implements OnInit {
   }
 
 }
+
+
+export { BubbleService, BoardService };
