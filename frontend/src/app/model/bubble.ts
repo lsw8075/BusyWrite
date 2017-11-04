@@ -9,6 +9,7 @@ export enum BubbleType {
 export interface Bubble {
   id: number;
   type: BubbleType;
+  location: number;
   comments: Array<number>;
 }
 
