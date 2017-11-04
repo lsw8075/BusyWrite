@@ -12,4 +12,52 @@ export class BubbleListViewComponent implements OnInit {
   ngOnInit() {
   }
 
+  public openSangjunBoardEvent() {
+
+  }
+
+  public showBubbleMenuEvent() {
+
+  }
+
+  public showMultipleBubbleMenuEvent() {
+
+  }
+
+  public showBorderMenuEvent() {
+
+  }
+
+  public showClickableBorder() {
+
+  }
+
+  public splitBubble() {
+
+  }
+
+  public onSplitBubbleEvent() {
+
+  }
+
+  public onPopBubbleEvent() {
+
+  }
+
+  public onWrapBubbleEvent() {
+
+  }
+
+  public onCreateBubbleEvent() {
+
+  }
+
+  public onEditBubbleEvent() {
+
+  }
+
+  public onDeleteBubbleEvent() {
+
+  }
+
 }

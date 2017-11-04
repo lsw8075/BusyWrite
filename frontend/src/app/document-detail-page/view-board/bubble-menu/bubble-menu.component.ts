@@ -12,4 +12,36 @@ export class BubbleMenuComponent implements OnInit {
   ngOnInit() {
   }
 
+  public openSangjunBoardEvent() {
+
+  }
+
+  public splitBubbleEvent() {
+
+  }
+
+  public popBubbleEvent() {
+
+
+  }
+
+  public wrapBubbleEvent() {
+
+  }
+
+  public createBubbleEvent() {
+
+  }
+
+  public editBubbleEvent() {
+
+
+  }
+
+  public deleteBubbleEvent() {
+
+  }
+
+
+
 }
