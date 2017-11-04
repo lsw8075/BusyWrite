@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { BubbleService } from '../view-board.component';
+import { Bubble, LeafBubble, InternalBubble } from '../view-board.component';
 @Component({
   selector: 'app-bubble-list-view',
   templateUrl: './bubble-list-view.component.html',
@@ -7,9 +8,13 @@ import { BubbleService } from '../view-board.component';
 })
 export class BubbleListViewComponent implements OnInit {
 
+  temp: LeafBubble;
+
   constructor() { }
 
   ngOnInit() {
+    this.temp = new LeafBubble();
+    this.temp.content = 'test leaf bubble';
   }
 
   public openSangjunBoardEvent() {

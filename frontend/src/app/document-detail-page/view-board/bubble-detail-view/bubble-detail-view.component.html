@@ -1,0 +1,11 @@
+<div *ngIf="isLeaf(); then leaf else internal"></div>
+<ng-template #leaf>
+  LeafNode content: {{getContent()}}
+</ng-template>
+<ng-template #internal>
+  <div *ngFor="let id of getChildren()">
+    <app-bubble-detail-view [id]="id">
+
+    </app-bubble-detail-view>
+  </div>
+</ng-template>

@@ -1,10 +1,28 @@
-<div>
-  <app-bubble-hierarchy-view></app-bubble-hierarchy-view>
-  <app-bubble-list-view></app-bubble-list-view>
-  <app-bubble-menu></app-bubble-menu>
-</div>
+<p-tabView>
+  <p-tabPanel header="View">
+    <app-bubble-menu></app-bubble-menu>
+    <div class="ui-g">
+      <div class="ui-g-2 list-group-item">
+        hierarchy
 
-<div>
-  <app-preview></app-preview>
+      </div>
+      <div class="ui-g-6 list-group-item">
+        <app-bubble-list-view></app-bubble-list-view>
+      </div>
+      <div class="ui-g-2 list-group-item">
+        hierarchy
 
-</div>
+      </div>
+      <div class="ui-g-2 list-group-item">
+        Button menu here
+      </div>
+    </div>
+  </p-tabPanel>
+  <p-tabPanel header="Preview">
+      <ng-template pTemplate="content">
+         <app-preview>
+           Lazy Loading...
+         </app-preview>
+      </ng-template>
+  </p-tabPanel>
+</p-tabView>

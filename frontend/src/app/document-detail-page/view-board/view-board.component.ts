@@ -1,5 +1,7 @@
 import { Component, OnInit, Output } from '@angular/core';
 import { BubbleService, BoardService } from '../document-detail-page.component';
+import { Board } from '../document-detail-page.component';
+import { BubbleType, Bubble, LeafBubble, InternalBubble, SuggestBubble } from '../document-detail-page.component';
 
 @Component({
   selector: 'app-view-board',
@@ -37,3 +39,4 @@ export class ViewBoardComponent implements OnInit {
 
 
 export { BubbleService, BoardService };
+export { BubbleType, Bubble, LeafBubble, InternalBubble, SuggestBubble, Board };
