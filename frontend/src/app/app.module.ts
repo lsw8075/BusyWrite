@@ -1,6 +1,10 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
+import { HttpModule } from '@angular/http';
+import { FormsModule } from '@angular/forms';
+import { APP_BASE_HREF } from '@angular/common';
+
 import { AppComponent } from './app.component';
 
 import { LandingComponent } from './landing/landing.component';
@@ -22,6 +26,7 @@ import { BubbleListViewComponent } from './document-detail-page/view-board/bubbl
 import { BubbleHierarchyViewComponent } from './document-detail-page/view-board/bubble-hierarchy-view/bubble-hierarchy-view.component';
 import { BubbleMenuComponent } from './document-detail-page/view-board/bubble-menu/bubble-menu.component';
 import { PreviewComponent } from './document-detail-page/view-board/preview/preview.component';
+import { BubbleDetailViewComponent } from './document-detail-page/view-board/bubble-detail-view/bubble-detail-view.component';
 
 import { EditBoardComponent } from './document-detail-page/edit-board/edit-board.component';
 import { EditItemComponent } from './document-detail-page/edit-board/edit-item/edit-item.component';
@@ -34,6 +39,18 @@ import { CommentComponent } from './document-detail-page/sangjun-board/comment/c
 import { FilterBoardComponent } from './document-detail-page/filter-board/filter-board.component';
 
 import { BoardManagerComponent } from './document-detail-page/board-manager/board-manager.component';
+
+import { AppRoutingModule } from './route/app-routing.module';
+
+import { AlarmService } from './service/alarm.service';
+import { AuthenticationService } from './service/authentication.service';
+import { BoardService } from './service/board.service';
+import { BubbleService } from './service/bubble.service';
+import { CommentService } from './service/comment.service';
+import { DirectoryService } from './service/directory.service';
+import { DocumentService } from './service/document.service';
+import { NoteService } from './service/note.service';
+
 
 @NgModule({
   declarations: [
@@ -60,12 +77,26 @@ import { BoardManagerComponent } from './document-detail-page/board-manager/boar
     SuggestBubbleComponent,
     CommentComponent,
     FilterBoardComponent,
-    BoardManagerComponent
+    BoardManagerComponent,
+    BubbleDetailViewComponent
   ],
   imports: [
-    BrowserModule
+    FormsModule,
+    AppRoutingModule,
+    BrowserModule,
+    HttpModule,
   ],
-  providers: [],
+  providers: [
+    {provide: APP_BASE_HREF, useValue: '/'},
+    AlarmService,
+    AuthenticationService,
+    BoardService,
+    BubbleService,
+    CommentService,
+    DirectoryService,
+    DocumentService,
+    NoteService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

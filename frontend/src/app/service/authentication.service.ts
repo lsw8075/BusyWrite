@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { User } from '../model/user';
 
 @Injectable()
 export class AuthenticationService {
@@ -6,3 +7,5 @@ export class AuthenticationService {
   constructor() { }
 
 }
+
+export { User };
