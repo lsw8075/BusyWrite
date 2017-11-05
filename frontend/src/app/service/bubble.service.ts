@@ -59,7 +59,7 @@ export class BubbleService {
     }
 
     async fetchBubble(id: number) {
-            if (1 <= id && id < this.bubbleList.length && this.bubbleList[id] != null) {
+            if (0 <= id && id < this.bubbleList.length && this.bubbleList[id] != null) {
                 return (this.bubbleList[id]);
             } else {
                 throw new Error('bubble with index ' + id + ' does not exist');
