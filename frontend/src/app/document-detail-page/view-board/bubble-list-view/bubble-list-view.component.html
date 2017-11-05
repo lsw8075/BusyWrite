@@ -1,5 +1,5 @@
 <div *ngIf="bubbleRootList">
-  <div [dragula]='"bag-one"'>
+  <div [dragula]='"bubble-bag"' [dragulaModel]='bubbleRootList'>
     <div *ngFor="let bubble of bubbleRootList">
         <app-bubble-detail-view [id]="bubble.id">
           bubble is know loading...!

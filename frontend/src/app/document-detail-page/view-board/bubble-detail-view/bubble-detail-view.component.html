@@ -1,5 +1,5 @@
-<div *ngIf="bubble">
-  <div [dragula]='"bag-one"'>
+<div *ngIf="bubble" >
+  <div [dragula]='"bubble-bag"'>
     <div *ngIf="isLeaf(); then leaf else internal"></div>
 
     <ng-template #leaf>

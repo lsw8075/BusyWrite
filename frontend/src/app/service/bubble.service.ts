@@ -7,7 +7,7 @@ import 'rxjs/add/operator/toPromise';
 export class BubbleService {
 
   bubbleData = [
-    { id: 0, parent_id: 0, bubble_type: 'internal', children: [ 1 ]},
+    { id: 0, parent_id: 0, bubble_type: 'internal', children: [ 1, 15 ]},
     { id: 1, parent_id: 0, bubble_type: 'internal', children: [ 7, 2, 3, 4 ] },
     { id: 2, parent_id: 1, bubble_type: 'leaf', content: 'Sed ut perspiciatis, unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa, quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt, explicabo. Nemo enim ipsam voluptatem, quia voluptas sit, aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos, qui ratione voluptatem sequi nesciunt, neque porro quisquam est, qui do' },
     { id: 3, parent_id: 1, bubble_type: 'internal', children: [ 5, 6 ] },

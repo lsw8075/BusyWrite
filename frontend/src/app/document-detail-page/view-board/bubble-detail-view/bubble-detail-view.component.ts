@@ -2,6 +2,9 @@ import { Component, OnInit, Input } from '@angular/core';
 import { BubbleService } from '../view-board.component';
 // import { BubbleType, Bubble, LeafBubble, InternalBubble, SuggestBubble } from '../../../model/bubble';
 import { BubbleType, Bubble, LeafBubble, InternalBubble, SuggestBubble } from '../view-board.component';
+
+import { dragula } from 'ng2-dragula/ng2-dragula';
+
 @Component({
   selector: 'app-bubble-detail-view',
   templateUrl: './bubble-detail-view.component.html',
