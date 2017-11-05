@@ -1,17 +1,20 @@
 <div *ngIf="bubble">
-  <div *ngIf="isLeaf(); then leaf else internal"></div>
-  <ng-template #leaf>
-    <div class="leafBubble">
-    LeafNode content: {{getContent()}}
-    <hr>
-    </div>
-  </ng-template>
-  <ng-template #internal>
-    <div [ngStyle]="setStyle()" class="internalBubble">
-      <div *ngFor="let id of getChildren()" >
-        <app-bubble-detail-view [id]="id">
-        </app-bubble-detail-view>
+  <div [dragula]='"bag-one"'>
+    <div *ngIf="isLeaf(); then leaf else internal"></div>
+
+    <ng-template #leaf>
+      <div class="leafBubble">
+      LeafNode content: {{getContent()}}
+      <hr>
       </div>
-    </div>
-  </ng-template>
+    </ng-template>
+    <ng-template #internal>
+      <div [ngStyle]="setStyle()" class="internalBubble">
+        <div *ngFor="let id of getChildren()" >
+          <app-bubble-detail-view [id]="id">
+          </app-bubble-detail-view>
+        </div>
+      </div>
+    </ng-template>
+  </div>
 </div>
