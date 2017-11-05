@@ -33,10 +33,10 @@ export class LeafBubble implements Bubble {
     this.type = BubbleType.leafBubble;
   }
 
-  public noteToLeafBubble(note: Note): LeafBubble {
-    throw new Error('not implemented');
-    // return new LeafBubble();
-  }
+  // public noteToLeafBubble(note: Note): LeafBubble {
+  //   throw new Error('not implemented');
+  //   // return new LeafBubble();
+  // }
 }
 
 export class InternalBubble implements Bubble {
