@@ -19,18 +19,18 @@ export class PreviewComponent implements OnInit {
   ngOnInit() {
     this._bubbleService.getBubbleById(0).then(rootBubble => {
       this.rootBubble = rootBubble;
-      this.bubbleTraversal(rootBubble);
+      this._bubbleTraversal(rootBubble);
     });
   }
 
-  bubbleTraversal(bubble: Bubble) {
+  private _bubbleTraversal(bubble: Bubble) {
     if (bubble.type === BubbleType.leafBubble) {
-      let leafBubble = bubble as LeafBubble;
+      const leafBubble = bubble as LeafBubble;
       this.contentList.push(leafBubble.content);
     } else {
-      let internalBubble = bubble as InternalBubble;
-      for (let childBubble of internalBubble.childBubbleList) {
-        this.bubbleTraversal(childBubble);
+      const internalBubble = bubble as InternalBubble;
+      for (const childBubble of internalBubble.childBubbleList) {
+        this._bubbleTraversal(childBubble);
       }
     }
   }

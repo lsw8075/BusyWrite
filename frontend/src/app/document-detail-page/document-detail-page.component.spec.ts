@@ -1,26 +1,22 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { AppComponent } from './app.component';
+import { DocumentDetailPageComponent } from './document-detail-page.component';
 
-describe('AppComponent', () => {
-    let comp: AppComponent;
-    let fixture: ComponentFixture<AppComponent>;
+describe('DocumentDetailPageComponent', () => {
+    let comp: DocumentDetailPageComponent;
+    let fixture: ComponentFixture<DocumentDetailPageComponent>;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            declarations: [ AppComponent ],
+            declarations: [ DocumentDetailPageComponent ],
             schemas: [ NO_ERRORS_SCHEMA ]
         });
-        fixture = TestBed.createComponent(AppComponent);
+        fixture = TestBed.createComponent(DocumentDetailPageComponent);
         comp = fixture.componentInstance;
     });
 
     it('can load instance', () => {
         expect(comp).toBeTruthy();
-    });
-
-    it('title defaults to: app', () => {
-        expect(comp.title).toEqual('app');
     });
 
 });

@@ -1,26 +1,22 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { AppComponent } from './app.component';
+import { ViewBoardComponent } from './view-board.component';
 
-describe('AppComponent', () => {
-    let comp: AppComponent;
-    let fixture: ComponentFixture<AppComponent>;
+describe('ViewBoardComponent', () => {
+    let comp: ViewBoardComponent;
+    let fixture: ComponentFixture<ViewBoardComponent>;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            declarations: [ AppComponent ],
+            declarations: [ ViewBoardComponent ],
             schemas: [ NO_ERRORS_SCHEMA ]
         });
-        fixture = TestBed.createComponent(AppComponent);
+        fixture = TestBed.createComponent(ViewBoardComponent);
         comp = fixture.componentInstance;
     });
 
     it('can load instance', () => {
         expect(comp).toBeTruthy();
-    });
-
-    it('title defaults to: app', () => {
-        expect(comp.title).toEqual('app');
     });
 
 });
