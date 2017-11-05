@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { BubbleService } from '../view-board.component';
 import { Bubble, LeafBubble, InternalBubble } from '../view-board.component';
+
 @Component({
   selector: 'app-bubble-list-view',
   templateUrl: './bubble-list-view.component.html',
@@ -8,6 +9,7 @@ import { Bubble, LeafBubble, InternalBubble } from '../view-board.component';
 })
 export class BubbleListViewComponent implements OnInit {
 
+  @Output() openMenu = new EventEmitter();
   bubbleRootList: Array<Bubble>; // bubbles that have root as parents
 
   constructor(
@@ -25,9 +27,8 @@ export class BubbleListViewComponent implements OnInit {
 
   }
 
-  public showBubbleMenuEvent(bubble: Bubble) {
-    console.log(bubble);
-    console.log('open!!');
+  public showMenuEvent(item) {
+    this.openMenu.emit(item);
   }
 
   public showMultipleBubbleMenuEvent() {

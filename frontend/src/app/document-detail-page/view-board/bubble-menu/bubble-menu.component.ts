@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { MenuType } from '../view-board.component';
 
 @Component({
   selector: 'app-bubble-menu',
@@ -7,9 +8,15 @@ import { Component, OnInit } from '@angular/core';
 })
 export class BubbleMenuComponent implements OnInit {
 
+  menuType: MenuType;
+
   constructor() { }
 
   ngOnInit() {
+  }
+
+  public test() {
+    console.log('test is ok');
   }
 
   public openSangjunBoardEvent() {
