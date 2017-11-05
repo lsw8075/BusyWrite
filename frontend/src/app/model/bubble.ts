@@ -12,6 +12,7 @@ export interface Bubble {
   location: number;
   comments: Array<number>;
   parentID: number;
+  parentBubble: Bubble;
   suggestBubbles: Array<number>;
 }
 
@@ -24,6 +25,7 @@ export class LeafBubble implements Bubble {
   content: string;
 
   parentID: number;
+  parentBubble: Bubble;
   suggestBubbles: Array<number>;
   comments: Array<number>;
 
@@ -44,8 +46,10 @@ export class InternalBubble implements Bubble {
   editLock: boolean;
 
   parentID: number;
+  parentBubble: Bubble;
   suggestBubbles: Array<number>;
   childBubbles: Array<number>;
+  childBubbleList: Array<Bubble>;
   comments: Array<number>;
 
   constructor() {

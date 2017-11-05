@@ -9,10 +9,13 @@ export class BubbleService {
   bubbleData = [
     { id: 0, parent_id: 0, bubble_type: 'leaf', content: '0. dummy bubble'},
     { id: 1, parent_id: 0, bubble_type: 'internal', children: [ 2, 3, 4 ] },
+    // tslint:disable-next-line:max-line-length
     { id: 2, parent_id: 1, bubble_type: 'leaf', content: '2. Sed ut perspiciatis, unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa, quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt, explicabo. Nemo enim ipsam voluptatem, quia voluptas sit, aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos, qui ratione voluptatem sequi nesciunt, neque porro quisquam est, qui do' },
     { id: 3, parent_id: 1, bubble_type: 'internal', children: [ 5, 6 ] },
+    // tslint:disable-next-line:max-line-length
     { id: 4, parent_id: 1, bubble_type: 'leaf', content: '4. et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio, cumque nihil impedit, quo minus id, quod maxime placeat, facere possimus, omnis voluptas assumenda est, omnis dolor repellendus.' },
     { id: 5, parent_id: 3, bubble_type: 'leaf', content: '5. lorem ipsum, quia dolor sit amet consectetur adipisci velit, sed quia non numquam  eius modi tempora incidunt, ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit, qui in ea voluptate velit esse, quam nihil molestiae consequatur, vel illum, qui dolorem eum fugiat, quo voluptas nulla pariatur?'},
+    // tslint:disable-next-line:max-line-length
     { id: 6, parent_id: 3, bubble_type: 'leaf', content: '6. At vero eos et accusamus et iusto odio dignissimos ducimus, qui blanditiis praesentium voluptatum deleniti atque corrupti, quos dolores et quas molestias excepturi sint, obcaecati cupiditate non provident, similique sunt in culpa, qui officia deserunt mollitia animi, id est laborum'}
   ];
 
@@ -37,6 +40,7 @@ export class BubbleService {
         bubble.parentID = rawBubble.parent_id;
         bubble.location = rawBubble.location;
         bubble.childBubbles = rawBubble.children;
+        bubble.childBubbleList = [];
         bubble.editLock = false;
         break;
       }
@@ -54,6 +58,17 @@ export class BubbleService {
     for (let rawBubble of this.bubbleData) {
       this.bubbleList.push(this.rawBubbleToBubble(rawBubble));
     }
+
+    for (let bubble of this.bubbleList) {
+      bubble.parentBubble = this.fetchBubble(bubble.parentID);
+
+      if (bubble.type === BubbleType.internalBubble) {
+        let internalBubble = bubble as InternalBubble;
+        for (let childBubbleId of internalBubble.childBubbles) {
+          internalBubble.childBubbleList.push(this.fetchBubble(childBubbleId));
+        }
+      }
+    }
   }
 
   calcBubbleHeight(bubble: Bubble): number {
@@ -62,8 +77,9 @@ export class BubbleService {
     }
 
     let height = 0;
-    for (let childBubbleId of (bubble as InternalBubble).childBubbles) {
-      height = Math.max(height, this.calcBubbleHeight(this.fetchBubble(childBubbleId)));
+    let internalBubble = bubble as InternalBubble;
+    for (let childBubble of internalBubble.childBubbleList) {
+      height = Math.max(height, this.calcBubbleHeight(childBubble));
     }
     return height + 1;
   }
