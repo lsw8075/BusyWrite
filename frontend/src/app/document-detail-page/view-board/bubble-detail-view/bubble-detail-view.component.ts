@@ -2,7 +2,7 @@ import { Component, EventEmitter, OnInit, Input, Output } from '@angular/core';
 import { BubbleService } from '../view-board.component';
 // import { BubbleType, Bubble, LeafBubble, InternalBubble, SuggestBubble } from '../../../model/bubble';
 import { BubbleType, Bubble, LeafBubble, InternalBubble, SuggestBubble } from '../view-board.component';
-import { MenuType } from '../view-board.component';
+import { MenuType } from '../bubble-menu/bubble-menu.component';
 
 @Component({
   selector: 'app-bubble-detail-view',

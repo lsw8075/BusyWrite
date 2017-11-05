@@ -1,3 +1,21 @@
-<p>
-  bubble-menu works!
-</p>
+
+<div *ngIf=isBorderMenu()>
+  <p>Border Menu</p>
+  <button>Create</button>
+</div>
+
+<div *ngIf=isLeafBubbleMenu()>
+  <p>Single Bubble Menu(leaf)</p>
+  <button>Split</button>
+  <button>Open Sangjun board</button>
+  <button>Delete</button>
+  <button>Edit</button>
+</div>
+
+<div *ngIf=isInternalBubbleMenu()>
+  <p>Single Bubble Menu(internal)</p>
+  <button>Pop</button>
+  <button>Open Sangjun board</button>
+  <button>Delete</button>
+  <button>Edit</button>
+</div>
