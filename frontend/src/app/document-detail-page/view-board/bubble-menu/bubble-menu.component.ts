@@ -1,5 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { MenuType } from '../view-board.component';
+import { BubbleType, Bubble, LeafBubble, InternalBubble } from '../view-board.component';
+
+export enum MenuType {
+  borderMenu,
+  bubbleMenu,
+}
 
 @Component({
   selector: 'app-bubble-menu',
@@ -9,14 +14,35 @@ import { MenuType } from '../view-board.component';
 export class BubbleMenuComponent implements OnInit {
 
   menuType: MenuType;
+  bubble: Bubble;
 
   constructor() { }
 
   ngOnInit() {
   }
 
-  public test() {
-    console.log('test is ok');
+  public showMenu(item) {
+    this.menuType = item.menuType;
+    this.bubble = item.bubble;
+    console.log(item);
+  }
+
+  isBorderMenu() {
+    return this.menuType === MenuType.borderMenu;
+  }
+
+  isLeafBubbleMenu() {
+    if (this.menuType === MenuType.bubbleMenu) {
+      return this.bubble.type === BubbleType.leafBubble;
+    }
+    return false;
+  }
+
+  isInternalBubbleMenu() {
+    if (this.menuType === MenuType.bubbleMenu) {
+      return this.bubble.type === BubbleType.internalBubble;
+    }
+    return false;
   }
 
   public openSangjunBoardEvent() {
@@ -28,7 +54,6 @@ export class BubbleMenuComponent implements OnInit {
   }
 
   public popBubbleEvent() {
-
 
   }
 
