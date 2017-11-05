@@ -83,7 +83,7 @@ export class BubbleService {
 
         const parentBubble = this.bubbleList[parentID] as InternalBubble;
         if (!parentBubble) {
-            throw new Error('invaild parentId in createBubble: ' + parentID);
+          throw new Error('invaild parentId in createBubble: ' + parentID);
         }
 
         // check parent bubble's type
