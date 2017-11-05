@@ -79,19 +79,9 @@ export class BubbleService {
     }
   }
 
-<<<<<<< HEAD
-    async fetchBubble(id: number) {
-            if (0 <= id && id < this.bubbleList.length && this.bubbleList[id] != null) {
-                return (this.bubbleList[id]);
-            } else {
-                throw new Error('bubble with index ' + id + ' does not exist');
-        }
-    }
-=======
   async getBubbleById(id: number) {
     return await this.fetchBubble(id);
   }
->>>>>>> f42d81e71b7e0458da44e0bd85f71425d019be40
 
   adjustChildLocation(childList, firstLocation, adjust, endLocation = -1) {
     if (endLocation === -1) {
