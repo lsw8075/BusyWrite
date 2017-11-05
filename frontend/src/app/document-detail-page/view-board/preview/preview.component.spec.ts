@@ -5,12 +5,6 @@ import { Bubble, BubbleType, LeafBubble, InternalBubble } from '../../../model/b
 import { Component } from '@angular/core';
 import { PreviewComponent } from './preview.component';
 
-class MockBubbleService {
-  calcBubbleHeight(bubble: Bubble) {
-    return 1;
-  }
-}
-
 const mockLeafBubble = {
   id: 2,
   type: BubbleType.leafBubble,
@@ -37,6 +31,12 @@ const mockInternalBubble = {
   childBubbleList: [mockLeafBubble],
   comments: null
 };
+
+class MockBubbleService {
+  async getBubbleById(id: number) {
+    return await mockInternalBubble;
+  }
+}
 
 describe('PreviewComponent', () => {
   let comp: PreviewComponent;
@@ -68,9 +68,14 @@ describe('PreviewComponent', () => {
   });
 
   it('call bubbleTraversal on ngOnInit', () => {
-    spyOn(comp, '_bubbleTraversal(mockInternalBubble)');
+    spyOn(comp, '_bubbleTraversal');
     comp.ngOnInit();
-    expect(comp._bubbleTraversal(mockInternalBubble)).toHaveBeenCalled();
+    expect(comp._bubbleTraversal).toHaveBeenCalled();
+  });
+
+  it('get content[] from bubbleTraversal internal', () => {
+    comp._bubbleTraversal(mockInternalBubble);
+    expect(comp.contentList.length).toEqual(1);
   });
 
 });
