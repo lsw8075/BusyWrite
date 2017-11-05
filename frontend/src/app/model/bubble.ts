@@ -49,7 +49,6 @@ export class InternalBubble implements Bubble {
   constructor() {
     // must initialize all attributes
     this.type = BubbleType.internalBubble;
-    throw new Error('not implemented');
   }
 }
 
@@ -64,7 +63,6 @@ export class SuggestBubble implements Bubble {
   constructor() {
     // must initialize all attributes
     this.type = BubbleType.suggestBubble;
-    throw new Error('not implemented');
   }
 
   public noteToSuggestBubble(note: Note): SuggestBubble {

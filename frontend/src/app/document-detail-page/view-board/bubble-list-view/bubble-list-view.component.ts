@@ -8,13 +8,9 @@ import { Bubble, LeafBubble, InternalBubble } from '../view-board.component';
 })
 export class BubbleListViewComponent implements OnInit {
 
-  temp: LeafBubble;
-
   constructor() { }
 
   ngOnInit() {
-    this.temp = new LeafBubble();
-    this.temp.content = 'test leaf bubble';
   }
 
   public openSangjunBoardEvent() {

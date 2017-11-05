@@ -10,17 +10,20 @@ import { BubbleType, Bubble, LeafBubble, InternalBubble, SuggestBubble } from '.
 export class BubbleDetailViewComponent implements OnInit {
 
   @Input() id: number;
-  bubble: LeafBubble | InternalBubble;
+  bubble: Bubble;
 
   constructor(
     private _bubbleService: BubbleService
   ) {}
 
   ngOnInit() {
-    this.bubble = this._bubbleService.getBubbleById(this.id);
-    if (this.bubble.type === BubbleType.suggestBubble) {
-      throw new Error('suggest bubble should not show here!');
-    }
+    this._bubbleService.getBubbleById(this.id).then(response => {
+      this.bubble = response;
+      if (this.bubble.type === BubbleType.suggestBubble) {
+        throw new Error('suggest bubble should not show here!');
+      }
+    });
+
   }
 
   public getContent(): string {
@@ -43,4 +46,8 @@ export class BubbleDetailViewComponent implements OnInit {
     return this.bubble.type === BubbleType.leafBubble;
   }
 
+  private _handleError(error: any): Promise<any> {
+    console.error('An error occurred', error);
+    return Promise.reject(error);
+  }
 }

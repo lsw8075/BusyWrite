@@ -48,9 +48,10 @@ export class BubbleService {
 
 
     constructor()  {
-        for (let rawBubble of this.bubbleData) {
-            this.bubbleList[rawBubble.id] = this.rawBubbleToBubble(rawBubble);
-        }
+      this.bubbleList = [];
+      for (let rawBubble of this.bubbleData) {
+          this.bubbleList.push(this.rawBubbleToBubble(rawBubble));
+      }
     }
 
     async fetchBubbles() {
@@ -132,8 +133,8 @@ export class BubbleService {
 
     async wrapBubble(wrapList: Array<number>) {
 
-        if(wrapList.length < 1) {
-            throw new Error('Wrapee does not exist')
+        if (wrapList.length < 1) {
+            throw new Error('Wrapee does not exist');
         }
 
         let firstWrapee = this.bubbleList[wrapList[0]] as LeafBubble | InternalBubble;
@@ -169,7 +170,7 @@ export class BubbleService {
 
         // and delete bubbles & insert new Parent from childList
         commonParent.childBubbles.splice(firstLocation, wrapList.length, newParent.id);
-        this.adjustChildLocation(commonParent.childBubbles, firstLocation+1, wrapList.length - 1);
+        this.adjustChildLocation(commonParent.childBubbles, firstLocation + 1, wrapList.length - 1);
 
         return (newParent);
 
