@@ -79,7 +79,58 @@ describe('BubbleDetailViewComponent', () => {
       expect(comp.getChildren).not.toHaveBeenCalled();
     });
 
-    it('')
+    it('should add background color when mouseEnter() called', () => {
+      comp.mouseEnter();
+      fixture.detectChanges();
+      expect(comp.showStyle['background-color']).toBe('rgba(150, 150, 150, 0.1)');
+    });
+
+    it('should add background color when mouse is over element', fakeAsync(() => {
+      const element = fixture.debugElement.query(By.css('.bubbleUnit')).nativeElement;
+      element.dispatchEvent(new Event('mouseenter'));
+      fixture.detectChanges();
+      tick();
+      expect(comp.showStyle['background-color']).toBe('rgba(150, 150, 150, 0.1)');
+    }));
+
+    it('should make background transparent when mouseLeave() called', () => {
+      comp.mouseLeave();
+      fixture.detectChanges();
+      expect(comp.showStyle['background-color']).toBe('transparent');
+    });
+
+    it('should make background transparent when mouse leaves element', fakeAsync(() => {
+      const element = fixture.debugElement.query(By.css('.bubbleUnit')).nativeElement;
+      element.dispatchEvent(new Event('mouseleave'));
+      fixture.detectChanges();
+      tick();
+      expect(comp.showStyle['background-color']).toBe('transparent');
+    }));
+
+    it('should emit event when showBubbleMenuEvent is called', fakeAsync(() => {
+      spyOn(comp.openMenu, 'emit');
+      comp.showBubbleMenuEvent(comp.bubble);
+      fixture.detectChanges();
+      expect(comp.openMenu.emit).toHaveBeenCalled();
+    }));
+
+    it('should emit event when showBorderMenuEvent is called', fakeAsync(() => {
+      spyOn(comp.openMenu, 'emit');
+      comp.showBorderMenuEvent(comp.bubble, false);
+      fixture.detectChanges();
+      expect(comp.openMenu.emit).toHaveBeenCalled();
+    }));
+
+    it('should emit event when showMenuEvent is called', fakeAsync(() => {
+      spyOn(comp.openMenu, 'emit');
+      comp.showMenuEvent(comp.bubble);
+      fixture.detectChanges();
+      expect(comp.openMenu.emit).toHaveBeenCalled();
+    }));
+
+    it('should get content', () => {
+      expect(comp.getContent()).toBe(mockLeafBubble.content);
+    });
   });
 
   describe('when internal bubble', () => {
@@ -92,6 +143,10 @@ describe('BubbleDetailViewComponent', () => {
       spyOn(comp, 'getChildren');
       comp.ngOnInit();
       expect(comp.getChildren).toHaveBeenCalled();
+    });
+
+    it('should not get content, instead throw error', () => {
+      expect(function() {comp.getContent()}).toThrow(new Error('this is not leaf bubble, do not have content'));
     });
   });
 

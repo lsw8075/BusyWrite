@@ -87,4 +87,4 @@ export class BubbleDetailViewComponent implements OnInit {
   public isLeaf(): Boolean {
     return this.bubble.type === BubbleType.leafBubble;
   }
-}
+}  /* istanbul ignore next */
