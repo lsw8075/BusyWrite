@@ -20,7 +20,6 @@ export class BubbleListViewComponent implements OnInit {
       console.assert(this.bubbleRootList.length >= 0, 'bubble list cannot be negative');
     });
   }
-
   public openSangjunBoardEvent() {
 
   }

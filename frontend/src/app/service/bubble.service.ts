@@ -76,7 +76,7 @@ export class BubbleService {
     }
   }
 
-  calcBubbleHeight(bubble: Bubble) {
+  calcBubbleHeight(bubble: Bubble): number {
     if (bubble.type === BubbleType.leafBubble) {
       return 1;
     }
