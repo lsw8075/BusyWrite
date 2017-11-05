@@ -1,5 +1,5 @@
 <div *ngIf="bubbleRootList">
-    <div *ngFor="let bubble of bubbleRootList">
+    <div *ngFor="let bubble of bubbleRootList" class="rootBubble">
         <app-bubble-detail-view [bubble]="bubble" (openMenu)="showBubbleMenuEvent($event)">
           bubble is know loading...!
         </app-bubble-detail-view>
