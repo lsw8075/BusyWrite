@@ -15,8 +15,8 @@ export class BubbleListViewComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this._bubbleService.fetchBubbles().then(response => {
-      this.bubbleRootList = response.filter(bubble => (bubble).parentID === 0);
+    this._bubbleService.getBubbleById(0).then(rootBubble => {
+      this.bubbleRootList = (rootBubble as InternalBubble).childBubbleList;
       console.assert(this.bubbleRootList.length >= 0, 'bubble list cannot be negative');
     });
   }

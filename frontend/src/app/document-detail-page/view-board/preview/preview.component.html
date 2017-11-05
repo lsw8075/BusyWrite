@@ -1,3 +1,9 @@
 <p>
   preview works!
 </p>
+
+<div *ngIf=contentList>
+  <p *ngFor="let content of contentList">
+    {{content}}
+  </p>
+</div>
