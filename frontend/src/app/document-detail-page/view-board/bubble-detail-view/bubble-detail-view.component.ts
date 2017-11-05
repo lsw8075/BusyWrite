@@ -13,7 +13,7 @@ import { dragula } from 'ng2-dragula/ng2-dragula';
 export class BubbleDetailViewComponent implements OnInit {
 
   @Input() bubble: Bubble;
-  @Output() openMenu = new EventEmitter<Bubble>();
+  @Output() openMenu = new EventEmitter();
   children: Array<Bubble>;
 
   constructor(
@@ -26,9 +26,10 @@ export class BubbleDetailViewComponent implements OnInit {
     }
   }
 
-  public showMenu(item) {
+  public showMenu(item, isTop: boolean) {
     console.log('open menu', item);
-    this.openMenu.emit(item);
+    const event = {item, isTop};
+    this.openMenu.emit(event);
   }
   public showMenuChild(item) {
     this.openMenu.emit(item);

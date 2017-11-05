@@ -1,11 +1,11 @@
 <div *ngIf="bubble" >
     <div *ngIf="isLeaf(); then leaf else internal"></div>
     <ng-template #leaf>
-      <div class="placeholder" (click)="showMenu(bubble)"></div>
+      <div class="placeholder" (click)="showMenu(bubble, true)"></div>
       <div class="leafBubble">
       LeafNode content: {{getContent()}}
       </div>
-      <div class="placeholder" (click)="showMenu(bubble)"></div>
+      <div class="placeholder" (click)="showMenu(bubble, false)"></div>
     </ng-template>
     <ng-template #internal>
       <div [ngStyle]="setStyle()" class="internalBubble">
