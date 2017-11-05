@@ -52,6 +52,7 @@ import { NoteService } from './service/note.service';
 
 
 import { TabViewModule } from 'primeng/primeng';
+import { DragulaModule } from 'ng2-dragula/ng2-dragula';
 
 @NgModule({
   declarations: [
@@ -85,7 +86,8 @@ import { TabViewModule } from 'primeng/primeng';
     AppRoutingModule,
     BrowserModule,
     HttpModule,
-    TabViewModule
+    TabViewModule,
+    DragulaModule
   ],
   providers: [
     {provide: APP_BASE_HREF, useValue: '/'},
