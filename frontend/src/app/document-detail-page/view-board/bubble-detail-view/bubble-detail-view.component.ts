@@ -38,19 +38,27 @@ export class BubbleDetailViewComponent implements OnInit {
   }
 
   public showBorderMenuEvent(bubble, isTop: boolean) {
-    let menuType = MenuType.borderMenu;
+    const menuType = MenuType.borderMenu;
     const event = {menuType, bubble, isTop};
     this.openMenu.emit(event);
   }
 
   public showBubbleMenuEvent(bubble) {
-    let menuType = MenuType.bubbleMenu;
+    const menuType = MenuType.bubbleMenu;
     const event = {menuType, bubble};
     this.openMenu.emit(event);
   }
 
   public showMenuEvent(item) {
     this.openMenu.emit(item);
+  }
+
+  public getContent(): string {
+    if (this.bubble.type === BubbleType.leafBubble) {
+      return (this.bubble as LeafBubble).content;
+    } else {
+      throw new Error('this is not leaf bubble, do not have content');
+    }
   }
 
   public setStyle(): object {
@@ -71,30 +79,12 @@ export class BubbleDetailViewComponent implements OnInit {
     return this._bubbleService.calcBubbleHeight(this.bubble);
   }
 
-  public getContent(): string {
-    if (this.bubble.type === BubbleType.leafBubble) {
-      return (this.bubble as LeafBubble).content;
-    } else {
-      throw new Error('this is not leaf bubble, do not have content');
-    }
-  }
-
   public getChildren(): void {
-    if (this.bubble.type === BubbleType.internalBubble) {
-      this.children =  (this.bubble as InternalBubble).childBubbleList;
-      console.log(this.children);
-    } else {
-      console.error(this.bubble);
-      throw new Error('this is not internal bubble, do not have children');
-    }
+    this.children =  (this.bubble as InternalBubble).childBubbleList;
+    console.log(this.children);
   }
 
   public isLeaf(): Boolean {
     return this.bubble.type === BubbleType.leafBubble;
-  }
-
-  private _handleError(error: any): Promise<any> {
-    console.error('An error occurred', error);
-    return Promise.reject(error);
   }
 }

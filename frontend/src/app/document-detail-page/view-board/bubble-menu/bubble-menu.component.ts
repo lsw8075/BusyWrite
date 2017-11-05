@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { BubbleType, Bubble, LeafBubble, InternalBubble } from '../view-board.component';
+import { BubbleType, Bubble, LeafBubble, InternalBubble } from '../../document-detail-page.component';
 
 export enum MenuType {
   borderMenu,
