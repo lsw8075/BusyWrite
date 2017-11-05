@@ -23,7 +23,7 @@ export class PreviewComponent implements OnInit {
     });
   }
 
-  private _bubbleTraversal(bubble: Bubble) {
+  public _bubbleTraversal(bubble: Bubble) {
     if (bubble.type === BubbleType.leafBubble) {
       const leafBubble = bubble as LeafBubble;
       this.contentList.push(leafBubble.content);

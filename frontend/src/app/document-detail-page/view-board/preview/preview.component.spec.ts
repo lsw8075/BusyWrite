@@ -1,28 +1,76 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, async, fakeAsync, tick } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { BubbleService } from '../view-board.component';
-import { Bubble } from '../view-board.component';
+import { Bubble, BubbleType, LeafBubble, InternalBubble } from '../../../model/bubble';
+import { Component } from '@angular/core';
 import { PreviewComponent } from './preview.component';
 
+class MockBubbleService {
+  calcBubbleHeight(bubble: Bubble) {
+    return 1;
+  }
+}
+
+const mockLeafBubble = {
+  id: 2,
+  type: BubbleType.leafBubble,
+  location: 0,
+  owner: 0,
+  editLock: false,
+  content: 'mock leaf bubble',
+  parentID: 1,
+  parentBubble: null,
+  suggestBubbles: null,
+  comments: null,
+};
+
+const mockInternalBubble = {
+  id: 1,
+  type: BubbleType.internalBubble,
+  location: 0,
+  editLock: false,
+
+  parentID: 0,
+  parentBubble: null,
+  suggestBubbles: null,
+  childBubbles: [2],
+  childBubbleList: [mockLeafBubble],
+  comments: null
+};
+
 describe('PreviewComponent', () => {
-    let comp: PreviewComponent;
-    let fixture: ComponentFixture<PreviewComponent>;
+  let comp: PreviewComponent;
+  let fixture: ComponentFixture<PreviewComponent>;
+  let bubbleService: BubbleService;
 
-    beforeEach(() => {
-        TestBed.configureTestingModule({
-            declarations: [ PreviewComponent ],
-            providers: [
-            ]
-        });
-        fixture = TestBed.createComponent(PreviewComponent);
-        comp = fixture.componentInstance;
-    });
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      declarations: [
+        PreviewComponent
+      ],
+      providers: [
+        {provide: BubbleService, useClass: MockBubbleService}
+      ]
+    }).compileComponents();
+  }));
 
-    it('can load instance', () => {
-        expect(comp).toBeTruthy();
-    });
+  beforeEach(() => {
+    fixture = TestBed.createComponent(PreviewComponent);
+    comp = fixture.componentInstance;
+  });
 
-    it('contentList defaults to: []', () => {
-        expect(comp.contentList).toEqual([]);
-    });
+  it('can instantiate it', () => {
+    expect(comp).not.toBeNull();
+  });
+
+  it('contentList defaults to: []', () => {
+      expect(comp.contentList).toEqual([]);
+  });
+
+  it('call bubbleTraversal on ngOnInit', () => {
+    spyOn(comp, '_bubbleTraversal(mockInternalBubble)');
+    comp.ngOnInit();
+    expect(comp._bubbleTraversal(mockInternalBubble)).toHaveBeenCalled();
+  });
 
 });
