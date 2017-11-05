@@ -37,6 +37,7 @@ export class BubbleService {
         bubble.parentID = rawBubble.parent_id;
         bubble.location = rawBubble.location;
         bubble.childBubbles = rawBubble.children;
+        bubble.childBubbleList = [];
         bubble.editLock = false;
         break;
       }
@@ -54,15 +55,28 @@ export class BubbleService {
     for (let rawBubble of this.bubbleData) {
       this.bubbleList.push(this.rawBubbleToBubble(rawBubble));
     }
+
+    for (let bubble of this.bubbleList) {
+      bubble.parentBubble = this.fetchBubble(bubble.parentID);
+
+      if (bubble.type === BubbleType.internalBubble) {
+        let internalBubble = bubble as InternalBubble;
+        for (let childBubbleId of internalBubble.childBubbles) {
+          internalBubble.childBubbleList.push(this.fetchBubble(childBubbleId));
+        }
+      }
+    }
   }
 
   calcBubbleHeight(bubble: Bubble) {
-    if(bubble.type == BubbleType.leafBubble)
+    if (bubble.type === BubbleType.leafBubble) {
       return 1;
+    }
 
-    var height: number = 0;
-    for (let childBubbleId of (bubble as InternalBubble).childBubbles) {
-      height = Math.max(height, this.calcBubbleHeight(this.fetchBubble(childBubbleId)));
+    let height = 0;
+    let internalBubble = bubble as InternalBubble;
+    for (let childBubble of internalBubble.childBubbleList) {
+      height = Math.max(height, this.calcBubbleHeight(childBubble));
     }
     return height + 1;
   }
