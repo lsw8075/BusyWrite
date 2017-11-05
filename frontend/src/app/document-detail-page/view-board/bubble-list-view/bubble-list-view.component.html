@@ -1,10 +1,8 @@
 <div *ngIf="bubbleRootList">
-  <div [dragula]='"bubble-bag"' [dragulaModel]='bubbleRootList'>
     <div *ngFor="let bubble of bubbleRootList">
-        <app-bubble-detail-view [id]="bubble.id">
+        <app-bubble-detail-view [bubble]="bubble" (openMenu)="showBubbleMenuEvent($event)">
           bubble is know loading...!
         </app-bubble-detail-view>
     </div>
-  </div>
 </div>
 

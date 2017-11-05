@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, EventEmitter, OnInit, Input, Output } from '@angular/core';
 import { BubbleService } from '../view-board.component';
 // import { BubbleType, Bubble, LeafBubble, InternalBubble, SuggestBubble } from '../../../model/bubble';
 import { BubbleType, Bubble, LeafBubble, InternalBubble, SuggestBubble } from '../view-board.component';
@@ -12,8 +12,8 @@ import { dragula } from 'ng2-dragula/ng2-dragula';
 })
 export class BubbleDetailViewComponent implements OnInit {
 
-  @Input() id: number;
-  bubble: Bubble;
+  @Input() bubble: Bubble;
+  @Output() openMenu = new EventEmitter<Bubble>();
   children: Array<Bubble>;
 
   constructor(
@@ -21,12 +21,17 @@ export class BubbleDetailViewComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this._bubbleService.getBubbleById(this.id).then(response => {
-      this.bubble = response;
-      if (!this.isLeaf()) {
-        this.getChildren();
-      }
-    });
+    if (!this.isLeaf()) {
+      this.getChildren();
+    }
+  }
+
+  public showMenu(item) {
+    console.log('open menu', item);
+    this.openMenu.emit(item);
+  }
+  public showMenuChild(item) {
+    this.openMenu.emit(item);
   }
 
   public setStyle(): object {
