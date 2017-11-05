@@ -19,11 +19,26 @@ export class BubbleDetailViewComponent implements OnInit {
   ngOnInit() {
     this._bubbleService.getBubbleById(this.id).then(response => {
       this.bubble = response;
-      if (this.bubble.type === BubbleType.suggestBubble) {
-        throw new Error('suggest bubble should not show here!');
-      }
     });
+  }
 
+  public setStyle(): object {
+    const height = this._getHeight();
+    const lineWidth = 2;
+    const space = 10;
+    const offset = 5;
+    console.log(height);
+    const styles = {};
+    styles['border-left-width'] = `${lineWidth}px`;
+    styles['border-right-width'] = `${lineWidth}px`;
+    styles['margin'] = `0px -${offset + height * space}px`;
+    styles['padding'] = `0px ${offset + height * space - lineWidth}px`;
+
+    return styles;
+  }
+
+  private _getHeight(): number {
+    return this._bubbleService.calcBubbleHeight(this.bubble);
   }
 
   public getContent(): string {

@@ -1,13 +1,17 @@
 <div *ngIf="bubble">
   <div *ngIf="isLeaf(); then leaf else internal"></div>
-  <ng-template #leaf class="leafBubble">
+  <ng-template #leaf>
+    <div class="leafBubble">
     LeafNode content: {{getContent()}}
+    <hr>
+    </div>
   </ng-template>
   <ng-template #internal>
-    <div *ngFor="let id of getChildren()" class="list-group-item">
-      <app-bubble-detail-view [id]="id">
-
-      </app-bubble-detail-view>
+    <div [ngStyle]="setStyle()" class="internalBubble">
+      <div *ngFor="let id of getChildren()" >
+        <app-bubble-detail-view [id]="id">
+        </app-bubble-detail-view>
+      </div>
     </div>
   </ng-template>
 </div>

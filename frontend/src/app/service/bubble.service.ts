@@ -7,13 +7,13 @@ import 'rxjs/add/operator/toPromise';
 export class BubbleService {
 
   bubbleData = [
-    { id: 0, parent_id: 0, bubble_type: 'leaf', content: 'dummy bubble'},
+    { id: 0, parent_id: 0, bubble_type: 'leaf', content: '0. dummy bubble'},
     { id: 1, parent_id: 0, bubble_type: 'internal', children: [ 2, 3, 4 ] },
-    { id: 2, parent_id: 1, bubble_type: 'leaf', content: 'Sed ut perspiciatis, unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa, quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt, explicabo. Nemo enim ipsam voluptatem, quia voluptas sit, aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos, qui ratione voluptatem sequi nesciunt, neque porro quisquam est, qui do' },
+    { id: 2, parent_id: 1, bubble_type: 'leaf', content: '2. Sed ut perspiciatis, unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa, quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt, explicabo. Nemo enim ipsam voluptatem, quia voluptas sit, aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos, qui ratione voluptatem sequi nesciunt, neque porro quisquam est, qui do' },
     { id: 3, parent_id: 1, bubble_type: 'internal', children: [ 5, 6 ] },
-    { id: 4, parent_id: 1, bubble_type: 'leaf', content: 'et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio, cumque nihil impedit, quo minus id, quod maxime placeat, facere possimus, omnis voluptas assumenda est, omnis dolor repellendus.' },
-    { id: 5, parent_id: 3, bubble_type: 'leaf', content: 'lorem ipsum, quia dolor sit amet consectetur adipisci velit, sed quia non numquam  eius modi tempora incidunt, ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit, qui in ea voluptate velit esse, quam nihil molestiae consequatur, vel illum, qui dolorem eum fugiat, quo voluptas nulla pariatur?'},
-    { id: 6, parent_id: 3, bubble_type: 'leaf', content: 'At vero eos et accusamus et iusto odio dignissimos ducimus, qui blanditiis praesentium voluptatum deleniti atque corrupti, quos dolores et quas molestias excepturi sint, obcaecati cupiditate non provident, similique sunt in culpa, qui officia deserunt mollitia animi, id est laborum'}
+    { id: 4, parent_id: 1, bubble_type: 'leaf', content: '4. et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio, cumque nihil impedit, quo minus id, quod maxime placeat, facere possimus, omnis voluptas assumenda est, omnis dolor repellendus.' },
+    { id: 5, parent_id: 3, bubble_type: 'leaf', content: '5. lorem ipsum, quia dolor sit amet consectetur adipisci velit, sed quia non numquam  eius modi tempora incidunt, ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit, qui in ea voluptate velit esse, quam nihil molestiae consequatur, vel illum, qui dolorem eum fugiat, quo voluptas nulla pariatur?'},
+    { id: 6, parent_id: 3, bubble_type: 'leaf', content: '6. At vero eos et accusamus et iusto odio dignissimos ducimus, qui blanditiis praesentium voluptatum deleniti atque corrupti, quos dolores et quas molestias excepturi sint, obcaecati cupiditate non provident, similique sunt in culpa, qui officia deserunt mollitia animi, id est laborum'}
   ];
 
   bubbleList: Array<Bubble>;
@@ -56,11 +56,12 @@ export class BubbleService {
     }
   }
 
-  calcBubbleHeight(bubble: Bubble) {
-    if(bubble.type == BubbleType.leafBubble)
+  calcBubbleHeight(bubble: Bubble): number {
+    if (bubble.type === BubbleType.leafBubble) {
       return 1;
+    }
 
-    var height: number = 0;
+    let height = 0;
     for (let childBubbleId of (bubble as InternalBubble).childBubbles) {
       height = Math.max(height, this.calcBubbleHeight(this.fetchBubble(childBubbleId)));
     }
