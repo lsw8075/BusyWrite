@@ -35,12 +35,24 @@ describe('BubbleService', () => {
     expect(service instanceof BubbleService).toBe(true);
   }));
 
-  it('should be able to calculate bubble height of leaf node',
+  it('should be able to get bubble list',
   inject([BubbleService], (service: BubbleService) => {
+    service.fetchBubbles().then((bubbles) => expect(bubbles.length).toEqual(16));
+  }));
+
+  it('should be able to get bubble by accessible id',
+  inject([BubbleService], (service: BubbleService) => {
+    service.getBubbleById(10).then((bubble) => expect(bubble.id).toBe(10));
+  }));
+
+  it('should not get bubble by inaccessible id',
+  inject([BubbleService], (service: BubbleService) => {
+    expect(function() {service.fetchBubble(999)}).toThrowError();;
   }));
 
   it('should be able to calculate bubble height of internal node',
   inject([BubbleService], (service: BubbleService) => {
+    service.getBubbleById(1).then((bubble) => expect(service.calcBubbleHeight(bubble)).toBe(5));
   }));
 
 });
