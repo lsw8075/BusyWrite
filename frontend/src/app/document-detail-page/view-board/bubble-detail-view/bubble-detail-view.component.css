@@ -8,19 +8,30 @@
   border-radius: 10px;
 }
 
+.internalBubble:hover {
+  border-left-color: red;
+
+  border-right-color: red;
+}
+
 .leafBubble {
-  background-color: #f8f2f2;
   border-radius: 10px;
-  padding: 5px;
-  margin: 5px 0px;
+  padding: 0px;
+  margin: 0px 0px;
 }
 
 .placeholder {
   padding: 5px 0px;
 
 }
-.placeholder:hover {
+.placeholder-bottom:hover {
   border-top-color: grey;
   border-top-style: solid;
   border-top-width: 1px;
+}
+
+.placeholder-top:hover {
+  border-bottom-color: grey;
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
 }

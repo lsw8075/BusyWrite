@@ -13,7 +13,9 @@ export class BubbleDetailViewComponent implements OnInit {
 
   @Input() bubble: Bubble;
   @Output() openMenu = new EventEmitter();
+  @Output() hover = new EventEmitter<void>();
   children: Array<Bubble>;
+  showStyle = {};
 
   constructor(
     private _bubbleService: BubbleService
@@ -23,6 +25,16 @@ export class BubbleDetailViewComponent implements OnInit {
     if (!this.isLeaf()) {
       this.getChildren();
     }
+  }
+
+  public mouseEnter() {
+    console.log('enter', this.bubble.id);
+    this.showStyle['background-color'] = 'rgba(150, 150, 150, 0.1)';
+  }
+
+  public mouseLeave() {
+    console.log('leave', this.bubble.id);
+    this.showStyle['background-color'] = 'transparent';
   }
 
   public showBorderMenuEvent(bubble, isTop: boolean) {
