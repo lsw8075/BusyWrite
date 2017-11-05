@@ -11,6 +11,7 @@ export class BubbleDetailViewComponent implements OnInit {
 
   @Input() id: number;
   bubble: Bubble;
+  children: Array<Bubble>;
 
   constructor(
     private _bubbleService: BubbleService
@@ -19,6 +20,9 @@ export class BubbleDetailViewComponent implements OnInit {
   ngOnInit() {
     this._bubbleService.getBubbleById(this.id).then(response => {
       this.bubble = response;
+      if (!this.isLeaf()) {
+        this.getChildren();
+      }
     });
   }
 
@@ -27,7 +31,6 @@ export class BubbleDetailViewComponent implements OnInit {
     const lineWidth = 2;
     const space = 10;
     const offset = 5;
-    console.log(height);
     const styles = {};
     styles['border-left-width'] = `${lineWidth}px`;
     styles['border-right-width'] = `${lineWidth}px`;
@@ -49,10 +52,12 @@ export class BubbleDetailViewComponent implements OnInit {
     }
   }
 
-  public getChildren(): Array<number> {
+  public getChildren(): void {
     if (this.bubble.type === BubbleType.internalBubble) {
-      return (this.bubble as InternalBubble).childBubbles;
+      this.children =  (this.bubble as InternalBubble).childBubbleList;
+      console.log(this.children);
     } else {
+      console.error(this.bubble);
       throw new Error('this is not internal bubble, do not have children');
     }
   }

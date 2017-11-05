@@ -10,8 +10,8 @@
     </ng-template>
     <ng-template #internal>
       <div [ngStyle]="setStyle()" class="internalBubble">
-        <div *ngFor="let id of getChildren()" >
-          <app-bubble-detail-view [id]="id">
+        <div *ngFor="let childBubble of children" >
+          <app-bubble-detail-view [id]="childBubble.id">
           </app-bubble-detail-view>
         </div>
       </div>

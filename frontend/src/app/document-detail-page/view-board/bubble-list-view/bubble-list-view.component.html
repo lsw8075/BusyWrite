@@ -1,10 +1,10 @@
 <div *ngIf="bubbleRootList">
-  <!-- <div [dragula]='"bag-one"'> -->
+  <div [dragula]='"bag-one"'>
     <div *ngFor="let bubble of bubbleRootList">
         <app-bubble-detail-view [id]="bubble.id">
           bubble is know loading...!
         </app-bubble-detail-view>
     </div>
-  <!-- </div> -->
+  </div>
 </div>
 

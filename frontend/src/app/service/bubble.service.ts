@@ -22,6 +22,7 @@ export class BubbleService {
     { id: 12, parent_id: 8, bubble_type: 'internal', children: [ 13, 14 ]},
     { id: 13, parent_id: 12, bubble_type: 'leaf', content: 'hello swpp team 1'},
     { id: 14, parent_id: 12, bubble_type: 'leaf', content: 'ww'},
+    { id: 15, parent_id: 0, bubble_type: 'leaf', content: 'node'},
   ];
 
   bubbleList: Array<Bubble>;
