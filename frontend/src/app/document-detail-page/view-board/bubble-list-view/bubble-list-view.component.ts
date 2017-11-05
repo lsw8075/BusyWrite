@@ -8,9 +8,17 @@ import { Bubble, LeafBubble, InternalBubble } from '../view-board.component';
 })
 export class BubbleListViewComponent implements OnInit {
 
-  constructor() { }
+  bubbleRootList: Array<Bubble>; // bubbles that have root as parents
+
+  constructor(
+    private _bubbleService: BubbleService
+  ) { }
 
   ngOnInit() {
+    this._bubbleService.fetchBubbles().then(response => {
+      this.bubbleRootList = response.filter(bubble => (bubble).parentID === 0);
+      console.assert(this.bubbleRootList.length >= 0, 'bubble list cannot be negative');
+    });
   }
 
   public openSangjunBoardEvent() {

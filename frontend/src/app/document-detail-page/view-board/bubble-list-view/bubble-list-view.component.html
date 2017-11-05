@@ -1,6 +1,8 @@
-<p>
-  bubble-list-view works!
-</p>
+<div *ngIf="bubbleRootList">
+  <div *ngFor="let bubble of bubbleRootList">
+      <app-bubble-detail-view [id]="bubble.id">
+        bubble is know loading...!
+      </app-bubble-detail-view>
+  </div>
+</div>
 
-<app-bubble-detail-view [id]="1">
-</app-bubble-detail-view>
