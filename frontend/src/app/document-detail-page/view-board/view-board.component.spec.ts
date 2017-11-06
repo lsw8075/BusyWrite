@@ -1,22 +1,71 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { ComponentFixture, TestBed, async, fakeAsync, tick } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { ViewBoardComponent } from './view-board.component';
+import { Component } from '@angular/core';
+import { TabViewModule } from 'primeng/primeng';
+import { BubbleMenuComponent } from './bubble-menu/bubble-menu.component';
+
+@Component({
+  selector: 'app-bubble-list-view',
+  template: `<p>app-bubble-list-view component</p>`
+})
+class MockBubbleListViewComponent {
+
+}
+
+@Component({
+  selector: 'app-bubble-menu',
+  template: `<p>app-bubble-menu component</p>`
+})
+class MockBubbleMenuComponent {
+  showMenu(item) {}
+}
+
+
+@Component({
+  selector: 'app-preview',
+  template: `<p>app-bubble-menu component</p>`
+})
+class MockPreviewComponent {
+
+}
 
 describe('ViewBoardComponent', () => {
-    let comp: ViewBoardComponent;
-    let fixture: ComponentFixture<ViewBoardComponent>;
+  let comp: ViewBoardComponent;
+  let fixture: ComponentFixture<ViewBoardComponent>;
 
-    beforeEach(() => {
-        TestBed.configureTestingModule({
-            declarations: [ ViewBoardComponent ],
-            schemas: [ NO_ERRORS_SCHEMA ]
-        });
-        fixture = TestBed.createComponent(ViewBoardComponent);
-        comp = fixture.componentInstance;
-    });
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      declarations: [
+        ViewBoardComponent,
+        MockBubbleListViewComponent,
+        MockPreviewComponent,
+        BubbleMenuComponent
+      ],
+      imports: [
+        TabViewModule
+      ]
+    }).compileComponents();
+  }));
 
-    it('can load instance', () => {
-        expect(comp).toBeTruthy();
-    });
+  beforeEach(() => {
+    fixture = TestBed.createComponent(ViewBoardComponent);
+    comp = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('can instantiate it', () => {
+    expect(comp).not.toBeNull();
+  });
+
+  it('should create the app', () => {
+    expect(comp).toBeTruthy();
+  });
+
+  it('should call child component show menu ', () => {
+    spyOn(comp.menu, 'showMenu');
+    comp.showMenu({});
+    expect(comp.menu.showMenu).toHaveBeenCalled();
+  });
 
 });

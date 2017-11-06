@@ -23,51 +23,51 @@ export class BubbleListViewComponent implements OnInit {
     });
   }
 
-  public openSangjunBoardEvent() {
+  // public openSangjunBoardEvent() {
 
-  }
+  // }
 
   public showMenuEvent(item) {
     this.openMenu.emit(item);
   }
 
-  public showMultipleBubbleMenuEvent() {
+  // public showMultipleBubbleMenuEvent() {
 
-  }
+  // }
 
-  public showBorderMenuEvent() {
+  // public showBorderMenuEvent() {
 
-  }
+  // }
 
-  public showClickableBorder() {
+  // public showClickableBorder() {
 
-  }
+  // }
 
-  public splitBubble() {
+  // public splitBubble() {
 
-  }
+  // }
 
-  public onSplitBubbleEvent() {
+  // public onSplitBubbleEvent() {
 
-  }
+  // }
 
-  public onPopBubbleEvent() {
+  // public onPopBubbleEvent() {
 
-  }
+  // }
 
-  public onWrapBubbleEvent() {
+  // public onWrapBubbleEvent() {
 
-  }
+  // }
 
-  public onCreateBubbleEvent() {
+  // public onCreateBubbleEvent() {
 
-  }
+  // }
 
-  public onEditBubbleEvent() {
+  // public onEditBubbleEvent() {
 
-  }
+  // }
 
-  public onDeleteBubbleEvent() {
+  // public onDeleteBubbleEvent() {
 
-  }
+  // }
 }

@@ -21,14 +21,12 @@ import { Note } from '../model/note';
   templateUrl: './document-detail-page.component.html',
   styleUrls: ['./document-detail-page.component.css']
 })
-export class DocumentDetailPageComponent implements OnInit {
+export class DocumentDetailPageComponent {
 
   constructor() { }
 
-  ngOnInit() {
-  }
 
-}
+} /* istanbul ignore next */
 
 export { AuthenticationService, BoardService, BubbleService, AlarmService, CommentService, DirectoryService, DocumentService, NoteService};
 export { Alarm, Board, BubbleType, Bubble, LeafBubble, InternalBubble, SuggestBubble, Comment, FileSystemEntity, Note };

@@ -10,41 +10,36 @@ import { BubbleMenuComponent, MenuType } from './bubble-menu/bubble-menu.compone
   styleUrls: ['./view-board.component.css']
 })
 
-export class ViewBoardComponent implements OnInit {
+export class ViewBoardComponent {
 
   @ViewChild(BubbleMenuComponent)
-  private menu: BubbleMenuComponent;
-
-  constructor() { }
-
-  ngOnInit() {
-  }
+  public menu: BubbleMenuComponent;
 
   public showMenu(item) {
     this.menu.showMenu(item);
   }
 
-  public openPreview() { // when click on previewTab
+  // public openPreview() { // when click on previewTab
 
-  }
+  // }
 
-  public openBubbleView() { // when click on bubbleViewTab
+  // public openBubbleView() { // when click on bubbleViewTab
 
-  }
+  // }
 
-  public onShowBubbleMenuEvent() {
+  // public onShowBubbleMenuEvent() {
 
-  }
+  // }
 
-  public onShowBorderMenuEvent() {
+  // public onShowBorderMenuEvent() {
 
-  }
+  // }
 
-  public onOpenSangjunBoardEvent() {
+  // public onOpenSangjunBoardEvent() {
 
-  }
+  // }
 
-}
+} /* istanbul ignore next */
 
 export { BubbleService, BoardService };
 export { BubbleType, Bubble, LeafBubble, InternalBubble, SuggestBubble, Board };
