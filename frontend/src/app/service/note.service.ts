@@ -3,7 +3,5 @@ import { Note } from '../model/note';
 
 @Injectable()
 export class NoteService {
-
-  constructor() { }
-
-}
+  constructor() {}
+} /* istanbul ignore next */

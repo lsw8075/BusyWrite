@@ -4,6 +4,5 @@ import { Alarm } from '../model/alarm';
 @Injectable()
 export class AlarmService {
 
-  constructor() { }
 
 }

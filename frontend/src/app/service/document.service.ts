@@ -4,6 +4,4 @@ import { FileSystemEntity } from '../model/file-system-entity';
 @Injectable()
 export class DocumentService {
 
-  constructor() { }
-
-}
+} /* istanbul ignore next */

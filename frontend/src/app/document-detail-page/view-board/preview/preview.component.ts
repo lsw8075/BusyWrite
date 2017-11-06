@@ -35,4 +35,4 @@ export class PreviewComponent implements OnInit {
     }
   }
 
-}
+} /* istanbul ignore next */

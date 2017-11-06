@@ -3,6 +3,5 @@ import { Comment } from '../model/comment';
 @Injectable()
 export class CommentService {
 
-  constructor() { }
 
 }

@@ -67,11 +67,13 @@ describe('PreviewComponent', () => {
       expect(comp.contentList).toEqual([]);
   });
 
-  it('call bubbleTraversal on ngOnInit', () => {
+  it('call bubbleTraversal on ngOnInit', fakeAsync(() => {
     spyOn(comp, '_bubbleTraversal');
     comp.ngOnInit();
+    fixture.detectChanges();
+    tick();
     expect(comp._bubbleTraversal).toHaveBeenCalled();
-  });
+  }));
 
   it('get content[] from bubbleTraversal internal', () => {
     comp._bubbleTraversal(mockInternalBubble);

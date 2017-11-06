@@ -70,4 +70,4 @@ export class BubbleListViewComponent implements OnInit {
   // public onDeleteBubbleEvent() {
 
   // }
-}
+} /* istanbul ignore next */

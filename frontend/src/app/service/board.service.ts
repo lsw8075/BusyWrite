@@ -4,6 +4,5 @@ import { Board } from '../model/board';
 @Injectable()
 export class BoardService {
 
-  constructor() { }
 
 }

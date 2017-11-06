@@ -66,13 +66,13 @@ export class SuggestBubble {
 
   comments: Array<number>;
 
-  constructor() {
-    // must initialize all attributes
-    this.type = BubbleType.suggestBubble;
-  }
+  // constructor() {
+  //   // must initialize all attributes
+  //   this.type = BubbleType.suggestBubble;
+  // }
 
-  public noteToSuggestBubble(note: Note): SuggestBubble {
-    throw new Error('not implemented');
-    // return new LeafBubble();
-  }
+  // public noteToSuggestBubble(note: Note): SuggestBubble {
+  //   throw new Error('not implemented');
+  //   // return new LeafBubble();
+  // }
 }

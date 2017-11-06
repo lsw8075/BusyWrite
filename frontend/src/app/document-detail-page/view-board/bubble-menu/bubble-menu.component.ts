@@ -45,35 +45,35 @@ export class BubbleMenuComponent implements OnInit {
     return false;
   }
 
-  public openSangjunBoardEvent() {
+  // public openSangjunBoardEvent() {
 
-  }
+  // }
 
-  public splitBubbleEvent() {
+  // public splitBubbleEvent() {
 
-  }
+  // }
 
-  public popBubbleEvent() {
+  // public popBubbleEvent() {
 
-  }
+  // }
 
-  public wrapBubbleEvent() {
+  // public wrapBubbleEvent() {
 
-  }
+  // }
 
-  public createBubbleEvent() {
+  // public createBubbleEvent() {
 
-  }
+  // }
 
-  public editBubbleEvent() {
-
-
-  }
-
-  public deleteBubbleEvent() {
-
-  }
+  // public editBubbleEvent() {
 
 
+  // }
 
-}
+  // public deleteBubbleEvent() {
+
+  // }
+
+
+
+} /* istanbul ignore next */
