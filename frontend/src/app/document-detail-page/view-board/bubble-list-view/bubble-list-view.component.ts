@@ -33,7 +33,6 @@ export class BubbleListViewComponent implements OnInit {
   }
 
   public bubbleAction(event) {
-    this.selectedBubbles = [];
     console.log(event);
     switch (event.act) {
       case ActionType.openSangjun:
@@ -60,6 +59,7 @@ export class BubbleListViewComponent implements OnInit {
       default:
         throw new Error('undefined action type');
     }
+    this.selectedBubbles = [];
   }
 
   public openSangjunBoardEvent() {
@@ -76,6 +76,10 @@ export class BubbleListViewComponent implements OnInit {
 
   public wrapBubbleEvent() {
     console.log('wrap bubble');
+    this._bubbleService.wrapBubble(this.selectedBubbles.map(selectBubble => selectBubble.bubble.id))
+      .then(response => {
+        this.refreshBubbleList();
+      });
   }
 
   public createBubbleEvent(bubble: Bubble, menu: MenuType) {
