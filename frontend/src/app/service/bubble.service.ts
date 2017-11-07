@@ -38,17 +38,13 @@ export class BubbleService {
     switch (rawBubble.bubble_type) {
       case 'leaf': {
         bubble = new LeafBubble();
-        bubble.parentID = rawBubble.parent_id;
         bubble.content = rawBubble.content;
-        bubble.location = rawBubble.location;
         bubble.owner = 0; // no owner yet
         bubble.editLock = false; // no editLock yet
         break;
       }
       case 'internal': {
         bubble = new InternalBubble();
-        bubble.parentID = rawBubble.parent_id;
-        bubble.location = rawBubble.location;
         bubble.childBubbles = rawBubble.children;
         bubble.childBubbleList = [];
         bubble.editLock = false;
@@ -67,12 +63,21 @@ export class BubbleService {
     }
 
     for (let bubble of this.bubbleList) {
-      bubble.parentBubble = this.fetchBubble(bubble.parentID);
+      if(bubble.type == BubbleType.internalBubble) {
 
-      if (bubble.type === BubbleType.internalBubble) {
-        let internalBubble = bubble as InternalBubble;
-        for (let childBubbleId of internalBubble.childBubbles) {
-          internalBubble.childBubbleList.push(this.fetchBubble(childBubbleId));
+        const parentBubble = bubble as InternalBubble;
+        const childrenID = parentBubble.childBubbles;
+
+        // for each child, set parentID and location
+        for (let i = 0; i < childrenID.length; i++) {
+
+          let childBubble = this.bubbleList[i];
+
+          childBubble.parentBubble = bubble;
+          childBubble.parentID = bubble.id;
+          childBubble.location = i;
+
+          parentBubble.childBubbleList.push(childBubble);
         }
       }
     }
@@ -281,7 +286,7 @@ export class BubbleService {
     this.bubbleList[splitID] = newInternal;
 
     // split splitee to 2 or 3 child of new InternalBubble
-    if(!prevContent && nextContent) {
+    if (!prevContent && nextContent) {
       this.createBubble(splitID, 0, splitContent);
       this.createBubble(splitID, 1, nextContent);
     } else if(prevContent && !nextContent) {
@@ -295,10 +300,6 @@ export class BubbleService {
       throw new Error('invalid split');
     }
     return newInternal;
-  }
-  
-
-  flatten_recursive_helper() {
   }
 
   async flattenBubble(flattenID: number) {
