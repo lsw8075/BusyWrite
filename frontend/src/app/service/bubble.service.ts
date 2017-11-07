@@ -107,153 +107,87 @@ export class BubbleService {
     return await this.fetchBubble(id);
   }
 
-  // adjustChildLocation(childList, firstLocation, adjust, endLocation = -1) {
-  //   if (endLocation === -1) {
-  //     endLocation = childList.length; // the default
-  //   }
-  //   for (let i = firstLocation; i < endLocation; i++) {
-  //     this.bubbleList[childList[i]].location += adjust;
-  //   }
-  // }
+  adjustChildLocation(childList, firstLocation, adjust, endLocation = -1) {
+    if (endLocation === -1) {
+      endLocation = childList.length; // the default
+    }
+    for (let i = firstLocation; i < endLocation; i++) {
+      this.bubbleList[childList[i]].location += adjust;
+    }
+  }
 
-  // async createBubble(parentID: number, location: number, content: string) {
-  //   const parentBubble = this.bubbleList[parentID] as InternalBubble;
-  //   if (!parentBubble) {
-  //     throw new Error('invaild parentId in createBubble: ' + parentID);
-  //   }
+  async createBubble(parentID: number, location: number, content: string) {
+    const parentBubble = this.bubbleList[parentID] as InternalBubble;
+    if (!parentBubble) {
+      throw new Error('invaild parentId in createBubble: ' + parentID);
+    }
 
-  //   // check parent bubble's type
-  //   if (parentBubble.type === BubbleType.internalBubble) {
-  //     const numChild = parentBubble.childBubbles.length;
-  //     if (0 <= location && location <= numChild) {
-  //       // create a new leaf bubble
-  //       const newBubble = new LeafBubble();
-  //       newBubble.id = this.bubbleList.length;
-  //       newBubble.content = content;
-  //       newBubble.location = location;
-  //       newBubble.owner = 0; // not used in sp2. get it from authservice..
-  //       newBubble.editLock = false;
-  //       newBubble.parentID = parentID;
-  //       this.bubbleList.push(newBubble);
-  //       // and insert into children
-  //       parentBubble.childBubbles.splice(location, 0, newBubble.id);
-  //       this.adjustChildLocation(parentBubble.childBubbles, location + 1, +1);
-  //       return (newBubble);
-  //     } else {
-  //       throw new Error('invaild location in createBubble: ' + location);
-  //     }
-  //   }
-  // }
+    // check parent bubble's type
+    if (parentBubble.type === BubbleType.internalBubble) {
+      const numChild = parentBubble.childBubbles.length;
+      if (0 <= location && location <= numChild) {
+        // create a new leaf bubble
+        const newBubble = new LeafBubble();
+        newBubble.id = this.bubbleList.length;
+        newBubble.content = content;
+        newBubble.location = location;
+        newBubble.owner = 0; // not used in sp2. get it from authservice..
+        newBubble.editLock = false;
+        newBubble.parentID = parentID;
+        this.bubbleList.push(newBubble);
+        // and insert into children
+        parentBubble.childBubbles.splice(location, 0, newBubble.id);
+        this.adjustChildLocation(parentBubble.childBubbles, location + 1, +1);
+        return (newBubble);
+      } else {
+        throw new Error('invaild location in createBubble: ' + location);
+      }
+    }
+  }
 
-  // async deleteBubble(deleteID: number) {
-  //   if (deleteID === 1) {
-  //     throw new Error('Cannot delete root bubble');
-  //   }
-  //   const bubble = this.bubbleList[deleteID] as LeafBubble | InternalBubble;
+  cascadedDeleteHelper(deleteID: number) {
 
-  //   // TODO : cascaded delete..
+    const deletingBubble = this.bubbleList[deleteID];
 
-  //   // find bubble at parents' childList
-  //   let childList = (this.bubbleList[bubble.parentID] as InternalBubble).childBubbles;
-  //   let childIndex = childList.indexOf(deleteID);
-  //   if (childIndex === -1) {
-  //     throw new Error('Cannot find child ' + deleteID + ' in deleteBubble');
-  //   }
+    switch(deletingBubble.type) {
+      case BubbleType.internalBubble:
+        // delete each child
+        for(let childID of (deletingBubble as InternalBubble).childBubbles) {
+          this.cascadedDeleteHelper(childID);
+        }
+        // TODO : delete any suggest bubbles
+        break;
+      case BubbleType.leafBubble:
+        // TODO : delete any suggest bubbles
+        break;
+        //case BubbleType.suggestBubble:
+    }
+    // delete itself
+    this.bubbleList[deleteID] = null;
+  }
 
-  //   // delete bubble from childList
-  //   childList.splice(childIndex, 1);
-  //   this.adjustChildLocation(childList, childIndex, -1);
-  //   this.bubbleList[deleteID] = null;
-  // }
 
-  // async wrapBubble(wrapList: Array<number>) {
+  async deleteBubble(deleteID: number) {
+    let deletee = this.bubbleList[deleteID];
+    // find bubble at parents' childList
+    let childList = (this.bubbleList[deletee.parentID] as InternalBubble).childBubbles;
+    let childIndex = childList.indexOf(deleteID);
+    if (childIndex === -1) {
+      throw new Error('Cannot find child ' + deleteID + ' in deleteBubble');
+    }
 
-  //   if (wrapList.length < 1) {
-  //     throw new Error('Wrapee does not exist');
-  //   }
+    // delete bubble from childList
+    childList.splice(childIndex, 1);
+    this.adjustChildLocation(childList, childIndex, -1);
+    
+    // cascaded delete
+    this.cascadedDeleteHelper(deleteID);
+  }
 
-  //   let firstWrapee = this.bubbleList[wrapList[0]] as LeafBubble | InternalBubble;
-  //   let commonParent = this.bubbleList[firstWrapee.parentID] as InternalBubble;
+  async wrapBubble(wrapList: Array<number>) {
 
-  //   // check the assumptions
-  //   let curLocation = firstWrapee.location;
-
-  //   for (let wrapee of wrapList) {
-
-  //     let curBubble = this.bubbleList[wrapee] as LeafBubble | InternalBubble;
-
-  //     // check the assumptions
-  //     if (curBubble.parentID !== commonParent.id) {
-  //       throw new Error('Wrapee does not have common parent');
-  //     }
-  //     if (commonParent.childBubbles[curLocation] !== curBubble.id) {
-  //       throw new Error('Wrapee does not adjacent');
-  //     }
-  //     curLocation++;
-  //   }
-
-  //   let firstLocation = firstWrapee.location;
-
-  //   // create new Parent
-  //   let newParent = new InternalBubble();
-  //   newParent.id = this.bubbleList.length;
-  //   newParent.location = firstLocation;
-  //   newParent.editLock = false;
-  //   newParent.parentID = commonParent.id;
-  //   newParent.childBubbles = wrapList;
-  //   this.bubbleList.push(newParent);
-
-  //   // and delete bubbles & insert new Parent from childList
-  //   commonParent.childBubbles.splice(firstLocation, wrapList.length, newParent.id);
-  //   this.adjustChildLocation(commonParent.childBubbles, firstLocation + 1, wrapList.length - 1);
-
-  //   return (newParent);
-
-  // }
-
-  // async popBubble(popID: number) {
-
-  //   const popee = this.bubbleList[popID] as InternalBubble;
-
-  //   // check the assumptions
-  //   if (popID === 1) {
-  //     throw new Error('Popee is root bubble');
-  //   }
-
-  //   const parentBubble = this.bubbleList[popee.parentID] as InternalBubble;
-
-  //   // set new parent
-  //   for (let child of popee.childBubbles) {
-  //     (this.bubbleList[child] as LeafBubble | InternalBubble).parentID = parentBubble.id;
-  //   }
-
-  //   const childLength = popee.childBubbles.length;
-
-  //   // 'pop' the bubble
-  //   parentBubble.childBubbles.splice(popee.location, 1, ...popee.childBubbles);
-
-  //   // adjust location of new & old children
-  //   this.adjustChildLocation(parentBubble.childBubbles, popee.location, popee.location,
-  //     popee.location + childLength);
-  //   this.adjustChildLocation(parentBubble.childBubbles, popee.location + childLength, childLength - 1);
-
-  //   // delete the popee
-
-  //   this.bubbleList[popID] = null;
-
-  //   return (parentBubble);
-  // }
-
-  // async splitBubble(splitID, prevContent, splitContent, nextContent) {
-  //   const splitee = this.bubbleList[splitID];
-  //   return (splitee);
-  // }
-
-  // flatten_recursive_helper() {
-  // }
-
-  // async flattenBubble(flattenID: number) {
-  //   const flattenee = this.bubbleList[flattenID];
-  //   return (flattenee);
-  // }
+    if (wrapList.length < 1) 
+      throw new Error('Wrapee does not exist');
+  }
 }
+
