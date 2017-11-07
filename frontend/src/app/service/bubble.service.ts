@@ -145,16 +145,32 @@ export class BubbleService {
     }
   }
 
-  async deleteBubble(deleteID: number) {
-    if (deleteID === 1) {
-      throw new Error('Cannot delete root bubble');
+  cascadedDeleteHelper(deleteID: number) {
+
+    const deletingBubble = this.bubbleList[deleteID];
+
+    switch(deletingBubble.type) {
+      case BubbleType.internalBubble:
+        // delete each child
+        for(let childID of (deletingBubble as InternalBubble).childBubbles) {
+          this.cascadedDeleteHelper(childID);
+        }
+        // TODO : delete any suggest bubbles
+        break;
+      case BubbleType.leafBubble:
+        // TODO : delete any suggest bubbles
+        break;
+        //case BubbleType.suggestBubble:
     }
-    const bubble = this.bubbleList[deleteID] as LeafBubble | InternalBubble;
+    // delete itself
+    this.bubbleList[deleteID] = null;
+  }
 
-    // TODO : cascaded delete..
 
+  async deleteBubble(deleteID: number) {
+    let deletee = this.bubbleList[deleteID];
     // find bubble at parents' childList
-    let childList = (this.bubbleList[bubble.parentID] as InternalBubble).childBubbles;
+    let childList = (this.bubbleList[deletee.parentID] as InternalBubble).childBubbles;
     let childIndex = childList.indexOf(deleteID);
     if (childIndex === -1) {
       throw new Error('Cannot find child ' + deleteID + ' in deleteBubble');
@@ -163,7 +179,9 @@ export class BubbleService {
     // delete bubble from childList
     childList.splice(childIndex, 1);
     this.adjustChildLocation(childList, childIndex, -1);
-    this.bubbleList[deleteID] = null;
+    
+    // cascaded delete
+    this.cascadedDeleteHelper(deleteID);
   }
 
   async wrapBubble(wrapList: Array<number>) {
