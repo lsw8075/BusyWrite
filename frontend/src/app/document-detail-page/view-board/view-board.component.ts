@@ -2,7 +2,7 @@ import { Component, OnInit, Output, ViewChild } from '@angular/core';
 import { BubbleService, BoardService } from '../document-detail-page.component';
 import { Board } from '../document-detail-page.component';
 import { BubbleType, Bubble, LeafBubble, InternalBubble, SuggestBubble } from '../document-detail-page.component';
-import { BubbleMenuComponent, MenuType } from './bubble-menu/bubble-menu.component';
+import { BubbleMenuComponent, MenuType, ActionType } from './bubble-menu/bubble-menu.component';
 
 @Component({
   selector: 'app-view-board',
@@ -12,16 +12,9 @@ import { BubbleMenuComponent, MenuType } from './bubble-menu/bubble-menu.compone
 
 export class ViewBoardComponent {
 
-  @ViewChild(BubbleMenuComponent)
-  public menu: BubbleMenuComponent;
-
   constructor(
     private _bubbleService: BubbleService
   ) {}
-
-  public showMenu(item) {
-    this.menu.showMenu(item);
-  }
 
   public action(item) {
     if (item.act === 'delete') {
@@ -52,4 +45,4 @@ export class ViewBoardComponent {
 } /* istanbul ignore next */
 
 export { BubbleService, BoardService };
-export { BubbleType, Bubble, LeafBubble, InternalBubble, SuggestBubble, Board };
+export { BubbleType, ActionType, Bubble, LeafBubble, InternalBubble, SuggestBubble, Board };

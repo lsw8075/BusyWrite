@@ -1,15 +1,15 @@
-<div *ngIf="menu" [ngStyle]="getStyle()">
+<div *ngIf="menu">
   <div [ngSwitch]="menu">
 
     <div *ngSwitchCase="menuType.borderTopMenu">
-      <button type="button" class="btn btn-primary" (click)="createBubbleEvent()">
+      <button type="button" class="btn btn-primary btn-sm" (click)="createBubbleEvent()">
         <i class="fa fa-chevron-up fa-fw"></i>
         Create Above
       </button>
     </div>
 
     <div *ngSwitchCase="menuType.borderBottomMenu">
-      <button type="button" class="btn btn-primary" (click)="createBubbleEvent()">
+      <button type="button" class="btn btn-primary btn-sm" (click)="createBubbleEvent()">
         <i class="fa fa-chevron-down fa-fw"></i>
         Create Below
       </button>
@@ -17,57 +17,56 @@
 
     <div *ngSwitchCase="menuType.leafMenu">
       <div class="btn-group" dropdown>
-        <button type="button" class="btn btn-primary" (click)="openSangjunBoardEvent()">
-          <i class="fa fa-comments fa-fw"></i>
-          Suggest/Comment
-        </button>
-        <button type="button" dropdownToggle class="btn btn-primary dropdown-toggle dropdown-toggle-split">
+        <button type="button" dropdownToggle class="btn btn-primary btn-sm dropdown-toggle dropdown-toggle-split" (click)="$event.stopPropagation()">
           <span class="caret"></span>
         </button>
         <ul *dropdownMenu class="dropdown-menu" role="menu">
-          <li role="menuitem"><a class="dropdown-item" href="#" (click)="splitBubbleEvent()">
+          <li role="menuitem"><a class="dropdown-item" href="#" (click)="splitBubbleEvent(); $event.stopPropagation()">
             <i class="fa fa-scissors fa-fw"></i>
             Split
           </a></li>
-          <li role="menuitem"><a class="dropdown-item" href="#" (click)="editBubbleEvent()">
+          <li role="menuitem"><a class="dropdown-item" href="#" (click)="editBubbleEvent(); $event.stopPropagation()">
             <i class="fa fa-pencil fa-fw"></i>
             Edit
           </a></li>
           <li class="divider dropdown-divider"></li>
-          <li role="menuitem"><a class="dropdown-item" href="#" (click)="deleteBubbleEvent()">
+          <li role="menuitem"><a class="dropdown-item" href="#" (click)="deleteBubbleEvent(); $event.stopPropagation()">
             <i class="fa fa-trash fa-fw"></i>
             Delete
           </a></li>
         </ul>
+        <button type="button" class="btn btn-primary btn-sm" (click)="openSangjunBoardEvent(); $event.stopPropagation()">
+          <i class="fa fa-comments fa-fw"></i>
+          Suggest/Comment
+        </button>
       </div>
-
     </div>
 
     <div *ngSwitchCase="menuType.internalMenu">
 
       <div class="btn-group" dropdown>
-        <button type="button" class="btn btn-info" (click)="openSangjunBoardEvent()">
-          <i class="fa fa-comments fa-fw"></i>
-          Suggest/Comment
-        </button>
-        <button type="button" dropdownToggle class="btn btn-info dropdown-toggle dropdown-toggle-split">
+        <button type="button" dropdownToggle class="btn btn-info btn-sm dropdown-toggle dropdown-toggle-split" (click)="$event.stopPropagation()">
           <span class="caret"></span>
         </button>
         <ul *dropdownMenu class="dropdown-menu" role="menu">
-          <li role="menuitem"><a class="dropdown-item" href="#" (click)="popBubbleEvent()">
+          <li role="menuitem"><a class="dropdown-item" href="#" (click)="popBubbleEvent(); $event.stopPropagation()">
             <i class="fa fa-ellipsis-v fa-fw"></i>
             Pop
           </a></li>
-          <li role="menuitem"><a class="dropdown-item" href="#" (click)="editBubbleEvent()">
+          <li role="menuitem"><a class="dropdown-item" href="#" (click)="editBubbleEvent(); $event.stopPropagation()">
             <i class="fa fa-pencil fa-fw"></i>
             Edit
           </a></li>
           <li class="divider dropdown-divider"></li>
-          <li role="menuitem"><a class="dropdown-item" href="#" (click)="deleteBubbleEvent()">
+          <li role="menuitem"><a class="dropdown-item" href="#" (click)="deleteBubbleEvent(); $event.stopPropagation()">
             <i class="fa fa-trash fa-fw"></i>
             Delete
           </a></li>
         </ul>
+        <button type="button" class="btn btn-info btn-sm" (click)="openSangjunBoardEvent(); $event.stopPropagation()">
+          <i class="fa fa-comments fa-fw"></i>
+          Suggest/Comment
+        </button>
       </div>
 
     </div>

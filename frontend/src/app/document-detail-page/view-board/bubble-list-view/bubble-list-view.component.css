@@ -33,8 +33,15 @@
 
 .placeholder {
   padding: 3px 0px;
-
 }
+
+.action {
+  display: flex;
+  float: right;
+  position: absolute;
+  z-index: 10;
+}
+
 .placeholder-bottom:hover {
   border-top-color: grey;
   border-top-style: solid;

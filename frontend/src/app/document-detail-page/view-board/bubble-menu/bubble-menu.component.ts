@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { BubbleType, Bubble, LeafBubble, InternalBubble } from '../../document-detail-page.component';
 import { BubbleService } from '../../document-detail-page.component';
 
@@ -7,6 +7,16 @@ export enum MenuType {
   borderBottomMenu,
   leafMenu,
   internalMenu,
+}
+
+export enum ActionType {
+  openSangjun = 1,
+  split,
+  pop,
+  wrap,
+  create,
+  edit,
+  delete,
 }
 
 @Component({
@@ -19,9 +29,8 @@ export class BubbleMenuComponent implements OnInit {
   @Output() action = new EventEmitter();
 
   menuType = MenuType;
-  menu: MenuType;
-  bubble: Bubble;
-  offsetY: number;
+  @Input() menu: MenuType;
+  @Input() bubble: Bubble;
 
   constructor(
     private _bubbleSerivce: BubbleService
@@ -29,50 +38,73 @@ export class BubbleMenuComponent implements OnInit {
 
   ngOnInit() {}
 
-  public showMenu(item) {
-    this.menu = item.menuType;
-    this.bubble = item.bubble;
-    this.offsetY = item.offsetY;
-  }
-
-  public getStyle() {  // for offset
-    const styles = {};
-    styles['position'] = 'relative';
-    styles['top'] = `${this.offsetY}px`;
-    styles['left'] = `-50px`;
-    return styles;
-  }
-
   public openSangjunBoardEvent() {
-    console.log('open sanjun');
+    const act = ActionType.openSangjun;
+    const bubble = this.bubble;
+    const menu = this.menu;
+    const event = {
+      act, bubble, menu
+    };
+    this.action.emit(event);
   }
 
   public splitBubbleEvent() {
-    console.log('split bubble');
+    const act = ActionType.split;
+    const bubble = this.bubble;
+    const menu = this.menu;
+    const event = {
+      act, bubble, menu
+    };
+    this.action.emit(event);
   }
 
   public popBubbleEvent() {
-    console.log('pop bubble');
+    const act = ActionType.pop;
+    const bubble = this.bubble;
+    const menu = this.menu;
+    const event = {
+      act, bubble, menu
+    };
+    this.action.emit(event);
   }
 
   public wrapBubbleEvent() {
-    console.log('wrap bubble');
+    const act = ActionType.wrap;
+    const bubble = this.bubble;
+    const menu = this.menu;
+    const event = {
+      act, bubble, menu
+    };
+    this.action.emit(event);
   }
 
   public createBubbleEvent() {
-    console.log('create bubble');
+    const act = ActionType.create;
+    const bubble = this.bubble;
+    const menu = this.menu;
+    const event = {
+      act, bubble, menu
+    };
+    this.action.emit(event);
   }
 
   public editBubbleEvent() {
-    console.log('edit bubble');
+    const act = ActionType.edit;
+    const bubble = this.bubble;
+    const menu = this.menu;
+    const event = {
+      act, bubble, menu
+    };
+    this.action.emit(event);
 
   }
 
   public deleteBubbleEvent() {
-    const act = 'delete';
+    const act = ActionType.delete;
     const bubble = this.bubble;
+    const menu = this.menu;
     const event = {
-      act, bubble
+      act, bubble, menu
     };
     this.action.emit(event);
   }
