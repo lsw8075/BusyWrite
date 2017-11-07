@@ -41,7 +41,7 @@ export class DocumentDetailPageComponent implements OnInit {
   
   onChangeTitleButton() {
 
-    if(this.documentTitle) {
+    if(/\S+/.test(this.documentTitle)) {
 
       this.shouldShowTitleError = false;
       this.displayTitleEditDialog = false;
