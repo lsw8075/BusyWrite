@@ -245,6 +245,7 @@ export class BubbleService {
 
     // and delete bubbles & insert new Parent from childList
     commonParent.childBubbles.splice(firstLocation, wrapList.length, newParent.id);
+    commonParent.childBubbleList.splice(firstLocation, wrapList.length, newParent);
     this.adjustChildLocation(commonParent.childBubbles, firstLocation + 1, wrapList.length - 1);
 
     return (newParent);
