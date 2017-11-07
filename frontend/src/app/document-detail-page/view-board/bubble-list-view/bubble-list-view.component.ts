@@ -1,6 +1,7 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { MenuType } from '../bubble-menu/bubble-menu.component';
+import { Component, EventEmitter, OnInit, Output, ViewChild, ElementRef } from '@angular/core';
 import { BubbleService } from '../view-board.component';
-import { Bubble, LeafBubble, InternalBubble } from '../view-board.component';
+import { BubbleType, Bubble, LeafBubble, InternalBubble } from '../view-board.component';
 
 @Component({
   selector: 'app-bubble-list-view',
@@ -10,7 +11,9 @@ import { Bubble, LeafBubble, InternalBubble } from '../view-board.component';
 export class BubbleListViewComponent implements OnInit {
 
   @Output() openMenu = new EventEmitter();
+  @ViewChild('bubbleUnit') bubbleUnit: ElementRef;
   bubbleRootList: Array<Bubble>; // bubbles that have root as parents
+  menuType = MenuType;
 
   constructor(
     private _bubbleService: BubbleService
@@ -23,10 +26,28 @@ export class BubbleListViewComponent implements OnInit {
     });
   }
 
-  public showMenuEvent(item) {
-    this.openMenu.emit(item);
+  public showMenuEvent(bubble, menuType) {
+    const element = this.bubbleUnit.nativeElement;
+    const event = {menuType, bubble, element};
+    this.openMenu.emit(event);
   }
 
+  public isInternal(bubble: Bubble): Boolean {
+    return bubble.type === BubbleType.internalBubble;
+  }
+
+  public setStyle(bubble: Bubble): object {
+    const height = this._bubbleService.calcBubbleHeight(bubble);
+    const lineWidth = 2;
+    const space = 10;
+    const offset = 5;
+    const styles = {};
+    styles['border-left-width'] = `${lineWidth}px`;
+    styles['border-right-width'] = `${lineWidth}px`;
+    styles['margin'] = `0px -${offset + height * space}px`;
+    styles['padding'] = `0px ${offset + height * space - lineWidth}px`;
+    return styles;
+  }
 
   // public splitBubble() {
 

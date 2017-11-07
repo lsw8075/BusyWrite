@@ -1,7 +1,27 @@
 <div *ngIf="bubbleRootList">
     <div *ngFor="let bubble of bubbleRootList">
-        <app-bubble-detail-view [bubble]="bubble" (openMenu)="showMenuEvent($event)">
-          bubble is know loading...!
-        </app-bubble-detail-view>
+      <ng-container *ngTemplateOutlet="bubbleUnit; context: { $implicit: bubble }"></ng-container>
     </div>
 </div>
+
+<ng-template #bubbleUnit let-bubble>
+  <div class="bubbleUnit">
+    <div *ngIf="isInternal(bubble); then internal else leaf"></div>
+
+    <ng-template #internal>
+      <div [ngStyle]="setStyle(bubble)" class="internalBubble" (click)="showMenuEvent(bubble, menuType.internalMenu); $event.stopPropagation()">
+        <div *ngFor="let childBubble of bubble.childBubbleList">
+          <ng-container *ngTemplateOutlet="bubbleUnit; context: { $implicit: childBubble }"></ng-container>
+        </div>
+      </div>
+    </ng-template>
+
+    <ng-template #leaf>
+      <div class="placeholder placeholder-top" (click)="showMenuEvent(bubble, menuType.borderTopMenu); $event.stopPropagation()"></div>
+      <div class="leafBubble" (click)="showMenuEvent(bubble, menuType.leafMenu); $event.stopPropagation()">
+      {{bubble.content}}
+      </div>
+      <div class="placeholder placeholder-bottom" (click)="showMenuEvent(bubble, menuType.borderBottomMenu); $event.stopPropagation()"></div>
+    </ng-template>
+  </div>
+</ng-template>
