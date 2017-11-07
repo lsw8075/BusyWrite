@@ -1,4 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
 
 import { HttpModule } from '@angular/http';
@@ -53,7 +54,8 @@ import { NoteService } from './service/note.service';
 import { TabViewModule } from 'primeng/primeng';
 import { ButtonModule } from 'primeng/primeng';
 import { DragulaModule } from 'ng2-dragula/ng2-dragula';
-
+import { DialogModule } from 'primeng/primeng';
+import { InputTextModule } from 'primeng/primeng';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 
 
@@ -87,11 +89,14 @@ import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
     FormsModule,
     AppRoutingModule,
     BrowserModule,
+    BrowserAnimationsModule,
     HttpModule,
     TabViewModule,
     BsDropdownModule.forRoot(),
     ButtonModule,
     DragulaModule,
+    DialogModule,
+    InputTextModule,
   ],
   providers: [
     {provide: APP_BASE_HREF, useValue: '/'},
