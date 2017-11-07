@@ -5,7 +5,7 @@
         <app-bubble-list-view (openMenu)="showMenu($event)"></app-bubble-list-view>
       </div>
       <div class="ui-g-2 ui-md-offset-1">
-        <app-bubble-menu></app-bubble-menu>
+        <app-bubble-menu (action)="action($event)"></app-bubble-menu>
       </div>
     </div>
   </p-tabPanel>

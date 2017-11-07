@@ -15,8 +15,18 @@ export class ViewBoardComponent {
   @ViewChild(BubbleMenuComponent)
   public menu: BubbleMenuComponent;
 
+  constructor(
+    private _bubbleService: BubbleService
+  ) {}
+
   public showMenu(item) {
     this.menu.showMenu(item);
+  }
+
+  public action(item) {
+    if (item.act === 'delete') {
+      this._bubbleService.deleteBubble(item.bubble.id);
+    }
   }
 
   // public openPreview() { // when click on previewTab
