@@ -2,8 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { BubbleType, Bubble, LeafBubble, InternalBubble } from '../../document-detail-page.component';
 
 export enum MenuType {
-  borderMenu,
-  bubbleMenu,
+  borderTopMenu,
+  borderBottomMenu,
+  leafMenu,
+  internalMenu,
 }
 
 @Component({
@@ -12,8 +14,8 @@ export enum MenuType {
   styleUrls: ['./bubble-menu.component.css']
 })
 export class BubbleMenuComponent implements OnInit {
-
-  menuType: MenuType;
+  menuType = MenuType;
+  menu: MenuType;
   bubble: Bubble;
   offsetY: number;
 
@@ -23,28 +25,9 @@ export class BubbleMenuComponent implements OnInit {
   }
 
   public showMenu(item) {
-    this.menuType = item.menuType;
+    this.menu = item.menuType;
     this.bubble = item.bubble;
     this.offsetY = item.offsetY;
-    console.log(item);
-  }
-
-  isBorderMenu() {
-    return this.menuType === MenuType.borderMenu;
-  }
-
-  isLeafBubbleMenu() {
-    if (this.menuType === MenuType.bubbleMenu) {
-      return this.bubble.type === BubbleType.leafBubble;
-    }
-    return false;
-  }
-
-  isInternalBubbleMenu() {
-    if (this.menuType === MenuType.bubbleMenu) {
-      return this.bubble.type === BubbleType.internalBubble;
-    }
-    return false;
   }
 
   public openSangjunBoardEvent() {

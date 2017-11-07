@@ -8,3 +8,48 @@
   background-color: white;
   border: none;
 }
+
+.internalBubble {
+  border-left-color: black;
+  border-left-style: solid;
+
+  border-right-color: black;
+  border-right-style: solid;
+
+  border-radius: 10px;
+}
+
+.internalBubble:hover {
+  border-left-color: red;
+
+  border-right-color: red;
+}
+
+.leafBubble {
+  border-radius: 10px;
+  padding: 0px;
+  margin: 0px 0px;
+}
+
+.placeholder {
+  padding: 3px 0px;
+
+}
+.placeholder-bottom:hover {
+  border-top-color: grey;
+  border-top-style: solid;
+  border-top-width: 1px;
+}
+
+.placeholder-top:hover {
+  border-bottom-color: grey;
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+}
+
+.bubbleUnit {
+  background-color: transparent;
+}
+.bubbleUnit:hover {
+  background-color: rgba(0, 150, 150, 0.1);
+}

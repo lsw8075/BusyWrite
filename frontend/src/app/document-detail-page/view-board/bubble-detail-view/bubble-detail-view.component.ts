@@ -13,46 +13,20 @@ export class BubbleDetailViewComponent implements OnInit {
   @Input() bubble: Bubble;
   @Output() openMenu = new EventEmitter();
   @ViewChild('bubbleUnit') bubbleUnit: ElementRef;
-  children: Array<Bubble>;
 
   constructor(
     private _bubbleService: BubbleService
   ) {}
 
-  ngOnInit() {
-    if (this.isInternal()) {
-      this._getChildren();
-    }
-  }
+  ngOnInit() {}
 
-  public showBorderMenuEvent(bubble, isTop: boolean) {
-    const element = this.bubbleUnit.nativeElement;
-    const menuType = MenuType.borderMenu;
-    const event = {menuType, bubble, isTop, element};
-    this.openMenu.emit(event);
-  }
-
-  public showBubbleMenuEvent(bubble) {
-    const element = this.bubbleUnit.nativeElement;
-    const menuType = MenuType.bubbleMenu;
-    const event = {menuType, bubble, element};
-    this.openMenu.emit(event);
-  }
 
   public propagateMenuEvent(item: any) {
     this.openMenu.emit(item);
   }
 
-  public getContent(): string {
-    if (this.bubble.type === BubbleType.leafBubble) {
-      return (this.bubble as LeafBubble).content;
-    } else {
-      throw new Error('this is not leaf bubble, do not have content');
-    }
-  }
-
-  public isInternal(): Boolean {
-    return this.bubble.type === BubbleType.internalBubble;
+  public isInternal(bubble: Bubble): Boolean {
+    return bubble.type === BubbleType.internalBubble;
   }
 
   public setStyle(): object {
@@ -66,10 +40,6 @@ export class BubbleDetailViewComponent implements OnInit {
     styles['margin'] = `0px -${offset + height * space}px`;
     styles['padding'] = `0px ${offset + height * space - lineWidth}px`;
     return styles;
-  }
-
-  private _getChildren(): void {
-    this.children =  (this.bubble as InternalBubble).childBubbleList;
   }
 
   private _getHeight(): number {

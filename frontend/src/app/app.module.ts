@@ -25,7 +25,6 @@ import { ViewBoardComponent } from './document-detail-page/view-board/view-board
 import { BubbleListViewComponent } from './document-detail-page/view-board/bubble-list-view/bubble-list-view.component';
 import { BubbleMenuComponent } from './document-detail-page/view-board/bubble-menu/bubble-menu.component';
 import { PreviewComponent } from './document-detail-page/view-board/preview/preview.component';
-import { BubbleDetailViewComponent } from './document-detail-page/view-board/bubble-detail-view/bubble-detail-view.component';
 
 import { EditBoardComponent } from './document-detail-page/edit-board/edit-board.component';
 import { EditItemComponent } from './document-detail-page/edit-board/edit-item/edit-item.component';
@@ -82,7 +81,6 @@ import { DragulaModule } from 'ng2-dragula/ng2-dragula';
     CommentComponent,
     FilterBoardComponent,
     BoardManagerComponent,
-    BubbleDetailViewComponent
   ],
   imports: [
     FormsModule,
