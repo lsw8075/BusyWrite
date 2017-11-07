@@ -43,7 +43,7 @@ export class BubbleListViewComponent implements OnInit {
         this.splitBubbleEvent();
         break;
       case ActionType.pop:
-        this.popBubbleEvent();
+        this.popBubbleEvent(event.bubble);
         break;
       case ActionType.wrap:
         this.wrapBubbleEvent();
@@ -55,7 +55,7 @@ export class BubbleListViewComponent implements OnInit {
         this.editBubbleEvent();
         break;
       case ActionType.delete:
-        this.deleteBubbleEvent();
+        this.deleteBubbleEvent(event.bubble);
         break;
       default:
         throw new Error('undefined action type');
@@ -70,8 +70,10 @@ export class BubbleListViewComponent implements OnInit {
     console.log('split bubble');
   }
 
-  public popBubbleEvent() {
+  public popBubbleEvent(bubble: Bubble) {
     console.log('pop bubble');
+    this._bubbleService.popBubble(bubble.id)
+      .then(() => this.refreshBubbleList());
   }
 
   public wrapBubbleEvent() {
@@ -97,11 +99,17 @@ export class BubbleListViewComponent implements OnInit {
 
   public editBubbleEvent() {
     console.log('edit bubble');
-
   }
 
-  public deleteBubbleEvent() {
+  public deleteBubbleEvent(bubble: Bubble) {
     console.log('delete bubble');
+    if(bubble.id != 0) {
+      this._bubbleService.deleteBubble(bubble.id)
+        .then(() => this.refreshBubbleList());
+
+    } else {
+      throw new Error('Cannot delete root bubble');
+    }
   }
 
   public cancelWrap() {
