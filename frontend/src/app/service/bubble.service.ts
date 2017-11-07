@@ -62,6 +62,9 @@ export class BubbleService {
       this.bubbleList.push(this.rawBubbleToBubble(rawBubble));
     }
 
+    this.bubbleList[0].parentID = -1;
+    this.bubbleList[0].parentBubble = null;
+
     for (let bubble of this.bubbleList) {
       if(bubble.type == BubbleType.internalBubble) {
 
@@ -71,7 +74,7 @@ export class BubbleService {
         // for each child, set parentID and location
         for (let i = 0; i < childrenID.length; i++) {
 
-          let childBubble = this.bubbleList[i];
+          let childBubble = this.bubbleList[childrenID[i]];
 
           childBubble.parentBubble = bubble;
           childBubble.parentID = bubble.id;
