@@ -257,7 +257,7 @@ export class BubbleService {
     const popee = this.bubbleList[popID] as InternalBubble;
 
     // check the assumptions
-    if (popID === 1) {
+    if (popID === 0) {
       throw new Error('Popee is root bubble');
     }
 
