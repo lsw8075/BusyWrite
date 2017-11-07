@@ -1,29 +1,72 @@
-<div *ngIf="menu">
+<div *ngIf="menu" [style.top]="offsetY">
   <div [ngSwitch]="menu">
+
     <div *ngSwitchCase="menuType.borderTopMenu">
-      border top menu
-      <button>Create</button>
+      <button type="button" class="btn btn-primary">Create Above</button>
     </div>
+
     <div *ngSwitchCase="menuType.borderBottomMenu">
-      border bottom menu
-      <button>Create</button>
+      <button type="button" class="btn btn-primary">Create Below</button>
     </div>
+
     <div *ngSwitchCase="menuType.leafMenu">
-      <p>Single Bubble Menu(leaf)</p>
-      <button>Split</button>
-      <button>Open Sangjun board</button>
-      <button>Delete</button>
-      <button>Edit</button>
+      <div class="btn-group" dropdown>
+        <button type="button" class="btn btn-primary">
+          <i class="fa fa-comments fa-fw"></i>
+          Suggest/Comment
+        </button>
+        <button type="button" dropdownToggle class="btn btn-primary dropdown-toggle dropdown-toggle-split">
+          <span class="caret"></span>
+        </button>
+        <ul *dropdownMenu class="dropdown-menu" role="menu">
+          <li role="menuitem"><a class="dropdown-item" href="#">
+            <i class="fa fa-scissors fa-fw"></i>
+            Split
+          </a></li>
+          <li role="menuitem"><a class="dropdown-item" href="#">
+            <i class="fa fa-pencil fa-fw"></i>
+            Edit
+          </a></li>
+          <li class="divider dropdown-divider"></li>
+          <li role="menuitem"><a class="dropdown-item" href="#">
+            <i class="fa fa-trash fa-fw"></i>
+            Delete
+          </a></li>
+        </ul>
+      </div>
+
     </div>
+
     <div *ngSwitchCase="menuType.internalMenu">
-      <p>Single Bubble Menu(internal)</p>
-      <button>Pop</button>
-      <button>Open Sangjun board</button>
-      <button>Delete</button>
-      <button>Edit</button>
+
+      <div class="btn-group" dropdown>
+        <button type="button" class="btn btn-primary">
+          <i class="fa fa-comments fa-fw"></i>
+          Suggest/Comment
+        </button>
+        <button type="button" dropdownToggle class="btn btn-primary dropdown-toggle dropdown-toggle-split">
+          <span class="caret"></span>
+        </button>
+        <ul *dropdownMenu class="dropdown-menu" role="menu">
+          <li role="menuitem"><a class="dropdown-item" href="#">
+            <i class="fa fa-ellipsis-v fa-fw"></i>
+            Pop
+          </a></li>
+          <li role="menuitem"><a class="dropdown-item" href="#">
+            <i class="fa fa-pencil fa-fw"></i>
+            Edit
+          </a></li>
+          <li class="divider dropdown-divider"></li>
+          <li role="menuitem"><a class="dropdown-item" href="#">
+            <i class="fa fa-trash fa-fw"></i>
+            Delete
+          </a></li>
+        </ul>
+      </div>
+
     </div>
     <div *ngSwitchDefault>
-      default
+      Did you click something wrong? try refresh
     </div>
   </div>
 </div>

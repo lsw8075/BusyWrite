@@ -51,9 +51,10 @@ import { NoteService } from './service/note.service';
 
 
 import { TabViewModule } from 'primeng/primeng';
-import { SplitButtonModule } from 'primeng/primeng';
 import { ButtonModule } from 'primeng/primeng';
 import { DragulaModule } from 'ng2-dragula/ng2-dragula';
+
+import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 
 
 @NgModule({
@@ -88,7 +89,7 @@ import { DragulaModule } from 'ng2-dragula/ng2-dragula';
     BrowserModule,
     HttpModule,
     TabViewModule,
-    SplitButtonModule,
+    BsDropdownModule.forRoot(),
     ButtonModule,
     DragulaModule,
   ],

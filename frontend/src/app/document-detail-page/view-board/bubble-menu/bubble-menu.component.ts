@@ -1,8 +1,9 @@
+import { FormsModule } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
 import { BubbleType, Bubble, LeafBubble, InternalBubble } from '../../document-detail-page.component';
 
 export enum MenuType {
-  borderTopMenu,
+  borderTopMenu = 1,
   borderBottomMenu,
   leafMenu,
   internalMenu,
@@ -17,17 +18,16 @@ export class BubbleMenuComponent implements OnInit {
   menuType = MenuType;
   menu: MenuType;
   bubble: Bubble;
-  offsetY: number;
+  offsetY: string;
 
   constructor() { }
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   public showMenu(item) {
     this.menu = item.menuType;
     this.bubble = item.bubble;
-    this.offsetY = item.offsetY;
+
   }
 
   public openSangjunBoardEvent() {

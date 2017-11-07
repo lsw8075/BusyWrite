@@ -27,8 +27,8 @@ export class BubbleListViewComponent implements OnInit {
   }
 
   public showMenuEvent(bubble, menuType) {
-    const element = this.bubbleUnit.nativeElement;
-    const event = {menuType, bubble, element};
+    const offsetTop = this.bubbleUnit.nativeElement;
+    const event = {menuType, bubble, offsetTop};
     this.openMenu.emit(event);
   }
 
