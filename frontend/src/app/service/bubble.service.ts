@@ -62,6 +62,9 @@ export class BubbleService {
       this.bubbleList.push(this.rawBubbleToBubble(rawBubble));
     }
 
+    this.bubbleList[0].parentID = -1;
+    this.bubbleList[0].parentBubble = null;
+
     for (let bubble of this.bubbleList) {
       if(bubble.type == BubbleType.internalBubble) {
 
@@ -71,7 +74,7 @@ export class BubbleService {
         // for each child, set parentID and location
         for (let i = 0; i < childrenID.length; i++) {
 
-          let childBubble = this.bubbleList[i];
+          let childBubble = this.bubbleList[childrenID[i]];
 
           childBubble.parentBubble = bubble;
           childBubble.parentID = bubble.id;
@@ -139,9 +142,13 @@ export class BubbleService {
         newBubble.owner = 0; // not used in sp2. get it from authservice..
         newBubble.editLock = false;
         newBubble.parentID = parentID;
+        newBubble.parentBubble = this.bubbleList[parentID];
         this.bubbleList.push(newBubble);
+
         // and insert into children
         parentBubble.childBubbles.splice(location, 0, newBubble.id);
+        parentBubble.childBubbleList.splice(location, 0, newBubble);
+
         this.adjustChildLocation(parentBubble.childBubbles, location + 1, +1);
         return (newBubble);
       } else {
@@ -176,6 +183,7 @@ export class BubbleService {
     let deletee = this.bubbleList[deleteID];
     // find bubble at parents' childList
     let childList = (this.bubbleList[deletee.parentID] as InternalBubble).childBubbles;
+    let childBubbleList = (this.bubbleList[deletee.parentID] as InternalBubble).childBubbleList;
     let childIndex = childList.indexOf(deleteID);
     if (childIndex === -1) {
       throw new Error('Cannot find child ' + deleteID + ' in deleteBubble');
@@ -183,6 +191,8 @@ export class BubbleService {
 
     // delete bubble from childList
     childList.splice(childIndex, 1);
+    childBubbleList.splice(childIndex, 1);
+
     this.adjustChildLocation(childList, childIndex, -1);
     
     // cascaded delete
@@ -223,11 +233,19 @@ export class BubbleService {
     newParent.location = firstLocation;
     newParent.editLock = false;
     newParent.parentID = commonParent.id;
+    newParent.parentBubble = commonParent;
     newParent.childBubbles = wrapList;
+    newParent.childBubbleList = [];
+
+    for (let childID of wrapList) {
+      newParent.childBubbleList.push(this.bubbleList[childID]);
+    }
+
     this.bubbleList.push(newParent);
 
     // and delete bubbles & insert new Parent from childList
     commonParent.childBubbles.splice(firstLocation, wrapList.length, newParent.id);
+    commonParent.childBubbleList.splice(firstLocation, wrapList.length, newParent);
     this.adjustChildLocation(commonParent.childBubbles, firstLocation + 1, wrapList.length - 1);
 
     return (newParent);
@@ -239,7 +257,7 @@ export class BubbleService {
     const popee = this.bubbleList[popID] as InternalBubble;
 
     // check the assumptions
-    if (popID === 1) {
+    if (popID === 0) {
       throw new Error('Popee is root bubble');
     }
 
@@ -254,6 +272,7 @@ export class BubbleService {
 
     // 'pop' the bubble
     parentBubble.childBubbles.splice(popee.location, 1, ...popee.childBubbles);
+    parentBubble.childBubbleList.splice(popee.location, 1, ...popee.childBubbleList);
 
     // adjust location of new & old children
     this.adjustChildLocation(parentBubble.childBubbles, popee.location, popee.location,

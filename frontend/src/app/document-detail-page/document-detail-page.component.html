@@ -1,3 +1,28 @@
+
+
+<p-dialog header="Change Title" [(visible)]="displayTitleEditDialog" modal="modal" width="500" [responsive]="true">
+    <p> 
+      <span class="ui-float-label">
+        <input [(ngModel)]="documentTitle" id="float-input" type="text" maxlength="60" width="300" pInputText>
+        <label for="float-input">New Title</label>
+      </span> 
+    </p>
+      <div *ngIf="shouldShowTitleError">
+        <em style='color: red'>
+          Please input valid title
+        </em>
+      </div>
+
+    <p-footer>
+            <button type="button" pButton icon="fa-check" (click)="onChangeTitleButton()" label="Change"></button>
+            <button type="button" pButton icon="fa-close" (click)="onCancelTitleButton()" label="Cancel"></button>
+    </p-footer>
+
+</p-dialog>
+
+
+Document Title : <button pButton type="button" class="ui-button-secondary" (click)="displayTitleEditDialog=true" [label]="documentTitle"> </button>
+
 <app-view-board></app-view-board>
 
 <app-board-manager></app-board-manager>
