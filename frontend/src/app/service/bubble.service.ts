@@ -38,17 +38,13 @@ export class BubbleService {
     switch (rawBubble.bubble_type) {
       case 'leaf': {
         bubble = new LeafBubble();
-        bubble.parentID = rawBubble.parent_id;
         bubble.content = rawBubble.content;
-        bubble.location = rawBubble.location;
         bubble.owner = 0; // no owner yet
         bubble.editLock = false; // no editLock yet
         break;
       }
       case 'internal': {
         bubble = new InternalBubble();
-        bubble.parentID = rawBubble.parent_id;
-        bubble.location = rawBubble.location;
         bubble.childBubbles = rawBubble.children;
         bubble.childBubbleList = [];
         bubble.editLock = false;
@@ -67,12 +63,21 @@ export class BubbleService {
     }
 
     for (let bubble of this.bubbleList) {
-      bubble.parentBubble = this.fetchBubble(bubble.parentID);
+      if(bubble.type == BubbleType.internalBubble) {
 
-      if (bubble.type === BubbleType.internalBubble) {
-        let internalBubble = bubble as InternalBubble;
-        for (let childBubbleId of internalBubble.childBubbles) {
-          internalBubble.childBubbleList.push(this.fetchBubble(childBubbleId));
+        const parentBubble = bubble as InternalBubble;
+        const childrenID = parentBubble.childBubbles;
+
+        // for each child, set parentID and location
+        for (let i = 0; i < childrenID.length; i++) {
+
+          let childBubble = this.bubbleList[i];
+
+          childBubble.parentBubble = bubble;
+          childBubble.parentID = bubble.id;
+          childBubble.location = i;
+
+          parentBubble.childBubbleList.push(childBubble);
         }
       }
     }
@@ -145,16 +150,32 @@ export class BubbleService {
     }
   }
 
-  async deleteBubble(deleteID: number) {
-    if (deleteID === 1) {
-      throw new Error('Cannot delete root bubble');
+  cascadedDeleteHelper(deleteID: number) {
+
+    const deletingBubble = this.bubbleList[deleteID];
+
+    switch(deletingBubble.type) {
+      case BubbleType.internalBubble:
+        // delete each child
+        for(let childID of (deletingBubble as InternalBubble).childBubbles) {
+          this.cascadedDeleteHelper(childID);
+        }
+        // TODO : delete any suggest bubbles
+        break;
+      case BubbleType.leafBubble:
+        // TODO : delete any suggest bubbles
+        break;
+        //case BubbleType.suggestBubble:
     }
-    const bubble = this.bubbleList[deleteID] as LeafBubble | InternalBubble;
+    // delete itself
+    this.bubbleList[deleteID] = null;
+  }
 
-    // TODO : cascaded delete..
 
+  async deleteBubble(deleteID: number) {
+    let deletee = this.bubbleList[deleteID];
     // find bubble at parents' childList
-    let childList = (this.bubbleList[bubble.parentID] as InternalBubble).childBubbles;
+    let childList = (this.bubbleList[deletee.parentID] as InternalBubble).childBubbles;
     let childIndex = childList.indexOf(deleteID);
     if (childIndex === -1) {
       throw new Error('Cannot find child ' + deleteID + ' in deleteBubble');
@@ -163,7 +184,9 @@ export class BubbleService {
     // delete bubble from childList
     childList.splice(childIndex, 1);
     this.adjustChildLocation(childList, childIndex, -1);
-    this.bubbleList[deleteID] = null;
+    
+    // cascaded delete
+    this.cascadedDeleteHelper(deleteID);
   }
 
   async wrapBubble(wrapList: Array<number>) {
@@ -243,13 +266,40 @@ export class BubbleService {
 
     return (parentBubble);
   }
+  
+  // split Leaf bubble
+  async splitLeafBubble(splitID, prevContent, splitContent, nextContent) {
+    const splitee = this.bubbleList[splitID] as LeafBubble;
+    
+    // change LeafBubble to the InternalBubble
+    let newInternal = new InternalBubble();
+    newInternal.id = splitee.id;
+    newInternal.location = splitee.location;
+    newInternal.comments = splitee.comments;
+    newInternal.parentID = splitee.parentID;
+    newInternal.parentBubble = splitee.parentBubble;
+    newInternal.suggestBubbles = splitee.suggestBubbles;
+    newInternal.childBubbles = [];
+    newInternal.childBubbleList = [];
 
-  async splitBubble(splitID, prevContent, splitContent, nextContent) {
-    const splitee = this.bubbleList[splitID];
-    return (splitee);
-  }
+    // alter bubble to newInternal
+    this.bubbleList[splitID] = newInternal;
 
-  flatten_recursive_helper() {
+    // split splitee to 2 or 3 child of new InternalBubble
+    if (!prevContent && nextContent) {
+      this.createBubble(splitID, 0, splitContent);
+      this.createBubble(splitID, 1, nextContent);
+    } else if(prevContent && !nextContent) {
+      this.createBubble(splitID, 0, prevContent);
+      this.createBubble(splitID, 1, splitContent);
+    } else if(prevContent && nextContent) {
+      this.createBubble(splitID, 0, prevContent);
+      this.createBubble(splitID, 1, splitContent);
+      this.createBubble(splitID, 2, nextContent);
+    } else {
+      throw new Error('invalid split');
+    }
+    return newInternal;
   }
 
   async flattenBubble(flattenID: number) {
@@ -257,3 +307,4 @@ export class BubbleService {
     return (flattenee);
   }
 }
+
