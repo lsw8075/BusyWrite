@@ -261,11 +261,42 @@ export class BubbleService {
 
     return (parentBubble);
   }
+  
+  // split Leaf bubble
+  async splitLeafBubble(splitID, prevContent, splitContent, nextContent) {
+    const splitee = this.bubbleList[splitID] as LeafBubble;
+    
+    // change LeafBubble to the InternalBubble
+    let newInternal = new InternalBubble();
+    newInternal.id = splitee.id;
+    newInternal.location = splitee.location;
+    newInternal.comments = splitee.comments;
+    newInternal.parentID = splitee.parentID;
+    newInternal.parentBubble = splitee.parentBubble;
+    newInternal.suggestBubbles = splitee.suggestBubbles;
+    newInternal.childBubbles = [];
+    newInternal.childBubbleList = [];
 
-  async splitBubble(splitID, prevContent, splitContent, nextContent) {
-    const splitee = this.bubbleList[splitID];
-    return (splitee);
+    // alter bubble to newInternal
+    this.bubbleList[splitID] = newInternal;
+
+    // split splitee to 2 or 3 child of new InternalBubble
+    if(!prevContent && nextContent) {
+      this.createBubble(splitID, 0, splitContent);
+      this.createBubble(splitID, 1, nextContent);
+    } else if(prevContent && !nextContent) {
+      this.createBubble(splitID, 0, prevContent);
+      this.createBubble(splitID, 1, splitContent);
+    } else if(prevContent && nextContent) {
+      this.createBubble(splitID, 0, prevContent);
+      this.createBubble(splitID, 1, splitContent);
+      this.createBubble(splitID, 2, nextContent);
+    } else {
+      throw new Error('invalid split');
+    }
+    return newInternal;
   }
+  
 
   flatten_recursive_helper() {
   }
