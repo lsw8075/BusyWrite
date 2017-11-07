@@ -14,8 +14,7 @@ export class BubbleListViewComponent implements OnInit {
   menuType = MenuType;
   actionType = ActionType;
 
-  clickedBubbleId: number;
-  clickedMenuType: MenuType;
+  selectedBubbles: Array<{bubble: Bubble, menuType: MenuType}> = [];
 
   constructor(
     private _bubbleService: BubbleService
@@ -34,6 +33,7 @@ export class BubbleListViewComponent implements OnInit {
   }
 
   public bubbleAction(event) {
+    this.selectedBubbles = [];
     console.log(event);
     switch (event.act) {
       case ActionType.openSangjun:
@@ -61,8 +61,6 @@ export class BubbleListViewComponent implements OnInit {
         throw new Error('undefined action type');
     }
   }
-
-
 
   public openSangjunBoardEvent() {
     console.log('open sanjun');
@@ -106,13 +104,32 @@ export class BubbleListViewComponent implements OnInit {
     console.log('delete bubble');
   }
 
-
-  public showMenuEvent(bubble, menuType, mouseEvent: MouseEvent) {
-    this.clickedBubbleId = bubble.id;
-    this.clickedMenuType = menuType;
+  public cancelWrap() {
+    this.selectedBubbles = [];
   }
-  public isMenuOpen(bubble, menuType) {
-    return (bubble.id === this.clickedBubbleId) && (menuType === this.clickedMenuType);
+
+
+  public showMenuEvent(bubble: Bubble, menuType: MenuType, mouseEvent: MouseEvent) {
+    if (this.selectedBubbles.length === 0) {
+      this.selectedBubbles.push({bubble, menuType});
+    } else if ((menuType === MenuType.leafMenu) &&
+               (menuType === this.selectedBubbles[0].menuType) &&
+               (bubble.parentBubble.id === this.selectedBubbles[0].bubble.parentBubble.id)) {
+       this.selectedBubbles.push({bubble, menuType});
+    } else {
+      this.cancelWrap();
+      this.selectedBubbles.push({bubble, menuType});
+    }
+
+  }
+  public isSingleMenuOpen(bubble, menuType) {
+    return (this.selectedBubbles.length === 1) &&
+           (bubble.id === this.selectedBubbles[0].bubble.id) &&
+           (menuType === this.selectedBubbles[0].menuType);
+  }
+
+  public isMultiBubbleMenuOpen() {
+    return (this.selectedBubbles.length > 1);
   }
 
   public isInternal(bubble: Bubble): Boolean {

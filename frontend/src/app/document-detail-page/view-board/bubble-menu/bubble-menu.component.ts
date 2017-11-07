@@ -7,6 +7,7 @@ export enum MenuType {
   borderBottomMenu,
   leafMenu,
   internalMenu,
+  multipleBubble,
 }
 
 export enum ActionType {
