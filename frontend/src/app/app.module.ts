@@ -52,7 +52,10 @@ import { NoteService } from './service/note.service';
 
 
 import { TabViewModule } from 'primeng/primeng';
+import { SplitButtonModule } from 'primeng/primeng';
+import { ButtonModule } from 'primeng/primeng';
 import { DragulaModule } from 'ng2-dragula/ng2-dragula';
+
 
 @NgModule({
   declarations: [
@@ -87,7 +90,9 @@ import { DragulaModule } from 'ng2-dragula/ng2-dragula';
     BrowserModule,
     HttpModule,
     TabViewModule,
-    DragulaModule
+    SplitButtonModule,
+    ButtonModule,
+    DragulaModule,
   ],
   providers: [
     {provide: APP_BASE_HREF, useValue: '/'},

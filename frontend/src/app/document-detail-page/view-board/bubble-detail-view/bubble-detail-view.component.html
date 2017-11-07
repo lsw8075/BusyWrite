@@ -1,18 +1,21 @@
-<div *ngIf="bubble" (mouseenter)='mouseEnter()' (mouseleave)='mouseLeave()' [ngStyle] = "showStyle" class="bubbleUnit">
-  <div *ngIf="isLeaf(); then leaf else internal"></div>
-  <ng-template #leaf>
-    <div class="placeholder placeholder-top" (click)="showBorderMenuEvent(bubble, true)"></div>
-    <div class="leafBubble" (click)="showBubbleMenuEvent(bubble)">
-    LeafNode content: {{getContent()}}
-    </div>
-    <div class="placeholder placeholder-bottom" (click)="showBorderMenuEvent(bubble, false)"></div>
-  </ng-template>
+<div #bubbleUnit *ngIf="bubble" class="bubbleUnit">
+
+  <div *ngIf="isInternal(); then internal else leaf"></div>
+
   <ng-template #internal>
     <div [ngStyle]="setStyle()" class="internalBubble">
       <div *ngFor="let childBubble of children">
-        <app-bubble-detail-view [bubble]="childBubble" (openMenu)="showMenuEvent($event)">
-        </app-bubble-detail-view>
+        <app-bubble-detail-view [bubble]="childBubble" (openMenu)="propagateMenuEvent($event)"></app-bubble-detail-view>
       </div>
     </div>
   </ng-template>
+
+  <ng-template #leaf>
+    <div class="placeholder placeholder-top" (click)="showBorderMenuEvent(bubble, true)"></div>
+    <div class="leafBubble" (click)="showBubbleMenuEvent(bubble)">
+    {{getContent()}}
+    </div>
+    <div class="placeholder placeholder-bottom" (click)="showBorderMenuEvent(bubble, false)"></div>
+  </ng-template>
+
 </div>

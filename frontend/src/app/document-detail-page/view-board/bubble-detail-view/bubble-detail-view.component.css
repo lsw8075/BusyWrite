@@ -35,3 +35,10 @@
   border-bottom-style: solid;
   border-bottom-width: 1px;
 }
+
+.bubbleUnit {
+  background-color: transparent;
+}
+.bubbleUnit:hover {
+  background-color: rgba(0, 150, 150, 0.1);
+}

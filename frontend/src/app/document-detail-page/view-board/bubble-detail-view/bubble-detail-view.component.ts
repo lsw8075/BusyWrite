@@ -1,6 +1,5 @@
-import { Component, EventEmitter, OnInit, Input, Output } from '@angular/core';
+import { Component, EventEmitter, OnInit, Input, Output, ElementRef, ViewChild } from '@angular/core';
 import { BubbleService } from '../view-board.component';
-// import { BubbleType, Bubble, LeafBubble, InternalBubble, SuggestBubble } from '../../../model/bubble';
 import { BubbleType, Bubble, LeafBubble, InternalBubble, SuggestBubble } from '../view-board.component';
 import { MenuType } from '../bubble-menu/bubble-menu.component';
 
@@ -13,43 +12,34 @@ export class BubbleDetailViewComponent implements OnInit {
 
   @Input() bubble: Bubble;
   @Output() openMenu = new EventEmitter();
-  @Output() hover = new EventEmitter<void>();
+  @ViewChild('bubbleUnit') bubbleUnit: ElementRef;
   children: Array<Bubble>;
-  showStyle = {};
 
   constructor(
     private _bubbleService: BubbleService
   ) {}
 
   ngOnInit() {
-    if (!this.isLeaf()) {
-      this.getChildren();
+    if (this.isInternal()) {
+      this._getChildren();
     }
   }
 
-  public mouseEnter() {
-    console.log('enter', this.bubble.id);
-    this.showStyle['background-color'] = 'rgba(150, 150, 150, 0.1)';
-  }
-
-  public mouseLeave() {
-    console.log('leave', this.bubble.id);
-    this.showStyle['background-color'] = 'transparent';
-  }
-
   public showBorderMenuEvent(bubble, isTop: boolean) {
+    const element = this.bubbleUnit.nativeElement;
     const menuType = MenuType.borderMenu;
-    const event = {menuType, bubble, isTop};
+    const event = {menuType, bubble, isTop, element};
     this.openMenu.emit(event);
   }
 
   public showBubbleMenuEvent(bubble) {
+    const element = this.bubbleUnit.nativeElement;
     const menuType = MenuType.bubbleMenu;
-    const event = {menuType, bubble};
+    const event = {menuType, bubble, element};
     this.openMenu.emit(event);
   }
 
-  public showMenuEvent(item) {
+  public propagateMenuEvent(item: any) {
     this.openMenu.emit(item);
   }
 
@@ -59,6 +49,10 @@ export class BubbleDetailViewComponent implements OnInit {
     } else {
       throw new Error('this is not leaf bubble, do not have content');
     }
+  }
+
+  public isInternal(): Boolean {
+    return this.bubble.type === BubbleType.internalBubble;
   }
 
   public setStyle(): object {
@@ -71,20 +65,14 @@ export class BubbleDetailViewComponent implements OnInit {
     styles['border-right-width'] = `${lineWidth}px`;
     styles['margin'] = `0px -${offset + height * space}px`;
     styles['padding'] = `0px ${offset + height * space - lineWidth}px`;
-
     return styles;
+  }
+
+  private _getChildren(): void {
+    this.children =  (this.bubble as InternalBubble).childBubbleList;
   }
 
   private _getHeight(): number {
     return this._bubbleService.calcBubbleHeight(this.bubble);
-  }
-
-  public getChildren(): void {
-    this.children =  (this.bubble as InternalBubble).childBubbleList;
-    console.log(this.children);
-  }
-
-  public isLeaf(): Boolean {
-    return this.bubble.type === BubbleType.leafBubble;
   }
 }  /* istanbul ignore next */

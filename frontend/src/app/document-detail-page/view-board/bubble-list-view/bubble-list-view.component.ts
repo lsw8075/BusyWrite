@@ -23,25 +23,10 @@ export class BubbleListViewComponent implements OnInit {
     });
   }
 
-  // public openSangjunBoardEvent() {
-
-  // }
-
   public showMenuEvent(item) {
     this.openMenu.emit(item);
   }
 
-  // public showMultipleBubbleMenuEvent() {
-
-  // }
-
-  // public showBorderMenuEvent() {
-
-  // }
-
-  // public showClickableBorder() {
-
-  // }
 
   // public splitBubble() {
 

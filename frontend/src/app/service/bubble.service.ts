@@ -19,10 +19,14 @@ export class BubbleService {
     { id: 9, parent_id: 7, bubble_type: 'leaf', content: 'xxdsds'},
     { id: 10, parent_id: 7, bubble_type: 'leaf', content: 'yy'},
     { id: 11, parent_id: 8, bubble_type: 'leaf', content: 'zz'},
-    { id: 12, parent_id: 8, bubble_type: 'internal', children: [ 13, 14 ]},
+    { id: 12, parent_id: 8, bubble_type: 'internal', children: [ 13, 14, 16 ]},
     { id: 13, parent_id: 12, bubble_type: 'leaf', content: 'hello swpp team 1'},
     { id: 14, parent_id: 12, bubble_type: 'leaf', content: 'ww'},
     { id: 15, parent_id: 0, bubble_type: 'leaf', content: 'node'},
+    { id: 16, parent_id: 12, bubble_type: 'internal', children: [17, 18, 19]},
+    { id: 17, parent_id: 16, bubble_type: 'leaf', content: 'hiafaf'},
+    { id: 18, parent_id: 16, bubble_type: 'leaf', content: 'hiafaf'},
+    { id: 19, parent_id: 16, bubble_type: 'leaf', content: 'hiafaf'}
   ];
 
   bubbleList: Array<Bubble>;
