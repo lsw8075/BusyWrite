@@ -1,4 +1,4 @@
-<div *ngIf="bubbleRootList">
+<div #b *ngIf="bubbleRootList">
     <div *ngFor="let bubble of bubbleRootList">
       <ng-container *ngTemplateOutlet="bubbleUnit; context: { $implicit: bubble }"></ng-container>
     </div>
@@ -9,7 +9,7 @@
     <div *ngIf="isInternal(bubble); then internal else leaf"></div>
 
     <ng-template #internal>
-      <div [ngStyle]="setStyle(bubble)" class="internalBubble" (click)="showMenuEvent(bubble, menuType.internalMenu); $event.stopPropagation()">
+      <div [ngStyle]="setStyle(bubble)" class="internalBubble" (click)="showMenuEvent(bubble, menuType.internalMenu, $event); $event.stopPropagation()">
         <div *ngFor="let childBubble of bubble.childBubbleList">
           <ng-container *ngTemplateOutlet="bubbleUnit; context: { $implicit: childBubble }"></ng-container>
         </div>
@@ -17,11 +17,11 @@
     </ng-template>
 
     <ng-template #leaf>
-      <div class="placeholder placeholder-top" (click)="showMenuEvent(bubble, menuType.borderTopMenu); $event.stopPropagation()"></div>
-      <div class="leafBubble" (click)="showMenuEvent(bubble, menuType.leafMenu); $event.stopPropagation()">
+      <div class="placeholder placeholder-top" (click)="showMenuEvent(bubble, menuType.borderTopMenu, $event); $event.stopPropagation()"></div>
+      <div class="leafBubble" (click)="showMenuEvent(bubble, menuType.leafMenu, $event); $event.stopPropagation()">
       {{bubble.content}}
       </div>
-      <div class="placeholder placeholder-bottom" (click)="showMenuEvent(bubble, menuType.borderBottomMenu); $event.stopPropagation()"></div>
+      <div class="placeholder placeholder-bottom" (click)="showMenuEvent(bubble, menuType.borderBottomMenu, $event); $event.stopPropagation()"></div>
     </ng-template>
   </div>
 </ng-template>

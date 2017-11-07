@@ -18,7 +18,7 @@ export class BubbleMenuComponent implements OnInit {
   menuType = MenuType;
   menu: MenuType;
   bubble: Bubble;
-  offsetY: string;
+  offsetY: number;
 
   constructor() { }
 
@@ -27,11 +27,20 @@ export class BubbleMenuComponent implements OnInit {
   public showMenu(item) {
     this.menu = item.menuType;
     this.bubble = item.bubble;
+    this.offsetY = item.offsetY;
+    console.log(this.offsetY);
+  }
 
+  public getStyle() {  // for offset
+    const styles = {};
+    styles['position'] = 'relative';
+    styles['top'] = `${this.offsetY}px`;
+    styles['left'] = `-50px`;
+    return styles;
   }
 
   public openSangjunBoardEvent() {
-
+    // console.log(o)
   }
 
   public splitBubbleEvent() {

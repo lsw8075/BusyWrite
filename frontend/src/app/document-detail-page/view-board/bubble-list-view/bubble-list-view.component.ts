@@ -1,5 +1,5 @@
 import { MenuType } from '../bubble-menu/bubble-menu.component';
-import { Component, EventEmitter, OnInit, Output, ViewChild, ElementRef } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { BubbleService } from '../view-board.component';
 import { BubbleType, Bubble, LeafBubble, InternalBubble } from '../view-board.component';
 
@@ -11,7 +11,6 @@ import { BubbleType, Bubble, LeafBubble, InternalBubble } from '../view-board.co
 export class BubbleListViewComponent implements OnInit {
 
   @Output() openMenu = new EventEmitter();
-  @ViewChild('bubbleUnit') bubbleUnit: ElementRef;
   bubbleRootList: Array<Bubble>; // bubbles that have root as parents
   menuType = MenuType;
 
@@ -26,9 +25,9 @@ export class BubbleListViewComponent implements OnInit {
     });
   }
 
-  public showMenuEvent(bubble, menuType) {
-    const offsetTop = this.bubbleUnit.nativeElement;
-    const event = {menuType, bubble, offsetTop};
+  public showMenuEvent(bubble, menuType, mouseEvent: MouseEvent) {
+    const offsetY = mouseEvent.layerY - 50;
+    const event = {menuType, bubble, offsetY};
     this.openMenu.emit(event);
   }
 
