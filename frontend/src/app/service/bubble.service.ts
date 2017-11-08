@@ -16,17 +16,17 @@ export class BubbleService {
     { id: 6, parent_id: 3, bubble_type: 'leaf', content: 'At vero eos et accusamus et iusto odio dignissimos ducimus, qui blanditiis praesentium voluptatum deleniti atque corrupti, quos dolores et quas molestias excepturi sint, obcaecati cupiditate non provident, similique sunt in culpa, qui officia deserunt mollitia animi, id est laborum'},
     { id: 7, parent_id: 1, bubble_type: 'internal', children: [ 8, 9, 10 ]},
     { id: 8, parent_id: 7, bubble_type: 'internal', children: [ 11, 12 ]},
-    { id: 9, parent_id: 7, bubble_type: 'leaf', content: 'xxdsds'},
-    { id: 10, parent_id: 7, bubble_type: 'leaf', content: 'yy'},
-    { id: 11, parent_id: 8, bubble_type: 'leaf', content: 'zz'},
+    { id: 9, parent_id: 7, bubble_type: 'leaf', content: 'BusyWrite    separate   writing   and   merging.   Normally,   participants   write   on   the   same   file, writing   and   merging   simultaneously,   which   is   troublesome.   The   concept   of   participants   writing different   parts   and   stacking   them   up   to   get   a   whole   is   an   utopian   thought;   nobody   is   certain   if everyone   understands   the   same   thing.   On    BusyWrite,     instead   of   just   writing   straight   to   a   file,   users make    bubbles'},
+    { id: 10, parent_id: 7, bubble_type: 'leaf', content: 'Limited   time   is   the   number   one   bottleneck   of   teamwork.   Therefore,   most   of   the   time, discussion   is   done   while   writing.   Teams   cannot   afford   time   to   match   document   structure,   details   and opinions   between   every   participant,   and   therefore   resolve   the   conflicts    on-the-go.    However,   this   is troublesome   with '},
+    { id: 11, parent_id: 8, bubble_type: 'leaf', content: 'BusyWrite    is   the   perfect   solution   for    team   writing.     The   concept   of    writing   as   a   team    has   been around   for   a   long   time,   by   services   like    Google   Docs,    but   the   approaches   are   impractical   and unproductive.'},
     { id: 12, parent_id: 8, bubble_type: 'internal', children: [ 13, 14, 16 ]},
     { id: 13, parent_id: 12, bubble_type: 'leaf', content: 'hello swpp team 1'},
-    { id: 14, parent_id: 12, bubble_type: 'leaf', content: 'ww'},
-    { id: 15, parent_id: 0, bubble_type: 'leaf', content: 'node'},
+    { id: 14, parent_id: 12, bubble_type: 'leaf', content: 'handle short sentences!'},
+    { id: 15, parent_id: 0, bubble_type: 'leaf', content: 'we are team !'},
     { id: 16, parent_id: 12, bubble_type: 'internal', children: [17, 18, 19]},
-    { id: 17, parent_id: 16, bubble_type: 'leaf', content: 'hiafaf'},
-    { id: 18, parent_id: 16, bubble_type: 'leaf', content: 'hiafaf'},
-    { id: 19, parent_id: 16, bubble_type: 'leaf', content: 'hiafaf'}
+    { id: 17, parent_id: 16, bubble_type: 'leaf', content: 'haha'},
+    { id: 18, parent_id: 16, bubble_type: 'leaf', content: 'blah'},
+    { id: 19, parent_id: 16, bubble_type: 'leaf', content: 'hey!'}
   ];
 
   bubbleList: Array<Bubble>;
@@ -199,7 +199,7 @@ export class BubbleService {
     childBubbleList.splice(childIndex, 1);
 
     this.adjustChildLocation(childList, childIndex, -1);
-    
+
     // cascaded delete
     this.cascadedDeleteHelper(deleteID);
   }
@@ -221,9 +221,9 @@ export class BubbleService {
         if (curBubble.parentID !== commonParent.id) {
           throw new Error('Wrapee does not have common parent');
         }
-  
+
     }
-    
+
     // check the adjacent condition
     let firstLocation = -1;
 
@@ -308,11 +308,11 @@ export class BubbleService {
 
     return (parentBubble);
   }
-  
+
   // split Leaf bubble
   async splitLeafBubble(splitID, prevContent, splitContent, nextContent) {
     const splitee = this.bubbleList[splitID] as LeafBubble;
-    
+
     // change LeafBubble to the InternalBubble
     let newInternal = new InternalBubble();
     newInternal.id = splitee.id;
