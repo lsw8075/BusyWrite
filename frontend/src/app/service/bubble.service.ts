@@ -271,6 +271,7 @@ export class BubbleService {
     // set new parent
     for (let child of popee.childBubbles) {
       (this.bubbleList[child] as LeafBubble | InternalBubble).parentID = parentBubble.id;
+      (this.bubbleList[child] as LeafBubble | InternalBubble).parentBubble = parentBubble;
     }
 
     const childLength = popee.childBubbles.length;
