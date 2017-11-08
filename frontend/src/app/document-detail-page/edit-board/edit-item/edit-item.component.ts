@@ -7,7 +7,7 @@ import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
 })
 export class EditItemComponent implements OnInit {
 
-  text: string= "Sample Text";
+  text = 'Sample Text';
 
   constructor() { }
 
