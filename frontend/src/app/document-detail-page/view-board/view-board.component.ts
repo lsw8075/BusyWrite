@@ -16,12 +16,6 @@ export class ViewBoardComponent {
     private _bubbleService: BubbleService
   ) {}
 
-  public action(item) {
-    if (item.act === 'delete') {
-      this._bubbleService.deleteBubble(item.bubble.id);
-    }
-  }
-
   // public openPreview() { // when click on previewTab
 
   // }

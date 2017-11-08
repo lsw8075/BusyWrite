@@ -81,6 +81,7 @@ export class BubbleListViewComponent implements OnInit {
     this._bubbleService.wrapBubble(this.selectedBubbles.map(selectBubble => selectBubble.bubble.id))
       .then(response => {
         this.refreshBubbleList();
+        this.cancelWrap();
       });
   }
 
@@ -107,7 +108,7 @@ export class BubbleListViewComponent implements OnInit {
 
   public deleteBubbleEvent(bubble: Bubble) {
     console.log('delete bubble');
-    if(bubble.id != 0) {
+    if (bubble.id !== 0) {
       this._bubbleService.deleteBubble(bubble.id)
         .then(() => this.refreshBubbleList());
 
