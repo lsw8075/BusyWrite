@@ -116,7 +116,7 @@ export class BubbleListViewComponent implements OnInit {
     console.log('edit bubble');
     if (bubble instanceof LeafBubble) {
       const newString = prompt('edit bubble!', (bubble as LeafBubble).content);
-      if(newString) {
+      if (newString) {
         this._bubbleService.editBubble(bubble.id, newString)
           .then(() => this.refreshBubbleList());
       }
