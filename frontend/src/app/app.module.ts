@@ -57,7 +57,7 @@ import { DragulaModule } from 'ng2-dragula/ng2-dragula';
 import { DialogModule } from 'primeng/primeng';
 import { InputTextModule } from 'primeng/primeng';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
-
+import { EditorModule } from 'primeng/primeng';
 
 @NgModule({
   declarations: [
@@ -97,6 +97,7 @@ import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
     DragulaModule,
     DialogModule,
     InputTextModule,
+    EditorModule,
   ],
   providers: [
     {provide: APP_BASE_HREF, useValue: '/'},
