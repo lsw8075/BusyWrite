@@ -157,6 +157,11 @@ export class BubbleService {
     }
   }
 
+  async editBubble(editID: number, content: string) {
+    let editee = this.bubbleList[editID] as LeafBubble;
+    editee.content = content;
+  }
+
   cascadedDeleteHelper(deleteID: number) {
 
     const deletingBubble = this.bubbleList[deleteID];
