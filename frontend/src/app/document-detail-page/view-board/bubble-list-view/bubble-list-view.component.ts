@@ -139,8 +139,7 @@ export class BubbleListViewComponent implements OnInit {
   public showMenuEvent(bubble: Bubble, menuType: MenuType, mouseEvent: MouseEvent) {
     if (this.selectedBubbles.length === 0) {
       this.selectedBubbles.push({bubble, menuType});
-    } else if ((menuType === MenuType.leafMenu) &&
-               (menuType === this.selectedBubbles[0].menuType) &&
+    } else if ((menuType === this.selectedBubbles[0].menuType) &&
                (bubble.parentBubble.id === this.selectedBubbles[0].bubble.parentBubble.id)) {
        this.selectedBubbles.push({bubble, menuType});
     } else {

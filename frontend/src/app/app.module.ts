@@ -58,6 +58,7 @@ import { DialogModule } from 'primeng/primeng';
 import { InputTextModule } from 'primeng/primeng';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { EditorModule } from 'primeng/primeng';
+import { QuillEditorModule } from 'ngx-quill-editor';
 
 @NgModule({
   declarations: [
@@ -98,6 +99,7 @@ import { EditorModule } from 'primeng/primeng';
     DialogModule,
     InputTextModule,
     EditorModule,
+    QuillEditorModule,
   ],
   providers: [
     {provide: APP_BASE_HREF, useValue: '/'},
