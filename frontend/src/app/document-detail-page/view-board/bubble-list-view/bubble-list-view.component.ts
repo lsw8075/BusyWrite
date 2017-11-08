@@ -140,14 +140,24 @@ export class BubbleListViewComponent implements OnInit {
     if (this.selectedBubbles.length === 0) {
       this.selectedBubbles.push({bubble, menuType});
     } else if ((menuType === this.selectedBubbles[0].menuType) &&
-               (bubble.parentBubble.id === this.selectedBubbles[0].bubble.parentBubble.id)) {
+               (bubble.parentBubble.id === this.selectedBubbles[0].bubble.parentBubble.id) &&
+               (!this._isAlreadySelected(bubble))) {
        this.selectedBubbles.push({bubble, menuType});
     } else {
       this.cancelWrap();
       this.selectedBubbles.push({bubble, menuType});
     }
-
   }
+
+  private _isAlreadySelected(bubble: Bubble): boolean {
+    for (let i = 0; i < this.selectedBubbles.length; i++) {
+      if (this.selectedBubbles[i].bubble.id === bubble.id) {
+          return true;
+      }
+      return false;
+    }
+  }
+
   public isSingleMenuOpen(bubble, menuType) {
     return (this.selectedBubbles.length === 1) &&
            (bubble.id === this.selectedBubbles[0].bubble.id) &&
