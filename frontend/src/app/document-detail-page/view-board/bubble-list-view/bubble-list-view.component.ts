@@ -1,12 +1,13 @@
-import { MenuType } from '../bubble-menu/bubble-menu.component';
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, HostListener, ElementRef } from '@angular/core';
 import { BubbleService } from '../view-board.component';
 import { BubbleType, Bubble, LeafBubble, InternalBubble, ActionType } from '../view-board.component';
+import { MenuType } from '../bubble-menu/bubble-menu.component';
+
 
 @Component({
   selector: 'app-bubble-list-view',
   templateUrl: './bubble-list-view.component.html',
-  styleUrls: ['./bubble-list-view.component.css']
+  styleUrls: ['./bubble-list-view.component.css'],
 })
 export class BubbleListViewComponent implements OnInit {
 
@@ -16,8 +17,17 @@ export class BubbleListViewComponent implements OnInit {
 
   selectedBubbles: Array<{bubble: Bubble, menuType: MenuType}> = [];
 
+  @HostListener('document:click', ['$event'])
+  clickout(event) {
+    if (!this.eRef.nativeElement.contains(event.target)) {
+      this.selectedBubbles = [];
+      console.log('clicked outside');
+    }
+  }
+
   constructor(
-    private _bubbleService: BubbleService
+    private _bubbleService: BubbleService,
+    private eRef: ElementRef
   ) {}
 
   ngOnInit() {
