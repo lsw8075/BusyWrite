@@ -55,6 +55,7 @@ import { TabViewModule } from 'primeng/primeng';
 import { ButtonModule } from 'primeng/primeng';
 import { DragulaModule } from 'ng2-dragula/ng2-dragula';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
+import { EditorModule } from 'primeng/primeng';
 import { QuillEditorModule } from 'ngx-quill-editor';
 import { DialogModule } from 'primeng/primeng';
 
@@ -94,6 +95,8 @@ import { DialogModule } from 'primeng/primeng';
     BsDropdownModule.forRoot(),
     ButtonModule,
     DragulaModule,
+    DialogModule,
+    EditorModule,
     QuillEditorModule,
     DialogModule,
   ],
