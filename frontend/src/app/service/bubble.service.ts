@@ -214,44 +214,61 @@ export class BubbleService {
     let commonParent = this.bubbleList[firstWrapee.parentID] as InternalBubble;
 
     // check the assumptions
-    let curLocation = firstWrapee.location;
-
     for (let wrapee of wrapList) {
 
       let curBubble = this.bubbleList[wrapee] as LeafBubble | InternalBubble;
 
-      // check the assumptions
-      if (curBubble.parentID !== commonParent.id) {
-        throw new Error('Wrapee does not have common parent');
+        if (curBubble.parentID !== commonParent.id) {
+          throw new Error('Wrapee does not have common parent');
+        }
+  
+    }
+    
+    // check the adjacent condition
+    let firstLocation = -1;
+
+    let wrapeeSet = wrapList;
+    const wrapeeString = wrapeeSet.sort().toString();
+
+    for (let index = 0 ; index <= commonParent.childBubbles.length - wrapeeSet.length ; index++) {
+      // if wrappee set is adjacently in the child bubbles
+      const adjacentString = commonParent.childBubbles.slice(index, index + wrapeeSet.length).sort().toString();
+      if (adjacentString == wrapeeString) {
+        firstLocation = index;
       }
-      if (commonParent.childBubbles[curLocation] !== curBubble.id) {
-        throw new Error('Wrapee does not adjacent');
-      }
-      curLocation++;
     }
 
-    let firstLocation = firstWrapee.location;
+    // wrappee set is maybe not adjacent
+    if (firstLocation == -1) {
+      throw new Error('Wrapees are not adjacent : ' + wrapeeString);
+    }
 
     // create new Parent
     let newParent = new InternalBubble();
     newParent.id = this.bubbleList.length;
-    newParent.location = firstLocation;
+    newParent.location = firstLocation
     newParent.editLock = false;
     newParent.parentID = commonParent.id;
     newParent.parentBubble = commonParent;
-    newParent.childBubbles = wrapList;
+    newParent.childBubbles = commonParent.childBubbles.slice(firstLocation, firstLocation + wrapList.length);
     newParent.childBubbleList = [];
 
-    for (let childID of wrapList) {
+    for (let index = 0; index < wrapList.length; index++) {
+      const childID = newParent.childBubbles[index];
       newParent.childBubbleList.push(this.bubbleList[childID]);
-    }
 
+      let childBubble = this.bubbleList[childID];
+
+      childBubble.location = index;
+      childBubble.parentID = newParent.id;
+      childBubble.parentBubble = newParent;
+    }
     this.bubbleList.push(newParent);
 
     // and delete bubbles & insert new Parent from childList
     commonParent.childBubbles.splice(firstLocation, wrapList.length, newParent.id);
     commonParent.childBubbleList.splice(firstLocation, wrapList.length, newParent);
-    this.adjustChildLocation(commonParent.childBubbles, firstLocation + 1, wrapList.length - 1);
+    this.adjustChildLocation(commonParent.childBubbles, firstLocation + 1, 1 - wrapList.length);
 
     return (newParent);
 
