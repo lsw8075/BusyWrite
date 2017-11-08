@@ -56,7 +56,8 @@
 
 .bubbleUnit {
   background-color: transparent;
+  border-radius: 2px;
 }
 .bubbleUnit:hover {
-  background-color: rgba(0, 150, 150, 0.1);
+  background-color: rgba(0, 150, 150, 0.2);
 }
