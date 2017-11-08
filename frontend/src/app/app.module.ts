@@ -57,7 +57,7 @@ import { DragulaModule } from 'ng2-dragula/ng2-dragula';
 import { DialogModule } from 'primeng/primeng';
 import { InputTextModule } from 'primeng/primeng';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
-
+import { QuillEditorModule } from 'ngx-quill-editor';
 
 @NgModule({
   declarations: [
@@ -97,6 +97,7 @@ import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
     DragulaModule,
     DialogModule,
     InputTextModule,
+    QuillEditorModule,
   ],
   providers: [
     {provide: APP_BASE_HREF, useValue: '/'},
