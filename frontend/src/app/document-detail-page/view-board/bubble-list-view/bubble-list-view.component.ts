@@ -51,7 +51,7 @@ export class BubbleListViewComponent implements OnInit {
         this.createBubbleEvent(event.bubble, event.menu);
         break;
       case ActionType.edit:
-        this.editBubbleEvent();
+        this.editBubbleEvent(event.bubble);
         break;
       case ActionType.delete:
         this.deleteBubbleEvent(event.bubble);
@@ -102,8 +102,12 @@ export class BubbleListViewComponent implements OnInit {
       });
   }
 
-  public editBubbleEvent() {
+  public editBubbleEvent(bubble: Bubble) {
     console.log('edit bubble');
+    if (bubble instanceof LeafBubble) {
+      const newString = prompt('edit bubble!', (bubble as LeafBubble).content);
+      (bubble as LeafBubble).content = newString;
+    }
   }
 
   public deleteBubbleEvent(bubble: Bubble) {
