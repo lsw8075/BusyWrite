@@ -54,8 +54,6 @@ import { NoteService } from './service/note.service';
 import { TabViewModule } from 'primeng/primeng';
 import { ButtonModule } from 'primeng/primeng';
 import { DragulaModule } from 'ng2-dragula/ng2-dragula';
-import { DialogModule } from 'primeng/primeng';
-import { InputTextModule } from 'primeng/primeng';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { QuillEditorModule } from 'ngx-quill-editor';
 
@@ -95,8 +93,6 @@ import { QuillEditorModule } from 'ngx-quill-editor';
     BsDropdownModule.forRoot(),
     ButtonModule,
     DragulaModule,
-    DialogModule,
-    InputTextModule,
     QuillEditorModule,
   ],
   providers: [
