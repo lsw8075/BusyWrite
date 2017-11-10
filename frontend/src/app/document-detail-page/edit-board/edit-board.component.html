@@ -4,6 +4,12 @@
     </p-tabPanel>
 
     <p-tabPanel header="Note">
-      <app-note-view></app-note-view>
+      <div class='container' [dragula]='"note-bag"' [dragulaModel]='memos'>
+        <div *ngFor="let id of memos">
+            <span class='handle'>+<i class="fa fa-sticky-note fa-fw"></i></span>
+            <app-note-view></app-note-view>
+            <hr>
+        </div>
+      </div>
     </p-tabPanel>
   </p-tabView>
