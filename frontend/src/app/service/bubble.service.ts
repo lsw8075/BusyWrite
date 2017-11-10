@@ -22,11 +22,11 @@ export class BubbleService {
     { id: 12, parent_id: 8, bubble_type: 'internal', children: [ 13, 14, 16 ]},
     { id: 13, parent_id: 12, bubble_type: 'leaf', content: 'hello swpp team 1'},
     { id: 14, parent_id: 12, bubble_type: 'leaf', content: 'handle short sentences!'},
-    { id: 15, parent_id: 0, bubble_type: 'leaf', content: 'we are team !'},
+    { id: 15, parent_id: 0, bubble_type: 'leaf', content: '<i>we are team !</i>'},
     { id: 16, parent_id: 12, bubble_type: 'internal', children: [17, 18, 19]},
-    { id: 17, parent_id: 16, bubble_type: 'leaf', content: 'haha'},
+    { id: 17, parent_id: 16, bubble_type: 'leaf', content: '<a href="http://busywrite.ribosome.kr">BusyWrite</a>'},
     { id: 18, parent_id: 16, bubble_type: 'leaf', content: 'blah'},
-    { id: 19, parent_id: 16, bubble_type: 'leaf', content: 'hey!'}
+    { id: 19, parent_id: 16, bubble_type: 'leaf', content: '<strong>hey!</strong>'}
   ];
 
   bubbleList: Array<Bubble>;
