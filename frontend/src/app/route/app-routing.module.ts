@@ -10,7 +10,7 @@ import { MainPageComponent } from '../main-page/main-page.component';
 import { AuthenticationService } from '../service/authentication.service';
 
 const routes = [
-  { path: '', redirectTo: '/landing', pathMatch: 'full' },
+  { path: '', redirectTo: '/document/1', pathMatch: 'full' }, // for easy testing, temporary
   { path: 'landing', component: LandingComponent },
   { path: 'sign_in',  component: SigninComponent },
   {
