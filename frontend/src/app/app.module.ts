@@ -59,7 +59,7 @@ import { EditorModule } from 'primeng/primeng';
 import { QuillEditorModule } from 'ngx-quill-editor';
 import { AccordionModule } from 'ngx-bootstrap/accordion';
 import { DialogModule } from 'primeng/primeng';
-
+import { TooltipModule } from 'ngx-bootstrap/tooltip';
 
 @NgModule({
   declarations: [
@@ -102,6 +102,7 @@ import { DialogModule } from 'primeng/primeng';
     QuillEditorModule,
     DialogModule,
     AccordionModule.forRoot(),
+    TooltipModule.forRoot(),
   ],
   providers: [
     {provide: APP_BASE_HREF, useValue: '/'},
