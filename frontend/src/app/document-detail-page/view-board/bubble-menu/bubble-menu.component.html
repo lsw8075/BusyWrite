@@ -2,15 +2,13 @@
   <div [ngSwitch]="menu">
 
     <div *ngSwitchCase="menuType.borderTopMenu">
-      <button type="button" class="btn btn-primary btn-sm" (click)="createBubbleEvent()">
-        <i class="fa fa-chevron-up fa-fw"></i>
+      <button type="button" class="btn btn-primary btn-sm hvr-icon-bob" (click)="createBubbleEvent()">
         Create Above
       </button>
     </div>
 
     <div *ngSwitchCase="menuType.borderBottomMenu">
-      <button type="button" class="btn btn-primary btn-sm" (click)="createBubbleEvent()">
-        <i class="fa fa-chevron-down fa-fw"></i>
+      <button type="button" class="btn btn-primary btn-sm hvr-icon-hang" (click)="createBubbleEvent()">
         Create Below
       </button>
     </div>
@@ -25,6 +23,12 @@
             <i class="fa fa-scissors fa-fw"></i>
             Split
           </a></li>
+
+          <li role="menuitem"><a class="dropdown-item" href="#" (click)="wrapBubbleEvent(); $event.stopPropagation()">
+            <i class="fa fa-comments fa-fw"></i>
+            Wrap
+          </a></li>
+
           <li role="menuitem"><a class="dropdown-item" href="#" (click)="editBubbleEvent(); $event.stopPropagation()">
             <i class="fa fa-pencil fa-fw"></i>
             Edit
@@ -53,6 +57,12 @@
             <i class="fa fa-ellipsis-v fa-fw"></i>
             Pop
           </a></li>
+
+          <li role="menuitem"><a class="dropdown-item" href="#" (click)="wrapBubbleEvent(); $event.stopPropagation()">
+            <i class="fa fa-comments fa-fw"></i>
+            Wrap
+          </a></li>
+
           <li role="menuitem"><a class="dropdown-item" href="#" (click)="editBubbleEvent(); $event.stopPropagation()">
             <i class="fa fa-pencil fa-fw"></i>
             Edit

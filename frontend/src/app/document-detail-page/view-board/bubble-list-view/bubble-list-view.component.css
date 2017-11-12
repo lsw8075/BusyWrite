@@ -16,13 +16,13 @@
   border-right-color: black;
   border-right-style: solid;
 
-  border-radius: 10px;
+  border-radius: 6px;
 }
 
 .internalBubble:hover {
-  border-left-color: red;
+  border-left-color: rgb(157, 172, 255);
 
-  border-right-color: red;
+  border-right-color: rgb(157, 172, 255);
 }
 
 .leafBubble {
@@ -58,6 +58,6 @@
   background-color: transparent;
   border-radius: 2px;
 }
-.bubbleUnit:hover {
+/* .bubbleUnit:hover {
   background-color: rgba(0, 150, 150, 0.2);
-}
+} */

@@ -30,7 +30,7 @@ export class PreviewComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     console.log('bubble list updated!');
-    this.refreshList();
+    // this.refreshList();
   }
 
   public _bubbleTraversal(bubble: Bubble) {

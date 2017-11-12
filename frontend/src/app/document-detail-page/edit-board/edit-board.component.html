@@ -12,10 +12,10 @@
           <div *ngFor="let note of notes">
             <accordion-group #group>
                 <div accordion-heading>
-                  <span class="handle" tooltip="click me to drag notes around!" triggers="mouseenter:click" (click)="$event.stopPropagation()">+</span>
+                  <span class="handle" tooltip="click me to drag notes around!" (click)="$event.stopPropagation()">+</span>
                   <span class="summary" [innerHTML]="getSummary(note)"></span>
-                  <span class="summary badge badge-secondary float-right pull-right">
-                    <button (click)="deleteNote(note)" type="button" class="btn btn-secondary btn-sm"><i class="fa fa-fw fa-times"></i></button>
+                  <span class="summary badge float-right pull-right">
+                    <button (click)="deleteNote(note)" type="button" class="btn btn-secondary btn-sm hvr-sweep-to-right"><i class="fa fa-fw fa-times"></i></button>
                   </span>
                 </div>
                 <app-note-view [note]="note" (changed)="updateNote(note, $event)"></app-note-view>
