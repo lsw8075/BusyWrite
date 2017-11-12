@@ -19,7 +19,7 @@ export class NoteService implements OnInit {
     return Promise.resolve(newNote3);
   }
 
-  updateNote(noteId: number, content: string): Promise<Note> {
+  updateNote(note: Note): Promise<Note> {
     return Promise.resolve(null);
   }
 

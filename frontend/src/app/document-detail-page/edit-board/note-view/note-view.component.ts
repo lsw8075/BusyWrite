@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
 import { Note } from '../edit-board.component';
 
 @Component({
@@ -9,6 +9,7 @@ import { Note } from '../edit-board.component';
 export class NoteViewComponent implements OnInit {
 
   @Input() note: Note;
+  @Output() changed: EventEmitter<boolean> = new EventEmitter<boolean>();
   editor;
   editorContent = '';
   editorOptions = {
@@ -30,21 +31,22 @@ export class NoteViewComponent implements OnInit {
   }
 
   onEditorBlured(quill) {
-    console.log('editor blur!', quill);
+    // console.log('editor blur!', quill);
   }
 
   onEditorFocused(quill) {
-    console.log('editor focus!', quill);
+    // console.log('editor focus!', quill);
   }
 
   onEditorCreated(quill) {
     this.editor = quill;
-    console.log('quill is ready! this is current quill instance object', quill);
+    // console.log('quill is ready! this is current quill instance object', quill);
   }
 
   onContentChanged({ quill, html, text }) {
-    console.log('quill content is changed!', quill, html, text);
+    // console.log('quill content is changed!', quill, html, text);
     this.note.content = this.editorContent;
+    this.changed.emit(true);
   }
 }
 

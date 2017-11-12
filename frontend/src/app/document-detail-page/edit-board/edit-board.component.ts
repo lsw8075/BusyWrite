@@ -56,8 +56,12 @@ export class EditBoardComponent implements OnInit {
       });
   }
 
-  updateNote(note: Note) {
-
+  updateNote(note: Note, changed: boolean) {
+    if (changed) {
+      this._noteService.updateNote(note).then(response => {
+        console.log('note changed!');
+      });
+    }
   }
 }
 

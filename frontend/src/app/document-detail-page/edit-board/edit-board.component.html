@@ -18,7 +18,7 @@
                     <button (click)="deleteNote(note)" type="button" class="btn btn-secondary btn-sm"><i class="fa fa-fw fa-times"></i></button>
                   </span>
                 </div>
-                <app-note-view [note]="note"></app-note-view>
+                <app-note-view [note]="note" (changed)="updateNote(note, $event)"></app-note-view>
             </accordion-group>
           </div>
         </div>
