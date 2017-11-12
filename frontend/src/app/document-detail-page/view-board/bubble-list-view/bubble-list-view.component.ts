@@ -25,7 +25,7 @@ export class BubbleListViewComponent implements OnInit {
   clickout(event) {
     if (!this.eRef.nativeElement.contains(event.target)) {
       this.selectedBubble = null;
-      this.selectedMenuType = null;
+      this.isWrapSelected = false;
       this.wrapBubbles = [];
       console.log('clicked outside');
     }
@@ -96,11 +96,14 @@ export class BubbleListViewComponent implements OnInit {
     console.log('wrap bubble');
     this.isWrapSelected = true;
     this.wrapBubbles.push(this.selectedBubble);
-    // this._bubbleService.wrapBubble(this.wrapBubbles.map(selectBubble => selectBubble.id))
-    //   .then(response => {
-    //     this.refreshBubbleList();
-    //     this.cancelWrap();
-    //   });
+  }
+
+  public wrapSelectedBubbles() {
+    this._bubbleService.wrapBubble(this.wrapBubbles.map(selectBubble => selectBubble.id))
+      .then(response => {
+        this.refreshBubbleList();
+        this.cancelWrap();
+      });
   }
 
   public createBubbleEvent(bubble: Bubble, menu: MenuType) {
@@ -142,7 +145,7 @@ export class BubbleListViewComponent implements OnInit {
     }
   }
 
-  public cancelWrap() {
+  private cancelWrap() {
     this.wrapBubbles = [];
     this.isWrapSelected = false;
   }
@@ -151,23 +154,19 @@ export class BubbleListViewComponent implements OnInit {
   public showMenuEvent(bubble: Bubble, menuType: MenuType, mouseEvent: MouseEvent) {
     if (this.isWrapSelected &&
         menuType === MenuType.leafMenu &&
-        this.wrapBubbles[0].parentBubble.id === bubble.parentBubble.id) {
-      this.wrapBubbles.push(bubble);
+        this.wrapBubbles[0].parentID === bubble.parentID
+       ) {
+        if (this._isBubbleSelected(bubble)) {
+          this.wrapBubbles = this.wrapBubbles.filter(b => b.id !== bubble.id);
+        } else {
+          this.wrapBubbles.push(bubble);
+        }
+        console.log(this.wrapBubbles.length);
     } else {
+      this.cancelWrap();
       this.selectedBubble = bubble;
       this.selectedMenuType = menuType;
     }
-
-    // if (this.selectedBubbles.length === 0) {
-    //   this.selectedBubbles.push({bubble, menuType});
-    // } else if ((menuType === this.selectedBubbles[0].menuType) &&
-    //            (bubble.parentBubble.id === this.selectedBubbles[0].bubble.parentBubble.id) &&
-    //            (!this._isAlreadySelected(bubble))) {
-    //    this.selectedBubbles.push({bubble, menuType});
-    // } else {
-    //   this.cancelWrap();
-    //   this.selectedBubbles.push({bubble, menuType});
-    // }
   }
   public isMenuOpen(bubble, menuType) {
     if (this.selectedBubble) {
@@ -190,7 +189,7 @@ export class BubbleListViewComponent implements OnInit {
     return styles;
   }
 
-  public setBubbleStyle(bubble: Bubble): object {
+  public setInteralBubbleStyle(bubble: Bubble): object {
     const height = this._bubbleService.calcBubbleHeight(bubble);
     const lineWidth = 2;
     const space = 8;
@@ -200,7 +199,40 @@ export class BubbleListViewComponent implements OnInit {
     styles['border-right-width'] = `${lineWidth}px`;
     styles['margin'] = `0px -${offset + height * space}px`;
     styles['padding'] = `0px ${offset + height * space - lineWidth}px`;
+
+    if (this._isBubbleSelected(bubble)) {
+      styles['background-color'] = `rgb(157, 172, 255)`;
+    }
+
     return styles;
+  }
+
+  public setLeafBubbleStyle(bubble: Bubble): object {
+    const styles = {};
+
+    if (this._isBubbleSelected(bubble)) {
+      styles['background-color'] = `rgb(157, 172, 255)`;
+    }
+
+    return styles;
+  }
+
+  private _isBubbleSelected(bubble: Bubble): boolean {
+    if (this.selectedBubble) {
+      if (this.selectedBubble.id === bubble.id) {
+        return true;
+      }
+    } else if (this.isWrapSelected) {
+      for (let b of this.wrapBubbles) {
+        console.log(b);
+        if (b.id === bubble.id) {
+          return true;
+        }
+      }
+      return false;
+    } else {
+      return false;
+    }
   }
 
 } /* istanbul ignore next */
