@@ -46,6 +46,16 @@ export class EditBoardComponent implements OnInit {
 
   }
 
+  deleteNote(note: Note) {
+    this._noteService.deleteNote(note)
+      .then(response => {
+        this.notes = this.notes.filter(n => n.id !== note.id);
+      });
+  }
+
+  updateNote(note: Note) {
+
+  }
 }
 
 export { Note };

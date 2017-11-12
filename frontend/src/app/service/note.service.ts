@@ -23,7 +23,7 @@ export class NoteService implements OnInit {
     return Promise.resolve(null);
   }
 
-  deleteNote(noteId: number, content: string): Promise<null> {
+  deleteNote(note: Note): Promise<null> {
     return Promise.resolve(null);
   }
 

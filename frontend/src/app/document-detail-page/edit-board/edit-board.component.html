@@ -15,7 +15,7 @@
                   <span class="handle">+</span>
                   <span class="summary" [innerHTML]="getSummary(note)"></span>
                   <span class="summary badge badge-secondary float-right pull-right">
-                    <button type="button" class="btn btn-secondary btn-sm"><i class="fa fa-fw fa-times"></i></button>
+                    <button (click)="deleteNote(note)" type="button" class="btn btn-secondary btn-sm"><i class="fa fa-fw fa-times"></i></button>
                   </span>
                 </div>
                 <app-note-view [note]="note"></app-note-view>
