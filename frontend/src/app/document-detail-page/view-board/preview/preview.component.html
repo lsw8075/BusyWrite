@@ -1,5 +1,5 @@
 <div *ngIf=contentList class="jumbotron">
-  <p *ngFor="let content of contentList">
-    {{content}}
-  </p>
+  <div *ngFor="let content of contentList">
+    <div [innerHTML]="content"></div>
+  </div>
 </div>
