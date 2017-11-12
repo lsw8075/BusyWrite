@@ -9,7 +9,7 @@ export class NoteService implements OnInit {
 
   }
 
-  addNote(noteId: number, content: string): Promise<Note> {
+  addNote(): Promise<Note> {
     const newNote3: Note = {
       id: 3,
       content: '',

@@ -11,7 +11,6 @@ export class NoteViewComponent implements OnInit {
   @Input() note: Note;
   editor;
   editorContent = '';
-  editorContentText = '';
   editorOptions = {
     placeholder: `Write Notes Freely! You can even drag around notes`,
     scrollingContainer: '.note',
@@ -46,7 +45,6 @@ export class NoteViewComponent implements OnInit {
   onContentChanged({ quill, html, text }) {
     console.log('quill content is changed!', quill, html, text);
     this.note.content = this.editorContent;
-    this.editorContentText = text;
   }
 }
 

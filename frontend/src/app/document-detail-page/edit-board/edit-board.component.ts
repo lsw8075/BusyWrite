@@ -42,8 +42,11 @@ export class EditBoardComponent implements OnInit {
     }
   }
 
-  createNote() {
-
+  addNote() {
+    this._noteService.addNote()
+      .then(note => {
+        this.notes.push(note);
+      });
   }
 
   deleteNote(note: Note) {
