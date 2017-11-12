@@ -1,11 +1,4 @@
-<accordion-group #group>
-  <div accordion-heading>
-    <span class="handle">+</span>
-    <span class="summary" [innerHTML]="getSummary()"></span>
-    <span class="summary badge badge-secondary float-right pull-right">
-      <button type="button" class="btn btn-secondary btn-sm"><i class="fa fa-fw fa-times"></i></button>
-    </span>
-  </div>
+
   <quill-editor [(ngModel)]="editorContent"
                 [options]="editorOptions"
                 (blur)="onEditorBlured($event)"
@@ -13,4 +6,4 @@
                 (ready)="onEditorCreated($event)"
                 (change)="onContentChanged($event)">
   </quill-editor>
-</accordion-group>
+

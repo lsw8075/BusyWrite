@@ -4,14 +4,25 @@
   </p-tabPanel>
 
   <p-tabPanel header="Note">
-    <button type="button" class="btn btn-primary"><i class="fa fa-fw fa-sticky-note-o"></i> New</button>
-    <hr>
-    <accordion>
-      <div class='container' [dragula]='"note-bag"' [dragulaModel]='notes'>
-        <div *ngFor="let note of notes">
-            <app-note-view [note]="note"></app-note-view>
+    <div *ngIf="notes">
+      <button type="button" class="btn btn-primary"><i class="fa fa-fw fa-sticky-note-o"></i> New</button>
+      <hr>
+      <accordion>
+        <div class='container' [dragula]='"note-bag"' [dragulaModel]='notes'>
+          <div *ngFor="let note of notes">
+            <accordion-group #group>
+                <div accordion-heading>
+                  <span class="handle">+</span>
+                  <span class="summary" [innerHTML]="getSummary(note)"></span>
+                  <span class="summary badge badge-secondary float-right pull-right">
+                    <button type="button" class="btn btn-secondary btn-sm"><i class="fa fa-fw fa-times"></i></button>
+                  </span>
+                </div>
+                <app-note-view [note]="note"></app-note-view>
+            </accordion-group>
+          </div>
         </div>
-      </div>
-    </accordion>
+      </accordion>
+    </div>
   </p-tabPanel>
 </p-tabView>

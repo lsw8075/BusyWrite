@@ -30,14 +30,6 @@ export class NoteViewComponent implements OnInit {
   ngOnInit() {
   }
 
-  getSummary(): string {
-    if (this.editorContentText === '') {
-      return `empty note`;
-    } else {
-      return `${this.editorContentText.slice(0, 30)}...`;
-    }
-  }
-
   onEditorBlured(quill) {
     console.log('editor blur!', quill);
   }
