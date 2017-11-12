@@ -1,4 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { Note } from '../edit-board.component';
 
 @Component({
   selector: 'app-note-view',
@@ -7,12 +8,14 @@ import { Component, OnInit, Input } from '@angular/core';
 })
 export class NoteViewComponent implements OnInit {
 
+  @Input() note: Note;
   editor;
-  @Input() editorContent = '';
-  @Input() editorOptions = {
+  editorContent = '';
+  editorContentText = '';
+  editorOptions = {
     placeholder: `Write Notes Freely! You can even drag around notes`,
     scrollingContainer: '.note',
-    theme: 'bubble',
+    theme: 'snow',
     // modules: {
     //   toolbar: [
     //     [{ header: [1, 2, false] }],
@@ -25,6 +28,14 @@ export class NoteViewComponent implements OnInit {
   constructor() {}
 
   ngOnInit() {
+  }
+
+  getSummary(): string {
+    if (this.editorContentText === '') {
+      return `empty note`;
+    } else {
+      return `${this.editorContentText.slice(0, 30)}...`;
+    }
   }
 
   onEditorBlured(quill) {
@@ -42,6 +53,8 @@ export class NoteViewComponent implements OnInit {
 
   onContentChanged({ quill, html, text }) {
     console.log('quill content is changed!', quill, html, text);
+    this.note.content = this.editorContent;
+    this.editorContentText = text;
   }
 }
 
