@@ -1,3 +1,5 @@
+<button (click)="refreshList()">refreshList</button>
+
 <div *ngIf=contentList class="jumbotron">
   <div *ngFor="let content of contentList">
     <div [innerHTML]="content"></div>
