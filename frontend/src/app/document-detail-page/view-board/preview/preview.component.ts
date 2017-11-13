@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { BubbleService } from '../view-board.component';
 import { BubbleType, Bubble, LeafBubble, InternalBubble } from '../view-board.component';
 
@@ -7,7 +7,7 @@ import { BubbleType, Bubble, LeafBubble, InternalBubble } from '../view-board.co
   templateUrl: './preview.component.html',
   styleUrls: ['./preview.component.css']
 })
-export class PreviewComponent implements OnInit, OnChanges {
+export class PreviewComponent implements OnInit {
 
   rootBubble: Bubble;
   contentList: string[];
@@ -26,11 +26,6 @@ export class PreviewComponent implements OnInit, OnChanges {
       this.rootBubble = rootBubble;
       this._bubbleTraversal(rootBubble);
     });
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
-    console.log('bubble list updated!');
-    // this.refreshList();
   }
 
   public _bubbleTraversal(bubble: Bubble) {
