@@ -13,8 +13,8 @@ import { PreviewComponent } from './preview/preview.component';
 
 export class ViewBoardComponent implements OnInit {
 
-//  @ViewChild('PreviewComponent')
-//  private preview: PreviewComponent;
+ @ViewChild('PreviewComponent')
+ private preview: PreviewComponent;
 
   constructor(
     private _bubbleService: BubbleService
