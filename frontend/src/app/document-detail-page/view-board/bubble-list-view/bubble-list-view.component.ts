@@ -189,7 +189,7 @@ export class BubbleListViewComponent implements OnInit {
     return styles;
   }
 
-  public setInteralBubbleStyle(bubble: Bubble): object {
+  public setInternalBubbleStyle(bubble: Bubble): object {
     const height = this._bubbleService.calcBubbleHeight(bubble);
     const lineWidth = 2;
     const space = 8;

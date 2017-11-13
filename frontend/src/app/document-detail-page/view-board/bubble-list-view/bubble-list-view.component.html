@@ -21,7 +21,7 @@
         </div>
       </div>
 
-      <div [ngStyle]="setInteralBubbleStyle(bubble)" class="internalBubble" (click)="showMenuEvent(bubble, menuType.internalMenu, $event); $event.stopPropagation()">
+      <div [ngStyle]="setInternalBubbleStyle(bubble)" class="internalBubble" (click)="showMenuEvent(bubble, menuType.internalMenu, $event); $event.stopPropagation()">
         <div *ngFor="let childBubble of bubble.childBubbleList">
           <ng-container *ngTemplateOutlet="bubbleUnit; context: { $implicit: childBubble }"></ng-container>
         </div>
