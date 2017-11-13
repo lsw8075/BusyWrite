@@ -26,9 +26,18 @@
 }
 
 .leafBubble {
-  border-radius: 10px;
-  padding: 0px;
+  border-radius: 0px;
+  padding: 0px 2px;
   margin: 0px 0px;
+  border-left-style: solid;
+  border-right-style: solid;
+  border-color: transparent;
+}
+
+.leafBubble:hover {
+  border-left-color: rgb(157, 172, 255);
+
+  border-right-color: rgb(157, 172, 255);
 }
 
 .placeholder {

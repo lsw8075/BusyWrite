@@ -209,6 +209,9 @@ export class BubbleListViewComponent implements OnInit {
 
   public setLeafBubbleStyle(bubble: Bubble): object {
     const styles = {};
+    const lineWidth = 1;
+    styles['border-left-width'] = `${lineWidth}px`;
+    styles['border-right-width'] = `${lineWidth}px`;
 
     if (this._isBubbleSelected(bubble)) {
       styles['background-color'] = `rgb(157, 172, 255)`;
