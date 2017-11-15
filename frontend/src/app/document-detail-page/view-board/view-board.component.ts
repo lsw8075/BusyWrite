@@ -24,8 +24,8 @@ export class ViewBoardComponent implements OnInit {
   }
 
   previewClick(event) {
-    if(event.index == 1) {
-  //    this.preview.refreshList();
+    if (event.index === 1) {
+     this.preview.refreshList();
       console.log('preview tab clicked');
     }
   }
