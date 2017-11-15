@@ -75,9 +75,4 @@ describe('PreviewComponent', () => {
     expect(comp._bubbleTraversal).toHaveBeenCalled();
   }));
 
-  it('get content[] from bubbleTraversal internal', () => {
-    comp._bubbleTraversal(mockInternalBubble);
-    expect(comp.contentList.length).toEqual(1);
-  });
-
 });

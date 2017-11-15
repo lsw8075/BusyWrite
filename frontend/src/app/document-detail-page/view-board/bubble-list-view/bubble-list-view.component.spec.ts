@@ -49,16 +49,9 @@ describe('BubbleListViewComponent', () => {
     });
 
     it('ngOnInit makes expected calls', () => {
-        spyOn(bubbleService, 'getBubbleById').and.returnValue(Promise.resolve(new LeafBubble()));
+        spyOn(bubbleService, 'getBubbleById').and.returnValue(Promise.resolve(new LeafBubble(0, 0, null)));
         comp.ngOnInit();
         expect(bubbleService.getBubbleById).toHaveBeenCalled();
     });
-
-    it('showMenuEvent method emits event', fakeAsync(() => {
-      spyOn(comp.openMenu, 'emit');
-      comp.showMenuEvent({});
-      tick();
-      expect(comp.openMenu.emit).toHaveBeenCalled();
-    }));
 
 });

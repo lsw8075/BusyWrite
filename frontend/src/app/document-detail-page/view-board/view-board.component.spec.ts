@@ -62,10 +62,4 @@ describe('ViewBoardComponent', () => {
     expect(comp).toBeTruthy();
   });
 
-  it('should call child component show menu ', () => {
-    spyOn(comp.menu, 'showMenu');
-    comp.showMenu({});
-    expect(comp.menu.showMenu).toHaveBeenCalled();
-  });
-
 });
