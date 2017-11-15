@@ -1,4 +1,5 @@
 import { Note } from './note';
+import { Comment } from './comment';
 
 export enum BubbleType {
   leafBubble,
@@ -10,27 +11,41 @@ export interface Bubble {
   id: number;
   type: BubbleType;
   location: number;
-  comments: Array<number>;
-  parentID: number;
+  comments: Array<Comment>;
   parentBubble: Bubble;
   suggestBubbles: Array<number>;
+
+  editLock: boolean;
+
+  getEditLock(userId: number): Promise<Bubble>;
+  releaseLock(): Promise<null>;
 }
 
 export class LeafBubble implements Bubble {
   id: number;
   type: BubbleType;
   location: number;
-  owner: number;
-  editLock: boolean;
-  content: string;
-
-  parentID: number;
+  comments: Array<Comment>;
   parentBubble: Bubble;
   suggestBubbles: Array<number>;
-  comments: Array<number>;
 
-  constructor() {
+  editLock: boolean;
+
+  owner: number;
+  content: string;
+
+  constructor(id: number, location: number, content?: string) {
     this.type = BubbleType.leafBubble;
+  }
+
+  getEditLock(userId: number): Promise<Bubble> {
+    if (this.editLock) {
+      return Promise.reject(this);
+    }
+  }
+
+  releaseLock(): Promise<null> {
+    return null;
   }
 
   // public noteToLeafBubble(note: Note): LeafBubble {
@@ -43,18 +58,25 @@ export class InternalBubble implements Bubble {
   id: number;
   type: BubbleType;
   location: number;
-  editLock: boolean;
-
-  parentID: number;
+  comments: Array<Comment>;
   parentBubble: Bubble;
   suggestBubbles: Array<number>;
-  childBubbles: Array<number>;
+
+  editLock: boolean;
+
   childBubbleList: Array<Bubble>;
-  comments: Array<number>;
 
   constructor() {
     // must initialize all attributes
     this.type = BubbleType.internalBubble;
+  }
+
+  getEditLock(userId: number): Promise<Bubble> {
+    return null;
+  }
+
+  releaseLock(): Promise<null> {
+    return null;
   }
 }
 
@@ -64,7 +86,7 @@ export class SuggestBubble {
   content: string;
   location: number;
 
-  comments: Array<number>;
+  comments: Array<Comment>;
 
   // constructor() {
   //   // must initialize all attributes

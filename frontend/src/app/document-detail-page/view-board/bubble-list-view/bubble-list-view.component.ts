@@ -117,7 +117,7 @@ export class BubbleListViewComponent implements OnInit {
     } else {
       throw new Error('create bubble invoked with not border');
     }
-    this._bubbleService.createBubble(bubble.parentBubble.id, location, 'default create string')
+    this._bubbleService.createBubble(bubble.parentBubble, location, 'default create string')
       .then(response => {
         this.refreshBubbleList();
       });
@@ -137,7 +137,7 @@ export class BubbleListViewComponent implements OnInit {
   public deleteBubbleEvent(bubble: Bubble) {
     console.log('delete bubble');
     if (bubble.id !== 0) {
-      this._bubbleService.deleteBubble(bubble.id)
+      this._bubbleService.deleteBubble(bubble)
         .then(() => this.refreshBubbleList());
 
     } else {
@@ -154,7 +154,7 @@ export class BubbleListViewComponent implements OnInit {
   public showMenuEvent(bubble: Bubble, menuType: MenuType, mouseEvent: MouseEvent) {
     if (this.isWrapSelected &&
         menuType === MenuType.leafMenu &&
-        this.wrapBubbles[0].parentID === bubble.parentID
+        this.wrapBubbles[0].parentBubble.id === bubble.parentBubble.id
        ) {
         if (this._isBubbleSelected(bubble)) {
           this.wrapBubbles = this.wrapBubbles.filter(b => b.id !== bubble.id);
