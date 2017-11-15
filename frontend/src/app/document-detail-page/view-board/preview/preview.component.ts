@@ -34,7 +34,7 @@ export class PreviewComponent implements OnInit {
       this.contentList.push(leafBubble.content);
     } else {
       const internalBubble = bubble as InternalBubble;
-      for (const childBubble of internalBubble.childBubbleList) {
+      for (const childBubble of internalBubble.childBubbles) {
         this._bubbleTraversal(childBubble);
       }
     }

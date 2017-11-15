@@ -3,5 +3,4 @@ export class Note {
   content: string;
   documentId: number;
   userId: number;
-  option?: Object;
 }

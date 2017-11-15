@@ -42,7 +42,7 @@ export class BubbleListViewComponent implements OnInit {
 
   public refreshBubbleList() {
     this._bubbleService.getBubbleById(0).then(rootBubble => {
-      this.bubbleRootList = (rootBubble as InternalBubble).childBubbleList;
+      this.bubbleRootList = (rootBubble as InternalBubble).childBubbles;
       console.assert(this.bubbleRootList.length >= 0, 'bubble list cannot be negative');
       console.log('refreshed list');
     });
