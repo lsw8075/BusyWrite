@@ -1,9 +1,10 @@
 import { ComponentFixture, TestBed, async, fakeAsync, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { BubbleService } from '../view-board.component';
-import { Bubble, MenuType, LeafBubble } from '../view-board.component';
+import { Bubble, MenuType } from '../view-board.component';
 import { BubbleListViewComponent } from './bubble-list-view.component';
 import { Component, Input } from '@angular/core';
+import { LeafBubble } from '../../../model/bubble';
 
 class MockBubbleService {
   getBubbleById(id: number) {}

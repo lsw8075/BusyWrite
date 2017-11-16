@@ -3,4 +3,8 @@ export class Note {
   content: string;
   documentId: number;
   userId: number;
+
+  getSummary() {
+
+  }
 }

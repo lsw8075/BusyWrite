@@ -18,10 +18,19 @@ export interface Bubble {
 
   editLock: boolean;
 
-  getEditLock(userId: number): Promise<Bubble>;
-  releaseLock(): Promise<void>;
+  getEditLock(userId: number): boolean;
+  releaseLock(): void;
 
   getHeight(): number;
+
+  addSuggestBubble(SB: Bubble): void;
+  addComment(comment: Comment): void;
+  deleteSuggestBubble(SB: Bubble): void;
+  deleteComment(comment: Comment): void;
+
+  getContent(): string;
+  getComments(): Array<Comment>;
+  getSuggestBubbles(): Array<SuggestBubble>;
 }
 
 export class LeafBubble implements Bubble {
@@ -35,14 +44,14 @@ export class LeafBubble implements Bubble {
 
   editLock: boolean;
 
-  owner: number;
+  ownerId: number;
   content: string;
 
   constructor(
     id: number,
     location: number,
     parentBubble: Bubble,
-    owner: number = -1,
+    ownerId: number = -1,
     content: string = '') {
 
     this.id = id;
@@ -51,18 +60,22 @@ export class LeafBubble implements Bubble {
     this.comments = [];
     this.parentBubble = parentBubble;
     this.suggestBubbles = [];
-    this.editLock = (owner === -1); // edit lock false if no owner
-    this.owner = owner;
+    this.editLock = (ownerId === -1); // edit lock false if no owner
+    this.ownerId = ownerId;
     this.content = content;
   }
 
-  getEditLock(userId: number): Promise<Bubble> {
+  getEditLock(userId: number): boolean {
     if (this.editLock) {
-      return Promise.reject(this);
+      return false;
+    } else {
+      this.ownerId = userId;
+      this.editLock = true;
+      return true;
     }
   }
 
-  releaseLock(): Promise<void> {
+  releaseLock(): void {
     return null;
   }
 
@@ -72,6 +85,31 @@ export class LeafBubble implements Bubble {
 
   split(): void {
 
+  }
+
+  addSuggestBubble(SB: Bubble): void {
+
+  }
+  addComment(comment: Comment): void {
+
+  }
+
+  deleteSuggestBubble(SB: Bubble): void {
+
+  }
+  deleteComment(comment: Comment): void {
+
+  }
+
+  getContent(): string {
+    return null;
+  }
+
+  getComments(): Array<Comment> {
+    return null;
+  }
+  getSuggestBubbles(): Array<SuggestBubble> {
+    return null;
   }
 }
 
@@ -92,7 +130,6 @@ export class InternalBubble implements Bubble {
     id: number,
     location: number,
     parentBubble: Bubble,
-    content: string = '',
     childBubbles: Array<Bubble> = []) {
 
     this.id = id;
@@ -105,15 +142,39 @@ export class InternalBubble implements Bubble {
     this.childBubbles = childBubbles;
   }
 
-  getEditLock(userId: number): Promise<Bubble> {
+  getEditLock(userId: number): boolean {
     return null;
   }
 
-  releaseLock(): Promise<void> {
+  releaseLock(): void {
     return null;
   }
 
   getHeight(): number {
+    return null;
+  }
+
+  addSuggestBubble(SB: Bubble): void {
+
+  }
+  addComment(comment: Comment): void {
+
+  }
+
+  deleteSuggestBubble(SB: Bubble): void {
+
+  }
+  deleteComment(comment: Comment): void {
+
+  }
+
+  getContent(): string {
+    return null;
+  }
+  getComments(): Array<Comment> {
+    return null;
+  }
+  getSuggestBubbles(): Array<SuggestBubble> {
     return null;
   }
 

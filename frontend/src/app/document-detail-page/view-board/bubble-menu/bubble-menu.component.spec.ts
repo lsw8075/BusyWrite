@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed, async, fakeAsync, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { Bubble, LeafBubble, InternalBubble, BubbleService } from '../view-board.component';
+import { Bubble, BubbleService } from '../view-board.component';
 import { Component, Input } from '@angular/core';
 
 import { BubbleMenuComponent, MenuType } from './bubble-menu.component';

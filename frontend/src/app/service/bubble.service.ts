@@ -138,7 +138,7 @@ export class BubbleService {
         newBubble.id = this.bubbleList.length;
         newBubble.content = content;
         newBubble.location = location;
-        newBubble.owner = 0; // not used in sp2. get it from authservice..
+        newBubble.ownerId = 0; // not used in sp2. get it from authservice..
         newBubble.editLock = false;
         newBubble.parentBubble = this.bubbleList[parentID];
         this.bubbleList.push(newBubble);

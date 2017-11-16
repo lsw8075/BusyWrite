@@ -1,7 +1,5 @@
 <button (click)="refreshList()">refreshList</button>
 
-<div *ngIf=contentList class="jumbotron">
-  <div *ngFor="let content of contentList">
-    <div [innerHTML]="content"></div>
-  </div>
+<div *ngIf=rootBubble class="jumbotron">
+  <div [innerHTML]="rootBubble.getContent()"></div>
 </div>
