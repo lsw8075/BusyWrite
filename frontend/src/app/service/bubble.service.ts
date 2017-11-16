@@ -37,14 +37,14 @@ export class BubbleService {
     // process raw bubble into Bubble object of each type
     switch (rawBubble.bubble_type) {
       case 'leaf': {
-        bubble = new LeafBubble(0, 0, null);
+        bubble = new LeafBubble(0, null);
         bubble.content = rawBubble.content;
         bubble.owner = 0; // no owner yet
         bubble.editLock = false; // no editLock yet
         break;
       }
       case 'internal': {
-        bubble = new InternalBubble(0, 0, null);
+        bubble = new InternalBubble(0, null);
         bubble.childBubbles = rawBubble.children;
         bubble.childBubbles = [];
         bubble.editLock = false;
@@ -134,7 +134,7 @@ export class BubbleService {
       const numChild = parentBubble.childBubbles.length;
       if (0 <= location && location <= numChild) {
         // create a new leaf bubble
-        const newBubble = new LeafBubble(0, 0, null);
+        const newBubble = new LeafBubble(0, null);
         newBubble.id = this.bubbleList.length;
         newBubble.content = content;
         newBubble.location = location;
@@ -243,10 +243,9 @@ export class BubbleService {
     }
 
     // create new Parent
-    const newParent = new InternalBubble(0, 0, null);
+    const newParent = new InternalBubble(0, null);
     newParent.id = this.bubbleList.length;
     newParent.location = firstLocation;
-    newParent.editLock = false;
     newParent.parentBubble = commonParent;
     childBubbles = commonParent.childBubbles.map(b => b.id).slice(firstLocation, firstLocation + wrapList.length);
     newParent.childBubbles = [];
@@ -308,7 +307,7 @@ export class BubbleService {
     const splitee = this.bubbleList[splitID] as LeafBubble;
 
     // change LeafBubble to the InternalBubble
-    const newInternal = new InternalBubble(0, 0, null);
+    const newInternal = new InternalBubble(0, null);
     newInternal.id = splitee.id;
     newInternal.location = splitee.location;
     newInternal.comments = splitee.comments;

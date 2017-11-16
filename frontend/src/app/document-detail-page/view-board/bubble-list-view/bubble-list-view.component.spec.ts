@@ -59,7 +59,7 @@ describe('BubbleListViewComponent', () => {
     });
 
     it('ngOnInit makes expected calls', () => {
-        spyOn(bubbleService, 'getBubbleById').and.returnValue(Promise.resolve(new LeafBubble(0, 0, null)));
+        spyOn(bubbleService, 'getBubbleById').and.returnValue(Promise.resolve(new LeafBubble(0, null)));
         comp.ngOnInit();
         expect(bubbleService.getBubbleById).toHaveBeenCalled();
     });
