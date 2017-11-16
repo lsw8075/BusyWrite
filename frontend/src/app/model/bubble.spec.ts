@@ -119,9 +119,9 @@ describe('InternalBubble', () => {
     leafBubble1 = new LeafBubble(2, internalBubble, 'leafBubble 1');
     leafBubble2 = new LeafBubble(3, internalBubble, 'leafBubble 2');
     internalBubble3 = new InternalBubble(4, internalBubble);
-    leafBubble4 = new LeafBubble(5, internalBubble3, 'leafBubble4');
-    leafBubble5 = new LeafBubble(6, internalBubble3, 'leafBubble5');
-    leafBubble6 = new LeafBubble(7, internalBubble, 'leafBubble6');
+    leafBubble4 = new LeafBubble(5, internalBubble3, 'leafBubble 4');
+    leafBubble5 = new LeafBubble(6, internalBubble3, 'leafBubble 5');
+    leafBubble6 = new LeafBubble(7, internalBubble, 'leafBubble 6');
   });
 
   it('getHeight should return correct height', () => {
@@ -172,15 +172,15 @@ describe('InternalBubble', () => {
       expect(internalBubble3.location).toBe(2);
       expect(leafBubble6.location).toBe(3);
       // internal bubble 3
-      expect(leafBubble4.location).toBe(1);
-      expect(leafBubble5.location).toBe(2);
+      expect(leafBubble4.location).toBe(0);
+      expect(leafBubble5.location).toBe(1);
     });
 
 
     it('should throw error when inserting bubble at invalid location', () => {
       const leafBubble7 = new LeafBubble(7, internalBubble);
       expect(function(){ internalBubble.insertChild(leafBubble7, -1); }).toThrow(new Error('location -1 is invalid'));
-      expect(function(){ internalBubble.insertChild(leafBubble7, 5); }).toThrow(new Error('location -1 is invalid'));
+      expect(function(){ internalBubble.insertChild(leafBubble7, 6); }).toThrow(new Error('location 6 is invalid'));
     });
 
     it('should insert bubble at valid location, other bubbles should also move', () => {
@@ -196,12 +196,6 @@ describe('InternalBubble', () => {
     it('should be able to get content of all childs', () => {
       const contentTree = `leafBubble 1\nleafBubble 2\nleafBubble 4\nleafBubble 5\nleafBubble 6`;
       expect(internalBubble.getContent()).toBe(contentTree);
-    });
-
-    it('should be able to flatten child bubble', () => {
-      internalBubble.flattenChild(internalBubble3);
-      expect(internalBubble3.type).toBe(BubbleType.leafBubble);
-      expect(internalBubble.getContent()).toBe(`leafBubble 4\nleafBubble 5`);
     });
 
     it('should be able to delete leaf child', () => {

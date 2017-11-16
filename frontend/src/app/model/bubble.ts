@@ -16,11 +16,6 @@ export interface Bubble {
   comments: Array<Comment>;
   suggestBubbles: Array<SuggestBubble>;
 
-  editLock: boolean;
-
-  getEditLock(userId: number): boolean;
-  releaseLock(): void;
-
   getHeight(): number;
 
   addSuggestBubble(SB: Bubble): void;
@@ -49,25 +44,26 @@ export class LeafBubble implements Bubble {
 
   constructor(
     id: number,
-    location: number,
     parentBubble: Bubble,
-    ownerId: number = -1,
-    content: string = '') {
+    content: string = '',
+    ownerId: number = -1) {
 
     this.id = id;
     this.type = BubbleType.leafBubble;
-    this.location = location;
     this.comments = [];
     this.parentBubble = parentBubble;
+    this.location = -1; // location is -1 when orphan
     this.suggestBubbles = [];
-    this.editLock = (ownerId === -1); // edit lock false if no owner
+    this.editLock = (ownerId !== -1); // edit lock false if no owner
     this.ownerId = ownerId;
     this.content = content;
   }
 
   getEditLock(userId: number): boolean {
-    if (this.editLock) {
+    if (this.editLock && this.ownerId !== userId) {
       return false;
+    } else if (this.ownerId === userId) {
+      return true;
     } else {
       this.ownerId = userId;
       this.editLock = true;
@@ -76,11 +72,13 @@ export class LeafBubble implements Bubble {
   }
 
   releaseLock(): void {
-    return null;
+    this.ownerId = -1;
+    this.editLock = false;
   }
 
   getHeight(): number {
-    return null;
+    const leafBubbleHeight = 1;
+    return leafBubbleHeight;
   }
 
   split(): void {
@@ -102,7 +100,7 @@ export class LeafBubble implements Bubble {
   }
 
   getContent(): string {
-    return null;
+    return this.content;
   }
 
   getComments(): Array<Comment> {
@@ -122,36 +120,24 @@ export class InternalBubble implements Bubble {
   comments: Array<Comment>;
   suggestBubbles: Array<SuggestBubble>;
 
-  editLock: boolean;
-
   childBubbles: Array<Bubble>;
 
   constructor(
     id: number,
-    location: number,
     parentBubble: Bubble,
     childBubbles: Array<Bubble> = []) {
 
     this.id = id;
     this.type = BubbleType.internalBubble;
-    this.location = location;
+    this.location = -1;
     this.comments = [];
     this.parentBubble = parentBubble;
     this.suggestBubbles = [];
-    this.editLock = false;
     this.childBubbles = childBubbles;
   }
 
-  getEditLock(userId: number): boolean {
-    return null;
-  }
-
-  releaseLock(): void {
-    return null;
-  }
-
   getHeight(): number {
-    return null;
+    return this.childBubbles.reduce((prev, curr) => Math.max(prev, curr.getHeight() + 1), 1);
   }
 
   addSuggestBubble(SB: Bubble): void {
@@ -169,7 +155,7 @@ export class InternalBubble implements Bubble {
   }
 
   getContent(): string {
-    return null;
+    return this.childBubbles.reduce((prev, curr) => prev + curr.getContent() + '\n', '').slice(0, -1);
   }
   getComments(): Array<Comment> {
     return null;
@@ -180,23 +166,48 @@ export class InternalBubble implements Bubble {
 
   // ----
 
-  flatten(): Promise<Bubble> {
+  insertChild(bubble: Bubble, location: number): void {
+    if ((location < 0) || (location > this.childBubbles.length + 1)) {
+      throw new Error(`location ${location} is invalid`);
+    } else {
+      bubble.parentBubble = this;
+      this.childBubbles.splice(location, 0, bubble);
+      bubble.location = location;
+      location++;
+      while (location < this.childBubbles.length) {
+        this.childBubbles[location].location++;
+        location++;
+      }
+    }
+
+  }
+
+  addChildren(...bubbles: Array<Bubble>): void {
+    let location = this.childBubbles.length;
+    for (let bubble of bubbles) {
+      if (this._ischildBubble(bubble)) {
+        bubble.location = location;
+        location++;
+        this.childBubbles.push(bubble);
+      }
+    }
+  }
+
+  deleteChild(childBubble: Bubble): void {
     return null;
   }
 
-  addChild(bubble: Bubble, location: number): Promise<Bubble> {
+  wrapChildren(wrapList: Array<Bubble>): InternalBubble {
     return null;
   }
 
-  deleteChild(): void {
-    return null;
+  private _ischildBubble(bubble: Bubble): boolean {
+    return bubble.parentBubble.id === this.id;
   }
 
-  wrapChildren(wrapList: Array<Bubble>): Promise<Bubble> {
-    return null;
+  private _sortByLocation(bubbleList: Array<Bubble>) {
+
   }
-
-
 }
 
 export class SuggestBubble {
