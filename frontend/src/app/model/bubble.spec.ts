@@ -176,6 +176,12 @@ describe('InternalBubble', () => {
       expect(leafBubble5.location).toBe(1);
     });
 
+    it('should be able to flatten child bubble', () => {
+      const flattendBubble = internalBubble.flattenChild(internalBubble3);
+      expect(flattendBubble.type).toBe(BubbleType.leafBubble);
+      expect(flattendBubble.getContent()).toBe(`leafBubble 4\nleafBubble 5`);
+    });
+
 
     it('should throw error when inserting bubble at invalid location', () => {
       const leafBubble7 = new LeafBubble(7, internalBubble);
@@ -201,13 +207,11 @@ describe('InternalBubble', () => {
     it('should be able to delete leaf child', () => {
       internalBubble.deleteChild(leafBubble2);
       expect(internalBubble.childBubbles).not.toContain(leafBubble2);
-      expect(leafBubble2).toBeNull();
     });
 
     it('should be able to delete internal child', () => {
       internalBubble.deleteChild(internalBubble3);
       expect(internalBubble.childBubbles).not.toContain(internalBubble3);
-      expect(internalBubble3).toBeNull();
     });
 
     it('should throw error when delete bubble that is not child', () => {
