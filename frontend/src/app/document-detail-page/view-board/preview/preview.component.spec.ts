@@ -63,16 +63,16 @@ describe('PreviewComponent', () => {
     expect(comp).not.toBeNull();
   });
 
-  it('contentList defaults to: []', () => {
-      expect(comp.contentList).toEqual([]);
-  });
+  // it('contentList defaults to: []', () => {
+  //     expect(comp.contentList).toEqual([]);
+  // });
 
-  it('call bubbleTraversal on ngOnInit', fakeAsync(() => {
-    spyOn(comp, '_bubbleTraversal');
-    comp.ngOnInit();
-    fixture.detectChanges();
-    tick();
-    expect(comp._bubbleTraversal).toHaveBeenCalled();
-  }));
+  // it('call bubbleTraversal on ngOnInit', fakeAsync(() => {
+  //   spyOn(comp, '_bubbleTraversal');
+  //   comp.ngOnInit();
+  //   fixture.detectChanges();
+  //   tick();
+  //   expect(comp._bubbleTraversal).toHaveBeenCalled();
+  // }));
 
 });

@@ -1,5 +1,5 @@
 import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
-import { BubbleType, Bubble, LeafBubble, InternalBubble } from '../../document-detail-page.component';
+import { BubbleType, Bubble } from '../../document-detail-page.component';
 import { BubbleService } from '../../document-detail-page.component';
 
 export enum MenuType {

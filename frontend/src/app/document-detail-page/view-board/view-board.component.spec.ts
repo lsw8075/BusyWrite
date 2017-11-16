@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed, async, fakeAsync, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { ViewBoardComponent } from './view-board.component';
+import { ViewBoardComponent, BubbleService } from './view-board.component';
 import { Component } from '@angular/core';
 import { TabViewModule } from 'primeng/primeng';
 import { BubbleMenuComponent } from './bubble-menu/bubble-menu.component';
@@ -30,6 +30,10 @@ class MockPreviewComponent {
 
 }
 
+class MockBubbleService {
+
+}
+
 describe('ViewBoardComponent', () => {
   let comp: ViewBoardComponent;
   let fixture: ComponentFixture<ViewBoardComponent>;
@@ -40,10 +44,13 @@ describe('ViewBoardComponent', () => {
         ViewBoardComponent,
         MockBubbleListViewComponent,
         MockPreviewComponent,
-        BubbleMenuComponent
+        MockBubbleMenuComponent
       ],
       imports: [
         TabViewModule
+      ],
+      providers: [
+        { provide: BubbleService, useClass: MockBubbleService },
       ]
     }).compileComponents();
   }));

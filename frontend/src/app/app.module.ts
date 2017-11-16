@@ -50,16 +50,19 @@ import { DirectoryService } from './service/directory.service';
 import { DocumentService } from './service/document.service';
 import { NoteService } from './service/note.service';
 
+import { DragulaModule } from 'ng2-dragula/ng2-dragula';
+import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
+import { QuillEditorModule } from 'ngx-quill-editor';
+import { AccordionModule } from 'ngx-bootstrap/accordion';
+import { TooltipModule } from 'ngx-bootstrap/tooltip';
 
 import { TabViewModule } from 'primeng/primeng';
 import { ButtonModule } from 'primeng/primeng';
-import { DragulaModule } from 'ng2-dragula/ng2-dragula';
-import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
+
 import { EditorModule } from 'primeng/primeng';
-import { QuillEditorModule } from 'ngx-quill-editor';
-import { AccordionModule } from 'ngx-bootstrap/accordion';
+
 import { DialogModule } from 'primeng/primeng';
-import { TooltipModule } from 'ngx-bootstrap/tooltip';
+
 
 @NgModule({
   declarations: [

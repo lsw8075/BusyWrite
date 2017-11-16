@@ -11,7 +11,7 @@ import { NoteService } from '../service/note.service';
 
 import { Alarm } from '../model/alarm';
 import { Board } from '../model/board';
-import { BubbleType, Bubble, LeafBubble, InternalBubble, SuggestBubble } from '../model/bubble';
+import { BubbleType, Bubble, SuggestBubble } from '../model/bubble';
 import { Comment } from '../model/comment';
 import { FileSystemEntity } from '../model/file-system-entity';
 import { Note } from '../model/note';
@@ -61,4 +61,4 @@ export class DocumentDetailPageComponent implements OnInit {
 } /* istanbul ignore next */
 
 export { AuthenticationService, BoardService, BubbleService, AlarmService, CommentService, DirectoryService, DocumentService, NoteService};
-export { Alarm, Board, BubbleType, Bubble, LeafBubble, InternalBubble, SuggestBubble, Comment, FileSystemEntity, Note };
+export { Alarm, Board, BubbleType, Bubble, SuggestBubble, Comment, FileSystemEntity, Note };

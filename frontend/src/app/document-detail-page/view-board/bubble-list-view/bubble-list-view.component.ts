@@ -1,7 +1,8 @@
 import { Component, EventEmitter, OnInit, Output, HostListener, ElementRef } from '@angular/core';
 import { BubbleService } from '../view-board.component';
-import { BubbleType, Bubble, LeafBubble, InternalBubble, ActionType } from '../view-board.component';
+import { BubbleType, Bubble, ActionType } from '../view-board.component';
 import { MenuType } from '../bubble-menu/bubble-menu.component';
+import { InternalBubble } from '../../../model/bubble';
 
 
 @Component({
@@ -125,8 +126,8 @@ export class BubbleListViewComponent implements OnInit {
 
   public editBubbleEvent(bubble: Bubble) {
     console.log('edit bubble');
-    if (bubble instanceof LeafBubble) {
-      const newString = prompt('edit bubble!', (bubble as LeafBubble).content);
+    if (bubble.type === BubbleType.leafBubble) {
+      const newString = prompt('edit bubble!', (bubble).getContent());
       if (newString) {
         this._bubbleService.editBubble(bubble.id, newString)
           .then(() => this.refreshBubbleList());

@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed, async, fakeAsync, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { BubbleService } from '../view-board.component';
-import { Bubble, LeafBubble } from '../view-board.component';
+import { Bubble, MenuType, LeafBubble } from '../view-board.component';
 import { BubbleListViewComponent } from './bubble-list-view.component';
 import { Component, Input } from '@angular/core';
 
@@ -17,6 +17,14 @@ class MockBubbleDetailViewComponent {
   @Input() bubble: Bubble;
 }
 
+@Component({
+  selector: 'app-bubble-menu',
+  template: `<p>app-bubble-menu component</p>`
+})
+class MockBubbleMenuComponent {
+  @Input() bubble: Bubble;
+  @Input() menu: MenuType;
+}
 describe('BubbleListViewComponent', () => {
     let comp: BubbleListViewComponent;
     let fixture: ComponentFixture<BubbleListViewComponent>;
@@ -26,7 +34,8 @@ describe('BubbleListViewComponent', () => {
         TestBed.configureTestingModule({
             declarations: [
               BubbleListViewComponent,
-              MockBubbleDetailViewComponent
+              MockBubbleDetailViewComponent,
+              MockBubbleMenuComponent
             ],
             providers: [
                 { provide: BubbleService, useClass: MockBubbleService },
