@@ -99,12 +99,12 @@ export class LeafBubble implements Bubble {
     return this.content;
   }
 
-  getComments(): Array<Comment> {
-    return null;
-  }
-  getSuggestBubbles(): Array<SuggestBubble> {
-    return null;
-  }
+  // getComments(): Array<Comment> {
+  //   return null;
+  // }
+  // getSuggestBubbles(): Array<SuggestBubble> {
+  //   return null;
+  // }
 }
 
 export class InternalBubble implements Bubble {
@@ -149,26 +149,29 @@ export class InternalBubble implements Bubble {
   getContent(): string {
     return this.childBubbles.reduce((prev, curr) => prev + curr.getContent() + '\n', '').slice(0, -1);
   }
-  getComments(): Array<Comment> {
-    return null;
-  }
-  getSuggestBubbles(): Array<SuggestBubble> {
-    return null;
-  }
+  // getComments(): Array<Comment> {
+  //   return null;
+  // }
+  // getSuggestBubbles(): Array<SuggestBubble> {
+  //   return null;
+  // }
 
   // ----
 
-  insertChild(bubble: Bubble, location: number): void {
+  insertChildren(location: number, ...bubbles: Array<Bubble>): void {
     if ((location < 0) || (location > this.childBubbles.length + 1)) {
       throw new Error(`location ${location} is invalid`);
     } else {
-      bubble.parentBubble = this;
-      this.childBubbles.splice(location, 0, bubble);
-      bubble.location = location;
-      location++;
-      while (location < this.childBubbles.length) {
-        this.childBubbles[location].location++;
-        location++;
+      let newLocation = location;
+      bubbles.forEach(bubble => {
+        bubble.parentBubble = this;
+        bubble.location = newLocation;
+        newLocation++;
+      });
+      this.childBubbles.splice(location, 0, ...bubbles);
+      while (newLocation < this.childBubbles.length) {
+        this.childBubbles[newLocation].location = newLocation;
+        newLocation++;
       }
     }
 
@@ -202,8 +205,8 @@ export class InternalBubble implements Bubble {
   wrapChildren(wrapList: Array<Bubble>): InternalBubble {
 
     // no bubble to wrap
-    if (wrapList.length <= 1) {
-      throw new Error('wrapList contains one or less bubble');
+    if (wrapList.length < 1) {
+      throw new Error('wrapList contains no bubble');
     }
 
     // some bubble is not child
@@ -226,6 +229,11 @@ export class InternalBubble implements Bubble {
         throw new Error('given bubbles are un-ajacent');
       }
       locationChecker ++;
+    }
+
+    // if wrap all children, return null, do nothing
+    if (this.childBubbles.length === wrapList.length) {
+      return null;
     }
 
     // make internal node
@@ -266,8 +274,9 @@ export class InternalBubble implements Bubble {
   public popChild(bubble: Bubble): void {
     if (this._ischildBubble(bubble) && (bubble.type === BubbleType.internalBubble)) {
       const newChildren = (bubble as InternalBubble).childBubbles;
+      const location = bubble.location;
       this.deleteChild(bubble);
-      this.addChildren(...newChildren);
+      this.insertChildren(location, ...newChildren);
     } else if (bubble.type === BubbleType.leafBubble) {
       throw new Error(`can't pop leaf bubble`);
     } else {
@@ -277,7 +286,11 @@ export class InternalBubble implements Bubble {
   }
 
   private _ischildBubble(bubble: Bubble): boolean {
-    return bubble.parentBubble.id === this.id;
+    if (bubble.parentBubble === null) {
+      return false;
+    } else {
+      return bubble.parentBubble.id === this.id;
+    }
   }
 
   private _sortByLocation(bubbleList: Array<Bubble>) {

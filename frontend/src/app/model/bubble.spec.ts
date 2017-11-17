@@ -41,33 +41,16 @@ describe('LeafBubble', () => {
       expect(leafBubble.getHeight()).toBe(leafBubbleHeight);
     });
 
-    it('should be able to split bubble into 3 pieces', () => {
-
-    });
-
-    it('should be able to add new suggest bubble', () => {
-
-    });
-
-    it('should be able to delete new suggest bubble', () => {
-
-    });
-
-    it('should be able to add new comment', () => {
-
-    });
-
+    it('should be able to split bubble into 3 pieces');
+    it('should be able to add new suggest bubble');
+    it('should be able to delete new suggest bubble');
+    it('should be able to add new comment');
     it('should be able to get content', () => {
       expect(leafBubble.getContent()).toBe(content);
     });
 
-    it('should be able to get comments', () => {
-
-    });
-
-    it('should be able to get suggest bubbles', () => {
-
-    });
+    it('should be able to get comments');
+    it('should be able to get suggest bubbles');
   });
 
   describe('when create leaf bubble without owner and content', () => {
@@ -148,22 +131,34 @@ describe('InternalBubble', () => {
     expect(leafBubble5.location).toBe(1);
   });
 
-  it('should be able to flatten child bubble', () => {
-    const flattendBubble = internalBubble.flattenChild(internalBubble3);
-    expect(flattendBubble.type).toBe(BubbleType.leafBubble);
-    expect(flattendBubble.getContent()).toBe(`leafBubble 4\nleafBubble 5`);
-  });
+  describe('when flatten bubble', () => {
+    it('should be able to flatten child bubble', () => {
+      const flattendBubble = internalBubble.flattenChild(internalBubble3);
+      expect(flattendBubble.type).toBe(BubbleType.leafBubble);
+      expect(flattendBubble.getContent()).toBe(`leafBubble 4\nleafBubble 5`);
+    });
 
+    it('should throw error when flatten leaf bubble', () => {
+      expect(function() { internalBubble.flattenChild(leafBubble4); }).toThrow(new Error(`can't flatten leaf bubble`));
+    });
+
+    it('should throw error when flatten non-child', () => {
+      const newInternalBubble: InternalBubble = new InternalBubble(8, []);
+      const errorMsg = `bubble(id: ${newInternalBubble.id}) is not child of bubble(id: ${internalBubble.id})`;
+      expect(function() { internalBubble.flattenChild(newInternalBubble); }).toThrow(new Error(errorMsg));
+    });
+
+  });
 
   it('should throw error when inserting bubble at invalid location', () => {
     const leafBubble7 = new LeafBubble(7);
-    expect(function(){ internalBubble.insertChild(leafBubble7, -1); }).toThrow(new Error('location -1 is invalid'));
-    expect(function(){ internalBubble.insertChild(leafBubble7, 6); }).toThrow(new Error('location 6 is invalid'));
+    expect(function(){ internalBubble.insertChildren(-1, leafBubble7); }).toThrow(new Error('location -1 is invalid'));
+    expect(function(){ internalBubble.insertChildren(6, leafBubble7); }).toThrow(new Error('location 6 is invalid'));
   });
 
   it('should insert bubble at valid location, other bubbles should also move', () => {
     const leafBubble7 = new LeafBubble(7);
-    internalBubble.insertChild(leafBubble7, 2);
+    internalBubble.insertChildren(2, leafBubble7);
     expect(leafBubble1.location).toBe(0);
     expect(leafBubble2.location).toBe(1);
     expect(leafBubble7.location).toBe(2);
@@ -176,72 +171,102 @@ describe('InternalBubble', () => {
     expect(internalBubble.getContent()).toBe(contentTree);
   });
 
-  it('should be able to delete leaf child', () => {
-    internalBubble.deleteChild(leafBubble2);
-    expect(internalBubble.childBubbles).not.toContain(leafBubble2);
+  describe('when delete bubble', () => {
+    it('should be able to delete leaf child', () => {
+      internalBubble.deleteChild(leafBubble2);
+      expect(internalBubble.childBubbles).not.toContain(leafBubble2);
+    });
+
+    it('should be able to delete internal child', () => {
+      internalBubble.deleteChild(internalBubble3);
+      expect(internalBubble.childBubbles).not.toContain(internalBubble3);
+    });
+
+    it('should throw error when delete bubble that is not child', () => {
+      const errorMsg = `bubble(id: ${leafBubble5.id}) is not child of bubble(id: ${internalBubble.id})`;
+      expect(function() { internalBubble.deleteChild(leafBubble5); }).toThrow(new Error(errorMsg));
+    });
   });
 
-  it('should be able to delete internal child', () => {
-    internalBubble.deleteChild(internalBubble3);
-    expect(internalBubble.childBubbles).not.toContain(internalBubble3);
+  describe('when wrap bubble', () => {
+    it('should be able to wrap adjacent children (could be out of order)', () => {
+      const wrapList: Array<Bubble> = [leafBubble2, leafBubble6, internalBubble3];
+      const wrapBubble: InternalBubble = internalBubble.wrapChildren(wrapList);
+      expect(internalBubble.getHeight()).toBe(4);
+      expect(wrapBubble.getHeight()).toBe(3);
+      expect(wrapBubble.childBubbles).toContain(leafBubble2);
+      expect(wrapBubble.childBubbles).toContain(leafBubble6);
+      expect(wrapBubble.childBubbles).toContain(internalBubble3);
+      expect(internalBubble.childBubbles).toContain(wrapBubble);
+    });
+
+    it('should be able to wrap adjacent children (other bubbles should update location)', () => {
+      const wrapList: Array<Bubble> = [leafBubble2, internalBubble3, leafBubble1];
+      const wrapBubble: InternalBubble = internalBubble.wrapChildren(wrapList);
+      expect(internalBubble.getHeight()).toBe(4);
+      expect(wrapBubble.getHeight()).toBe(3);
+      expect(wrapBubble.childBubbles).toContain(leafBubble1);
+      expect(wrapBubble.childBubbles).toContain(leafBubble2);
+      expect(wrapBubble.childBubbles).toContain(internalBubble3);
+      expect(internalBubble.childBubbles).toContain(wrapBubble);
+      expect(leafBubble6.location).toBe(1);
+    });
+
+    it('should not do anything when wrap is redundant', () => {
+      const wrapList: Array<Bubble> = [leafBubble2, internalBubble3, leafBubble1, leafBubble6];
+      const wrapBubble: InternalBubble = internalBubble.wrapChildren(wrapList);
+      expect(internalBubble.getHeight()).toBe(3);
+      expect(wrapBubble).toBeNull();
+      expect(internalBubble.childBubbles).not.toContain(wrapBubble);
+      expect(leafBubble6.location).toBe(3);
+    });
+
+    it('should throw error if try to wrap zero bubbles', () => {
+      const wrapList: Array<Bubble> = [];
+      expect(function() {internalBubble.wrapChildren(wrapList); }).toThrow(new Error('wrapList contains no bubble'));
+    });
+
+    it('should throw error when wrap un-adjacent children', () => {
+      const wrapList: Array<Bubble> = [leafBubble1, leafBubble6, internalBubble3];
+      const errorMsg = `given bubbles are un-ajacent`;
+      expect(function() { internalBubble.wrapChildren(wrapList); }).toThrow(new Error(errorMsg));
+    });
+
+    it('should throw error when wrap non children', () => {
+      const wrapList: Array<Bubble> = [leafBubble1, leafBubble6, leafBubble4];
+      const errorMsg = `given bubbles are not child`;
+      expect(function() { internalBubble.wrapChildren(wrapList); }).toThrow(new Error(errorMsg));
+    });
   });
 
-  it('should throw error when delete bubble that is not child', () => {
-    const errorMsg = `bubble(id: ${leafBubble5.id}) is not child of bubble(id: ${internalBubble.id})`;
-    expect(function() { internalBubble.deleteChild(leafBubble5); }).toThrow(new Error(errorMsg));
+  describe('when pop bubble', () => {
+    it('should be able to pop internal bubble', () => {
+      internalBubble.popChild(internalBubble3);
+      expect(internalBubble.childBubbles).not.toContain(internalBubble3);
+      expect(leafBubble1.location).toBe(0);
+      expect(leafBubble2.location).toBe(1);
+      expect(leafBubble4.location).toBe(2);
+      expect(leafBubble5.location).toBe(3);
+      expect(leafBubble6.location).toBe(4);
+    });
+
+    it('should throw error when pop leaf bubble', () => {
+      expect(function() { internalBubble.popChild(leafBubble4); }).toThrow(new Error(`can't pop leaf bubble`));
+    });
+
+    it('should throw error when pop non-child', () => {
+      const newInternalBubble: InternalBubble = new InternalBubble(8, []);
+      const errorMsg = `bubble(id: ${newInternalBubble.id}) is not child of bubble(id: ${internalBubble.id})`;
+      expect(function() { internalBubble.popChild(newInternalBubble); }).toThrow(new Error(errorMsg));
+    });
   });
 
-  it('should be able to wrap adjacent children (could be out of order)', () => {
-    const wrapList: Array<Bubble> = [leafBubble2, leafBubble6, internalBubble3];
-    const wrapBubble: InternalBubble = internalBubble.wrapChildren(wrapList);
-    expect(internalBubble.getHeight()).toBe(4);
-    expect(wrapBubble.getHeight()).toBe(3);
-    expect(wrapBubble.childBubbles).toContain(leafBubble2);
-    expect(wrapBubble.childBubbles).toContain(leafBubble6);
-    expect(wrapBubble.childBubbles).toContain(internalBubble3);
-    expect(internalBubble.childBubbles).toContain(wrapBubble);
-  });
-
-  it('should not do anything when wrap is redundant');
-
-  it('should throw error when wrap un-adjacent children', () => {
-    const wrapList: Array<Bubble> = [leafBubble1, leafBubble6, internalBubble3];
-    const errorMsg = `given bubbles are un-ajacent`;
-    expect(function() { internalBubble.wrapChildren(wrapList); }).toThrow(new Error(errorMsg));
-  });
-
-  it('should throw error when wrap non children', () => {
-    const wrapList: Array<Bubble> = [leafBubble1, leafBubble6, leafBubble4];
-    const errorMsg = `given bubbles are not child`;
-    expect(function() { internalBubble.wrapChildren(wrapList); }).toThrow(new Error(errorMsg));
-  });
-
-
-  it('should be able to split bubble into 3 pieces', () => {
-
-  });
-
-  it('should be able to add new suggest bubble', () => {
-
-  });
-
-  it('should be able to delete new suggest bubble', () => {
-
-  });
-
-  it('should be able to add new comment', () => {
-
-  });
-
-  it('should be able to get comments', () => {
-
-  });
-
-  it('should be able to get suggest bubbles', () => {
-
-  });
-
-
+  it('should be able to split bubble into 3 pieces');
+  it('should be able to add new suggest bubble');
+  it('should be able to delete new suggest bubble');
+  it('should be able to add new comment');
+  it('should be able to get comments');
+  it('should be able to get suggest bubbles');
 });
 
 describe('RootBubble', () => {

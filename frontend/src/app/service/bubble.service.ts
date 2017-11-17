@@ -34,7 +34,7 @@ export class BubbleService {
   public createBubble(parentBubble: InternalBubble, location: number, content: string): Promise<void> {
     const tempId = 100; // to be deleted after backend implemented
     const newBubble = new LeafBubble(tempId, content);
-    parentBubble.insertChild(newBubble, location);
+    parentBubble.insertChildren(location, newBubble);
     return Promise.resolve(null);
   }
 
@@ -49,6 +49,7 @@ export class BubbleService {
     }
     const parentBubble: InternalBubble = bubble.parentBubble;
     parentBubble.deleteChild(bubble);
+
     bubble.id = -1; // this is check later if a bubble is not properly erased
     this.bubbleList = this.bubbleList.filter(b => b.id !== bubble.id);
     return Promise.resolve(null);
@@ -70,6 +71,7 @@ export class BubbleService {
 
     const parentBubble: InternalBubble = bubble.parentBubble;
     parentBubble.popChild(bubble);
+    this.bubbleList = this.bubbleList.filter(b => b.id !== bubble.id);
 
     return Promise.resolve(null);
   }
