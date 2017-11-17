@@ -13,17 +13,20 @@
     <div *ngIf="isInternal(bubble); then internal else leaf"></div>
 
     <ng-template #internal>
+
       <div *ngIf="isMenuOpen(bubble, menuType.internalMenu)">
         <div [ngStyle]="setActionStyle(bubble)" class="action" >
           <app-bubble-menu (action)="bubbleAction($event)" [bubble]="bubble" [menu]="menuType.internalMenu"></app-bubble-menu>
         </div>
       </div>
 
-      <div [ngStyle]="setInternalBubbleStyle(bubble)" class="internalBubble" (click)="showMenuEvent(bubble, menuType.internalMenu, $event); $event.stopPropagation()">
-        <div *ngFor="let childBubble of bubble.childBubbles">
+
+      <div *ngFor="let childBubble of bubble.childBubbles">
+        <div [ngStyle]="setInternalBubbleStyle(childBubble)" class="internalBubble" (click)="showMenuEvent(bubble, menuType.internalMenu, $event); $event.stopPropagation()">
           <ng-container *ngTemplateOutlet="bubbleUnit; context: { $implicit: childBubble }"></ng-container>
         </div>
       </div>
+
     </ng-template>
 
     <ng-template #leaf>
