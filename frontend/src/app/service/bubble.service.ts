@@ -16,8 +16,8 @@ export class BubbleService {
       });
   }
 
-  public getRootBubble(): Bubble {
-    return this.bubbleRoot;
+  public getRootBubble(): Promise<Bubble> {
+    return Promise.resolve(this.bubbleRoot);
   }
 
   public getBubbleById(id: number): Bubble {

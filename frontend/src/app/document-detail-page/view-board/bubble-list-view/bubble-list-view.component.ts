@@ -2,7 +2,7 @@ import { Component, EventEmitter, OnInit, Output, HostListener, ElementRef } fro
 import { BubbleService } from '../view-board.component';
 import { BubbleType, Bubble, ActionType } from '../view-board.component';
 import { MenuType } from '../bubble-menu/bubble-menu.component';
-import { InternalBubble } from '../../../model/bubble';
+import { InternalBubble, LeafBubble } from '../../../model/bubble';
 
 
 @Component({
@@ -12,7 +12,7 @@ import { InternalBubble } from '../../../model/bubble';
 })
 export class BubbleListViewComponent implements OnInit {
 
-  bubbleRootList: Array<Bubble>; // bubbles that have root as parents
+  rootBubble: Bubble; // bubbles that have root as parents
   menuType = MenuType;
   actionType = ActionType;
 
@@ -42,10 +42,8 @@ export class BubbleListViewComponent implements OnInit {
   }
 
   public refreshBubbleList() {
-    this._bubbleService.getBubbleById(0).then(rootBubble => {
-      this.bubbleRootList = (rootBubble as InternalBubble).childBubbles;
-      console.assert(this.bubbleRootList.length >= 0, 'bubble list cannot be negative');
-      console.log('refreshed list');
+    this._bubbleService.getRootBubble().then(rootBubble => {
+      this.rootBubble = rootBubble;
     });
   }
 
@@ -89,7 +87,7 @@ export class BubbleListViewComponent implements OnInit {
 
   public popBubbleEvent(bubble: Bubble) {
     console.log('pop bubble');
-    this._bubbleService.popBubble(bubble.id)
+    this._bubbleService.popBubble(bubble)
       .then(() => this.refreshBubbleList());
   }
 
@@ -100,7 +98,7 @@ export class BubbleListViewComponent implements OnInit {
   }
 
   public wrapSelectedBubbles() {
-    this._bubbleService.wrapBubble(this.wrapBubbles.map(selectBubble => selectBubble.id))
+    this._bubbleService.wrapBubble(this.wrapBubbles)
       .then(response => {
         this.refreshBubbleList();
         this.cancelWrap();
@@ -129,7 +127,7 @@ export class BubbleListViewComponent implements OnInit {
     if (bubble.type === BubbleType.leafBubble) {
       const newString = prompt('edit bubble!', (bubble).getContent());
       if (newString) {
-        this._bubbleService.editBubble(bubble.id, newString)
+        this._bubbleService.editBubble(bubble as LeafBubble, newString)
           .then(() => this.refreshBubbleList());
       }
     }
@@ -227,7 +225,7 @@ export class BubbleListViewComponent implements OnInit {
         return true;
       }
     } else if (this.isWrapSelected) {
-      for (let b of this.wrapBubbles) {
+      for (const b of this.wrapBubbles) {
         console.log(b);
         if (b.id === bubble.id) {
           return true;

@@ -1,7 +1,5 @@
-<div *ngIf="bubbleRootList">
-    <div *ngFor="let bubble of bubbleRootList">
-      <ng-container *ngTemplateOutlet="bubbleUnit; context: { $implicit: bubble }"></ng-container>
-    </div>
+<div *ngIf="rootBubble">
+    <ng-container *ngTemplateOutlet="bubbleUnit; context: { $implicit: rootBubble }"></ng-container>
 </div>
 
 <div *ngIf="isWrapSelected">
@@ -22,7 +20,7 @@
       </div>
 
       <div [ngStyle]="setInternalBubbleStyle(bubble)" class="internalBubble" (click)="showMenuEvent(bubble, menuType.internalMenu, $event); $event.stopPropagation()">
-        <div *ngFor="let childBubble of bubble.childBubbleList">
+        <div *ngFor="let childBubble of bubble.childBubbles">
           <ng-container *ngTemplateOutlet="bubbleUnit; context: { $implicit: childBubble }"></ng-container>
         </div>
       </div>

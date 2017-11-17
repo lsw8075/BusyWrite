@@ -20,7 +20,7 @@ export class PreviewComponent implements OnInit {
   }
 
   refreshList() {
-    this._bubbleService.getBubbleById(0).then(rootBubble => {
+    this._bubbleService.getRootBubble().then(rootBubble => {
       this.rootBubble = rootBubble;
     });
   }
