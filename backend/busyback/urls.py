@@ -13,5 +13,4 @@ channel_routing = [
 	route("websocket.connect", "busyback.consumers.ws_connect"),
 	route("websocket.receive", "busyback.consumers.ws_receive"),
 	route("websocket.disconnect", "busyback.consumers.ws_disconnect"),
-	route("received-commands", "busyback.consumers.command_receiver"),
 ]
