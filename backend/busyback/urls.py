@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from blog import views
+from busyback import views
 
 urlpatterns = [
     url('^signup$', views.signup, name='signup'),
