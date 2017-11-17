@@ -50,8 +50,10 @@ export class BubbleService {
     const parentBubble: InternalBubble = bubble.parentBubble;
     parentBubble.deleteChild(bubble);
 
-    bubble.id = -1; // this is check later if a bubble is not properly erased
-    this.bubbleList = this.bubbleList.filter(b => b.id !== bubble.id);
+    const deleteBubbleList = [];
+    this._getChildrenList(bubble, deleteBubbleList);
+    this.bubbleList = this.bubbleList.filter(b => !this._containsBubble(b, deleteBubbleList));
+
     return Promise.resolve(null);
   }
 
@@ -115,8 +117,12 @@ export class BubbleService {
     }
     const parentBubble: InternalBubble = bubble.parentBubble;
     const flattenedBubble = parentBubble.flattenChild(bubble);
-    this.bubbleList = this.bubbleList.filter(b => b.id !== bubble.id);
     this.bubbleList.push(flattenedBubble);
+
+    const wrapBubbleList = [];
+    this._getChildrenList(bubble, wrapBubbleList);
+    this.bubbleList = this.bubbleList.filter(b => !this._containsBubble(b, wrapBubbleList));
+
     return Promise.resolve(null);
   }
 
@@ -132,6 +138,17 @@ export class BubbleService {
       }
     }
     return false;
+  }
+
+  private _getChildrenList(bubble: Bubble, childrenList: Array<Bubble>): void {
+    bubble.id = -1; // this is check later if a bubble is not properly erased
+    childrenList.push(bubble);
+    if (bubble.type !== BubbleType.leafBubble) {
+      const children = (bubble as InternalBubble).childBubbles;
+      for (const child of children) {
+        this._getChildrenList(child, childrenList);
+      }
+    }
   }
 
 }

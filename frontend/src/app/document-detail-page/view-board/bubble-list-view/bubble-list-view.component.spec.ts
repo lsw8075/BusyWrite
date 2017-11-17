@@ -4,10 +4,10 @@ import { BubbleService } from '../view-board.component';
 import { Bubble, MenuType } from '../view-board.component';
 import { BubbleListViewComponent } from './bubble-list-view.component';
 import { Component, Input } from '@angular/core';
-import { LeafBubble } from '../../../model/bubble';
+import { LeafBubble, InternalBubble } from '../../../model/bubble';
 
 class MockBubbleService {
-  getBubbleById(id: number) {}
+  getRootBubble(id: number) {}
 }
 
 @Component({
@@ -59,9 +59,9 @@ describe('BubbleListViewComponent', () => {
     });
 
     it('ngOnInit makes expected calls', () => {
-        spyOn(bubbleService, 'getBubbleById').and.returnValue(Promise.resolve(new LeafBubble(0, null)));
+        spyOn(bubbleService, 'getRootBubble').and.returnValue(Promise.resolve(new InternalBubble(0, [])));
         comp.ngOnInit();
-        expect(bubbleService.getBubbleById).toHaveBeenCalled();
+        expect(bubbleService.getRootBubble).toHaveBeenCalled();
     });
 
 });
