@@ -16,7 +16,11 @@ import { Inject } from '@angular/core';
                                                     The concept of writing as a team has been around for a long time, \
                                                     by services like Google Docs, but the approaches are impractical and unproductive.`);
             const b19: LeafBubble = new LeafBubble(19, `<strong>hey!</strong>`);
-            const b18: LeafBubble = new LeafBubble(18, 'blah');
+            const b18: LeafBubble = new LeafBubble(18, `BusyWrite helps you organize new ideas. New ideas are important, \
+                                                        but they result in lots of changes. Accepting new ideas is hostile, \
+                                                        as it is unknown what revisions are needed and how many. BusyWrite \
+                                                        shows users new ideas in a sidebar. It shows each idea with parts \
+                                                        that are subject to change: lines, paragraphs and even other ideas!`);
             const b17: LeafBubble = new LeafBubble(17, `<a href="http://busywrite.ribosome.kr">BusyWrite</a>`);
           const b16: InternalBubble = new InternalBubble(16, [b17, b18, b19]);
           const b14: LeafBubble = new LeafBubble(14, 'handle short sentences');

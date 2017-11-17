@@ -69,11 +69,9 @@ export class BubbleService {
     }
 
     const parentBubble: InternalBubble = bubble.parentBubble;
+    parentBubble.popChild(bubble);
 
-    // not implemented yet!
-    throw new Error('not implemented!');
-
-    // return Promise.resolve(null);
+    return Promise.resolve(null);
   }
 
   // split Leaf bubble

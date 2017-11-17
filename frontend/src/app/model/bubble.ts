@@ -18,14 +18,14 @@ export interface Bubble {
 
   getHeight(): number;
 
-  addSuggestBubble(SB: Bubble): void;
-  addComment(comment: Comment): void;
-  deleteSuggestBubble(SB: Bubble): void;
-  deleteComment(comment: Comment): void;
+  // addSuggestBubble(SB: Bubble): void;
+  // addComment(comment: Comment): void;
+  // deleteSuggestBubble(SB: Bubble): void;
+  // deleteComment(comment: Comment): void;
 
   getContent(): string;
-  getComments(): Array<Comment>;
-  getSuggestBubbles(): Array<SuggestBubble>;
+  // getComments(): Array<Comment>;
+  // getSuggestBubbles(): Array<SuggestBubble>;
 }
 
 export class LeafBubble implements Bubble {
@@ -77,23 +77,23 @@ export class LeafBubble implements Bubble {
     return leafBubbleHeight;
   }
 
-  split(): void {
+  // split(): void {
 
-  }
+  // }
 
-  addSuggestBubble(SB: Bubble): void {
+  // addSuggestBubble(SB: Bubble): void {
 
-  }
-  addComment(comment: Comment): void {
+  // }
+  // addComment(comment: Comment): void {
 
-  }
+  // }
 
-  deleteSuggestBubble(SB: Bubble): void {
+  // deleteSuggestBubble(SB: Bubble): void {
 
-  }
-  deleteComment(comment: Comment): void {
+  // }
+  // deleteComment(comment: Comment): void {
 
-  }
+  // }
 
   getContent(): string {
     return this.content;
@@ -132,19 +132,19 @@ export class InternalBubble implements Bubble {
     return this.childBubbles.reduce((prev, curr) => Math.max(prev, curr.getHeight() + 1), 1);
   }
 
-  addSuggestBubble(SB: Bubble): void {
+  // addSuggestBubble(SB: Bubble): void {
 
-  }
-  addComment(comment: Comment): void {
+  // }
+  // addComment(comment: Comment): void {
 
-  }
+  // }
 
-  deleteSuggestBubble(SB: Bubble): void {
+  // deleteSuggestBubble(SB: Bubble): void {
 
-  }
-  deleteComment(comment: Comment): void {
+  // }
+  // deleteComment(comment: Comment): void {
 
-  }
+  // }
 
   getContent(): string {
     return this.childBubbles.reduce((prev, curr) => prev + curr.getContent() + '\n', '').slice(0, -1);
@@ -257,6 +257,19 @@ export class InternalBubble implements Bubble {
       return newLeaf;
     } else if (bubble.type === BubbleType.leafBubble) {
       throw new Error(`can't flatten leaf bubble`);
+    } else {
+      const errorMsg = `bubble(id: ${bubble.id}) is not child of bubble(id: ${this.id})`;
+      throw new Error(errorMsg);
+    }
+  }
+
+  public popChild(bubble: Bubble): void {
+    if (this._ischildBubble(bubble) && (bubble.type === BubbleType.internalBubble)) {
+      const newChildren = (bubble as InternalBubble).childBubbles;
+      this.deleteChild(bubble);
+      this.addChildren(...newChildren);
+    } else if (bubble.type === BubbleType.leafBubble) {
+      throw new Error(`can't pop leaf bubble`);
     } else {
       const errorMsg = `bubble(id: ${bubble.id}) is not child of bubble(id: ${this.id})`;
       throw new Error(errorMsg);
