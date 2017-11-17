@@ -11,9 +11,9 @@ import { AppComponent } from './app.component';
 import { LandingComponent } from './landing/landing.component';
 import { SigninComponent } from './signin/signin.component';
 
-import { AlarmPageComponent } from './alarm-page/alarm-page.component';
-import { AlarmDetailComponent } from './alarm-page/alarm-detail/alarm-detail.component';
-import { InvitationAcceptanceComponent } from './alarm-page/invitation-acceptance/invitation-acceptance.component';
+import { AlertPageComponent } from './alert-page/alert-page.component';
+import { AlertDetailComponent } from './alert-page/alert-detail/alert-detail.component';
+import { InvitationAcceptanceComponent } from './alert-page/invitation-acceptance/invitation-acceptance.component';
 
 import { MainPageComponent } from './main-page/main-page.component';
 import { SideNavigationComponent } from './main-page/side-navigation/side-navigation.component';
@@ -41,7 +41,7 @@ import { BoardManagerComponent } from './document-detail-page/board-manager/boar
 
 import { AppRoutingModule } from './route/app-routing.module';
 
-import { AlarmService } from './service/alarm.service';
+import { AlertService } from './service/alert.service';
 import { AuthenticationService } from './service/authentication.service';
 import { BoardService } from './service/board.service';
 import { BubbleService } from './service/bubble.service';
@@ -70,12 +70,12 @@ import { DialogModule } from 'primeng/primeng';
     LandingComponent,
     SigninComponent,
     MainPageComponent,
-    AlarmPageComponent,
+    AlertPageComponent,
     DocumentDetailPageComponent,
     SideNavigationComponent,
     BrowserComponent,
     SharePopupComponent,
-    AlarmDetailComponent,
+    AlertDetailComponent,
     InvitationAcceptanceComponent,
     ViewBoardComponent,
     BubbleListViewComponent,
@@ -109,7 +109,7 @@ import { DialogModule } from 'primeng/primeng';
   ],
   providers: [
     {provide: APP_BASE_HREF, useValue: '/'},
-    AlarmService,
+    AlertService,
     AuthenticationService,
     BoardService,
     BubbleService,

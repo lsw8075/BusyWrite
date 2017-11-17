@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 import { AuthenticationService } from '../service/authentication.service';
-import { AlarmService } from '../service/alarm.service';
+import { AlertService } from '../service/alert.service';
 import { BoardService } from '../service/board.service';
 import { BubbleService } from '../service/bubble.service';
 import { CommentService } from '../service/comment.service';
@@ -9,7 +9,7 @@ import { DirectoryService } from '../service/directory.service';
 import { DocumentService } from '../service/document.service';
 import { NoteService } from '../service/note.service';
 
-import { Alarm } from '../model/alarm';
+import { Alert } from '../model/alert';
 import { Board } from '../model/board';
 import { BubbleType, Bubble, SuggestBubble } from '../model/bubble';
 import { Comment } from '../model/comment';
@@ -60,5 +60,5 @@ export class DocumentDetailPageComponent implements OnInit {
   }
 } /* istanbul ignore next */
 
-export { AuthenticationService, BoardService, BubbleService, AlarmService, CommentService, DirectoryService, DocumentService, NoteService};
-export { Alarm, Board, BubbleType, Bubble, SuggestBubble, Comment, FileSystemEntity, Note };
+export { AuthenticationService, BoardService, BubbleService, AlertService, CommentService, DirectoryService, DocumentService, NoteService};
+export { Alert, Board, BubbleType, Bubble, SuggestBubble, Comment, FileSystemEntity, Note };

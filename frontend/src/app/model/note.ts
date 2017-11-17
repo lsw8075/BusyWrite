@@ -4,7 +4,5 @@ export class Note {
   documentId: number;
   userId: number;
 
-  getSummary() {
-
-  }
+  // getSummary() {}
 }
