@@ -202,6 +202,8 @@ describe('InternalBubble', () => {
     expect(internalBubble.childBubbles).toContain(wrapBubble);
   });
 
+  it('should not do anything when wrap is redundant');
+
   it('should throw error when wrap un-adjacent children', () => {
     const wrapList: Array<Bubble> = [leafBubble1, leafBubble6, internalBubble3];
     const errorMsg = `given bubbles are un-ajacent`;

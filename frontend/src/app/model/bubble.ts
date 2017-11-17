@@ -10,7 +10,7 @@ export enum BubbleType {
 export interface Bubble {
   id: number;
   type: BubbleType;
-  parentBubble: Bubble;
+  parentBubble: InternalBubble;
   location: number;
 
   comments: Array<Comment>;
@@ -31,7 +31,7 @@ export interface Bubble {
 export class LeafBubble implements Bubble {
   id: number;
   type: BubbleType;
-  parentBubble: Bubble = null;
+  parentBubble: InternalBubble = null;
   location: number;
 
   comments: Array<Comment> = [];
@@ -110,7 +110,7 @@ export class LeafBubble implements Bubble {
 export class InternalBubble implements Bubble {
   id: number;
   type: BubbleType;
-  parentBubble: Bubble = null;
+  parentBubble: InternalBubble = null;
   location: number;
 
   comments: Array<Comment> = [];
@@ -185,7 +185,6 @@ export class InternalBubble implements Bubble {
   }
 
   deleteChild(childBubble: Bubble): void {
-    // must set child bubble null from callee also!
     if (this._ischildBubble(childBubble)) {
       let location = childBubble.location;
       childBubble = null;
