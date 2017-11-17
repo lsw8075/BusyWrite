@@ -31,11 +31,11 @@ export interface Bubble {
 export class LeafBubble implements Bubble {
   id: number;
   type: BubbleType;
-  parentBubble: Bubble;
+  parentBubble: Bubble = null;
   location: number;
 
-  comments: Array<Comment>;
-  suggestBubbles: Array<SuggestBubble>;
+  comments: Array<Comment> = [];
+  suggestBubbles: Array<SuggestBubble> = [];
 
   editLock: boolean;
 
@@ -44,19 +44,15 @@ export class LeafBubble implements Bubble {
 
   constructor(
     id: number,
-    parentBubble: Bubble,
     content: string = '',
     ownerId: number = -1) {
 
     this.id = id;
     this.type = BubbleType.leafBubble;
-    this.comments = [];
-    this.parentBubble = parentBubble;
     this.location = -1; // location is -1 when orphan
-    this.suggestBubbles = [];
     this.editLock = (ownerId !== -1); // edit lock false if no owner
-    this.ownerId = ownerId;
     this.content = content;
+    this.ownerId = ownerId;
   }
 
   getEditLock(userId: number): boolean {
@@ -114,32 +110,22 @@ export class LeafBubble implements Bubble {
 export class InternalBubble implements Bubble {
   id: number;
   type: BubbleType;
-  parentBubble: Bubble;
+  parentBubble: Bubble = null;
   location: number;
 
-  comments: Array<Comment>;
-  suggestBubbles: Array<SuggestBubble>;
+  comments: Array<Comment> = [];
+  suggestBubbles: Array<SuggestBubble> = [];
 
-  childBubbles: Array<Bubble>;
+  childBubbles: Array<Bubble> = [];
 
   constructor(
     id: number,
-    parentBubble: Bubble,
-    childBubbles: Array<Bubble> = []) {
+    childBubbles: Array<Bubble>) {
 
     this.id = id;
     this.type = BubbleType.internalBubble;
     this.location = -1;
-    this.comments = [];
-    this.parentBubble = parentBubble;
-    this.suggestBubbles = [];
-    this.childBubbles = childBubbles;
-
-    if (childBubbles !== []) {
-      for (const bubble of childBubbles) {
-        bubble.parentBubble = this;
-      }
-    }
+    this.addChildren(...childBubbles);
   }
 
   getHeight(): number {
@@ -190,12 +176,11 @@ export class InternalBubble implements Bubble {
 
   addChildren(...bubbles: Array<Bubble>): void {
     let location = this.childBubbles.length;
-    for (let bubble of bubbles) {
-      if (this._ischildBubble(bubble)) {
-        bubble.location = location;
-        location++;
-        this.childBubbles.push(bubble);
-      }
+    for (const bubble of bubbles) {
+      bubble.location = location;
+      bubble.parentBubble = this;
+      location++;
+      this.childBubbles.push(bubble);
     }
   }
 
@@ -245,8 +230,9 @@ export class InternalBubble implements Bubble {
     }
 
     // make internal node
-    const wrapBubble: InternalBubble = new InternalBubble(startBubbleId, this, wrapList);
+    const wrapBubble: InternalBubble = new InternalBubble(startBubbleId, wrapList);
     wrapBubble.location = startLocation;
+    wrapBubble.parentBubble = this;
     // delete un-needed node
     this.childBubbles.splice(startLocation, wrapList.length, wrapBubble);
 
@@ -264,8 +250,9 @@ export class InternalBubble implements Bubble {
       const id = bubble.id;
       const location = bubble.location;
       const content = bubble.getContent();
-      const newLeaf: LeafBubble = new LeafBubble(id, this, content);
+      const newLeaf: LeafBubble = new LeafBubble(id, content);
       newLeaf.location = location;
+      newLeaf.parentBubble = this;
       this.childBubbles.splice(location, 1, newLeaf);
 
       return newLeaf;
