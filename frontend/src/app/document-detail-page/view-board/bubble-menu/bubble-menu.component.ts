@@ -1,24 +1,6 @@
 import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
-import { BubbleType, Bubble } from '../../document-detail-page.component';
-import { BubbleService } from '../../document-detail-page.component';
-
-export enum MenuType {
-  borderTopMenu = 1,
-  borderBottomMenu,
-  leafMenu,
-  internalMenu,
-  multipleBubble,
-}
-
-export enum ActionType {
-  openSangjun = 1,
-  split,
-  pop,
-  wrap,
-  create,
-  edit,
-  delete,
-}
+import { BubbleType, Bubble, MenuType, ActionType } from '../service';
+import { BubbleService } from '../service';
 
 @Component({
   selector: 'app-bubble-menu',

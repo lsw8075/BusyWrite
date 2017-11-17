@@ -1,9 +1,10 @@
 import { ComponentFixture, TestBed, async, fakeAsync, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { Bubble, BubbleService } from '../view-board.component';
+import { Bubble, BubbleService } from '../service';
 import { Component, Input } from '@angular/core';
 
-import { BubbleMenuComponent, MenuType } from './bubble-menu.component';
+import { BubbleMenuComponent } from './bubble-menu.component';
+import { MenuType } from '../service';
 
 class MockBubbleService {
 

@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed, async, fakeAsync, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { ViewBoardComponent, BubbleService } from './view-board.component';
+import { ViewBoardComponent } from './view-board.component';
+import { BubbleService } from './service';
 import { Component } from '@angular/core';
 import { TabViewModule } from 'primeng/primeng';
 import { BubbleMenuComponent } from './bubble-menu/bubble-menu.component';

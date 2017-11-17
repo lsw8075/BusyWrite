@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { DragulaService } from 'ng2-dragula/ng2-dragula';
-import { Note, NoteService } from '../document-detail-page.component';
+
+import { Note, NoteService } from './service';
 
 @Component({
   selector: 'app-edit-board',

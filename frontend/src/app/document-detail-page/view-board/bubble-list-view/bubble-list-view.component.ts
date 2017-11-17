@@ -1,7 +1,6 @@
 import { Component, EventEmitter, OnInit, Output, HostListener, ElementRef } from '@angular/core';
-import { BubbleService } from '../view-board.component';
-import { BubbleType, Bubble, ActionType } from '../view-board.component';
-import { MenuType } from '../bubble-menu/bubble-menu.component';
+import { BubbleService } from '../service';
+import { BubbleType, Bubble, ActionType, MenuType } from '../service';
 import { InternalBubble, LeafBubble } from '../../../model/bubble';
 
 

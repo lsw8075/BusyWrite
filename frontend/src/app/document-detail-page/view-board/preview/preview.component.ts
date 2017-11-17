@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { BubbleService } from '../../document-detail-page.component';
-import { BubbleType, Bubble } from '../../document-detail-page.component';
+import { BubbleService } from '../service';
+import { BubbleType, Bubble } from '../service';
 
 @Component({
   selector: 'app-preview',

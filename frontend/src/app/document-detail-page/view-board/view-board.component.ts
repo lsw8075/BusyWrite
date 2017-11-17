@@ -1,9 +1,9 @@
 import { Component, OnInit, Output, ViewChild } from '@angular/core';
-import { BubbleService, BoardService } from '../document-detail-page.component';
-import { Board } from '../document-detail-page.component';
-import { BubbleType, Bubble, SuggestBubble } from '../document-detail-page.component';
-import { BubbleMenuComponent, MenuType, ActionType } from './bubble-menu/bubble-menu.component';
+import { BubbleMenuComponent } from './bubble-menu/bubble-menu.component';
+import { MenuType, ActionType } from './service';
 import { PreviewComponent } from './preview/preview.component';
+
+import { BubbleService } from './service';
 
 @Component({
   selector: 'app-view-board',
@@ -52,5 +52,3 @@ export class ViewBoardComponent implements OnInit {
 
 } /* istanbul ignore next */
 
-export { BubbleService, BoardService };
-export { BubbleType, MenuType, ActionType, Bubble, SuggestBubble, Board };
