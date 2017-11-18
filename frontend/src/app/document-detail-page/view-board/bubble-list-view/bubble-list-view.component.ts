@@ -20,6 +20,9 @@ export class BubbleListViewComponent implements OnInit {
   wrapBubbles: Array<Bubble> = [];
   isWrapSelected = false;
 
+  hightlightedText = '';
+  highlightOffset = 0;
+
   @HostListener('document:click', ['$event'])
   clickout(event) {
     if (!this.eRef.nativeElement.contains(event.target)) {
@@ -29,6 +32,11 @@ export class BubbleListViewComponent implements OnInit {
       console.log('clicked outside');
     }
   }
+
+  // @HostListener('document:keyup', ['$event'])
+  // onKeyUp(ev: KeyboardEvent) {
+  //   console.log(`The user just pressed ${ev.key}!`);
+  // }
 
   constructor(
     private _bubbleService: BubbleService,
@@ -79,19 +87,23 @@ export class BubbleListViewComponent implements OnInit {
     console.log('open sanjun board!');
   }
 
-  showSelectedText(oField) {
+  showSelectedText(bubble: Bubble) {
     let text = '';
     if (window.getSelection) {
         text = window.getSelection().toString();
+        console.log(window.getSelection().getRangeAt(0).startOffset);
     } else if ((document as any).selection && (document as any).selection.type !== 'Control') {
         text = (document as any).selection.createRange().text;
     }
-    console.log('text ', text);
+    this.hightlightedText = text;
+    this.highlightOffset = window.getSelection().getRangeAt(0).startOffset;
+    console.log('text ', this.hightlightedText);
   }
 
   public splitBubbleEvent(bubble: Bubble) {
-
     console.log('split bubble');
+    this._bubbleService.splitLeafBubble(bubble, this.hightlightedText, this.highlightOffset)
+      .then(() => this.refreshBubbleList());
   }
 
   public popBubbleEvent(bubble: Bubble) {
@@ -235,7 +247,6 @@ export class BubbleListViewComponent implements OnInit {
       }
     } else if (this.isWrapSelected) {
       for (const b of this.wrapBubbles) {
-        console.log(b);
         if (b.id === bubble.id) {
           return true;
         }

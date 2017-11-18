@@ -284,7 +284,6 @@ export class InternalBubble implements Bubble {
       throw new Error(errorMsg);
     }
   }
-
   private _ischildBubble(bubble: Bubble): boolean {
     if (bubble.parentBubble === null) {
       return false;

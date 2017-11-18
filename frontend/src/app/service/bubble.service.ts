@@ -4,6 +4,8 @@ import { MockBubbleRoot, MockBubbleList } from '../model/bubble.mock';
 
 import 'rxjs/add/operator/toPromise';
 
+let tempId = 30; // to be deleted after backend implemented
+
 @Injectable()
 export class BubbleService {
 
@@ -32,8 +34,7 @@ export class BubbleService {
   }
 
   public createBubble(parentBubble: InternalBubble, location: number, content: string): Promise<void> {
-    const tempId = 100; // to be deleted after backend implemented
-    const newBubble = new LeafBubble(tempId, content);
+    const newBubble = new LeafBubble(this._getId(), content);
     parentBubble.insertChildren(location, newBubble);
     return Promise.resolve(null);
   }
@@ -79,36 +80,39 @@ export class BubbleService {
   }
 
   // split Leaf bubble
-  async splitLeafBubble(splitID, prevContent, splitContent, nextContent) {
-    const splitee = this.bubbleList[splitID] as LeafBubble;
+  public splitLeafBubble(bubble: Bubble, selectContent: string, startIndex: number): Promise<void> {
+    const originalContent = bubble.getContent();
 
-    // change LeafBubble to the InternalBubble
-    const newInternal = new InternalBubble(0, null);
-    newInternal.id = splitee.id;
-    newInternal.location = splitee.location;
-    newInternal.comments = splitee.comments;
-    newInternal.parentBubble = splitee.parentBubble;
-    newInternal.suggestBubbles = splitee.suggestBubbles;
-    newInternal.childBubbles = [];
-
-    // alter bubble to newInternal
-    this.bubbleList[splitID] = newInternal;
-
-    // split splitee to 2 or 3 child of new InternalBubble
-    if (!prevContent && nextContent) {
-      this.createBubble(splitID, 0, splitContent);
-      this.createBubble(splitID, 1, nextContent);
-    } else if (prevContent && !nextContent) {
-      this.createBubble(splitID, 0, prevContent);
-      this.createBubble(splitID, 1, splitContent);
-    } else if (prevContent && nextContent) {
-      this.createBubble(splitID, 0, prevContent);
-      this.createBubble(splitID, 1, splitContent);
-      this.createBubble(splitID, 2, nextContent);
-    } else {
-      throw new Error('invalid split');
+    if (originalContent.indexOf(selectContent) === -1) {
+      throw new Error(`selected content not found in bubble (id: ${bubble.id})`);
     }
-    return newInternal;
+    const endIndex: number = startIndex + selectContent.length;
+
+    const splittedChildren: Array<Bubble> = [];
+
+    if (startIndex !== 0) {
+      const prevBubble: LeafBubble = new LeafBubble(this._getId(), originalContent.substring(0, startIndex));
+      splittedChildren.push(prevBubble);
+    }
+
+    const currBubble: LeafBubble = new LeafBubble(this._getId(), selectContent);
+    splittedChildren.push(currBubble);
+
+    if (endIndex !== originalContent.length - 1) {
+      const nextBubble: LeafBubble = new LeafBubble(this._getId(), originalContent.substring(endIndex, originalContent.length));
+      splittedChildren.push(nextBubble);
+    }
+
+    const wrapBubble = new InternalBubble(this._getId(), splittedChildren);
+
+    const parentBubble: InternalBubble = bubble.parentBubble;
+    const location = bubble.location;
+    parentBubble.deleteChild(bubble);
+    this.bubbleList = this.bubbleList.filter(b => b.id !== bubble.id);
+    parentBubble.insertChildren(location, wrapBubble);
+    this.bubbleList.push(...splittedChildren);
+
+    return Promise.resolve(null);
   }
 
   public flattenBubble(bubble: Bubble): Promise<void> {
@@ -149,6 +153,11 @@ export class BubbleService {
         this._getChildrenList(child, childrenList);
       }
     }
+  }
+
+  private _getId(): number {
+    tempId++;
+    return tempId;
   }
 
 }

@@ -47,7 +47,7 @@
           </div>
         </div>
 
-        <div [ngStyle]="setLeafBubbleStyle(bubble)" innerHtml="{{bubble.content}}"></div>
+        <div (mouseup)="showSelectedText(bubble)" [ngStyle]="setLeafBubbleStyle(bubble)" innerHtml="{{bubble.content}}"></div>
 
       </div>
 
