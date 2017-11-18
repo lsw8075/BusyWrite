@@ -1,0 +1,12 @@
+.bubble-list {
+  height: 600px;
+  overflow-y: scroll;
+  /* overflow-x: visible; this is not allowed! */
+}
+.view-board {
+  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -o-box-sizing: border-box;
+
+}

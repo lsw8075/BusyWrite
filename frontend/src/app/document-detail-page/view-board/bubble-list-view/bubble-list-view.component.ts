@@ -183,14 +183,14 @@ export class BubbleListViewComponent implements OnInit {
   public setActionStyle(bubble: Bubble): object {
     const height = bubble.getHeight();
     const styles = {};
-    styles['right'] = `-${200 + height * 10}px`;
+    styles['right'] = `-${50 + height * 10}px`;
     return styles;
   }
 
   public setInternalBubbleStyle(bubble: Bubble): object {
     const height = bubble.getHeight();
     const lineWidth = 2;
-    const space = 8;
+    const space = 6;
     const offset = -5;
     const styles = {};
     styles['border-left-width'] = `${lineWidth}px`;
