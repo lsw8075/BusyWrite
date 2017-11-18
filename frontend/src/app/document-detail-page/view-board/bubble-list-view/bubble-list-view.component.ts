@@ -190,7 +190,7 @@ export class BubbleListViewComponent implements OnInit {
   public setInternalBubbleStyle(bubble: Bubble): object {
     const height = bubble.getHeight();
     const lineWidth = 2;
-    const space = 6;
+    const space = 8;
     const offset = -5;
     const styles = {};
     styles['border-left-width'] = `${lineWidth}px`;
