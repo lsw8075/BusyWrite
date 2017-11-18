@@ -6,4 +6,6 @@
 
 > writing is a form of discussion for busy teams
 
-stay tuned!
+check progress results in 
+
+[busywrite.ribosome.kr](busywrite.ribosome.kr)

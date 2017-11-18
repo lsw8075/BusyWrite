@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed, async, fakeAsync, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { ViewBoardComponent } from './view-board.component';
+import { BubbleService } from './service';
 import { Component } from '@angular/core';
 import { TabViewModule } from 'primeng/primeng';
 import { BubbleMenuComponent } from './bubble-menu/bubble-menu.component';
@@ -30,6 +31,10 @@ class MockPreviewComponent {
 
 }
 
+class MockBubbleService {
+
+}
+
 describe('ViewBoardComponent', () => {
   let comp: ViewBoardComponent;
   let fixture: ComponentFixture<ViewBoardComponent>;
@@ -40,10 +45,13 @@ describe('ViewBoardComponent', () => {
         ViewBoardComponent,
         MockBubbleListViewComponent,
         MockPreviewComponent,
-        BubbleMenuComponent
+        MockBubbleMenuComponent
       ],
       imports: [
         TabViewModule
+      ],
+      providers: [
+        { provide: BubbleService, useClass: MockBubbleService },
       ]
     }).compileComponents();
   }));
@@ -60,12 +68,6 @@ describe('ViewBoardComponent', () => {
 
   it('should create the app', () => {
     expect(comp).toBeTruthy();
-  });
-
-  it('should call child component show menu ', () => {
-    spyOn(comp.menu, 'showMenu');
-    comp.showMenu({});
-    expect(comp.menu.showMenu).toHaveBeenCalled();
   });
 
 });

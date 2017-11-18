@@ -10,10 +10,10 @@
 }
 
 .internalBubble {
-  border-left-color: black;
+  border-left-color: transparent;
   border-left-style: solid;
 
-  border-right-color: black;
+  border-right-color: transparent;
   border-right-style: solid;
 
   border-radius: 6px;
@@ -29,16 +29,16 @@
   border-radius: 0px;
   padding: 0px 2px;
   margin: 0px 0px;
-  border-left-style: solid;
-  border-right-style: solid;
-  border-color: transparent;
+
 }
 
-.leafBubble:hover {
-  border-left-color: rgb(157, 172, 255);
-
-  border-right-color: rgb(157, 172, 255);
+::selection {
+  background: #fff2a8;
 }
+::-moz-selection {
+  background: #fff2a8;
+}
+
 
 .placeholder {
   padding: 3px 0px;

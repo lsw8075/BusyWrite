@@ -10,12 +10,7 @@ export class NoteService implements OnInit {
   }
 
   addNote(): Promise<Note> {
-    const newNote3: Note = {
-      id: 3,
-      content: '',
-      documentId: 1,
-      userId: 1,
-    };
+    const newNote3: Note = new Note(3, 1, 1, 'note 3');
     return Promise.resolve(newNote3);
   }
 
@@ -33,18 +28,8 @@ export class NoteService implements OnInit {
 
   getNotes(userId: number): Promise<Array<Note>> {
     const notes: Array<Note> = [];
-    const newNote1: Note = {
-      id: 1,
-      content: '',
-      documentId: 1,
-      userId: 1,
-    };
-    const newNote2: Note = {
-      id: 2,
-      content: '',
-      documentId: 1,
-      userId: 1,
-    };
+    const newNote1: Note = new Note (1, 1, 1, 'note 1');
+    const newNote2: Note = new Note (2, 1, 1, 'note 2');
     notes.push(newNote1);
     notes.push(newNote2);
     return Promise.resolve(notes);

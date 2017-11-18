@@ -1,12 +1,13 @@
 import { ComponentFixture, TestBed, async, fakeAsync, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { BubbleService } from '../view-board.component';
-import { Bubble, LeafBubble } from '../view-board.component';
+import { BubbleService } from '../service';
+import { Bubble, MenuType } from '../service';
 import { BubbleListViewComponent } from './bubble-list-view.component';
 import { Component, Input } from '@angular/core';
+import { LeafBubble, InternalBubble } from '../../../model/bubble';
 
 class MockBubbleService {
-  getBubbleById(id: number) {}
+  getRootBubble(id: number) {}
 }
 
 @Component({
@@ -17,6 +18,14 @@ class MockBubbleDetailViewComponent {
   @Input() bubble: Bubble;
 }
 
+@Component({
+  selector: 'app-bubble-menu',
+  template: `<p>app-bubble-menu component</p>`
+})
+class MockBubbleMenuComponent {
+  @Input() bubble: Bubble;
+  @Input() menu: MenuType;
+}
 describe('BubbleListViewComponent', () => {
     let comp: BubbleListViewComponent;
     let fixture: ComponentFixture<BubbleListViewComponent>;
@@ -26,7 +35,8 @@ describe('BubbleListViewComponent', () => {
         TestBed.configureTestingModule({
             declarations: [
               BubbleListViewComponent,
-              MockBubbleDetailViewComponent
+              MockBubbleDetailViewComponent,
+              MockBubbleMenuComponent
             ],
             providers: [
                 { provide: BubbleService, useClass: MockBubbleService },
@@ -49,16 +59,9 @@ describe('BubbleListViewComponent', () => {
     });
 
     it('ngOnInit makes expected calls', () => {
-        spyOn(bubbleService, 'getBubbleById').and.returnValue(Promise.resolve(new LeafBubble()));
+        spyOn(bubbleService, 'getRootBubble').and.returnValue(Promise.resolve(new InternalBubble(0, [])));
         comp.ngOnInit();
-        expect(bubbleService.getBubbleById).toHaveBeenCalled();
+        expect(bubbleService.getRootBubble).toHaveBeenCalled();
     });
-
-    it('showMenuEvent method emits event', fakeAsync(() => {
-      spyOn(comp.openMenu, 'emit');
-      comp.showMenuEvent({});
-      tick();
-      expect(comp.openMenu.emit).toHaveBeenCalled();
-    }));
 
 });

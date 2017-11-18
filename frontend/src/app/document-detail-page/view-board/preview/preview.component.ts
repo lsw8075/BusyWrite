@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { BubbleService } from '../../document-detail-page.component';
-import { BubbleType, Bubble, LeafBubble, InternalBubble } from '../../document-detail-page.component';
+import { BubbleService } from '../service';
+import { BubbleType, Bubble } from '../service';
 
 @Component({
   selector: 'app-preview',
@@ -10,7 +10,6 @@ import { BubbleType, Bubble, LeafBubble, InternalBubble } from '../../document-d
 export class PreviewComponent implements OnInit {
 
   rootBubble: Bubble;
-  contentList: string[];
 
   constructor(
     private _bubbleService: BubbleService
@@ -21,23 +20,9 @@ export class PreviewComponent implements OnInit {
   }
 
   refreshList() {
-    this.contentList = [];
-    this._bubbleService.getBubbleById(0).then(rootBubble => {
+    this._bubbleService.getRootBubble().then(rootBubble => {
       this.rootBubble = rootBubble;
-      this._bubbleTraversal(rootBubble);
     });
-  }
-
-  public _bubbleTraversal(bubble: Bubble) {
-    if (bubble.type === BubbleType.leafBubble) {
-      const leafBubble = bubble as LeafBubble;
-      this.contentList.push(leafBubble.content);
-    } else {
-      const internalBubble = bubble as InternalBubble;
-      for (const childBubble of internalBubble.childBubbleList) {
-        this._bubbleTraversal(childBubble);
-      }
-    }
   }
 
 } /* istanbul ignore next */

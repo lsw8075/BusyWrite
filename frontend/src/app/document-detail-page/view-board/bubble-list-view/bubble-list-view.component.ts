@@ -1,8 +1,7 @@
 import { Component, EventEmitter, OnInit, Output, HostListener, ElementRef } from '@angular/core';
-import { BubbleService } from '../view-board.component';
-import { BubbleType, Bubble, LeafBubble, InternalBubble, ActionType } from '../view-board.component';
-import { MenuType } from '../bubble-menu/bubble-menu.component';
-
+import { BubbleService } from '../service';
+import { BubbleType, Bubble, ActionType, MenuType } from '../service';
+import { InternalBubble, LeafBubble } from '../../../model/bubble';
 
 @Component({
   selector: 'app-bubble-list-view',
@@ -11,7 +10,7 @@ import { MenuType } from '../bubble-menu/bubble-menu.component';
 })
 export class BubbleListViewComponent implements OnInit {
 
-  bubbleRootList: Array<Bubble>; // bubbles that have root as parents
+  rootBubble: Bubble; // bubbles that have root as parents
   menuType = MenuType;
   actionType = ActionType;
 
@@ -20,6 +19,9 @@ export class BubbleListViewComponent implements OnInit {
 
   wrapBubbles: Array<Bubble> = [];
   isWrapSelected = false;
+
+  hightlightedText = '';
+  highlightOffset = 0;
 
   @HostListener('document:click', ['$event'])
   clickout(event) {
@@ -31,6 +33,11 @@ export class BubbleListViewComponent implements OnInit {
     }
   }
 
+  // @HostListener('document:keyup', ['$event'])
+  // onKeyUp(ev: KeyboardEvent) {
+  //   console.log(`The user just pressed ${ev.key}!`);
+  // }
+
   constructor(
     private _bubbleService: BubbleService,
     private eRef: ElementRef
@@ -41,10 +48,8 @@ export class BubbleListViewComponent implements OnInit {
   }
 
   public refreshBubbleList() {
-    this._bubbleService.getBubbleById(0).then(rootBubble => {
-      this.bubbleRootList = (rootBubble as InternalBubble).childBubbleList;
-      console.assert(this.bubbleRootList.length >= 0, 'bubble list cannot be negative');
-      console.log('refreshed list');
+    this._bubbleService.getRootBubble().then(rootBubble => {
+      this.rootBubble = rootBubble;
     });
   }
 
@@ -82,13 +87,28 @@ export class BubbleListViewComponent implements OnInit {
     console.log('open sanjun board!');
   }
 
+  showSelectedText(bubble: Bubble) {
+    let text = '';
+    if (window.getSelection) {
+        text = window.getSelection().toString();
+        console.log(window.getSelection().getRangeAt(0).startOffset);
+    } else if ((document as any).selection && (document as any).selection.type !== 'Control') {
+        text = (document as any).selection.createRange().text;
+    }
+    this.hightlightedText = text;
+    this.highlightOffset = window.getSelection().getRangeAt(0).startOffset;
+    console.log('text ', this.hightlightedText);
+  }
+
   public splitBubbleEvent(bubble: Bubble) {
     console.log('split bubble');
+    this._bubbleService.splitLeafBubble(bubble, this.hightlightedText, this.highlightOffset)
+      .then(() => this.refreshBubbleList());
   }
 
   public popBubbleEvent(bubble: Bubble) {
     console.log('pop bubble');
-    this._bubbleService.popBubble(bubble.id)
+    this._bubbleService.popBubble(bubble)
       .then(() => this.refreshBubbleList());
   }
 
@@ -99,7 +119,7 @@ export class BubbleListViewComponent implements OnInit {
   }
 
   public wrapSelectedBubbles() {
-    this._bubbleService.wrapBubble(this.wrapBubbles.map(selectBubble => selectBubble.id))
+    this._bubbleService.wrapBubble(this.wrapBubbles)
       .then(response => {
         this.refreshBubbleList();
         this.cancelWrap();
@@ -117,7 +137,7 @@ export class BubbleListViewComponent implements OnInit {
     } else {
       throw new Error('create bubble invoked with not border');
     }
-    this._bubbleService.createBubble(bubble.parentBubble.id, location, 'default create string')
+    this._bubbleService.createBubble(bubble.parentBubble, location, 'default create string')
       .then(response => {
         this.refreshBubbleList();
       });
@@ -125,10 +145,10 @@ export class BubbleListViewComponent implements OnInit {
 
   public editBubbleEvent(bubble: Bubble) {
     console.log('edit bubble');
-    if (bubble instanceof LeafBubble) {
-      const newString = prompt('edit bubble!', (bubble as LeafBubble).content);
+    if (bubble.type === BubbleType.leafBubble) {
+      const newString = prompt('edit bubble!', (bubble).getContent());
       if (newString) {
-        this._bubbleService.editBubble(bubble.id, newString)
+        this._bubbleService.editBubble(bubble as LeafBubble, newString)
           .then(() => this.refreshBubbleList());
       }
     }
@@ -137,7 +157,7 @@ export class BubbleListViewComponent implements OnInit {
   public deleteBubbleEvent(bubble: Bubble) {
     console.log('delete bubble');
     if (bubble.id !== 0) {
-      this._bubbleService.deleteBubble(bubble.id)
+      this._bubbleService.deleteBubble(bubble)
         .then(() => this.refreshBubbleList());
 
     } else {
@@ -154,7 +174,7 @@ export class BubbleListViewComponent implements OnInit {
   public showMenuEvent(bubble: Bubble, menuType: MenuType, mouseEvent: MouseEvent) {
     if (this.isWrapSelected &&
         menuType === MenuType.leafMenu &&
-        this.wrapBubbles[0].parentID === bubble.parentID
+        this.wrapBubbles[0].parentBubble.id === bubble.parentBubble.id
        ) {
         if (this._isBubbleSelected(bubble)) {
           this.wrapBubbles = this.wrapBubbles.filter(b => b.id !== bubble.id);
@@ -183,14 +203,14 @@ export class BubbleListViewComponent implements OnInit {
   }
 
   public setActionStyle(bubble: Bubble): object {
-    const height = this._bubbleService.calcBubbleHeight(bubble);
+    const height = bubble.getHeight();
     const styles = {};
-    styles['right'] = `-${200 + height * 10}px`;
+    styles['right'] = `-${50 + height * 10}px`;
     return styles;
   }
 
   public setInternalBubbleStyle(bubble: Bubble): object {
-    const height = this._bubbleService.calcBubbleHeight(bubble);
+    const height = bubble.getHeight();
     const lineWidth = 2;
     const space = 8;
     const offset = -5;
@@ -226,8 +246,7 @@ export class BubbleListViewComponent implements OnInit {
         return true;
       }
     } else if (this.isWrapSelected) {
-      for (let b of this.wrapBubbles) {
-        console.log(b);
+      for (const b of this.wrapBubbles) {
         if (b.id === bubble.id) {
           return true;
         }

@@ -3,7 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { SigninComponent } from '../signin/signin.component';
 import { LandingComponent } from '../landing/landing.component';
-import { AlarmPageComponent } from '../alarm-page/alarm-page.component';
+import { AlertPageComponent } from '../alert-page/alert-page.component';
 import { DocumentDetailPageComponent } from '../document-detail-page/document-detail-page.component';
 import { MainPageComponent } from '../main-page/main-page.component';
 
@@ -14,8 +14,8 @@ const routes = [
   { path: 'landing', component: LandingComponent },
   { path: 'sign_in',  component: SigninComponent },
   {
-    path: 'alarm',
-    component: AlarmPageComponent,
+    path: 'alert',
+    component: AlertPageComponent,
     canActivate: [ AuthenticationService ],
   },
   {

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { DragulaService } from 'ng2-dragula/ng2-dragula';
-import { Note, NoteService } from '../document-detail-page.component';
+
+import { Note, NoteService } from './service';
 
 @Component({
   selector: 'app-edit-board',
@@ -25,23 +26,6 @@ export class EditBoardComponent implements OnInit {
     });
   }
 
-  private _getNotes(): void {
-    this._noteService.getNotes(1)
-      .then(notes => {
-        this.notes = notes;
-      });
-  }
-
-  getSummary(note: Note): string {
-    if (note.content) {
-      const summary = note.content.slice(0, 30);
-      const htmlRegex = /(<([^>]+)>)/ig;
-      return `${summary.replace(htmlRegex, '')}...`;
-    } else {
-      return `empty note`;
-    }
-  }
-
   addNote() {
     this._noteService.addNote()
       .then(note => {
@@ -63,6 +47,14 @@ export class EditBoardComponent implements OnInit {
       });
     }
   }
+
+  private _getNotes(): void {
+    this._noteService.getNotes(1)
+      .then(notes => {
+        this.notes = notes;
+      });
+  }
+
 }
 
 export { Note };
