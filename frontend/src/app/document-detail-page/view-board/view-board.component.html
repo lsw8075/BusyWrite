@@ -1,10 +1,10 @@
 <div class="view-board">
   <p-tabView (onChange)="previewClick($event)">
+
     <p-tabPanel header="View">
       <div class="bubble-list">
         <div class="ui-g">
           <div class="ui-g-9 ui-md-offset-1 list-group-item">
-
             <app-bubble-list-view></app-bubble-list-view>
           </div>
         </div>
@@ -13,8 +13,9 @@
 
     <p-tabPanel header="Preview">
       <app-preview>
-        Lazy Loading...
+        Loading...
       </app-preview>
     </p-tabPanel>
+
   </p-tabView>
 </div>

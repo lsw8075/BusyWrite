@@ -3,7 +3,6 @@ import { BubbleService } from '../service';
 import { BubbleType, Bubble, ActionType, MenuType } from '../service';
 import { InternalBubble, LeafBubble } from '../../../model/bubble';
 
-
 @Component({
   selector: 'app-bubble-list-view',
   templateUrl: './bubble-list-view.component.html',
@@ -80,7 +79,18 @@ export class BubbleListViewComponent implements OnInit {
     console.log('open sanjun board!');
   }
 
+  showSelectedText(oField) {
+    let text = '';
+    if (window.getSelection) {
+        text = window.getSelection().toString();
+    } else if ((document as any).selection && (document as any).selection.type !== 'Control') {
+        text = (document as any).selection.createRange().text;
+    }
+    console.log('text ', text);
+  }
+
   public splitBubbleEvent(bubble: Bubble) {
+
     console.log('split bubble');
   }
 

@@ -1,7 +1,6 @@
 .bubble-list {
   height: 600px;
   overflow-y: scroll;
-  /* overflow-x: visible; this is not allowed! */
 }
 .view-board {
   box-sizing: border-box;
