@@ -1,6 +1,11 @@
 import { Bubble, LeafBubble, InternalBubble, SuggestBubble } from './bubble';
 import { Inject } from '@angular/core';
 
+  const sb1: SuggestBubble = new SuggestBubble(1, "hello1", []);
+  const sb2: SuggestBubble = new SuggestBubble(2, "hello2", []);
+  const sb3: SuggestBubble = new SuggestBubble(3, "hello3", []);
+  const sb4: SuggestBubble = new SuggestBubble(4, "hello4", []);
+
   const b15: LeafBubble = new LeafBubble(15, '<i>we are team !</i>');
       const b10: LeafBubble = new LeafBubble(10,
 `Limited time is the number one bottleneck of teamwork. Therefore, \
@@ -17,7 +22,7 @@ of just writing straight to a file, users make bubbles`);
         const b11: LeafBubble = new LeafBubble(11,
 `BusyWrite is the perfect solution for team writing. \
 The concept of writing as a team has been around for a long time, \
-by services like Google Docs, but the approaches are impractical and unproductive.`);
+by services like Google Docs, but the approaches are impractical and unproductive.`, -1, [sb2, sb4, sb1, sb2]);
             const b19: LeafBubble = new LeafBubble(19, `<strong>hey!</strong>`);
             const b18: LeafBubble = new LeafBubble(18,
 `BusyWrite helps you organize new ideas. New ideas are important, \

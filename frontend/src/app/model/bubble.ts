@@ -46,7 +46,8 @@ export class LeafBubble implements Bubble {
   constructor(
     id: number,
     content: string = '',
-    ownerId: number = -1) {
+    ownerId: number = -1,
+    suggestBubbles: Array<SuggestBubble> = []) {
 
     this.id = id;
     this.type = BubbleType.leafBubble;
@@ -54,6 +55,7 @@ export class LeafBubble implements Bubble {
     this.editLock = (ownerId !== -1); // edit lock false if no owner
     this.content = content;
     this.ownerId = ownerId;
+    this.suggestBubbles = suggestBubbles;
   }
 
   getEditLock(userId: number): boolean {
@@ -129,12 +131,14 @@ export class InternalBubble implements Bubble {
 
   constructor(
     id: number,
-    childBubbles: Array<Bubble>) {
+    childBubbles: Array<Bubble>,
+    suggestBubbles: Array<SuggestBubble> = []) {
 
     this.id = id;
     this.type = BubbleType.internalBubble;
     this.location = -1;
     this.addChildren(...childBubbles);
+    this.suggestBubbles = suggestBubbles;
   }
 
   getHeight(): number {
@@ -316,12 +320,17 @@ export class SuggestBubble {
   id: number;
   type: BubbleType;
   content: string;
-  location: number;
-
   comments: Array<Comment>;
 
-  // constructor() {
-  //   // must initialize all attributes
-  //   this.type = BubbleType.suggestBubble;
-  // }
+   constructor(
+     id: number,
+     content: string,
+     comments: Array<Comment>
+   ) {
+     // must initialize all attributes
+     this.type = BubbleType.suggestBubble;
+     this.id = id;
+     this.content = content;
+     this.comments = comments;
+   }
 }
