@@ -24,6 +24,7 @@ export interface Bubble {
   // deleteComment(comment: Comment): void;
 
   getContent(): string;
+  isBeingEditted(): boolean;
   // getComments(): Array<Comment>;
   // getSuggestBubbles(): Array<SuggestBubble>;
 }
@@ -165,6 +166,10 @@ export class InternalBubble implements Bubble {
   // }
 
   // ----
+
+  isBeingEditted(): boolean {
+    return this.childBubbles.reduce((prev, curr) => prev || curr.isBeingEditted(), false);
+  }
 
 insertChildren(location: number, ...bubbles: Array<Bubble>): void {
     if ((location < 0) || (location > this.childBubbles.length + 1)) {

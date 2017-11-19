@@ -13,13 +13,18 @@ export class BubbleMenuComponent implements OnInit {
   menuType = MenuType;
   @Input() menu: MenuType;
   @Input() bubble: Bubble;
+  editLock: boolean;
 
   constructor(
     private _bubbleSerivce: BubbleService,
     private _eventBubbleService: EventBubbleService) {
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    if (this.bubble.isBeingEditted()) {
+      this.editLock = true;
+    }
+  }
 
   public openSangjunBoard() {
     this._eventBubbleService.openSangjunBoard(this.bubble);
