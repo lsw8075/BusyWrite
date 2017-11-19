@@ -35,9 +35,9 @@ export class EditItemComponent implements OnInit {
   ngOnInit() {
   }
 
-  onEditorBlured(quill) {
-    // console.log('editor blur!', quill);
-  }
+  // onEditorBlured(quill) {
+  //   // console.log('editor blur!', quill);
+  // }
 
   onEditorFocused(quill) {
     this.focus.emit();
@@ -54,4 +54,4 @@ export class EditItemComponent implements OnInit {
     this.editItem.content = this.editorContent;
   }
 
-}
+} /* istanbul ignore next */
