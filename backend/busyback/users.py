@@ -1,5 +1,5 @@
 from .models import *
-from errors import UserDoesNotExistError
+from .errors import UserDoesNotExistError
 
 def do_fetch_user(user_id: int):
     '''Fetch one user with given id'''

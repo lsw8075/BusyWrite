@@ -1,6 +1,6 @@
 from .models import *
-from users import do_fetch_user
-from errors import *
+from .users import do_fetch_user
+from .errors import *
 from datetime import datetime
 
 def check_contributor(bubble, user):

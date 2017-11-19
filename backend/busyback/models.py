@@ -28,7 +28,7 @@ class Document(models.Model):
     	related_name='documents'
     )
     def is_contributed_by(self, user_id: int):
-        return self.filter(id__exact=user_id).exist()
+        return self.contributors.filter(id__exact=user_id).exists()
 
 class Note(models.Model):
     content = models.TextField()
