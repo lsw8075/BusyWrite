@@ -1,6 +1,7 @@
 export { BubbleService, BoardService } from '../service';
 export { Board } from '../service';
 export { BubbleType, Bubble, SuggestBubble } from '../service';
+export { EventBubbleService } from '../service';
 
 export enum MenuType {
   borderTopMenu = 1,

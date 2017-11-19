@@ -158,7 +158,7 @@ export class InternalBubble implements Bubble {
 
   // ----
 
-  insertChildren(location: number, ...bubbles: Array<Bubble>): void {
+insertChildren(location: number, ...bubbles: Array<Bubble>): void {
     if ((location < 0) || (location > this.childBubbles.length + 1)) {
       throw new Error(`location ${location} is invalid`);
     } else {
@@ -187,7 +187,7 @@ export class InternalBubble implements Bubble {
     }
   }
 
-  deleteChild(childBubble: Bubble): void {
+deleteChild(childBubble: Bubble): void {
     if (this._ischildBubble(childBubble)) {
       let location = childBubble.location;
       childBubble = null;
@@ -199,10 +199,10 @@ export class InternalBubble implements Bubble {
     } else {
       const errorMsg = `bubble(id: ${childBubble.id}) is not child of bubble(id: ${this.id})`;
       throw new Error(errorMsg);
-    }
+     }
   }
 
-  wrapChildren(wrapList: Array<Bubble>): InternalBubble {
+wrapChildren(wrapList: Array<Bubble>): InternalBubble {
 
     // no bubble to wrap
     if (wrapList.length < 1) {
@@ -261,7 +261,6 @@ export class InternalBubble implements Bubble {
       newLeaf.location = location;
       newLeaf.parentBubble = this;
       this.childBubbles.splice(location, 1, newLeaf);
-      this.insertChildren(location, newLeaf);
 
       return newLeaf;
     } else if (bubble.type === BubbleType.leafBubble) {

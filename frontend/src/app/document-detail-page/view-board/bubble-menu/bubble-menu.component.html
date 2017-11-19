@@ -2,13 +2,13 @@
   <div [ngSwitch]="menu">
 
     <div *ngSwitchCase="menuType.borderTopMenu">
-      <button type="button" class="btn btn-primary btn-sm hvr-icon-bob" (click)="createBubbleEvent()">
+      <button type="button" class="btn btn-primary btn-sm hvr-icon-bob" (click)="createBubble()">
         Create
       </button>
     </div>
 
     <div *ngSwitchCase="menuType.borderBottomMenu">
-      <button type="button" class="btn btn-primary btn-sm hvr-icon-hang" (click)="createBubbleEvent()">
+      <button type="button" class="btn btn-primary btn-sm hvr-icon-hang" (click)="createBubble()">
         Create
       </button>
     </div>
