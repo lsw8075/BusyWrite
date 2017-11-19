@@ -9,7 +9,7 @@ import { Note } from '../edit-board.component';
 export class NoteViewComponent implements OnInit {
 
   @Input() note: Note;
-  @Output() changed: EventEmitter<boolean> = new EventEmitter<boolean>();
+  @Output() changed: EventEmitter<void> = new EventEmitter<void>();
   editor;
   editorContent = '';
   editorOptions = {
@@ -46,7 +46,7 @@ export class NoteViewComponent implements OnInit {
   onContentChanged({ quill, html, text }) {
     // console.log('quill content is changed!', quill, html, text);
     this.note.content = this.editorContent;
-    this.changed.emit(true);
+    this.changed.emit();
   }
 }
 

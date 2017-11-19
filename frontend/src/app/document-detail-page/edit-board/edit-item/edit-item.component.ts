@@ -11,7 +11,9 @@ export class EditItemComponent implements OnInit {
 
 
   @Input() editItem: EditItem;
+  @Output() focus: EventEmitter<void> = new EventEmitter<void>();
   content: string;
+
 
   editor;
   editorContent = '';
@@ -38,6 +40,7 @@ export class EditItemComponent implements OnInit {
   }
 
   onEditorFocused(quill) {
+    this.focus.emit();
     // console.log('editor focus!', quill);
   }
 

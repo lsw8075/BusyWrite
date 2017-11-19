@@ -108,7 +108,7 @@ public createBubble(bubble: Bubble, menu: MenuType) {
     } else if (menu !== MenuType.borderTopMenu) {
       throw new Error('create bubble invoked with not border');
     }
-    this._bubbleService.createBubble(bubble.parentBubble, location, '')
+    this._bubbleService.createBubble(bubble.parentBubble, location, 'empty bubble')
       .then(response => {
         this._boardService.createBubble(response);
         this._eventBubbleService.clearState();
@@ -117,6 +117,7 @@ public createBubble(bubble: Bubble, menu: MenuType) {
   }
 
   private finishEdit(bubble: Bubble) {
+    this._eventBubbleService.edittedBubble = null;
     this._refreshBubbleList();
   }
 
@@ -209,6 +210,10 @@ public onClickEvent(bubble: Bubble, menu: MenuType, mouseEvent: MouseEvent): voi
 
     if (this._eventBubbleService.isBubbleSelected(bubble)) {
       styles['background-color'] = `rgb(157, 172, 255)`;
+    }
+
+    if (this._eventBubbleService.isBeingEditted(bubble)) {
+      styles['background-color'] = `red`;
     }
 
     return styles;

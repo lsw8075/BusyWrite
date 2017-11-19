@@ -7,8 +7,11 @@ export class EventBubbleService {
 
   private actionState: ActionType;
   private selectState: SelectState;
+
   selectedBubble: Bubble;
   selectedMenuType: MenuType;
+
+  edittedBubble: Bubble;
 
   wrapBubbles: Array<Bubble> = [];
 
@@ -84,6 +87,12 @@ export class EventBubbleService {
       return this._isBubbleInWrapList(bubble);
     } else {
       return false;
+    }
+  }
+
+  public isBeingEditted(bubble: Bubble): boolean {
+    if (this.edittedBubble) {
+      return this.edittedBubble.id === bubble.id;
     }
   }
 

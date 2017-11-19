@@ -14,11 +14,11 @@
                   <span class="summary">{{editItem.bubble.id}}</span>
                   <span class="badge float-right pull-right">
                     <button (click)="finishEdit(editItem)" type="button" class="btn btn-secondary btn-sm hvr-sweep-to-right">
-                      <i class="fa fa-fw fa-check"></i>
+                      <i tooltip="did you finish editting?" class="fa fa-fw fa-check"></i>
                     </button>
                   </span>
                 </div>
-                <app-edit-item [editItem]="editItem"></app-edit-item>
+                <app-edit-item (focus)="focusEditItem(editItem)" [editItem]="editItem"></app-edit-item>
             </accordion-group>
           </div>
         </div>
@@ -43,7 +43,10 @@
                   <span class="summary">{{note.getSummary()}}</span>
                   <span class="badge float-right pull-right">
                     <button (click)="deleteNote(note)" type="button" class="btn btn-secondary btn-sm hvr-sweep-to-right">
-                      <i class="fa fa-fw fa-times"></i>
+                      <i tooltip="delete note" class="fa fa-fw fa-times"></i>
+                    </button>
+                    <button (click)="toBubble(note)" type="button" class="btn btn-secondary btn-sm hvr-sweep-to-right">
+                      <i tooltip="send to edit board" class="fa fa-fw fa-pencil"></i>
                     </button>
                   </span>
                 </div>
