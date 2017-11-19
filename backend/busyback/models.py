@@ -27,8 +27,9 @@ class Document(models.Model):
     	User,
     	related_name='documents'
     )
-    def is_contributed_by(self, user_id: int):
-        return self.filter(id__exact=user_id).exist()
+
+    def is_contributed_by(self, user_id):
+        return self.contributors.filter(id__exact=user_id).exists()
 
 class Note(models.Model):
     content = models.TextField()
@@ -72,7 +73,7 @@ class Bubble(models.Model):
         return None
 
     @update
-    def change_content(self, content: str):
+    def change_content(self, content):
         '''Change bubble's content'''
         locked = self.get_locked_direct()
         if locked is not None:
@@ -81,6 +82,7 @@ class Bubble(models.Model):
 
 class NormalBubble(Bubble):
     location = models.IntegerField()
+        
     # need to check if editLockHolder and ownerWithLock are
     # contributors of the document
     edit_lock_holder = models.ForeignKey(
@@ -93,17 +95,16 @@ class NormalBubble(Bubble):
     	related_name='owning_bubbles',
     	null=True
     )
-    document = models.ForeignKey(
-    	'Document',
-    	related_name='bubbles',
-    	null=False
-    )
     parent_bubble = models.ForeignKey(
     	'Bubble',
     	related_name='child_bubbles',
     	null=True
     )
 
+    document = models.ForeignKey(
+    	'Document',
+    	related_name='bubbles',
+    )
     def has_locked_ancestors(self):
         '''Check self/any ancestor bubble is locked'''
         # check self is root
