@@ -40,7 +40,6 @@ describe('BoardService', () => {
     const bubbleService = new BubbleService();
     tick();
     const boardService = new BoardService(bubbleService);
-    console.log(bubbleService.bubbleList);
     let bubble = bubbleService.getBubbleById(15);
     boardService.finishEdit(bubble, "swpp");
   }));
