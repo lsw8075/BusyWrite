@@ -1,6 +1,8 @@
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.utils import timezone
+from .errors import *
 
 class Directory(models.Model):
     name = models.TextField()
@@ -56,32 +58,22 @@ class Bubble(models.Model):
     )
 
     def touch(self):
-        '''Update timestamp.'''
-        from datetime import datetime
-        timestamp = datetime.now()
+        timestamp = timezone.now()
+        self.save()
 
-    def update(func):
-        '''Decorator for bubble-updating methods.'''
-        def wrapper(self, *args, **kwargs):
-            '''decorate'''
-            # if update the timestamp
-            self.touch()
-            self.func(*args, **kwargs)
- 
     def has_locked_directs(self):
         # overrided by NormalBubble
-        return None
+        return False
 
-    @update
     def change_content(self, content):
         '''Change bubble's content'''
-        locked = self.get_locked_direct()
-        if locked is not None:
-            raise BubbleLockedError
+        if self.has_locked_directs():
+            raise BubbleLockedError(self)
         self.content = content
+        self.touch()
 
 class NormalBubble(Bubble):
-    location = models.IntegerField()
+    location = models.IntegerField(null=True)
         
     # need to check if editLockHolder and ownerWithLock are
     # contributors of the document
@@ -96,7 +88,7 @@ class NormalBubble(Bubble):
     	null=True
     )
     parent_bubble = models.ForeignKey(
-    	'Bubble',
+    	'NormalBubble',
     	related_name='child_bubbles',
     	null=True
     )
@@ -105,6 +97,28 @@ class NormalBubble(Bubble):
     	'Document',
     	related_name='bubbles',
     )
+
+    def touch(self):
+        super().touch()
+        if not self.is_root():
+            self.parent_bubble.touch()
+
+    def child_count(self):
+        return len(self.child_bubbles.all().values())
+
+    def is_leaf(self):
+        '''check if self is leaf bubble'''
+        return self.child_count() == 0
+
+    def is_root(self):
+        '''check if self is root'''
+        return self.parent_bubble is None
+
+    def owned_by_other(self, user):
+        return (self.owner_with_lock is not None and
+                self.owner_with_lock.id != user.id)
+    # lock methods
+
     def has_locked_ancestors(self):
         '''Check self/any ancestor bubble is locked'''
         # check self is root
@@ -125,29 +139,104 @@ class NormalBubble(Bubble):
         # if all descendants are not locked
         return False
 
-    def is_locked(self):
-        return self.edit_lock_holder is not None
-
     def has_locked_directs(self):
         return (self.has_locked_ancestors() or
                 self.has_locked_descendants() or
                 self.is_locked())
 
-    def child_count(self):
-        return len(self.child_bubbles)
+    def is_locked(self):
+        return self.edit_lock_holder is not None
 
-    def is_leaf(self):
-        '''check if self is leaf bubble'''
-        return self.child_count() == 0
+    def lock(self, user):
+        editlock = self.edit_lock_holder
+        if self.has_locked_directs():
+            raise BubbleLockedError(self)
+        else:
+            self.edit_lock_holder = user
+            self.save()
 
-    def is_root(self):
-        '''check if self is root'''
-        return self.parent_bubble is None
+    def unlock(self, user):
+        editlock = self.edit_lock_holder
+        if editlock is not None:
+            if editlock.id == user.id:
+                self.edit_lock_holder = None
+                self.save()
+            else:
+                raise BubbleLockedError(self)
 
-    def owned_by_other(self, user):
-        return (self.owner_with_lock is not None and
-                self.owner_with_lock != user)
+    # args of all bubble method below should be checked before use
+    # locs of new bubbles are auto-determined by these methods,
+    # so in the view you just create with dummy location.
 
+    def fetch_child(self, location):
+        return self.child_bubbles.get(location=location)
+
+    def list_children(self):
+        return list(self.child_bubbles.all().values())
+
+    def adjust_children_location(self, start, adjust):
+        children = self.child_bubbles.all()
+        for child in children:
+            if child.location >= start:
+                child.location += adjust
+            child.save()
+    
+    def splice_children(self, location, splice_count=0, new_parent=None, new_location=0, splice_list=[]):
+
+        # assert when self == new_parent, splice_list is empty
+        if new_parent is not None and self.id == new_parent.id and splice_list != []:
+            raise InternalError('invaild use of splice_children')
+
+        # mark target childrens to be unaffected by adjusting
+        for child in self.child_bubbles.all():
+            if (location <= child.location and
+                child.location < location + splice_count):
+                child.location = -child.location
+
+        # adjust location (order is matter)
+        self.adjust_children_location(location + splice_count, len(splice_list) - splice_count)
+
+        if new_parent is not None:
+            self.adjust_children_location(new_location, splice_count)
+        
+        # process target childrens
+        for child in self.child_bubbles.all():
+            if child.location < 0:
+                if new_parent is not None:
+                    child.location = -child.location - location + new_location
+                    child.parent_bubble = new_parent
+                    child.save()
+                else:
+                    child.delete()
+
+        # add new bubbles if they exist
+        for idx, child in enumerate(splice_list):
+            child.location = location + idx
+            child.parent_bubble = self
+            child.save()
+
+        return self
+
+    def insert_children(self, location, insert_list):
+        self.splice_children(location, splice_list=insert_list)
+        return insert_list[0]
+
+    def delete_children(self, location, delete_count):
+        self.splice_children(location, delete_count)
+        return self
+
+    def wrap_children(self, location, wrap_count):
+        wrapper = NormalBubble.objects.create(document=self.document, content='', timestamp=timezone.now(), location=0)
+        self.splice_children(location, wrap_count, wrapper, 0, [wrapper])
+        return wrapper
+
+    def pop_child(self, location):
+        popped = self.fetch_child(location)
+        self.splice_children(location, 1, splice_list=popped.child_bubbles.all())
+        popped.delete()
+        return self
+
+        
 class SuggestBubble(Bubble):
     hidden = models.BooleanField()	
     normal_bubble = models.ForeignKey(
@@ -155,6 +244,14 @@ class SuggestBubble(Bubble):
     	related_name='suggest_bubbles',
     	null=False
     )
+
+    def show(self):
+        self.hidden = False
+        self.save()
+
+    def hide(self):
+        self.hidden = True
+        self.save()
 
 class Comment(models.Model):
     content = models.TextField()
