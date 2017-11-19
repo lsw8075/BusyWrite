@@ -5,9 +5,7 @@ import { Note } from '../model/note';
 export class NoteService implements OnInit {
   constructor() {}
 
-  ngOnInit() {
-
-  }
+  ngOnInit() {}
 
   addNote(): Promise<Note> {
     const newNote3: Note = new Note(3, 1, 1, 'note 3');
