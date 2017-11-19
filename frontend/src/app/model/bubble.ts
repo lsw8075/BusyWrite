@@ -5,7 +5,7 @@ export enum BubbleType {
   leafBubble,
   internalBubble,
   suggestBubble
-}
+} /* istanbul ignore next */
 
 export interface Bubble {
   id: number;
@@ -27,7 +27,7 @@ export interface Bubble {
   isBeingEditted(): boolean;
   // getComments(): Array<Comment>;
   // getSuggestBubbles(): Array<SuggestBubble>;
-}
+} /* istanbul ignore next */
 
 export class LeafBubble implements Bubble {
   id: number;
@@ -116,7 +116,7 @@ export class LeafBubble implements Bubble {
   // getSuggestBubbles(): Array<SuggestBubble> {
   //   return null;
   // }
-}
+} /* istanbul ignore next */
 
 export class InternalBubble implements Bubble {
   id: number;
@@ -314,7 +314,7 @@ wrapChildren(wrapList: Array<Bubble>): InternalBubble {
       return a.location - b.location;
     });
   }
-}
+} /* istanbul ignore next */
 
 export class SuggestBubble {
   id: number;
@@ -333,4 +333,4 @@ export class SuggestBubble {
      this.content = content;
      this.comments = comments;
    }
-}
+} /* istanbul ignore next */

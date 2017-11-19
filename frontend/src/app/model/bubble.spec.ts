@@ -51,6 +51,14 @@ describe('LeafBubble', () => {
 
     it('should be able to get comments');
     it('should be able to get suggest bubbles');
+
+    it('should return current edit lock status (in boolean)', () => {
+      expect(leafBubble.isBeingEditted()).toBeTruthy();
+    });
+
+    it('should return who is editting', () => {
+      expect(leafBubble.whoIsEditting()).toBe(1);
+    });
   });
 
   describe('when create leaf bubble without owner and content', () => {
@@ -73,6 +81,14 @@ describe('LeafBubble', () => {
       const someOtherUserId = 4;
       expect(leafBubble.getEditLock(someUserId)).toBeTruthy();
       expect(leafBubble.getEditLock(someOtherUserId)).toBeFalsy();
+    });
+
+    it('should return current edit lock status (in boolean)', () => {
+      expect(leafBubble.isBeingEditted()).toBeFalsy();
+    });
+
+    it('should return -1 when no one is editting', () => {
+      expect(leafBubble.whoIsEditting()).toBe(-1);
     });
   });
 });
@@ -267,6 +283,20 @@ describe('InternalBubble', () => {
   it('should be able to add new comment');
   it('should be able to get comments');
   it('should be able to get suggest bubbles');
+
+  it('should return current edit lock status (in boolean)', () => {
+    expect(internalBubble.isBeingEditted()).toBeFalsy();
+  });
+
+  describe('when leaf bubble is being editted', () => {
+    beforeEach(() => {
+      leafBubble4.getEditLock(2);
+    });
+
+    it('internal bubble with leaf bubbles that are being editted should return true', () => {
+      expect(internalBubble3.isBeingEditted()).toBeTruthy();
+    });
+  });
 });
 
 describe('RootBubble', () => {

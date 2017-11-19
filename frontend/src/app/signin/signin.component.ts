@@ -26,4 +26,4 @@ export class SigninComponent implements OnInit {
     console.log(f.value);
   }
 
-}
+} /* istanbul ignore next */

@@ -5,6 +5,8 @@ import { BubbleService } from './service';
 import { Component } from '@angular/core';
 import { TabViewModule } from 'primeng/primeng';
 import { BubbleMenuComponent } from './bubble-menu/bubble-menu.component';
+import { BoardService } from'./service';
+import { DocumentService } from '../../service/document.service';
 
 @Component({
   selector: 'app-bubble-list-view',
@@ -35,9 +37,16 @@ class MockBubbleService {
 
 }
 
+class MockBoardService {
+  updatePreview() {
+
+  }
+}
+
 describe('ViewBoardComponent', () => {
   let comp: ViewBoardComponent;
   let fixture: ComponentFixture<ViewBoardComponent>;
+  let boardService: BoardService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -52,6 +61,7 @@ describe('ViewBoardComponent', () => {
       ],
       providers: [
         { provide: BubbleService, useClass: MockBubbleService },
+        { provide: BoardService, useClass: MockBoardService }
       ]
     }).compileComponents();
   }));
@@ -59,6 +69,7 @@ describe('ViewBoardComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ViewBoardComponent);
     comp = fixture.componentInstance;
+    boardService = fixture.debugElement.injector.get(BoardService);
     fixture.detectChanges();
   });
 
@@ -68,6 +79,22 @@ describe('ViewBoardComponent', () => {
 
   it('should create the app', () => {
     expect(comp).toBeTruthy();
+  });
+
+  it('should call expected calls on onInit', () => {
+    comp.ngOnInit();
+  });
+
+  it('should call updatePreview event on click tab', () => {
+    spyOn(boardService, 'updatePreview');
+    comp.previewClick({index: 1});
+    expect(boardService.updatePreview).toHaveBeenCalled();
+  });
+
+  it('should not call updatePreview event on click tab', () => {
+    spyOn(boardService, 'updatePreview');
+    comp.previewClick({index: 0});
+    expect(boardService.updatePreview).not.toHaveBeenCalled();
   });
 
 });

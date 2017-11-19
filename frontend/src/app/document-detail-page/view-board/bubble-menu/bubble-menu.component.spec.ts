@@ -1,24 +1,45 @@
 import { ComponentFixture, TestBed, async, fakeAsync, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { Bubble, BubbleService } from '../service';
+import { Bubble } from '../service';
 import { Component, Input } from '@angular/core';
 
 import { BubbleMenuComponent } from './bubble-menu.component';
 import { MenuType } from '../service';
+import { BubbleService, EventBubbleService, BoardService } from '../service';
+
+import { Subject } from 'rxjs/Subject';
+import { Observable } from 'rxjs/Observable';
+import 'rxjs/add/observable/of';
 
 class MockBubbleService {
 
 }
 
+class MockEventBubbleService {
+
+  openSangjunBoard() {}
+  splitBubble() {}
+  popBubble() {}
+  wrapBubble() {}
+  createBubble() {}
+  editBubble() {}
+  flattenBubble() {}
+  deleteBubble() {}
+
+  }
+
 describe('BubbleMenuComponent', () => {
     let comp: BubbleMenuComponent;
     let fixture: ComponentFixture<BubbleMenuComponent>;
+    let bubbleService: BubbleService;
+    let eventBubbleService: EventBubbleService;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
             declarations: [ BubbleMenuComponent ],
             providers: [
               { provide: BubbleService, useClass: MockBubbleService },
+              { provide: EventBubbleService, useClass: MockEventBubbleService },
             ]
         }).compileComponents();
     });
@@ -26,6 +47,8 @@ describe('BubbleMenuComponent', () => {
     beforeEach(() => {
       fixture = TestBed.createComponent(BubbleMenuComponent);
       comp = fixture.componentInstance;
+      bubbleService = fixture.debugElement.injector.get(BubbleService);
+      eventBubbleService = fixture.debugElement.injector.get(EventBubbleService);
     });
 
     it('can instantiate it', () => {
@@ -35,108 +58,68 @@ describe('BubbleMenuComponent', () => {
     it('should create the app', () => {
       expect(comp).toBeTruthy();
     });
+    describe('openSangjunBoard', () => {
+      it('makes expected calls', () => {
+          spyOn(eventBubbleService, 'openSangjunBoard');
+          comp.openSangjunBoard();
+          expect(eventBubbleService.openSangjunBoard).toHaveBeenCalled();
+      });
+  });
 
-    // it('should set menuType and bubble when showMenu is called', () => {
-    //   const menuType = MenuType.borderMenu;
-    //   const bubble = new LeafBubble();
-    //   const item = {
-    //     menuType, bubble
-    //   };
-    //   comp.showMenu(item);
-    //   fixture.detectChanges();
-    //   expect(comp.bubble).toEqual(bubble);
-    //   expect(comp.menuType).toEqual(menuType);
-    // });
+  describe('splitBubble', () => {
+      it('makes expected calls', () => {
+          spyOn(eventBubbleService, 'splitBubble');
+          comp.splitBubble();
+          expect(eventBubbleService.splitBubble).toHaveBeenCalled();
+      });
+  });
 
-    // it('isBorderMenu should return true if menutype is border menu', () => {
-    //   const menuType = MenuType.borderMenu;
-    //   const bubble = null;
-    //   const item = {
-    //     menuType, bubble
-    //   };
-    //   comp.showMenu(item);
-    //   fixture.detectChanges();
-    //   expect(comp.isBorderMenu()).toBeTruthy();
-    // });
+  describe('popBubble', () => {
+      it('makes expected calls', () => {
+          spyOn(eventBubbleService, 'popBubble');
+          comp.popBubble();
+          expect(eventBubbleService.popBubble).toHaveBeenCalled();
+      });
+  });
 
-    // it('isBorderMenu should return false if menutype is not border menu', () => {
-    //   const menuType = MenuType.bubbleMenu;
-    //   const bubble = null;
-    //   const item = {
-    //     menuType, bubble
-    //   };
-    //   comp.showMenu(item);
-    //   expect(comp.isBorderMenu()).toBeFalsy();
-    // });
+  describe('wrapBubble', () => {
+      it('makes expected calls', () => {
+          spyOn(eventBubbleService, 'wrapBubble');
+          comp.wrapBubble();
+          expect(eventBubbleService.wrapBubble).toHaveBeenCalled();
+      });
+  });
 
-    // it('isLeafBubbleMenu should return true if menutype is bubble menu and bubble is leaf bubble', () => {
-    //   const menuType = MenuType.bubbleMenu;
-    //   const bubble = new LeafBubble();
-    //   const item = {
-    //     menuType, bubble
-    //   };
-    //   comp.showMenu(item);
-    //   expect(comp.isLeafBubbleMenu()).toBeTruthy();
-    // });
+  describe('createBubble', () => {
+      it('makes expected calls', () => {
+          spyOn(eventBubbleService, 'createBubble');
+          comp.createBubble();
+          expect(eventBubbleService.createBubble).toHaveBeenCalled();
+      });
+  });
 
-    // it('isLeafBubbleMenu should return false if menutype is bubble menu and bubble is internal bubble', () => {
-    //   const menuType = MenuType.bubbleMenu;
-    //   const bubble = new InternalBubble();
-    //   const item = {
-    //     menuType, bubble
-    //   };
-    //   comp.showMenu(item);
-    //   expect(comp.isLeafBubbleMenu()).toBeFalsy();
-    // });
+  describe('editBubble', () => {
+      it('makes expected calls', () => {
+          spyOn(eventBubbleService, 'editBubble');
+          comp.editBubble();
+          expect(eventBubbleService.editBubble).toHaveBeenCalled();
+      });
+  });
 
-    // it('isLeafBubbleMenu should return false if menutype is border menu and bubble is leaf bubble', () => {
-    //   const menuType = MenuType.borderMenu;
-    //   const bubble = new LeafBubble();
-    //   const item = {
-    //     menuType, bubble
-    //   };
-    //   comp.showMenu(item);
-    //   expect(comp.isLeafBubbleMenu()).toBeFalsy();
-    // });
+  describe('deleteBubble', () => {
+      it('makes expected calls', () => {
+          spyOn(eventBubbleService, 'deleteBubble');
+          comp.deleteBubble();
+          expect(eventBubbleService.deleteBubble).toHaveBeenCalled();
+      });
+  });
 
-    // it('isLeafBubbleMenu should return false if menutype is border menu and bubble is internal bubble', () => {
-    //   const menuType = MenuType.borderMenu;
-    //   const bubble = new InternalBubble();
-    //   const item = {
-    //     menuType, bubble
-    //   };
-    //   comp.showMenu(item);
-    //   expect(comp.isLeafBubbleMenu()).toBeFalsy();
-    // });
-
-    // it('isInternalBubbleMenu should return true if menutype is bubble menu and bubble is internal bubble', () => {
-    //   const menuType = MenuType.bubbleMenu;
-    //   const bubble = new InternalBubble();
-    //   const item = {
-    //     menuType, bubble
-    //   };
-    //   comp.showMenu(item);
-    //   expect(comp.isInternalBubbleMenu()).toBeTruthy();
-    // });
-
-    // it('isInternalBubbleMenu should return false if menutype is bubble menu and bubble is leaf bubble', () => {
-    //   const menuType = MenuType.bubbleMenu;
-    //   const bubble = new LeafBubble();
-    //   const item = {
-    //     menuType, bubble
-    //   };
-    //   comp.showMenu(item);
-    //   expect(comp.isInternalBubbleMenu()).toBeFalsy();
-    // });
-
-    // it('isInternalBubbleMenu should return false if menutype is border menu ', () => {
-    //   const menuType = MenuType.borderMenu;
-    //   const bubble = null;
-    //   const item = {
-    //     menuType, bubble
-    //   };
-    //   comp.showMenu(item);
-    //   expect(comp.isInternalBubbleMenu()).toBeFalsy();
-    // });
+  describe('flattenBubble', () => {
+      it('makes expected calls', () => {
+          spyOn(eventBubbleService, 'flattenBubble');
+          comp.flattenBubble();
+          expect(eventBubbleService.flattenBubble).toHaveBeenCalled();
+      });
+  });
 
 });

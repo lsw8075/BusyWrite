@@ -13,4 +13,5 @@ export class EditItem {
     this.bubble = bubble;
     this.content = '';
   }
-}
+
+} /* istanbul ignore next */
