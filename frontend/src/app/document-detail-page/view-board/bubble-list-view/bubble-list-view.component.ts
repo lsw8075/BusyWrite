@@ -2,6 +2,7 @@ import { Component, EventEmitter, OnInit, Output, HostListener, ElementRef } fro
 import { BubbleService } from '../service';
 import { BubbleType, Bubble, ActionType, MenuType } from '../service';
 import { InternalBubble, LeafBubble } from '../../../model/bubble';
+import { EventBubbleService } from '../../../service/event/event-bubble.service';
 
 @Component({
   selector: 'app-bubble-list-view',
@@ -29,7 +30,7 @@ export class BubbleListViewComponent implements OnInit {
       this.selectedBubble = null;
       this.isWrapSelected = false;
       this.wrapBubbles = [];
-      console.log('clicked outside');
+//      console.log('clicked outside');
     }
   }
 
@@ -40,8 +41,14 @@ export class BubbleListViewComponent implements OnInit {
 
   constructor(
     private _bubbleService: BubbleService,
-    private eRef: ElementRef
-  ) {}
+    private eRef: ElementRef,
+    private _eventBubbleService: EventBubbleService) {
+
+    _eventBubbleService.sangjunBoardOpenEvent$.subscribe((bubble) => {
+      this.openSangjunBoard(bubble);
+    });
+
+  }
 
   ngOnInit() {
     this.refreshBubbleList();
@@ -54,10 +61,9 @@ export class BubbleListViewComponent implements OnInit {
   }
 
   public bubbleAction(event) {
-    console.log(event);
+//    console.log(event);
     switch (event.act) {
       case ActionType.openSangjun:
-        this.openSangjunBoardEvent();
         break;
       case ActionType.split:
         this.splitBubbleEvent(event.bubble);
@@ -83,8 +89,8 @@ export class BubbleListViewComponent implements OnInit {
     this.selectedBubble = null;
   }
 
-  public openSangjunBoardEvent() {
-    console.log('open sanjun board!');
+  public openSangjunBoard(bubble: Bubble) {
+    console.log(`[${bubble.id}] openSangjunBoard`);
   }
 
   showSelectedText(bubble: Bubble) {

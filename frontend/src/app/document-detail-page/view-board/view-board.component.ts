@@ -1,34 +1,29 @@
-import { Component, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, OnInit, Output } from '@angular/core';
 import { BubbleMenuComponent } from './bubble-menu/bubble-menu.component';
-import { MenuType, ActionType } from './service';
+import { MenuType, ActionType, Board } from './service';
 import { BubbleService } from './service';
 
 import { PreviewComponent } from './preview/preview.component';
+import { BoardService } from '../../service/board.service';
 
 @Component({
   selector: 'app-view-board',
   templateUrl: './view-board.component.html',
-  styleUrls: ['./view-board.component.css']
+  styleUrls: ['./view-board.component.css'],
 })
 
 export class ViewBoardComponent implements OnInit {
 
- @ViewChild(PreviewComponent)
- private preview: PreviewComponent;
-
   constructor(
-    private _bubbleService: BubbleService
-  ) { }
-
-  ngOnInit() {
-    console.log('view board component initialized: ', this.preview);
+    private _boardService: BoardService,
+    private _bubbleService: BubbleService) {
   }
+
+  ngOnInit() {}
 
   previewClick(event) {
     if (event.index === 1) {
-      console.log(this.preview);
-     this.preview.refreshList();
-      console.log('preview tab clicked');
+      this._boardService.updatePreview();
     }
   }
 

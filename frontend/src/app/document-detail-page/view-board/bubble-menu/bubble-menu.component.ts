@@ -1,6 +1,7 @@
 import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { BubbleType, Bubble, MenuType, ActionType } from '../service';
 import { BubbleService } from '../service';
+import { EventBubbleService } from '../../../service/event/event-bubble.service';
 
 @Component({
   selector: 'app-bubble-menu',
@@ -16,29 +17,18 @@ export class BubbleMenuComponent implements OnInit {
   @Input() bubble: Bubble;
 
   constructor(
-    private _bubbleSerivce: BubbleService
-  ) { }
+    private _bubbleSerivce: BubbleService,
+    private _eventBubbleService: EventBubbleService) {
+  }
 
   ngOnInit() {}
 
-  public openSangjunBoardEvent() {
-    const act = ActionType.openSangjun;
-    const bubble = this.bubble;
-    const menu = this.menu;
-    const event = {
-      act, bubble, menu
-    };
-    this.action.emit(event);
+  public openSangjunBoard() {
+    this._eventBubbleService.openSangjunBoard(this.bubble);
   }
 
-  public splitBubbleEvent() {
-    const act = ActionType.split;
-    const bubble = this.bubble;
-    const menu = this.menu;
-    const event = {
-      act, bubble, menu
-    };
-    this.action.emit(event);
+  public splitBubble() {
+    this._eventBubbleService.splitBubble(this.bubble);
   }
 
   public popBubbleEvent() {
@@ -95,3 +85,5 @@ export class BubbleMenuComponent implements OnInit {
 
 
 } /* istanbul ignore next */
+
+export { MenuType, ActionType };

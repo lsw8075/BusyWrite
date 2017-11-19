@@ -50,6 +50,8 @@ import { DirectoryService } from './service/directory.service';
 import { DocumentService } from './service/document.service';
 import { NoteService } from './service/note.service';
 
+import { EventBubbleService } from './service/event/event-bubble.service';
+
 import { DragulaModule } from 'ng2-dragula/ng2-dragula';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { QuillEditorModule } from 'ngx-quill-editor';
@@ -116,6 +118,7 @@ import { DialogModule } from 'primeng/primeng';
     CommentService,
     DirectoryService,
     DocumentService,
+    EventBubbleService,
     NoteService
   ],
   bootstrap: [AppComponent]
