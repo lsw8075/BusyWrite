@@ -48,49 +48,48 @@ export class BubbleListViewComponent implements OnInit {
       this.openSangjunBoard(bubble);
     });
 
+    _eventBubbleService.splitBubbleEvent$.subscribe((bubble) => {
+      this.splitBubble(bubble);
+    });
+
+    _eventBubbleService.popBubbleEvent$.subscribe((bubble) => {
+      this.popBubble(bubble);
+    });
+
+    _eventBubbleService.wrapBubbleEvent$.subscribe((bubble) => {
+      this.wrapBubble();
+    });
+
+    _eventBubbleService.createBubbleEvent$.subscribe((response) => {
+      this.createBubble(response.bubble, response.menu);
+    });
+
+    _eventBubbleService.editBubbleEvent$.subscribe((bubble) => {
+      this.editBubble(bubble);
+    });
+
+    _eventBubbleService.deleteBubbleEvent$.subscribe((bubble) => {
+      this.deleteBubble(bubble);
+    });
+
+    _eventBubbleService.flattenBubbleEvent$.subscribe((bubble) => {
+      this.flattenBubble(bubble);
+    });
   }
 
   ngOnInit() {
     this.refreshBubbleList();
   }
 
-  public refreshBubbleList() {
+  private refreshBubbleList() {
     this._bubbleService.getRootBubble().then(rootBubble => {
       this.rootBubble = rootBubble;
     });
   }
 
-  public bubbleAction(event) {
-//    console.log(event);
-    switch (event.act) {
-      case ActionType.openSangjun:
-        break;
-      case ActionType.split:
-        this.splitBubbleEvent(event.bubble);
-        break;
-      case ActionType.pop:
-        this.popBubbleEvent(event.bubble);
-        break;
-      case ActionType.wrap:
-        this.wrapBubbleEvent();
-        break;
-      case ActionType.create:
-        this.createBubbleEvent(event.bubble, event.menu);
-        break;
-      case ActionType.edit:
-        this.editBubbleEvent(event.bubble);
-        break;
-      case ActionType.delete:
-        this.deleteBubbleEvent(event.bubble);
-        break;
-      default:
-        throw new Error('undefined action type');
-    }
-    this.selectedBubble = null;
-  }
-
   public openSangjunBoard(bubble: Bubble) {
     console.log(`[${bubble.id}] openSangjunBoard`);
+    this.selectedBubble = null;
   }
 
   showSelectedText(bubble: Bubble) {
@@ -106,22 +105,29 @@ export class BubbleListViewComponent implements OnInit {
     console.log('text ', this.hightlightedText);
   }
 
-  public splitBubbleEvent(bubble: Bubble) {
+  public splitBubble(bubble: Bubble) {
     console.log('split bubble');
     this._bubbleService.splitLeafBubble(bubble, this.hightlightedText, this.highlightOffset)
-      .then(() => this.refreshBubbleList());
+      .then(() => {
+        this.refreshBubbleList();
+        this.selectedBubble = null;
+      });
   }
 
-  public popBubbleEvent(bubble: Bubble) {
+  public popBubble(bubble: Bubble) {
     console.log('pop bubble');
     this._bubbleService.popBubble(bubble)
-      .then(() => this.refreshBubbleList());
+      .then(() => {
+        this.refreshBubbleList();
+        this.selectedBubble = null;
+      });
   }
 
-  public wrapBubbleEvent() {
+  public wrapBubble() {
     console.log('wrap bubble');
     this.isWrapSelected = true;
     this.wrapBubbles.push(this.selectedBubble);
+    this.selectedBubble = null;
   }
 
   public wrapSelectedBubbles() {
@@ -132,10 +138,9 @@ export class BubbleListViewComponent implements OnInit {
       });
   }
 
-  public createBubbleEvent(bubble: Bubble, menu: MenuType) {
+  public createBubble(bubble: Bubble, menu: MenuType) {
     console.log('create bubble', bubble);
     let location = bubble.location;
-
     if (menu === MenuType.borderTopMenu) {
 
     } else if (menu === MenuType.borderBottomMenu) {
@@ -146,36 +151,51 @@ export class BubbleListViewComponent implements OnInit {
     this._bubbleService.createBubble(bubble.parentBubble, location, 'default create string')
       .then(response => {
         this.refreshBubbleList();
+        this.selectedBubble = null;
       });
   }
 
-  public editBubbleEvent(bubble: Bubble) {
+  public editBubble(bubble: Bubble) {
     console.log('edit bubble');
     if (bubble.type === BubbleType.leafBubble) {
       const newString = prompt('edit bubble!', (bubble).getContent());
       if (newString) {
         this._bubbleService.editBubble(bubble as LeafBubble, newString)
-          .then(() => this.refreshBubbleList());
+          .then(() => {
+            this.refreshBubbleList();
+            this.selectedBubble = null;
+          });
       }
     }
   }
 
-  public deleteBubbleEvent(bubble: Bubble) {
+  public deleteBubble(bubble: Bubble) {
     console.log('delete bubble');
     if (bubble.id !== 0) {
       this._bubbleService.deleteBubble(bubble)
-        .then(() => this.refreshBubbleList());
+        .then(() => {
+          this.refreshBubbleList();
+          this.selectedBubble = null;
+        });
 
     } else {
       throw new Error('Cannot delete root bubble');
     }
   }
 
+  public flattenBubble(bubble: Bubble) {
+    console.log('flatten bubble');
+    this._bubbleService.flattenBubble(bubble)
+      .then(() => {
+        this.refreshBubbleList();
+        this.selectedBubble = null;
+      });
+  }
+
   private cancelWrap() {
     this.wrapBubbles = [];
     this.isWrapSelected = false;
   }
-
 
   public showMenuEvent(bubble: Bubble, menuType: MenuType, mouseEvent: MouseEvent) {
     if (this.isWrapSelected &&

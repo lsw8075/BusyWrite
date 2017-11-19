@@ -31,59 +31,28 @@ export class BubbleMenuComponent implements OnInit {
     this._eventBubbleService.splitBubble(this.bubble);
   }
 
-  public popBubbleEvent() {
-    const act = ActionType.pop;
-    const bubble = this.bubble;
-    const menu = this.menu;
-    const event = {
-      act, bubble, menu
-    };
-    this.action.emit(event);
+  public popBubble() {
+    this._eventBubbleService.popBubble(this.bubble);
   }
 
-  public wrapBubbleEvent() {
-    const act = ActionType.wrap;
-    const bubble = this.bubble;
-    const menu = this.menu;
-    const event = {
-      act, bubble, menu
-    };
-    this.action.emit(event);
+  public wrapBubble() {
+    this._eventBubbleService.wrapBubble(this.bubble);
   }
 
-  public createBubbleEvent() {
-    const act = ActionType.create;
-    const bubble = this.bubble;
-    const menu = this.menu;
-    const event = {
-      act, bubble, menu
-    };
-    this.action.emit(event);
+  public createBubble() {
+    this._eventBubbleService.createBubble(this.bubble, this.menu);
   }
 
-  public editBubbleEvent() {
-    const act = ActionType.edit;
-    const bubble = this.bubble;
-    const menu = this.menu;
-    const event = {
-      act, bubble, menu
-    };
-    this.action.emit(event);
-
+  public editBubble() {
+    this._eventBubbleService.editBubble(this.bubble);
   }
 
-  public deleteBubbleEvent() {
-    const act = ActionType.delete;
-    const bubble = this.bubble;
-    const menu = this.menu;
-    const event = {
-      act, bubble, menu
-    };
-    this.action.emit(event);
+  public deleteBubble() {
+    this._eventBubbleService.deleteBubble(this.bubble);
   }
 
-
+  public flattenBubble() {
+    this._eventBubbleService.flattenBubble(this.bubble);
+  }
 
 } /* istanbul ignore next */
-
-export { MenuType, ActionType };

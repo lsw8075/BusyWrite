@@ -4,7 +4,6 @@ import { BubbleType, Bubble } from '../service';
 
 import { BoardService } from '../../../service/board.service';
 
-
 @Component({
   selector: 'app-preview',
   templateUrl: './preview.component.html',
@@ -13,11 +12,11 @@ import { BoardService } from '../../../service/board.service';
 export class PreviewComponent implements OnInit {
 
   rootBubble: Bubble;
-  contentList: string[];
 
   constructor(
     private _boardService: BoardService,
     private _bubbleService: BubbleService) {
+
     _boardService.previewUpdateEvent$.subscribe(() => {
       this.refreshList();
     });
@@ -30,7 +29,6 @@ export class PreviewComponent implements OnInit {
   public refreshList() {
       this._bubbleService.getRootBubble().then(rootBubble => {
       console.log('preview updated');
-      this.contentList = [];
       this.rootBubble = rootBubble;
     });
   }

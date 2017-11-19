@@ -23,17 +23,53 @@ export enum ActionType {
 @Injectable()
 export class EventBubbleService {
 
-  private sangjunBoardOpenEventSource = new Subject<Bubble>();
-  private bubbleSplitEventSource = new Subject<Bubble>();
+  private _sangjunBoardOpenEventSource = new Subject<Bubble>();
+  private _splitBubbleEventSource = new Subject<Bubble>();
+  private _popBubbleEventSource = new Subject<Bubble>();
+  private _wrapBubbleEventSource = new Subject<Bubble>();
+  private _createBubbleEventSource = new Subject<{bubble: Bubble, menu: MenuType}>();
+  private _editBubbleEventSource = new Subject<Bubble>();
+  private _deleteBubbleEventSource = new Subject<Bubble>();
+  private _flattenBubbleEventSource = new Subject<Bubble>();
 
-  sangjunBoardOpenEvent$ = this.sangjunBoardOpenEventSource.asObservable();
-  splitBubbleEvent$ = this.bubbleSplitEventSource.asObservable();
+  sangjunBoardOpenEvent$ = this._sangjunBoardOpenEventSource.asObservable();
+  splitBubbleEvent$ = this._splitBubbleEventSource.asObservable();
+  popBubbleEvent$ = this._popBubbleEventSource.asObservable();
+  wrapBubbleEvent$ = this._wrapBubbleEventSource.asObservable();
+  createBubbleEvent$ = this._createBubbleEventSource.asObservable();
+  editBubbleEvent$ = this._editBubbleEventSource.asObservable();
+  deleteBubbleEvent$ = this._deleteBubbleEventSource.asObservable();
+  flattenBubbleEvent$ = this._flattenBubbleEventSource.asObservable();
 
-  openSangjunBoard(bubble: Bubble) {
-    this.sangjunBoardOpenEventSource.next(bubble);
+  openSangjunBoard(bubble: Bubble): void {
+    this._sangjunBoardOpenEventSource.next(bubble);
   }
 
-  splitBubble(bubble: Bubble) {
-    this.bubbleSplitEventSource.next(bubble);
+  splitBubble(bubble: Bubble): void {
+    this._splitBubbleEventSource.next(bubble);
+  }
+
+  popBubble(bubble: Bubble): void {
+    this._popBubbleEventSource.next(bubble);
+  }
+
+  wrapBubble(bubble: Bubble): void {
+    this._wrapBubbleEventSource.next(bubble);
+  }
+
+  createBubble(bubble: Bubble, menu: MenuType): void {
+    this._createBubbleEventSource.next({bubble, menu});
+  }
+
+  editBubble(bubble: Bubble): void {
+    this._editBubbleEventSource.next(bubble);
+  }
+
+  deleteBubble(bubble: Bubble): void {
+    this._deleteBubbleEventSource.next(bubble);
+  }
+
+  flattenBubble(bubble: Bubble): void {
+    this._flattenBubbleEventSource.next(bubble);
   }
 }

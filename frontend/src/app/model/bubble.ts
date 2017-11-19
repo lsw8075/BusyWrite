@@ -261,6 +261,7 @@ export class InternalBubble implements Bubble {
       newLeaf.location = location;
       newLeaf.parentBubble = this;
       this.childBubbles.splice(location, 1, newLeaf);
+      this.insertChildren(location, newLeaf);
 
       return newLeaf;
     } else if (bubble.type === BubbleType.leafBubble) {
