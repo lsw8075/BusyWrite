@@ -14,3 +14,4 @@ export { BubbleType, Bubble, SuggestBubble } from '../model/bubble';
 export { Comment } from '../model/comment';
 export { FileSystemEntity } from '../model/file-system-entity';
 export { Note } from '../model/note';
+export { EditItem } from '../model/board';

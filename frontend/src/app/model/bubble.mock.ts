@@ -60,5 +60,7 @@ omnis dolor repellendus.`);
   const b1: InternalBubble = new InternalBubble(1, [b7, b2, b3, b4]);
 const rootBubble: InternalBubble = new InternalBubble(0, [b1, b15]);
 const bubbleList: Array<Bubble> = [b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15, b16, b17, b18, b19];
+b5.getEditLock(2);
+
 export { rootBubble as MockBubbleRoot };
 export { bubbleList as MockBubbleList };

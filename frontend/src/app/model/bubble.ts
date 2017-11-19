@@ -37,7 +37,7 @@ export class LeafBubble implements Bubble {
   comments: Array<Comment> = [];
   suggestBubbles: Array<SuggestBubble> = [];
 
-  editLock: boolean;
+  private editLock: boolean;
 
   ownerId: number;
   content: string;
@@ -70,6 +70,14 @@ export class LeafBubble implements Bubble {
   releaseLock(): void {
     this.ownerId = -1;
     this.editLock = false;
+  }
+
+  isBeingEditted(): boolean {
+    return this.editLock;
+  }
+
+  whoIsEditting(): number {
+    return this.ownerId;
   }
 
   getHeight(): number {

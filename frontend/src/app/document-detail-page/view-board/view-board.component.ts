@@ -27,14 +27,6 @@ export class ViewBoardComponent implements OnInit {
     }
   }
 
-  // public openPreview() { // when click on previewTab
-
-  // }
-
-  // public openBubbleView() { // when click on bubbleViewTab
-
-  // }
-
   // public onShowBubbleMenuEvent() {
 
   // }

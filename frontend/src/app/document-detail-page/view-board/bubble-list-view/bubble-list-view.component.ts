@@ -2,7 +2,7 @@ import { Component, EventEmitter, OnInit, Output, HostListener, ElementRef } fro
 import { BubbleService } from '../service';
 import { BubbleType, Bubble, ActionType, MenuType } from '../service';
 import { InternalBubble, LeafBubble } from '../../../model/bubble';
-import { EventBubbleService } from '../service';
+import { EventBubbleService, BoardService } from '../service';
 
 @Component({
   selector: 'app-bubble-list-view',
@@ -21,7 +21,8 @@ export class BubbleListViewComponent implements OnInit {
   constructor(
     private _bubbleService: BubbleService,
     private eRef: ElementRef,
-    private _eventBubbleService: EventBubbleService) {}
+    private _eventBubbleService: EventBubbleService,
+    private _boardService: BoardService) {}
 
   ngOnInit() {
     this._refreshBubbleList();
@@ -107,12 +108,18 @@ public createBubble(bubble: Bubble, menu: MenuType) {
     } else if (menu !== MenuType.borderTopMenu) {
       throw new Error('create bubble invoked with not border');
     }
-    this._bubbleService.createBubble(bubble.parentBubble, location, 'default create string')
+    this._bubbleService.createBubble(bubble.parentBubble, location, '')
       .then(response => {
+        this._boardService.createBubble(response);
         this._eventBubbleService.clearState();
         this._refreshBubbleList();
       });
   }
+
+  private finishEdit(bubble: Bubble) {
+    this._refreshBubbleList();
+  }
+
   public editBubble(bubble: Bubble) {
     if (bubble.type === BubbleType.leafBubble) {
       const newString = prompt('edit bubble!', (bubble).getContent());
@@ -158,6 +165,11 @@ public onClickEvent(bubble: Bubble, menu: MenuType, mouseEvent: MouseEvent): voi
 
   public isMenuOpen(bubble, menuType): boolean {
     return this._eventBubbleService.isMenuOpen(bubble, menuType);
+  }
+
+  public isBubbleContentShown(bubble): boolean {
+    return (bubble.whoIsEditting() === -1) ||
+           (bubble.whoIsEditting() === 1);
   }
 
   public isInternal(bubble: Bubble): Boolean {
@@ -233,6 +245,10 @@ public onClickEvent(bubble: Bubble, menu: MenuType, mouseEvent: MouseEvent): voi
     });
     this._eventBubbleService.flattenBubbleEvent$.subscribe((bubble) => {
       this.flattenBubble(bubble);
+    });
+
+    this._boardService.finishBubbleEditEvent$.subscribe((bubble) => {
+      this.finishEdit(bubble);
     });
   }
 

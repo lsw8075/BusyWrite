@@ -1,6 +1,29 @@
 <p-tabView>
   <p-tabPanel header="Edit">
-    <app-edit-item></app-edit-item>
+    <div *ngIf="editItems">
+      <accordion>
+        <div class='container' [dragula]='"note-bag"' [dragulaModel]='notes'>
+          <div *ngFor="let editItem of editItems">
+            <accordion-group #group>
+                <div accordion-heading>
+                  <span class="badge badge-pill badge-info">
+                    <div class="handle" tooltip="click me to drag notes around!" (click)="$event.stopPropagation()">
+                      +
+                    </div>
+                  </span>
+                  <span class="summary">{{editItem.bubble.id}}</span>
+                  <span class="badge float-right pull-right">
+                    <button (click)="finishEdit(editItem)" type="button" class="btn btn-secondary btn-sm hvr-sweep-to-right">
+                      <i class="fa fa-fw fa-check"></i>
+                    </button>
+                  </span>
+                </div>
+                <app-edit-item [editItem]="editItem"></app-edit-item>
+            </accordion-group>
+          </div>
+        </div>
+      </accordion>
+    </div>
   </p-tabPanel>
 
   <p-tabPanel header="Note">

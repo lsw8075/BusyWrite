@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { DragulaService } from 'ng2-dragula/ng2-dragula';
 
-import { Note, NoteService } from './service';
+import { Note, NoteService, Bubble, BoardService, EditItem } from './service';
 
 @Component({
   selector: 'app-edit-board',
@@ -11,19 +11,35 @@ import { Note, NoteService } from './service';
 export class EditBoardComponent implements OnInit {
 
   notes: Array<Note>;
+  editItems: Array<EditItem>;
 
   constructor(
     private _dragulaService: DragulaService,
-    private _noteService: NoteService
+    private _noteService: NoteService,
+    private _boardService: BoardService
   ) { }
 
   ngOnInit() {
     this._getNotes();
+    this._getBubbles();
     this._dragulaService.setOptions('note-bag', {
       moves: function (el, container, handle) {
         return handle.className === 'handle';
       }
     });
+    this._boardService.createBubbleEvent$.subscribe((editItem: EditItem) => {
+      this.createNewEditItem(editItem);
+    });
+  }
+
+  public finishEdit(editItem: EditItem) {
+    this._boardService.finishEdit(editItem.bubble, editItem.content);
+    this.editItems = this.editItems.filter(e => e.id !== editItem.id);
+  }
+
+  public createNewEditItem(editItem: EditItem) {
+    this.editItems.push(editItem);
+    console.log('new item');
   }
 
   addNote() {
@@ -53,6 +69,9 @@ export class EditBoardComponent implements OnInit {
       .then(notes => {
         this.notes = notes;
       });
+  }
+  private _getBubbles(): void {
+    this.editItems = [];
   }
 
 }

@@ -33,15 +33,22 @@ export class BubbleService {
     throw new Error('bubble with index ' + id + ' does not exist');
   }
 
-  public createBubble(parentBubble: InternalBubble, location: number, content: string): Promise<void> {
-    const newBubble = new LeafBubble(this._getId(), content);
+  public createBubble(parentBubble: InternalBubble, location: number, content: string): Promise<Bubble> {
+    const tempUserId = 1;
+    const newBubble = new LeafBubble(this._getId(), content, tempUserId);
     parentBubble.insertChildren(location, newBubble);
-    return Promise.resolve(null);
+    return Promise.resolve(newBubble);
   }
 
-  public editBubble(bubble: LeafBubble, newContent: string): Promise<void> {
-    bubble.content = newContent;
-    return Promise.resolve(null);
+
+  public editBubble(bubble: Bubble, newContent: string): Promise<void> {
+    if (bubble.type === BubbleType.leafBubble) {
+      (bubble as LeafBubble).content = newContent;
+      (bubble as LeafBubble).releaseLock();
+      return Promise.resolve(null);
+    } else {
+      throw new Error('Cannot edit internal bubble');
+    }
   }
 
   public deleteBubble(bubble: Bubble): Promise<void> {

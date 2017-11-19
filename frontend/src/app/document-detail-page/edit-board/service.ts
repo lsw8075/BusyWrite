@@ -1,2 +1,2 @@
-export { Note, NoteService } from '../service';
+export { Note, NoteService, Bubble, BoardService, EditItem } from '../service';
 

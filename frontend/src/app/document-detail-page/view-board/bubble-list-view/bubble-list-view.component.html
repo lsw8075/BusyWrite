@@ -46,7 +46,15 @@
           </div>
         </div>
 
-        <div (mouseup)="showSelectedText(bubble)" [ngStyle]="setLeafBubbleStyle(bubble)" innerHtml="{{bubble.content}}"></div>
+        <div *ngIf="isBubbleContentShown(bubble); then owner else editLock"></div>
+
+        <ng-template #owner>
+          <div (mouseup)="showSelectedText(bubble)" [ngStyle]="setLeafBubbleStyle(bubble)" innerHtml="{{bubble.content}}"></div>
+        </ng-template>
+
+        <ng-template #editLock>
+          <div class="editting">This bubble is being editted by {{bubble.whoIsEditting()}}</div>
+        </ng-template>
 
       </div>
 
