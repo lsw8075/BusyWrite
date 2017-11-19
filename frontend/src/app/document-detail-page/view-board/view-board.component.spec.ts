@@ -5,7 +5,7 @@ import { BubbleService } from './service';
 import { Component } from '@angular/core';
 import { TabViewModule } from 'primeng/primeng';
 import { BubbleMenuComponent } from './bubble-menu/bubble-menu.component';
-import { BoardService } from'./service';
+import { BoardService } from './service';
 import { DocumentService } from '../../service/document.service';
 
 @Component({

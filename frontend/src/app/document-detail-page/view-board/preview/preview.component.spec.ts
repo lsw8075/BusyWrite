@@ -37,7 +37,7 @@ const mockInternalBubble = {
 };
 
 class MockBubbleService {
-  getRootBubble(){}
+  getRootBubble() {}
 }
 
 class MockBoardService {
