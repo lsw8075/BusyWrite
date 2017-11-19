@@ -38,7 +38,18 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+	'channels',
 ]
+
+CHANNEL_LAYERS = {
+	"default": {
+		"BACKEND": "asgi_redis.RedisChannelLayer",
+		"CONFIG": {
+			"hosts": [("localhost", 6379)],
+		},
+		"ROUTING": "busyback.urls.channel_routing",
+	},
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

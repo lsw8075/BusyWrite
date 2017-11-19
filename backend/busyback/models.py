@@ -199,4 +199,4 @@ class SharedLink(News):
 class Notification(News):
     notitype = models.IntegerField()
     who = models.TextField()
-
+    
