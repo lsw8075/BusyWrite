@@ -10,8 +10,6 @@ import { EventBubbleService } from '../../../service/event/event-bubble.service'
 })
 export class BubbleMenuComponent implements OnInit {
 
-  @Output() action = new EventEmitter();
-
   menuType = MenuType;
   @Input() menu: MenuType;
   @Input() bubble: Bubble;

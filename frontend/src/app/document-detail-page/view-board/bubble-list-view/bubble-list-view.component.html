@@ -2,7 +2,7 @@
     <ng-container *ngTemplateOutlet="bubbleUnit; context: { $implicit: rootBubble }"></ng-container>
 </div>
 
-<div *ngIf="isWrapSelected">
+<div *ngIf="isWrapSelected()">
   <button type="button" class="btn btn-primary btn-sm wrap" (click)="wrapSelectedBubbles(); $event.stopPropagation()">
     WRAP!
   </button>
@@ -16,14 +16,13 @@
 
       <div *ngIf="isMenuOpen(bubble, menuType.internalMenu)">
         <div [ngStyle]="setActionStyle(bubble)" class="action" >
-          <app-bubble-menu (action)="bubbleAction($event)" [bubble]="bubble" [menu]="menuType.internalMenu"></app-bubble-menu>
+          <app-bubble-menu [bubble]="bubble" [menu]="menuType.internalMenu"></app-bubble-menu>
         </div>
       </div>
 
 
-
       <div *ngFor="let childBubble of bubble.childBubbles">
-        <div [ngStyle]="setInternalBubbleStyle(childBubble)" class="internalBubble" (click)="showMenuEvent(childBubble, menuType.internalMenu, $event); $event.stopPropagation()">
+        <div [ngStyle]="setInternalBubbleStyle(childBubble)" class="internalBubble" (click)="onClickEvent(childBubble, menuType.internalMenu, $event); $event.stopPropagation()">
           <ng-container *ngTemplateOutlet="bubbleUnit; context: { $implicit: childBubble }"></ng-container>
         </div>
       </div>
@@ -31,19 +30,19 @@
     </ng-template>
 
     <ng-template #leaf>
-      <div class="placeholder placeholder-top" (click)="showMenuEvent(bubble, menuType.borderTopMenu, $event); $event.stopPropagation()">
+      <div class="placeholder placeholder-top" (click)="onClickEvent(bubble, menuType.borderTopMenu, $event); $event.stopPropagation()">
         <div *ngIf="isMenuOpen(bubble, menuType.borderTopMenu)">
           <div [ngStyle]="setActionStyle(bubble)" class="action" >
-            <app-bubble-menu (action)="bubbleAction($event)" [bubble]="bubble" [menu]="menuType.borderTopMenu"></app-bubble-menu>
+            <app-bubble-menu [bubble]="bubble" [menu]="menuType.borderTopMenu"></app-bubble-menu>
           </div>
         </div>
       </div>
 
-      <div class="leafBubble" (click)="showMenuEvent(bubble, menuType.leafMenu, $event); $event.stopPropagation()">
+      <div class="leafBubble" (click)="onClickEvent(bubble, menuType.leafMenu, $event); $event.stopPropagation()">
 
         <div *ngIf="isMenuOpen(bubble, menuType.leafMenu)">
           <div [ngStyle]="setActionStyle(bubble)" class="action" >
-            <app-bubble-menu (action)="bubbleAction($event)" [bubble]="bubble" [menu]="menuType.leafMenu"></app-bubble-menu>
+            <app-bubble-menu [bubble]="bubble" [menu]="menuType.leafMenu"></app-bubble-menu>
           </div>
         </div>
 
@@ -51,10 +50,10 @@
 
       </div>
 
-      <div class="placeholder placeholder-bottom" (click)="showMenuEvent(bubble, menuType.borderBottomMenu, $event); $event.stopPropagation()">
+      <div class="placeholder placeholder-bottom" (click)="onClickEvent(bubble, menuType.borderBottomMenu, $event); $event.stopPropagation()">
         <div *ngIf="isMenuOpen(bubble, menuType.borderBottomMenu)">
           <div [ngStyle]="setActionStyle(bubble)" class="action" >
-            <app-bubble-menu (action)="bubbleAction($event)" [bubble]="bubble" [menu]="menuType.borderBottomMenu"></app-bubble-menu>
+            <app-bubble-menu [bubble]="bubble" [menu]="menuType.borderBottomMenu"></app-bubble-menu>
           </div>
         </div>
       </div>

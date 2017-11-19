@@ -6,7 +6,7 @@ export { CommentService } from '../service/comment.service';
 export { DirectoryService } from '../service/directory.service';
 export { DocumentService } from '../service/document.service';
 export { NoteService } from '../service/note.service';
-export { EventBubbleService } from '../service/event/event-bubble.service';
+export { EventBubbleService, MenuType, ActionType } from '../service/event/event-bubble.service';
 
 export { Alert } from '../model/alert';
 export { Board } from '../model/board';

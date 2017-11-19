@@ -4,12 +4,6 @@ import { BubbleType, Bubble, ActionType, MenuType } from '../service';
 import { InternalBubble, LeafBubble } from '../../../model/bubble';
 import { EventBubbleService } from '../service';
 
-enum SelectMode {
-  none = 1,
-  openSangjunBoard, split, pop, wrap, create, edit, delete, flatten,
-  insertNote
-}
-
 @Component({
   selector: 'app-bubble-list-view',
   templateUrl: './bubble-list-view.component.html',
@@ -20,12 +14,6 @@ export class BubbleListViewComponent implements OnInit {
   actionType = ActionType;
 
   rootBubble: Bubble; // bubbles that have root as parents
-  state: SelectMode = SelectMode.none;
-  selectedBubble: Bubble;
-  selectedMenuType: MenuType;
-
-  wrapBubbles: Array<Bubble> = [];
-  isWrapSelected = false;
 
   hightlightedText = '';
   highlightOffset = 0;
@@ -33,46 +21,18 @@ export class BubbleListViewComponent implements OnInit {
   constructor(
     private _bubbleService: BubbleService,
     private eRef: ElementRef,
-    private _eventBubbleService: EventBubbleService) {
-
-    _eventBubbleService.sangjunBoardOpenEvent$.subscribe((bubble) => {
-      this.openSangjunBoard(bubble);
-    });
-    _eventBubbleService.splitBubbleEvent$.subscribe((bubble) => {
-      this.splitBubble(bubble);
-    });
-    _eventBubbleService.popBubbleEvent$.subscribe((bubble) => {
-      this.popBubble(bubble);
-    });
-    _eventBubbleService.wrapBubbleEvent$.subscribe((bubble) => {
-      this.wrapBubble();
-    });
-    _eventBubbleService.createBubbleEvent$.subscribe((response) => {
-      this.createBubble(response.bubble, response.menu);
-    });
-    _eventBubbleService.editBubbleEvent$.subscribe((bubble) => {
-      this.editBubble(bubble);
-    });
-    _eventBubbleService.deleteBubbleEvent$.subscribe((bubble) => {
-      this.deleteBubble(bubble);
-    });
-    _eventBubbleService.flattenBubbleEvent$.subscribe((bubble) => {
-      this.flattenBubble(bubble);
-    });
-  }
+    private _eventBubbleService: EventBubbleService) {}
 
   ngOnInit() {
     this._refreshBubbleList();
+    this._subscribeEvents();
   }
 
   // host listener to check if user click outside
   @HostListener('document:click', ['$event'])
   clickout(event) {
     if (!this.eRef.nativeElement.contains(event.target)) {
-      this.selectedBubble = null;
-      this.isWrapSelected = false;
-      this.wrapBubbles = [];
-      this.state = SelectMode.none;
+      this._eventBubbleService.clearState();
     }
   }
   // @HostListener('document:keyup', ['$event'])
@@ -82,67 +42,65 @@ export class BubbleListViewComponent implements OnInit {
 
 
   public openSangjunBoard(bubble: Bubble) {
+    this._eventBubbleService.setState(ActionType.openSangjun);
     console.log(`[${bubble.id}] openSangjunBoard`);
-    this.state = SelectMode.openSangjunBoard;
-    this.selectedBubble = null;
-
-    this.state = SelectMode.none;
+    this._eventBubbleService.clearState();
   }
 
   showSelectedText(bubble: Bubble) {
-    this.state = SelectMode.split;
     let text = '';
+    let startOffset = 0;
     if (window.getSelection) {
         text = window.getSelection().toString();
-        console.log(window.getSelection().getRangeAt(0).startOffset);
+        startOffset = window.getSelection().getRangeAt(0).startOffset;
+        console.log(window.getSelection().getRangeAt(0));
     } else if ((document as any).selection && (document as any).selection.type !== 'Control') {
         text = (document as any).selection.createRange().text;
+        startOffset = (document as any).selection.createRange().startOffset;
     }
+    console.log(text, startOffset);
     this.hightlightedText = text;
-    this.highlightOffset = window.getSelection().getRangeAt(0).startOffset;
-    console.log('text ', this.hightlightedText);
+    this.highlightOffset = startOffset;
   }
 
   public splitBubble(bubble: Bubble) {
     console.log('split bubble');
+    this._eventBubbleService.setState(ActionType.split);
     this._bubbleService.splitLeafBubble(bubble, this.hightlightedText, this.highlightOffset)
       .then(() => {
         this._refreshBubbleList();
-        this.selectedBubble = null;
-        this.state = SelectMode.none;
+        this._eventBubbleService.clearState();
       });
   }
 
   public popBubble(bubble: Bubble) {
-    this.state = SelectMode.pop;
-    console.log('pop bubble');
+    this._eventBubbleService.setState(ActionType.pop);
     this._bubbleService.popBubble(bubble)
       .then(() => {
         this._refreshBubbleList();
-        this.selectedBubble = null;
-        this.state = SelectMode.none;
+        this._eventBubbleService.clearState();
       });
   }
 
   public wrapBubble() {
-    this.state = SelectMode.wrap;
-    console.log('wrap bubble');
-    this.isWrapSelected = true;
-    this.wrapBubbles.push(this.selectedBubble);
-    this.selectedBubble = null;
+    this._eventBubbleService.setState(ActionType.wrap);
   }
 
   public wrapSelectedBubbles() {
-    this._bubbleService.wrapBubble(this.wrapBubbles)
+    const wrapBubbles: Array<Bubble> = this._eventBubbleService.wrapBubbles;
+    this._bubbleService.wrapBubble(wrapBubbles)
       .then(response => {
         this._refreshBubbleList();
-        this.cancelWrap();
-        this.state = SelectMode.none;
+        this._eventBubbleService.clearState();
+        console.log('hi');
       });
   }
+
+  public isWrapSelected(): boolean {
+    return this._eventBubbleService.getActionState() === ActionType.wrap;
+  }
 public createBubble(bubble: Bubble, menu: MenuType) {
-    this.state = SelectMode.create;
-    console.log('create bubble', bubble);
+    this._eventBubbleService.setState(ActionType.create);
     let location = bubble.location;
     if (menu === MenuType.borderBottomMenu) {
       location++;
@@ -151,22 +109,19 @@ public createBubble(bubble: Bubble, menu: MenuType) {
     }
     this._bubbleService.createBubble(bubble.parentBubble, location, 'default create string')
       .then(response => {
+        this._eventBubbleService.clearState();
         this._refreshBubbleList();
-        this.selectedBubble = null;
-        this.state = SelectMode.none;
       });
   }
   public editBubble(bubble: Bubble) {
-    console.log('edit bubble');
     if (bubble.type === BubbleType.leafBubble) {
       const newString = prompt('edit bubble!', (bubble).getContent());
       if (newString) {
-        this.state = SelectMode.edit;
+        this._eventBubbleService.setState(ActionType.edit);
         this._bubbleService.editBubble(bubble as LeafBubble, newString)
           .then(() => {
+            this._eventBubbleService.clearState();
             this._refreshBubbleList();
-            this.selectedBubble = null;
-            this.state = SelectMode.none;
           });
       }
     }
@@ -174,57 +129,35 @@ public createBubble(bubble: Bubble, menu: MenuType) {
 public deleteBubble(bubble: Bubble) {
     console.log('delete bubble');
     if (bubble.id !== 0) {
-      this.state = SelectMode.delete;
+      this._eventBubbleService.setState(ActionType.delete);
       this._bubbleService.deleteBubble(bubble)
         .then(() => {
+          this._eventBubbleService.clearState();
           this._refreshBubbleList();
-          this.selectedBubble = null;
-          this.state = SelectMode.none;
         });
-
     } else {
       throw new Error('Cannot delete root bubble');
     }
   }
 
   public flattenBubble(bubble: Bubble) {
-    this.state = SelectMode.flatten;
+    this._eventBubbleService.setState(ActionType.flatten);
     console.log('flatten bubble');
     this._bubbleService.flattenBubble(bubble)
       .then(() => {
+        this._eventBubbleService.clearState();
         this._refreshBubbleList();
-        this.selectedBubble = null;
-        this.state = SelectMode.none;
       });
   }
 
 
-public showMenuEvent(bubble: Bubble, menuType: MenuType, mouseEvent: MouseEvent) {
-    if (this.isWrapSelected &&
-        menuType === MenuType.leafMenu &&
-        this.wrapBubbles[0].parentBubble.id === bubble.parentBubble.id
-       ) {
-        if (this._isBubbleSelected(bubble)) {
-          this.wrapBubbles = this.wrapBubbles.filter(b => b.id !== bubble.id);
-        } else {
-          this.wrapBubbles.push(bubble);
-        }
-        console.log(this.wrapBubbles.length);
-    } else {
-      this.cancelWrap();
-      this.selectedBubble = bubble;
-      this.selectedMenuType = menuType;
-    }
+public onClickEvent(bubble: Bubble, menu: MenuType, mouseEvent: MouseEvent): void {
+  console.log('clicked');
+    this._eventBubbleService.selectBubble(bubble, menu);
 }
 
-  public isMenuOpen(bubble, menuType) {
-    if (this.selectedBubble) {
-      return (!this.isWrapSelected) &&
-      (bubble.id === this.selectedBubble.id) &&
-      (menuType === this.selectedMenuType);
-    } else {
-      return false;
-    }
+  public isMenuOpen(bubble, menuType): boolean {
+    return this._eventBubbleService.isMenuOpen(bubble, menuType);
   }
 
   public isInternal(bubble: Bubble): Boolean {
@@ -249,7 +182,7 @@ public showMenuEvent(bubble: Bubble, menuType: MenuType, mouseEvent: MouseEvent)
     styles['margin'] = `0px -${offset + height * space}px`;
     styles['padding'] = `0px ${offset + height * space - lineWidth}px`;
 
-    if (this._isBubbleSelected(bubble)) {
+    if (this._eventBubbleService.isBubbleSelected(bubble)) {
       styles['background-color'] = `rgb(157, 172, 255)`;
     }
 
@@ -262,38 +195,45 @@ public showMenuEvent(bubble: Bubble, menuType: MenuType, mouseEvent: MouseEvent)
     styles['border-left-width'] = `${lineWidth}px`;
     styles['border-right-width'] = `${lineWidth}px`;
 
-    if (this._isBubbleSelected(bubble)) {
+    if (this._eventBubbleService.isBubbleSelected(bubble)) {
       styles['background-color'] = `rgb(157, 172, 255)`;
     }
 
     return styles;
   }
 
-  private cancelWrap() {
-    this.wrapBubbles = [];
-    this.isWrapSelected = false;
-  }
 
   private _refreshBubbleList() {
     this._bubbleService.getRootBubble().then(rootBubble => {
       this.rootBubble = rootBubble;
     });
   }
-  private _isBubbleSelected(bubble: Bubble): boolean {
-    if (this.selectedBubble) {
-      if (this.selectedBubble.id === bubble.id) {
-        return true;
-      }
-    } else if (this.isWrapSelected) {
-      for (const b of this.wrapBubbles) {
-        if (b.id === bubble.id) {
-          return true;
-        }
-      }
-      return false;
-    } else {
-      return false;
-    }
+
+  private _subscribeEvents() {
+    this._eventBubbleService.sangjunBoardOpenEvent$.subscribe((bubble) => {
+      this.openSangjunBoard(bubble);
+    });
+    this._eventBubbleService.splitBubbleEvent$.subscribe((bubble) => {
+      this.splitBubble(bubble);
+    });
+    this._eventBubbleService.popBubbleEvent$.subscribe((bubble) => {
+      this.popBubble(bubble);
+    });
+    this._eventBubbleService.wrapBubbleEvent$.subscribe((bubble) => {
+      this.wrapBubble();
+    });
+    this._eventBubbleService.createBubbleEvent$.subscribe((response) => {
+      this.createBubble(response.bubble, response.menu);
+    });
+    this._eventBubbleService.editBubbleEvent$.subscribe((bubble) => {
+      this.editBubble(bubble);
+    });
+    this._eventBubbleService.deleteBubbleEvent$.subscribe((bubble) => {
+      this.deleteBubble(bubble);
+    });
+    this._eventBubbleService.flattenBubbleEvent$.subscribe((bubble) => {
+      this.flattenBubble(bubble);
+    });
   }
 
 } /* istanbul ignore next */
