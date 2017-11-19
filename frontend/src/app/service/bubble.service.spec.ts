@@ -3,21 +3,7 @@ import { async, inject, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { Observable } from 'rxjs/Observable';
 
 import { BubbleService } from './bubble.service';
-import { Bubble, InternalBubble, LeafBubble, BubbleType } from '../model/bubble';
-
-const mockBubbleData = [
-  { id: 0, parent_id: 0, bubble_type: 'internal', children: [ 1, 15 ]},
-  { id: 1, parent_id: 0, bubble_type: 'internal', children: [ 7, 2, 3 ] },
-  { id: 2, parent_id: 1, bubble_type: 'leaf', content: 'ui do' },
-  { id: 3, parent_id: 1, bubble_type: 'internal', children: [ 5, 6 ] },
-  { id: 5, parent_id: 3, bubble_type: 'leaf', content: 'iatur?'},
-  { id: 6, parent_id: 3, bubble_type: 'leaf', content: 'Animi, id est laborum'},
-  { id: 7, parent_id: 1, bubble_type: 'internal', children: [ 8, 9, 10 ]},
-  { id: 9, parent_id: 7, bubble_type: 'leaf', content: 'xxdsds'},
-  { id: 10, parent_id: 7, bubble_type: 'leaf', content: 'yy'},
-  { id: 15, parent_id: 0, bubble_type: 'leaf', content: 'node'},
-];
-
+import { Bubble, InternalBubble, LeafBubble } from '../model/bubble';
 
 describe('BubbleService', () => {
 
@@ -150,9 +136,4 @@ describe('BubbleService', () => {
     let b1 = service.getBubbleById(8);
     service.flattenBubble(b1).then((res) => expect(res).toBeNull());
   }));
-
-
-
-
-
 });
