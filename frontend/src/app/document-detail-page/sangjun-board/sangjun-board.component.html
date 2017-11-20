@@ -1,0 +1,27 @@
+<div *ngIf="bubble">
+  <h3>Bubble {{bubble.id}}'s Details</h3>
+
+  <div class="form-check form-check-inline">
+    <label class="form-check-label">
+      <input class="form-check-input" type="checkbox" [(ngModel)]="isSBChecked"> Suggest Bubbles
+    </label>
+  </div>
+  <div class="form-check form-check-inline">
+    <label class="form-check-label">
+      <input class="form-check-input" type="checkbox" [(ngModel)]="isCommentChecked"> Comments
+    </label>
+  </div>
+
+  <div *ngIf="isSBChecked">
+    <h4>Suggest Bubbles</h4>
+    <div *ngFor="let suggestBubble of suggestBubbles">
+      <app-suggest-bubble [suggestBubble]="suggestBubble"></app-suggest-bubble>
+    </div>
+  </div>
+
+  <div *ngIf="isCommentChecked">
+    <h4>Comments</h4>
+    <app-comment></app-comment>
+  </div>
+
+</div>

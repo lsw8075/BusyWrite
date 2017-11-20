@@ -31,14 +31,25 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'backend.apps.BusybackConfig',
+    'busyback.apps.BusybackConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+	'channels',
 ]
+
+CHANNEL_LAYERS = {
+	"default": {
+		"BACKEND": "asgi_redis.RedisChannelLayer",
+		"CONFIG": {
+			"hosts": [("localhost", 6379)],
+		},
+		"ROUTING": "busyback.urls.channel_routing",
+	},
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
