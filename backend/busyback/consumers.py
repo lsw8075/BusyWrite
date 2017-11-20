@@ -95,7 +95,7 @@ def ws_receive(message):
             data = json.loads(message.content['text'])
         except KeyError:
             log.debug("ws message isn't json text")
-            message.reply_channel.send({'header': 'create_bubble', 'accept': False, 'content': 'no text attached'})
+            message.reply_channel.send({'header': 'create_bubble', 'accept': False, 'message': 'no text attached'})
             return
 
         if set(data.keys()) != set(('parent', 'location', 'content')):
