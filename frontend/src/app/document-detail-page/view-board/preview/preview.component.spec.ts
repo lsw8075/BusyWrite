@@ -1,9 +1,13 @@
 import { ComponentFixture, TestBed, async, fakeAsync, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { BubbleService } from '../view-board.component';
+import { BubbleService, BoardService, EditItem } from '../../service';
 import { Bubble, BubbleType, LeafBubble, InternalBubble } from '../../../model/bubble';
 import { Component } from '@angular/core';
 import { PreviewComponent } from './preview.component';
+
+import { Subject } from 'rxjs/Subject';
+import { Observable } from 'rxjs/Observable';
+import 'rxjs/add/observable/of';
 
 const mockLeafBubble = {
   id: 2,
@@ -33,15 +37,26 @@ const mockInternalBubble = {
 };
 
 class MockBubbleService {
-  async getBubbleById(id: number) {
-    return await mockInternalBubble;
-  }
+  getRootBubble() {}
+}
+
+class MockBoardService {
+
+  private previewUpdateEventSource = new Subject<void>();
+  private createBubbleEventSource = new Subject<EditItem>();
+  private finishBubbleEditEventSource = new Subject<Bubble>();
+
+  previewUpdateEvent$ = this.previewUpdateEventSource.asObservable();
+  createBubbleEvent$ = this.createBubbleEventSource.asObservable();
+  finishBubbleEditEvent$ = this.finishBubbleEditEventSource.asObservable();
+
 }
 
 describe('PreviewComponent', () => {
   let comp: PreviewComponent;
   let fixture: ComponentFixture<PreviewComponent>;
   let bubbleService: BubbleService;
+  let boardService: BoardService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -49,7 +64,8 @@ describe('PreviewComponent', () => {
         PreviewComponent
       ],
       providers: [
-        {provide: BubbleService, useClass: MockBubbleService}
+        {provide: BubbleService, useClass: MockBubbleService},
+        { provide: BoardService, useClass: MockBoardService },
       ]
     }).compileComponents();
   }));
@@ -57,27 +73,22 @@ describe('PreviewComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(PreviewComponent);
     comp = fixture.componentInstance;
+    bubbleService = fixture.debugElement.injector.get(BubbleService);
+    boardService = fixture.debugElement.injector.get(BoardService);
+
+    spyOn(boardService, 'previewUpdateEvent$').and.returnValue(Observable.of(null));
   });
 
   it('can instantiate it', () => {
     expect(comp).not.toBeNull();
   });
 
-  it('contentList defaults to: []', () => {
-      expect(comp.contentList).toEqual([]);
-  });
-
-  it('call bubbleTraversal on ngOnInit', fakeAsync(() => {
-    spyOn(comp, '_bubbleTraversal');
+  it('refresh list on ngOnInit', fakeAsync(() => {
+    spyOn(bubbleService, 'getRootBubble').and.returnValue(Promise.resolve(new InternalBubble(0, [])));
     comp.ngOnInit();
     fixture.detectChanges();
     tick();
-    expect(comp._bubbleTraversal).toHaveBeenCalled();
+    expect(bubbleService.getRootBubble).toHaveBeenCalled();
   }));
-
-  it('get content[] from bubbleTraversal internal', () => {
-    comp._bubbleTraversal(mockInternalBubble);
-    expect(comp.contentList.length).toEqual(1);
-  });
 
 });

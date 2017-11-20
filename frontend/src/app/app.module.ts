@@ -11,9 +11,9 @@ import { AppComponent } from './app.component';
 import { LandingComponent } from './landing/landing.component';
 import { SigninComponent } from './signin/signin.component';
 
-import { AlarmPageComponent } from './alarm-page/alarm-page.component';
-import { AlarmDetailComponent } from './alarm-page/alarm-detail/alarm-detail.component';
-import { InvitationAcceptanceComponent } from './alarm-page/invitation-acceptance/invitation-acceptance.component';
+import { AlertPageComponent } from './alert-page/alert-page.component';
+import { AlertDetailComponent } from './alert-page/alert-detail/alert-detail.component';
+import { InvitationAcceptanceComponent } from './alert-page/invitation-acceptance/invitation-acceptance.component';
 
 import { MainPageComponent } from './main-page/main-page.component';
 import { SideNavigationComponent } from './main-page/side-navigation/side-navigation.component';
@@ -41,7 +41,7 @@ import { BoardManagerComponent } from './document-detail-page/board-manager/boar
 
 import { AppRoutingModule } from './route/app-routing.module';
 
-import { AlarmService } from './service/alarm.service';
+import { AlertService } from './service/alert.service';
 import { AuthenticationService } from './service/authentication.service';
 import { BoardService } from './service/board.service';
 import { BubbleService } from './service/bubble.service';
@@ -50,14 +50,21 @@ import { DirectoryService } from './service/directory.service';
 import { DocumentService } from './service/document.service';
 import { NoteService } from './service/note.service';
 
+import { EventBubbleService } from './service/event/event-bubble.service';
+
+import { DragulaModule } from 'ng2-dragula/ng2-dragula';
+import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
+import { QuillEditorModule } from 'ngx-quill-editor';
+import { AccordionModule } from 'ngx-bootstrap/accordion';
+import { TooltipModule } from 'ngx-bootstrap/tooltip';
 
 import { TabViewModule } from 'primeng/primeng';
 import { ButtonModule } from 'primeng/primeng';
-import { DragulaModule } from 'ng2-dragula/ng2-dragula';
-import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
+
 import { EditorModule } from 'primeng/primeng';
-import { QuillEditorModule } from 'ngx-quill-editor';
+
 import { DialogModule } from 'primeng/primeng';
+
 
 @NgModule({
   declarations: [
@@ -65,12 +72,12 @@ import { DialogModule } from 'primeng/primeng';
     LandingComponent,
     SigninComponent,
     MainPageComponent,
-    AlarmPageComponent,
+    AlertPageComponent,
     DocumentDetailPageComponent,
     SideNavigationComponent,
     BrowserComponent,
     SharePopupComponent,
-    AlarmDetailComponent,
+    AlertDetailComponent,
     InvitationAcceptanceComponent,
     ViewBoardComponent,
     BubbleListViewComponent,
@@ -99,16 +106,19 @@ import { DialogModule } from 'primeng/primeng';
     EditorModule,
     QuillEditorModule,
     DialogModule,
+    AccordionModule.forRoot(),
+    TooltipModule.forRoot(),
   ],
   providers: [
     {provide: APP_BASE_HREF, useValue: '/'},
-    AlarmService,
+    AlertService,
     AuthenticationService,
     BoardService,
     BubbleService,
     CommentService,
     DirectoryService,
     DocumentService,
+    EventBubbleService,
     NoteService
   ],
   bootstrap: [AppComponent]

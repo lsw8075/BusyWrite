@@ -1,24 +1,7 @@
 import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
-import { BubbleType, Bubble, LeafBubble, InternalBubble } from '../../document-detail-page.component';
-import { BubbleService } from '../../document-detail-page.component';
-
-export enum MenuType {
-  borderTopMenu = 1,
-  borderBottomMenu,
-  leafMenu,
-  internalMenu,
-  multipleBubble,
-}
-
-export enum ActionType {
-  openSangjun = 1,
-  split,
-  pop,
-  wrap,
-  create,
-  edit,
-  delete,
-}
+import { BubbleType, Bubble, MenuType, ActionType } from '../service';
+import { BubbleService } from '../service';
+import { EventBubbleService } from '../../../service/event/event-bubble.service';
 
 @Component({
   selector: 'app-bubble-menu',
@@ -27,89 +10,52 @@ export enum ActionType {
 })
 export class BubbleMenuComponent implements OnInit {
 
-  @Output() action = new EventEmitter();
-
   menuType = MenuType;
   @Input() menu: MenuType;
   @Input() bubble: Bubble;
+  editLock: boolean;
 
   constructor(
-    private _bubbleSerivce: BubbleService
-  ) { }
-
-  ngOnInit() {}
-
-  public openSangjunBoardEvent() {
-    const act = ActionType.openSangjun;
-    const bubble = this.bubble;
-    const menu = this.menu;
-    const event = {
-      act, bubble, menu
-    };
-    this.action.emit(event);
+    private _bubbleSerivce: BubbleService,
+    private _eventBubbleService: EventBubbleService) {
   }
 
-  public splitBubbleEvent() {
-    const act = ActionType.split;
-    const bubble = this.bubble;
-    const menu = this.menu;
-    const event = {
-      act, bubble, menu
-    };
-    this.action.emit(event);
+  ngOnInit() {
+    if (this.bubble.isBeingEditted()) {
+      this.editLock = true;
+    }
   }
 
-  public popBubbleEvent() {
-    const act = ActionType.pop;
-    const bubble = this.bubble;
-    const menu = this.menu;
-    const event = {
-      act, bubble, menu
-    };
-    this.action.emit(event);
+  public openSangjunBoard() {
+    this._eventBubbleService.openSangjunBoard(this.bubble);
   }
 
-  public wrapBubbleEvent() {
-    const act = ActionType.wrap;
-    const bubble = this.bubble;
-    const menu = this.menu;
-    const event = {
-      act, bubble, menu
-    };
-    this.action.emit(event);
+  public splitBubble() {
+    this._eventBubbleService.splitBubble(this.bubble);
   }
 
-  public createBubbleEvent() {
-    const act = ActionType.create;
-    const bubble = this.bubble;
-    const menu = this.menu;
-    const event = {
-      act, bubble, menu
-    };
-    this.action.emit(event);
+  public popBubble() {
+    this._eventBubbleService.popBubble(this.bubble);
   }
 
-  public editBubbleEvent() {
-    const act = ActionType.edit;
-    const bubble = this.bubble;
-    const menu = this.menu;
-    const event = {
-      act, bubble, menu
-    };
-    this.action.emit(event);
-
+  public wrapBubble() {
+    this._eventBubbleService.wrapBubble(this.bubble);
   }
 
-  public deleteBubbleEvent() {
-    const act = ActionType.delete;
-    const bubble = this.bubble;
-    const menu = this.menu;
-    const event = {
-      act, bubble, menu
-    };
-    this.action.emit(event);
+  public createBubble() {
+    this._eventBubbleService.createBubble(this.bubble, this.menu);
   }
 
+  public editBubble() {
+    this._eventBubbleService.editBubble(this.bubble);
+  }
 
+  public deleteBubble() {
+    this._eventBubbleService.deleteBubble(this.bubble);
+  }
+
+  public flattenBubble() {
+    this._eventBubbleService.flattenBubble(this.bubble);
+  }
 
 } /* istanbul ignore next */
