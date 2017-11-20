@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from .consumers import ws_connect, ws_receive, ws_disconnect
 from .models import *
 from .errors import *
+from django.utils import timezone
 import json
 import pdb
 
@@ -12,6 +13,7 @@ class ChannelConnectTestCase(ChannelTestCase):
     def setUp(self):
 #pdb.set_trace()
         d = Document.objects.create(title='A')
+        Document.objects.create(title='B')
         u = User.objects.create_user(username='swpp')
         u.set_password('swpp')
         u.save()
@@ -39,8 +41,7 @@ class ChannelConnectTestCase(ChannelTestCase):
     def test_wr_connect_value_error(self):
         message = {"path": "document_detail"}
         
-        client = Client()
-        client.send("websocket.connect", content=message)
+        self.client.send("websocket.connect", content=message)
         
         message = self.get_next_message("websocket.connect", require=True)
         ws_connect(message)
@@ -52,8 +53,7 @@ class ChannelConnectTestCase(ChannelTestCase):
     def test_wr_connect_does_not_exist(self):
         message = {"path": "document_detail/3"}
 
-        client = Client()
-        client.send("websocket.connect", content=message)
+        self.client.send("websocket.connect", content=message)
         
         message = self.get_next_message("websocket.connect", require=True)
         ws_connect(message)
@@ -61,10 +61,23 @@ class ChannelConnectTestCase(ChannelTestCase):
         result = self.get_next_message(message.reply_channel.name, require=True)
         self.assertEqual(result['accept'], False)
         self.assertEqual(result['message'], "document does not exist")
+
+    def test_wr_connect_not_contributor(self):
+        message = {"path": "document_detail/2"}
+
+        self.client.send("websocket.connect", content=message)
+
+        message = self.get_next_message("websocket.connect", require=True)
+        ws_connect(message)
         
+        result = self.get_next_message(message.reply_channel.name, require=True)
+        self.assertEqual(result['accept'], False)
+        self.assertEqual(result['message'], 'user does not contribute to the document')
+
 class ChannelTestCase(ChannelTestCase):
     def setUp(self):
         d = Document.objects.create(title='A')
+        b = NormalBubble.objects.create(location=0, document =d, timestamp=timezone.now())
         u = User.objects.create_user(username='swpp')
         u.set_password('swpp')
         u.save()
@@ -82,7 +95,7 @@ class ChannelTestCase(ChannelTestCase):
 #self.get_next_message(message.reply_channel.name, require=True)
         self.client.receive()
     
-    def test_wr_receive_fail(self):
+    def test_wr_receive_invalid_command(self):
         message = {'order':0, 'header': 'wow'}
         self.client.send("websocket.receive", content=message)
 #message = self.get_next_message("websocket.receive", require=True)
@@ -91,7 +104,24 @@ class ChannelTestCase(ChannelTestCase):
         self.client.consume('websocket.receive')
         result = self.client.receive()
         self.assertEqual(result['accept'], False)
+        self.assertEqual(result['message'], 'invalid command')
 
+    def test_wr_receive_header_Key_Error(self):
+        message = {'order':0, 'text':'wow'}
+        self.client.send('websocket.receive', content=message)
+        self.client.consume('websocket.receive')
+        result = self.client.receive()
+        self.assertEqual(result['accept'], False)
+        self.assertEqual(result['message'], 'header needed')
+        
+    def test_wr_receive_text_Key_Error(self):
+        message = {'order':0, 'header': 'create_bubble'}
+        self.client.send('websocket.receive', content=message)
+        self.client.consume('websocket.receive')
+        result = self.client.receive()
+        self.assertEqual(result['accept'], False)
+        self.assertEqual(result['message'], 'no text attached')
+        
     def test_wr_receive_get_bubble_list(self):
         message = {'order':0, 'header': 'get_bubble_list'}
         self.client.send("websocket.receive", content=message)
@@ -102,6 +132,15 @@ class ChannelTestCase(ChannelTestCase):
         result = self.client.receive()
         self.assertEqual(result['header'], "get_bubble_list")
 
+    def test_wr_receive_create_bubble(self):
+        message = {'order':0, 'header': 'create_bubble', 'text': {'parent': 1, 'location': 0, 'content': 'wow'}}
+        self.client.send("websocket.receive", content=message)
+        self.client.consume('websocket.receive')
+        result = self.client.receive()
+        self.assertEqual(result['header'], 'create_bubble')
+        self.assertEqual(result['content']['location'], 0)
+        self.assertEqual(result['content']['content'], 'wow')
+    
     def test_wr_disconnect(self):
         self.client.send("websocket.disconnect", content={"text":""})
         message = self.get_next_message("websocket.disconnect", require=True)

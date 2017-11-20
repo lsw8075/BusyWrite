@@ -8,6 +8,7 @@ from channels.auth import channel_session_user, channel_session_user_from_http
 from .models import *
 from .bubbles import *
 import logging
+import pdb
 
 log = logging.getLogger(__name__)
 
@@ -70,8 +71,8 @@ def ws_receive(message):
     # conform to the expected message format.
     try:
         command = message.content['header']
-    except ValueError:
-        log.debug("ws message doesn't have header=%s", command)
+    except KeyError:
+        log.debug("ws message doesn't have header")
         message.reply_channel.send({"header": "response", "accept": False, "message": "header needed"})
         return
 
@@ -88,7 +89,33 @@ def ws_receive(message):
             return
         message.reply_channel.send({"header": "get_bubble_list", "accept": True, "content": result})
         return
-#elif command == '':
+
+    elif command == 'create_bubble':
+        try:
+            data = json.loads(message.content['text'])
+        except KeyError:
+            log.debug("ws message isn't json text")
+            message.reply_channel.send({'header': 'create_bubble', 'accept': False, 'content': 'no text attached'})
+            return
+
+        if set(data.keys()) != set(('parent', 'location', 'content')):
+            log.debug("ws message unexpected format command=%s", command)
+            return
+        
+        if data:
+            # do_create_bubble creates bubble and give edit lock to user
+            # TODO: pass over also document_id to do_create_bubble when merging with Seungwoo's code
+            result = do_create_normal_bubble(message.user.id, int(data['parent']), 
+                    int(data['location']), True, data['content'])
+
+            if not result:
+                log.debug("error occurred when creating new bubble at location=%d", data['location'])
+                message.reply_channel__send({"header": "create_bubble", "accept": False, "text": data})
+                return
+
+            Group('document_detail-'+id, channel_layer=message.channel_layer).send({'header': 'create_bubble', 'accept': True, 'content': {'parent': data['parent'], 'location': data['location'], 'content': data['content']}})
+            return
+
 #elif command == '':
     else:
         log.debug("ws message have invalid command=%s", command)

@@ -36,14 +36,12 @@ def do_fetch_suggest_bubble(bubble_id: int):
 
 
 def do_fetch_bubbles(document_id: int):
-    pass
-'''
     try:
-        bubbles = Bubble.objects.filter(document=document).values()
+        document = Document.objects.get(id=document_id)
+        bubbles = NormalBubble.objects.filter(document=document).values()
     except Bubble.DoesNotExist:
         raise InternalError('Document has no bubble')
     return list(bubbles)
-'''
 
 def get_root_bubble(document_id: int):
     '''Get root bubble of a document'''

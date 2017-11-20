@@ -26,8 +26,8 @@ class BubblesTestCase(TestCase):
         with self.assertRaises(BubbleDoesNotExistError):
             do_fetch_suggest_bubble(100)
 
-    def test_do_fetch_bubbles(self):
-        do_fetch_bubbles(1)
+#def test_do_fetch_bubbles(self):
+#do_fetch_bubbles(1)
     def test_get_root_bubble(self):
         get_root_bubble(1)
 
