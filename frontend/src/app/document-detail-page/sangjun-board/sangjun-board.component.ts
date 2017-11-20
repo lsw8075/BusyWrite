@@ -9,8 +9,8 @@ import { Bubble, SuggestBubble } from '../../model/bubble';
   styleUrls: ['./sangjun-board.component.css']
 })
 export class SangjunBoardComponent implements OnInit {
-  isSBChecked: boolean = true;
-  isCommentChecked: boolean = true;
+  isSBChecked = true;
+  isCommentChecked = true;
   bubble: Bubble;
   suggestBubbles: Array<SuggestBubble>;
 
