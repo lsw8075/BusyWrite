@@ -1,19 +1,11 @@
-<div *ngIf="bubbleRootList">
-    <div *ngFor="let bubble of bubbleRootList">
-      <ng-container *ngTemplateOutlet="bubbleUnit; context: { $implicit: bubble }"></ng-container>
-    </div>
+<div *ngIf="rootBubble">
+    <ng-container *ngTemplateOutlet="bubbleUnit; context: { $implicit: rootBubble }"></ng-container>
 </div>
 
-<div *ngIf="isMultiBubbleMenuOpen()">
-  <div class="btn-group">
-    <button type="button" class="btn btn-info btn-sm" (click)="wrapBubbleEvent(); $event.stopPropagation()">
-      <i class="fa fa-comments fa-fw"></i>
-      Wrap Selected Bubbles
-    </button>
-  </div>
-    <button type="button" class="btn btn-info btn-sm" (click)="cancelWrap(); $event.stopPropagation()">
-      <i class="fa fa-times fa-fw"></i>
-    </button>
+<div *ngIf="isWrapSelected()">
+  <button type="button" class="btn btn-primary btn-sm wrap" (click)="wrapSelectedBubbles(); $event.stopPropagation()">
+    WRAP!
+  </button>
 </div>
 
 <ng-template #bubbleUnit let-bubble>
@@ -21,44 +13,55 @@
     <div *ngIf="isInternal(bubble); then internal else leaf"></div>
 
     <ng-template #internal>
-      <div *ngIf="isSingleMenuOpen(bubble, menuType.internalMenu)">
+
+      <div *ngIf="isMenuOpen(bubble, menuType.internalMenu)">
         <div [ngStyle]="setActionStyle(bubble)" class="action" >
-          <app-bubble-menu (action)="bubbleAction($event)" [bubble]="bubble" [menu]="menuType.internalMenu"></app-bubble-menu>
+          <app-bubble-menu [bubble]="bubble" [menu]="menuType.internalMenu"></app-bubble-menu>
         </div>
       </div>
 
-      <div [ngStyle]="setBubbleStyle(bubble)" class="internalBubble" (click)="showMenuEvent(bubble, menuType.internalMenu, $event); $event.stopPropagation()">
-        <div *ngFor="let childBubble of bubble.childBubbleList">
+
+      <div *ngFor="let childBubble of bubble.childBubbles">
+        <div [ngStyle]="setInternalBubbleStyle(childBubble)" class="internalBubble" (click)="onClickEvent(childBubble, menuType.internalMenu, $event); $event.stopPropagation()">
           <ng-container *ngTemplateOutlet="bubbleUnit; context: { $implicit: childBubble }"></ng-container>
         </div>
       </div>
+
     </ng-template>
 
     <ng-template #leaf>
-      <div class="placeholder placeholder-top" (click)="showMenuEvent(bubble, menuType.borderTopMenu, $event); $event.stopPropagation()">
-        <div *ngIf="isSingleMenuOpen(bubble, menuType.borderTopMenu)">
+      <div class="placeholder placeholder-top" (click)="onClickEvent(bubble, menuType.borderTopMenu, $event); $event.stopPropagation()">
+        <div *ngIf="isMenuOpen(bubble, menuType.borderTopMenu)">
           <div [ngStyle]="setActionStyle(bubble)" class="action" >
-            <app-bubble-menu (action)="bubbleAction($event)" [bubble]="bubble" [menu]="menuType.borderTopMenu"></app-bubble-menu>
+            <app-bubble-menu [bubble]="bubble" [menu]="menuType.borderTopMenu"></app-bubble-menu>
           </div>
         </div>
       </div>
 
-      <div class="leafBubble" (click)="showMenuEvent(bubble, menuType.leafMenu, $event); $event.stopPropagation()">
+      <div class="leafBubble" (click)="onClickEvent(bubble, menuType.leafMenu, $event); $event.stopPropagation()">
 
-        <div *ngIf="isSingleMenuOpen(bubble, menuType.leafMenu)">
+        <div *ngIf="isMenuOpen(bubble, menuType.leafMenu)">
           <div [ngStyle]="setActionStyle(bubble)" class="action" >
-            <app-bubble-menu (action)="bubbleAction($event)" [bubble]="bubble" [menu]="menuType.leafMenu"></app-bubble-menu>
+            <app-bubble-menu [bubble]="bubble" [menu]="menuType.leafMenu"></app-bubble-menu>
           </div>
         </div>
 
-        {{bubble.content}}
+        <div *ngIf="isBubbleContentShown(bubble); then owner else editLock"></div>
+
+        <ng-template #owner>
+          <div (mouseup)="showSelectedText(bubble)" [ngStyle]="setLeafBubbleStyle(bubble)" innerHtml="{{bubble.content}}"></div>
+        </ng-template>
+
+        <ng-template #editLock>
+          <div class="editting">This bubble is being editted by {{bubble.whoIsEditting()}}</div>
+        </ng-template>
 
       </div>
 
-      <div class="placeholder placeholder-bottom" (click)="showMenuEvent(bubble, menuType.borderBottomMenu, $event); $event.stopPropagation()">
-        <div *ngIf="isSingleMenuOpen(bubble, menuType.borderBottomMenu)">
+      <div class="placeholder placeholder-bottom" (click)="onClickEvent(bubble, menuType.borderBottomMenu, $event); $event.stopPropagation()">
+        <div *ngIf="isMenuOpen(bubble, menuType.borderBottomMenu)">
           <div [ngStyle]="setActionStyle(bubble)" class="action" >
-            <app-bubble-menu (action)="bubbleAction($event)" [bubble]="bubble" [menu]="menuType.borderBottomMenu"></app-bubble-menu>
+            <app-bubble-menu [bubble]="bubble" [menu]="menuType.borderBottomMenu"></app-bubble-menu>
           </div>
         </div>
       </div>

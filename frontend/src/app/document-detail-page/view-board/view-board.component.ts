@@ -1,28 +1,31 @@
-import { Component, OnInit, Output, ViewChild } from '@angular/core';
-import { BubbleService, BoardService } from '../document-detail-page.component';
-import { Board } from '../document-detail-page.component';
-import { BubbleType, Bubble, LeafBubble, InternalBubble, SuggestBubble } from '../document-detail-page.component';
-import { BubbleMenuComponent, MenuType, ActionType } from './bubble-menu/bubble-menu.component';
+import { Component, OnInit, Output } from '@angular/core';
+import { BubbleMenuComponent } from './bubble-menu/bubble-menu.component';
+import { MenuType, ActionType, Board } from './service';
+import { BubbleService } from './service';
+
+import { PreviewComponent } from './preview/preview.component';
+import { BoardService } from '../../service/board.service';
 
 @Component({
   selector: 'app-view-board',
   templateUrl: './view-board.component.html',
-  styleUrls: ['./view-board.component.css']
+  styleUrls: ['./view-board.component.css'],
 })
 
-export class ViewBoardComponent {
+export class ViewBoardComponent implements OnInit {
 
   constructor(
-    private _bubbleService: BubbleService
-  ) {}
+    private _boardService: BoardService,
+    private _bubbleService: BubbleService) {
+  }
 
-  // public openPreview() { // when click on previewTab
+  ngOnInit() {}
 
-  // }
-
-  // public openBubbleView() { // when click on bubbleViewTab
-
-  // }
+  previewClick(event) {
+    if (event.index === 1) {
+      this._boardService.updatePreview();
+    }
+  }
 
   // public onShowBubbleMenuEvent() {
 
@@ -38,5 +41,3 @@ export class ViewBoardComponent {
 
 } /* istanbul ignore next */
 
-export { BubbleService, BoardService };
-export { BubbleType, ActionType, Bubble, LeafBubble, InternalBubble, SuggestBubble, Board };

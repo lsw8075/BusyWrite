@@ -7,7 +7,7 @@ export class DocumentService {
   documentTitle: string;
 
   constructor() {
-    this.documentTitle = "BusyWrite Demo Document";
+    this.documentTitle = 'BusyWrite Demo Document';
   }
 
   async setTitle(newTitle: string) {
@@ -16,10 +16,10 @@ export class DocumentService {
         return false;
       } else {
         this.documentTitle = newTitle;
-      }   
+      }
     } else {
       throw new Error('Invaild Title');
-    }   
+    }
   }
 
   async getTitle() {

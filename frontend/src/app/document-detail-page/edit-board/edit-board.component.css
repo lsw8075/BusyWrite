@@ -1,0 +1,6 @@
+span:hover > .fa-sticky-note {
+  color: black;
+}
+.fa-sticky-note {
+  color: grey;
+}
