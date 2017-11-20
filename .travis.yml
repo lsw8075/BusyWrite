@@ -8,6 +8,8 @@ matrix:
         pip: true
       install:
         - pip install django coverage coveralls
+        - pip install -U channels
+        - pip install -U asgi_redis
       before_script:
         - cd backend
         - python3 manage.py migrate

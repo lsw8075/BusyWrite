@@ -9,6 +9,8 @@ from django.http import HttpResponseNotFound, JsonResponse
 
 from django.forms.models import model_to_dict
 
+import json
+
 def signup(request):
     if request.method == 'POST':
         req_data = json.loads(request.body.decode())
