@@ -7,6 +7,7 @@ export { DirectoryService } from '../service/directory.service';
 export { DocumentService } from '../service/document.service';
 export { NoteService } from '../service/note.service';
 export { EventBubbleService, MenuType, ActionType } from '../service/event/event-bubble.service';
+export { EventSangjunBoardService } from '../service/event/event-sangjun-board.service';
 
 export { Alert } from '../model/alert';
 export { Board } from '../model/board';
