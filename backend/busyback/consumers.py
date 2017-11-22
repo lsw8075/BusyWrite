@@ -63,9 +63,9 @@ def ws_receive(message):
         return
 
     # Double check if user is contributor of the document
-#    if not document.is_contributed_by(message.user):
-#        message.reply_channel.send({"header": "response", "accept": False, "message": "user does not contribute to the document"})
-#        return
+    if not document.is_contributed_by(message.user.id):
+        message.reply_channel.send({"header": "response", "accept": False, "message": "user does not contribute to the document"})
+        return
 
     # Parse out a message from the content text, bailing if it doesn't
     # conform to the expected message format.
@@ -97,26 +97,114 @@ def ws_receive(message):
             log.debug("ws message isn't json text")
             message.reply_channel.send({'header': 'create_bubble', 'accept': False, 'message': 'no text attached'})
             return
-
-        if set(data.keys()) != set(('parent', 'location', 'content')):
-            log.debug("ws message unexpected format command=%s", command)
-            return
-        
+       
         if data:
+            
+            if set(data.keys()) != set(('parent', 'location', 'content')):
+                log.debug("ws message unexpected format command=%s", command)
+                message.reply_channel.send({'header': 'create_bubble', 'accept': False, 'message': 'text does not follow format'})
+                return
+ 
             # do_create_bubble creates bubble and give edit lock to user
             # TODO: pass over also document_id to do_create_bubble when merging with Seungwoo's code
-            result = do_create_normal_bubble(message.user.id, int(data['parent']), 
-                    int(data['location']), True, data['content'])
+            try:
+                result = do_create_normal_bubble(message.user.id, int(data['parent']), 
+                        int(data['location']), True, data['content'])
+            except:
+                log.debug("do_create_normal_bubble failed")
+                message.reply_channel.send({'header': 'create_bubble', 'accept': False, 'message': 'create normal bubble failed'})
+                return
 
             if not result:
                 log.debug("error occurred when creating new bubble at location=%d", data['location'])
-                message.reply_channel__send({"header": "create_bubble", "accept": False, "text": data})
+                message.reply_channel.send({"header": "create_bubble", "accept": False, "text": data})
                 return
 
             Group('document_detail-'+id, channel_layer=message.channel_layer).send({'header': 'create_bubble', 'accept': True, 'content': {'parent': data['parent'], 'location': data['location'], 'content': data['content']}})
             return
+    
+    elif command == 'create_suggest_bubble':
+        try:
+            data = json.loads(message.content['text'])
+        except KeyError:
+            log.debug("ws message isn't json text")
+            message.reply_channel.send({'header': 'create_suggest_bubble', 'accept': False, 'message': 'no text attached'})
+            return
 
-#elif command == '':
+        if data:
+            
+            if set(data.keys()) != set(('binded_bubble', 'content')):
+                log.debug("ws message unexpected format comand=%s", command)
+                message.reply_channel.send({'header': 'create_suggest_bubble', 'accept': False, 'message': 'text does not follow format'})
+                return
+
+            try:
+                # TODO: pass over also document_id
+                result = do_create_suggest_bubble(message.user.id, int(data['binded_bubble']), data['content'])
+            except:
+                log.debug("do_create_suggest_bubble failed")
+                message.reply_channel.send({'header': 'create_suggest_bubble', 'accept': False, 'message': 'create suggest bubble failed'})
+                return
+
+            if not result:
+                log.debug("error occurred when creating new suggest bubble at bubble=%d", data['binded_bubble'])
+                message.reply_channel.send({'header': 'create_suggest_bubble', 'accept': False, 'text': data})
+                return
+
+            Group('document_detail-'+id, channel_layer=message.channel_layer).send({'header': 'create_suggest_bubble', 'accept': True, 'content': {'binded_bubble': data['binded_bubble'], 'content': data['content']}})
+            return
+    
+    elif command == 'edit_bubble':
+        try:
+            data = json.loads(message.content['text'])
+        except KeyError:
+            log.debug("ws message isn't json text")
+            message.reply_channel.send({'header': 'edit_bubble', 'accept': False, 'message': 'no text attached'})
+            return
+
+        if data:
+            
+            if set(data.keys()) != set(('bubble_id', 'content')):
+                log.debug('ws message unexpeced format command=%s', command)
+                message.reply_channel.send({'header': 'edit_bubble', 'accept': False, 'message': 'text does not follow format'})
+                return
+
+            try:
+                result = do_edit_normal_bubble(message.user.id, int(data['bubble_id']), data['content'])
+            except:
+                log.debug("do_edit_normal_bubble failed")
+                message.reply_channel.send({'header': 'edit_bubble', 'accept': False, 'message': 'edit bubble failed'})
+                return
+
+            Group('document_detail-'+id, channel_layer=message.channel_layer).send({'header': 'edit_bubble', 'accept': True, 'content': {'bubble_id': data['bubble_id'], 'content': data['content']}})
+            return
+        
+    elif command == 'delete_bubble':
+        try:
+            # TODO: maybe change it into {path: 'delete_bubble/(bubble_id)'}
+            data = json.loads(message.content['text'])
+        except KeyError:
+            log.debug("ws message isn't json text")
+            message.reply_channel.send({'header': 'delete_bubble', 'accept': False, 'message': 'no text attached'})
+            return
+        
+        if data:
+
+            if set(data.keys()) != set(('bubble_id')):
+                log.debug("ws message unexpected format command=%s", command)
+                message.reply_channel.send({'header': 'delete_bubble', 'accept': False, 'message': 'text does not follow format'})
+                return
+
+            try:
+                result = do_delete_normal_bubble(message.user.id, int(data['bubble_id']))
+            except:
+                log.debug("do_delete_normal_bubble failed")
+                message.reply_channel.send({"header": "delete_bubble", "accept": False, 'message': 'delete bubble failed'})
+                return
+            
+            Group('document_detail-'+id, channel_layer=message.channel_layer).send({'header': 'delete_bubble', 'accept': True, 'content': {'bubble_id': data['bubble_id']}})
+            return
+
     else:
         log.debug("ws message have invalid command=%s", command)
         message.reply_channel.send({"accept": False, "message": "invalid command"})
