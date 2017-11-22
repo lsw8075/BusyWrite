@@ -93,7 +93,6 @@ export class BubbleListViewComponent implements OnInit {
       .then(response => {
         this._refreshBubbleList();
         this._eventBubbleService.clearState();
-        console.log('hi');
       });
   }
 
@@ -135,7 +134,6 @@ public createBubble(bubble: Bubble, menu: MenuType) {
     }
   }
 public deleteBubble(bubble: Bubble) {
-    console.log('delete bubble');
     if (bubble.id !== 0) {
       this._eventBubbleService.setState(ActionType.delete);
       this._bubbleService.deleteBubble(bubble)
@@ -150,7 +148,6 @@ public deleteBubble(bubble: Bubble) {
 
   public flattenBubble(bubble: Bubble) {
     this._eventBubbleService.setState(ActionType.flatten);
-    console.log('flatten bubble');
     this._bubbleService.flattenBubble(bubble)
       .then(() => {
         this._eventBubbleService.clearState();
@@ -159,10 +156,9 @@ public deleteBubble(bubble: Bubble) {
   }
 
 
-public onClickEvent(bubble: Bubble, menu: MenuType, mouseEvent: MouseEvent): void {
-  console.log('clicked');
+  public onClickEvent(bubble: Bubble, menu: MenuType, mouseEvent: MouseEvent): void {
     this._eventBubbleService.selectBubble(bubble, menu);
-}
+  }
 
   public isMenuOpen(bubble, menuType): boolean {
     return this._eventBubbleService.isMenuOpen(bubble, menuType);
@@ -255,6 +251,8 @@ public onClickEvent(bubble: Bubble, menu: MenuType, mouseEvent: MouseEvent): voi
     this._boardService.finishBubbleEditEvent$.subscribe((bubble) => {
       this.finishEdit(bubble);
     });
+
+    // must unsubscribe on Destroy
   }
 
 } /* istanbul ignore next */

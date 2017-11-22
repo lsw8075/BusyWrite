@@ -18,15 +18,15 @@ export interface Bubble {
 
   getHeight(): number;
 
-  // addSuggestBubble(SB: Bubble): void;
-  // addComment(comment: Comment): void;
-  // deleteSuggestBubble(SB: Bubble): void;
-  // deleteComment(comment: Comment): void;
+  addSuggestBubble(SB: Bubble): void;
+  addComment(comment: Comment): void;
+  deleteSuggestBubble(SB: Bubble): void;
+  deleteComment(comment: Comment): void;
 
   getContent(): string;
   isBeingEditted(): boolean;
-  // getComments(): Array<Comment>;
-  // getSuggestBubbles(): Array<SuggestBubble>;
+  getComments(): Array<Comment>;
+  getSuggestBubbles(): Array<SuggestBubble>;
 } /* istanbul ignore next */
 
 export class LeafBubble implements Bubble {
@@ -88,34 +88,30 @@ export class LeafBubble implements Bubble {
     return leafBubbleHeight;
   }
 
-  // split(): void {
+  addSuggestBubble(SB: Bubble): void {
 
-  // }
+  }
+  addComment(comment: Comment): void {
 
-  // addSuggestBubble(SB: Bubble): void {
+  }
 
-  // }
-  // addComment(comment: Comment): void {
+  deleteSuggestBubble(SB: Bubble): void {
 
-  // }
+  }
+  deleteComment(comment: Comment): void {
 
-  // deleteSuggestBubble(SB: Bubble): void {
-
-  // }
-  // deleteComment(comment: Comment): void {
-
-  // }
+  }
 
   getContent(): string {
     return this.content;
   }
 
-  // getComments(): Array<Comment> {
-  //   return null;
-  // }
-  // getSuggestBubbles(): Array<SuggestBubble> {
-  //   return null;
-  // }
+  getComments(): Array<Comment> {
+    return null;
+  }
+  getSuggestBubbles(): Array<SuggestBubble> {
+    return null;
+  }
 } /* istanbul ignore next */
 
 export class InternalBubble implements Bubble {
@@ -145,29 +141,29 @@ export class InternalBubble implements Bubble {
     return this.childBubbles.reduce((prev, curr) => Math.max(prev, curr.getHeight() + 1), 1);
   }
 
-  // addSuggestBubble(SB: Bubble): void {
+  addSuggestBubble(SB: Bubble): void {
 
-  // }
-  // addComment(comment: Comment): void {
+  }
+  addComment(comment: Comment): void {
 
-  // }
+  }
 
-  // deleteSuggestBubble(SB: Bubble): void {
+  deleteSuggestBubble(SB: Bubble): void {
 
-  // }
-  // deleteComment(comment: Comment): void {
+  }
+  deleteComment(comment: Comment): void {
 
-  // }
+  }
 
   getContent(): string {
     return this.childBubbles.reduce((prev, curr) => prev + curr.getContent() + '\n', '').slice(0, -1);
   }
-  // getComments(): Array<Comment> {
-  //   return null;
-  // }
-  // getSuggestBubbles(): Array<SuggestBubble> {
-  //   return null;
-  // }
+  getComments(): Array<Comment> {
+    return null;
+  }
+  getSuggestBubbles(): Array<SuggestBubble> {
+    return null;
+  }
 
   // ----
 
