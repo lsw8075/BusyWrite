@@ -9,6 +9,7 @@ import { Bubble, SuggestBubble } from '../../model/bubble';
   styleUrls: ['./sangjun-board.component.css']
 })
 export class SangjunBoardComponent implements OnInit {
+  isOBChecked = true;
   isSBChecked = true;
   isCommentChecked = true;
   bubble: Bubble;
@@ -23,6 +24,15 @@ export class SangjunBoardComponent implements OnInit {
       this.bubble = bubble;
       this.suggestBubbles = bubble.suggestBubbles;
     });
+  }
+
+  clickSuggestBubble(suggestBubble: SuggestBubble) {
+    console.log(`clicked ${suggestBubble.id}`);
+  }
+
+  clickThumbsUp(suggestBubble: SuggestBubble) {
+    console.log('clicked thumbs up');
+    suggestBubble.thumbUps++;
   }
 
   ngOnInit() {

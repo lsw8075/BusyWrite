@@ -1,10 +1,20 @@
 import { Bubble, LeafBubble, InternalBubble, SuggestBubble } from './bubble';
+import { Comment } from './comment';
 import { Inject } from '@angular/core';
 
-  const sb1: SuggestBubble = new SuggestBubble(1, "hello1", []);
-  const sb2: SuggestBubble = new SuggestBubble(2, "hello2", []);
-  const sb3: SuggestBubble = new SuggestBubble(3, "hello3", []);
-  const sb4: SuggestBubble = new SuggestBubble(4, "hello4", []);
+const c1: Comment = new Comment(1, '1st comment', null);
+const c2: Comment = new Comment(2, '2nd comment', null);
+const c3: Comment = new Comment(3, '3rd comment', null);
+const c4: Comment = new Comment(4, '4th comment', null);
+const c5: Comment = new Comment(5, '5th comment', null);
+const c6: Comment = new Comment(6, '6th comment', null);
+const c7: Comment = new Comment(7, '7th comment', null);
+const c8: Comment = new Comment(8, '8th comment', null);
+
+const sb1: SuggestBubble = new SuggestBubble(1, '1st suggest bubble', [c1, c2]);
+const sb2: SuggestBubble = new SuggestBubble(2, '2nd suggest bubble', [c3]);
+const sb3: SuggestBubble = new SuggestBubble(3, 'BusyWrite helps you organize new ideas. New ideas are important, but they result in lots of changes. Accepting new ideas is hostile, as it is unknown what revisions are needed and how many. BusyWrite shows users new ideas in a sidebar. It shows each idea with parts that are subject to change: lines, paragraphs and even other ideas!', [c5, c4]);
+const sb4: SuggestBubble = new SuggestBubble(4, '4th suggest bubble', []);
 
   const b15: LeafBubble = new LeafBubble(15, '<i>we are team !</i>');
       const b10: LeafBubble = new LeafBubble(10,
@@ -22,7 +32,7 @@ of just writing straight to a file, users make bubbles`);
         const b11: LeafBubble = new LeafBubble(11,
 `BusyWrite is the perfect solution for team writing. \
 The concept of writing as a team has been around for a long time, \
-by services like Google Docs, but the approaches are impractical and unproductive.`, -1, [sb2, sb4, sb1, sb2]);
+by services like Google Docs, but the approaches are impractical and unproductive.`, -1, [sb2, sb4, sb1, sb3]);
             const b19: LeafBubble = new LeafBubble(19, `<strong>hey!</strong>`);
             const b18: LeafBubble = new LeafBubble(18,
 `BusyWrite helps you organize new ideas. New ideas are important, \

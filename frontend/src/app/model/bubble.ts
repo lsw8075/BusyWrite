@@ -321,16 +321,19 @@ export class SuggestBubble {
   type: BubbleType;
   content: string;
   comments: Array<Comment>;
+  thumbUps: number;
 
-   constructor(
-     id: number,
-     content: string,
-     comments: Array<Comment>
-   ) {
-     // must initialize all attributes
-     this.type = BubbleType.suggestBubble;
-     this.id = id;
-     this.content = content;
-     this.comments = comments;
-   }
+  constructor(
+    id: number,
+    content: string,
+    comments: Array<Comment>,
+    thumbUps: number = 0
+  ) {
+    // must initialize all attributes
+    this.type = BubbleType.suggestBubble;
+    this.id = id;
+    this.content = content;
+    this.comments = comments;
+    this.thumbUps = thumbUps;
+  }
 } /* istanbul ignore next */
