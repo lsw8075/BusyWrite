@@ -22,4 +22,20 @@ export class SuggestBubbleComponent implements OnInit {
     this._eventSangjunBoardService.clickBackButton();
   }
 
+  clickSwitch() {
+    this._eventSangjunBoardService.clickSwitch(this.suggestBubble);
+  }
+
+  clickEdit() {
+    this._eventSangjunBoardService.clickEdit(this.suggestBubble);
+  }
+
+  clickDelete() {
+    this._eventSangjunBoardService.clickDelete(this.suggestBubble);
+  }
+
+  clickThumbsUp() {
+    this._eventSangjunBoardService.clickThumbsUp(this.suggestBubble);
+  }
+
 }

@@ -29,6 +29,9 @@ table td.content {
   border-bottom: 1px solid #ccc;
 }
 
+.fa:hover {
+  color: blue;
+}
 
 input {
   width: inherit;

@@ -18,9 +18,9 @@ export interface Bubble {
 
   getHeight(): number;
 
-  addSuggestBubble(SB: Bubble): void;
+  addSuggestBubble(suggestBubble: SuggestBubble): void;
   addComment(comment: Comment): void;
-  deleteSuggestBubble(SB: Bubble): void;
+  deleteSuggestBubble(suggestBubble: SuggestBubble): void;
   deleteComment(comment: Comment): void;
 
   getContent(): string;
@@ -90,18 +90,24 @@ export class LeafBubble implements Bubble {
     return leafBubbleHeight;
   }
 
-  addSuggestBubble(SB: Bubble): void {
+  addSuggestBubble(suggestBubble: SuggestBubble) {}
 
+  addComment(comment: Comment) {
+    this.comments.push(comment);
   }
-  addComment(comment: Comment): void {
 
+  deleteSuggestBubble(suggestBubble: SuggestBubble) {
+    let index: number = this.suggestBubbles.indexOf(suggestBubble);
+    if (index > -1) {
+      this.suggestBubbles.splice(index, 1);
+    }
   }
 
-  deleteSuggestBubble(SB: Bubble): void {
-
-  }
-  deleteComment(comment: Comment): void {
-
+  deleteComment(comment: Comment) {
+    let index: number = this.comments.indexOf(comment);
+    if (index > -1) {
+      this.comments.splice(index, 1);
+    }
   }
 
   getContent(): string {
@@ -145,19 +151,10 @@ export class InternalBubble implements Bubble {
     return this.childBubbles.reduce((prev, curr) => Math.max(prev, curr.getHeight() + 1), 1);
   }
 
-  addSuggestBubble(SB: Bubble): void {
-
-  }
-  addComment(comment: Comment): void {
-
-  }
-
-  deleteSuggestBubble(SB: Bubble): void {
-
-  }
-  deleteComment(comment: Comment): void {
-
-  }
+  addSuggestBubble(suggestBubble: SuggestBubble) {}
+  addComment(comment: Comment) {}
+  deleteSuggestBubble(suggestBubble: SuggestBubble) {}
+  deleteComment(comment: Comment) {}
 
   getContent(): string {
     return this.childBubbles.reduce((prev, curr) => prev + curr.getContent() + '\n', '').slice(0, -1);
@@ -175,7 +172,7 @@ export class InternalBubble implements Bubble {
     return this.childBubbles.reduce((prev, curr) => prev || curr.isBeingEditted(), false);
   }
 
-insertChildren(location: number, ...bubbles: Array<Bubble>): void {
+  insertChildren(location: number, ...bubbles: Array<Bubble>): void {
     if ((location < 0) || (location > this.childBubbles.length + 1)) {
       throw new Error(`location ${location} is invalid`);
     } else {
@@ -204,7 +201,7 @@ insertChildren(location: number, ...bubbles: Array<Bubble>): void {
     }
   }
 
-deleteChild(childBubble: Bubble): void {
+  deleteChild(childBubble: Bubble): void {
     if (this._ischildBubble(childBubble)) {
       let location = childBubble.location;
       childBubble = null;
@@ -219,7 +216,7 @@ deleteChild(childBubble: Bubble): void {
      }
   }
 
-wrapChildren(wrapList: Array<Bubble>): InternalBubble {
+  wrapChildren(wrapList: Array<Bubble>): InternalBubble {
 
     // no bubble to wrap
     if (wrapList.length < 1) {

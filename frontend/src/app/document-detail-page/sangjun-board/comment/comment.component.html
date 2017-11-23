@@ -5,17 +5,17 @@
         <th>Anonymous</th>
         <td class="content">{{comment.content}}</td>
         <td>
-          <i class="fa fa-pencil fa-fw"></i>
-          <i class="fa fa-trash fa-fw"></i>
+          <i (click)="clickEditComment(comment)" class="fa fa-pencil fa-fw"></i>
+          <i (click)="clickDeleteComment(comment)" class="fa fa-trash fa-fw"></i>
         </td>
       </tr>
       <tr *ngIf="newComment">
         <th>Anonymous</th>
         <td class="content">
-          <input (submit)="console.log('submit')" type="text" [(ngModel)]="newComment.content">
+          <input type="text" [(ngModel)]="newComment.content">
         </td>
         <td>
-          <i *ngIf="newComment.content" class="fa fa-check fa-fw"></i>
+          <i (click)="clickCreateComment()" *ngIf="newComment.content" class="fa fa-check fa-fw"></i>
         </td>
       </tr>
     </table>

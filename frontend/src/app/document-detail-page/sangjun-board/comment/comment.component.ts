@@ -14,10 +14,25 @@ export class CommentComponent implements OnInit {
   newComment: Comment;
 
   constructor() {
-    this.newComment = new Comment(9, "", null);
+    this.newComment = new Comment(-1, "", null);
   }
 
   ngOnInit() {
+  }
+
+  clickEditComment(comment: Comment) {
+    console.log('edit comment');
+  }
+
+  clickDeleteComment(comment: Comment) {
+    this.bubble.deleteComment(comment);
+    console.log('delete comment');
+  }
+
+  clickCreateComment() {
+    console.log('create comment');
+    this.bubble.addComment(this.newComment);
+    this.newComment = new Comment(-1, "", null);
   }
 
 }

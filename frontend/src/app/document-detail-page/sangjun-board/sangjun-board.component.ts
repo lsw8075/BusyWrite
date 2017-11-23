@@ -20,27 +20,43 @@ export class SangjunBoardComponent implements OnInit {
   constructor(
     private _bubbleSerivce: BubbleService,
     private _eventBubbleService: EventBubbleService,
-    private _eventSangjunBoardService: EventSangjunBoardService) {
-
+    private _eventSangjunBoardService: EventSangjunBoardService
+  ) {
     _eventBubbleService.sangjunBoardOpenEvent$.subscribe((bubble) => {
-      console.log(bubble);
       this.bubble = bubble;
       this.suggestBubbles = bubble.suggestBubbles;
     });
+
     _eventSangjunBoardService._backButtonClickEvent$.subscribe(() => {
-      console.log('back button clicked');
       this.selectedSB = null;
+    });
+
+    _eventSangjunBoardService._switchClickEvent$.subscribe((suggestBubble) => {
+      console.log('switch');
+    });
+
+    _eventSangjunBoardService._editClickEvent$.subscribe((suggestBubble) => {
+      console.log('edit');
+    });
+
+    _eventSangjunBoardService._deleteClickEvent$.subscribe((suggestBubble) => {
+      this.bubble.deleteSuggestBubble(suggestBubble);
+      this.selectedSB = null;
+      console.log('delete');
+    });
+
+    _eventSangjunBoardService._thumbsUpClickEvent$.subscribe((suggestBubble) => {
+      suggestBubble.thumbUps++;
+      this.suggestBubbles = this.suggestBubbles.sort((sb1, sb2) => sb2.thumbUps - sb1.thumbUps);
     });
   }
 
   clickSuggestBubble(suggestBubble: SuggestBubble) {
-    console.log(`clicked ${suggestBubble.id}`);
     this.selectedSB = suggestBubble;
   }
 
   clickThumbsUp(suggestBubble: SuggestBubble) {
-    console.log('clicked thumbs up');
-    suggestBubble.thumbUps++;
+    this._eventSangjunBoardService.clickThumbsUp(suggestBubble);
   }
 
   ngOnInit() {
