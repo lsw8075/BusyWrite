@@ -9,8 +9,8 @@ export class InternalBubbleDirective implements OnInit {
 
   @Input() appInternalBubble: Bubble;
 
-  private lineWidth = 2;
-  private space = 8;
+  private lineWidth = 3;
+  private space = 10;
   private offset = -5;
   private selectedColor = `rgb(157, 172, 255)`;
 

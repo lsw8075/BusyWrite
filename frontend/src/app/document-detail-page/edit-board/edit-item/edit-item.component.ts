@@ -11,8 +11,8 @@ export class EditItemComponent implements OnInit {
 
 
   @Input() editItem: EditItem;
-  @Output() focus: EventEmitter<void> = new EventEmitter<void>();
-  content: string;
+  @Output() focus: EventEmitter<boolean> = new EventEmitter<boolean>();
+  @Output() update: EventEmitter<void> = new EventEmitter<void>();
 
 
   editor;
@@ -33,15 +33,15 @@ export class EditItemComponent implements OnInit {
   constructor() {}
 
   ngOnInit() {
+    this.editorContent = this.editItem.bubble.getContent();
   }
 
-  // onEditorBlured(quill) {
-  //   // console.log('editor blur!', quill);
-  // }
+  onEditorBlured(quill) {
+    this.focus.emit(false);
+  }
 
   onEditorFocused(quill) {
-    this.focus.emit();
-    // console.log('editor focus!', quill);
+    this.focus.emit(true);
   }
 
   onEditorCreated(quill) {
@@ -52,6 +52,7 @@ export class EditItemComponent implements OnInit {
   onContentChanged({ quill, html, text }) {
     // console.log('quill content is changed!', quill, html, text);
     this.editItem.content = this.editorContent;
+    this.update.emit(null);
   }
 
 } /* istanbul ignore next */

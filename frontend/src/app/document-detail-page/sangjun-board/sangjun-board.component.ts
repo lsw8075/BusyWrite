@@ -22,6 +22,7 @@ export class SangjunBoardComponent implements OnInit {
       console.log(bubble);
       this.bubble = bubble;
       this.suggestBubbles = bubble.suggestBubbles;
+      _eventBubbleService.clearState();
     });
   }
 

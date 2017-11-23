@@ -9,9 +9,9 @@ export class LeafBubbleDirective implements OnInit {
 
   @Input() appLeafBubble: Bubble;
 
-  private lineWidth = 2;
+  private lineWidth = 3;
   private selectedColor = `rgb(157, 172, 255)`;
-  private editColor = `red`;
+  private editColor = `rgb(100, 100, 100)`;
 
   constructor(
     private el: ElementRef,
@@ -32,17 +32,38 @@ export class LeafBubbleDirective implements OnInit {
     }
   }
 
+  @HostBinding('style.color')
+  public get color(): string {
+    if (this._eventBubbleService.isBeingEditted(this.appLeafBubble)) {
+      return 'white';
+    }
+  }
+
   public setLeafBubbleStyle(): void {
     this.renderer.setStyle(this.el.nativeElement, 'border-left-width', `${this.lineWidth}px`);
     this.renderer.setStyle(this.el.nativeElement, 'border-right-width', `${this.lineWidth}px`);
+    if (!this.isBubbleContentShown(this.appLeafBubble)) {
+      this.renderer.setStyle(this.el.nativeElement, 'background-color', '#aaa');
+      this.renderer.setStyle(this.el.nativeElement, 'color', 'white');
+    }
   }
 
-  @HostListener('mouseenter') onMouseEnter() {
+  @HostListener('mouseenter')
+  onMouseEnter() {
     this.renderer.setStyle(this.el.nativeElement, 'background-color', `rgba(157, 172, 255, 0.4)`);
   }
 
-  @HostListener('mouseleave') onMouseLeave() {
-    this.renderer.setStyle(this.el.nativeElement, 'background-color', `transparent`);
+  @HostListener('mouseleave')
+  onMouseLeave() {
+    if (this._eventBubbleService.isBubbleSelected(this.appLeafBubble)) {
+      this.renderer.setStyle(this.el.nativeElement, 'background-color', this.selectedColor);
+    } else if (this._eventBubbleService.isBeingEditted(this.appLeafBubble)) {
+      this.renderer.setStyle(this.el.nativeElement, 'background-color', this.editColor);
+    } else if (!this.isBubbleContentShown(this.appLeafBubble)) {
+      this.renderer.setStyle(this.el.nativeElement, 'background-color', '#aaa');
+    } else {
+      this.renderer.setStyle(this.el.nativeElement, 'background-color', `transparent`);
+    }
   }
 
   @HostListener('mouseup')
@@ -60,5 +81,10 @@ export class LeafBubbleDirective implements OnInit {
     console.log(text, startOffset);
     this._eventBubbleService.hightlightedText = text;
     this._eventBubbleService.highlightOffset = startOffset;
+  }
+
+  public isBubbleContentShown(bubble): boolean {
+    return (bubble.whoIsEditting() === -1) ||
+           (bubble.whoIsEditting() === 1);
   }
 }

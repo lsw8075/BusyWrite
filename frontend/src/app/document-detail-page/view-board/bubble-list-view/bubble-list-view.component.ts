@@ -85,28 +85,21 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
     }
     this._bubbleService.createBubble(bubble.parentBubble, location, 'empty bubble')
       .then(response => {
-        this._boardService.createBubble(response);
+        this._boardService.editBubble(response);
         this._eventBubbleService.clearState();
         this._refreshBubbleList();
       });
   }
-
   private finishEdit(bubble: Bubble) {
     this._eventBubbleService.edittedBubble = null;
     this._refreshBubbleList();
   }
-
   public editBubble(bubble: Bubble) {
-    if (bubble.type === BubbleType.leafBubble) {
-      const newString = prompt('edit bubble!', (bubble).getContent());
-      if (newString) {
-        this._eventBubbleService.setState(ActionType.edit);
-        this._bubbleService.editBubble(bubble as LeafBubble, newString)
-          .then(() => {
-            this._eventBubbleService.clearState();
-            this._refreshBubbleList();
-          });
-      }
+    if (bubble.type === BubbleType.leafBubble &&
+        this.isBubbleContentShown(bubble)) {
+      this._boardService.editBubble(bubble);
+      this._eventBubbleService.clearState();
+      this._refreshBubbleList();
     }
   }
   public deleteBubble(bubble: Bubble) {
@@ -133,7 +126,10 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
 
 
   public onClickEvent(bubble: Bubble, menu: MenuType, mouseEvent: MouseEvent): void {
-    if (this._eventBubbleService.getActionState() === ActionType.none) {
+    const currActionState = this._eventBubbleService.getActionState();
+    if (currActionState === ActionType.none ||
+        currActionState === ActionType.wrap ||
+        currActionState === ActionType.move) {
       this._eventBubbleService.selectBubble(bubble, menu);
     } else {
       alert('please wait, your request is still pending');
@@ -183,7 +179,6 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
     this._boardService.finishBubbleEditEvent$.subscribe((bubble) => {
       this.finishEdit(bubble);
     });
-
     // must unsubscribe on Destroy
   }
 

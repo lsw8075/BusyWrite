@@ -40,13 +40,12 @@
       <!-- leaf bubble content -->
       <div class="leafBubble" appStopClickPropagation (click)="onClickEvent(bubble, menuType.leafMenu, $event);">
         <app-bubble-menu *ngIf="isMenuOpen(bubble, menuType.leafMenu)" class="action"  [bubble]="bubble" [menu]="menuType.leafMenu"></app-bubble-menu>
-        <div *ngIf="isBubbleContentShown(bubble); then owner else editLock"></div>
-        <ng-template #owner>
-          <div [appLeafBubble]="bubble" innerHtml="{{bubble.content}}"></div>
-        </ng-template>
-        <ng-template #editLock>
-          <div [appLeafBubble]="bubble" class="editting">This bubble is being editted by {{bubble.whoIsEditting()}}</div>
-        </ng-template>
+        <div class="text-center" *ngIf="!isBubbleContentShown(bubble)">
+          <span [style.color]="'green'">
+            <i class="fa fa-fw fa-pencil"></i>
+            This bubble is being editted by {{bubble.whoIsEditting()}}</span>
+        </div>
+        <div [appLeafBubble]="bubble" innerHtml="{{bubble.content}}"></div>
       </div>
 
       <!-- bottom border -->

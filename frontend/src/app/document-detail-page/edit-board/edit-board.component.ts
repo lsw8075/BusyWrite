@@ -45,8 +45,12 @@ export class EditBoardComponent implements OnInit {
     console.log('new item');
   }
 
-  public focusEditItem(editItem: EditItem) {
-    this._eventBubbleService.edittedBubble = editItem.bubble;
+  public focusEditItem(editItem: EditItem, focused: boolean) {
+    this._eventBubbleService.edittedBubble = (focused) ? editItem.bubble : null;
+  }
+
+  public updateEditItem(editItem: EditItem) {
+    this._boardService.updateEdit(editItem.bubble, editItem.content);
   }
 
   addNote() {

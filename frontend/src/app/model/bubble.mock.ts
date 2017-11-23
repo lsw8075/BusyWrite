@@ -1,24 +1,24 @@
 import { Bubble, LeafBubble, InternalBubble, SuggestBubble } from './bubble';
 import { Inject } from '@angular/core';
 
-  const sb1: SuggestBubble = new SuggestBubble(1, "hello1", []);
-  const sb2: SuggestBubble = new SuggestBubble(2, "hello2", []);
-  const sb3: SuggestBubble = new SuggestBubble(3, "hello3", []);
-  const sb4: SuggestBubble = new SuggestBubble(4, "hello4", []);
+  const sb1: SuggestBubble = new SuggestBubble(1, 'hello1', []);
+  const sb2: SuggestBubble = new SuggestBubble(2, 'hello2', []);
+  const sb3: SuggestBubble = new SuggestBubble(3, 'hello3', []);
+  const sb4: SuggestBubble = new SuggestBubble(4, 'hello4', []);
 
   const b15: LeafBubble = new LeafBubble(15, '<i>we are team !</i>');
       const b10: LeafBubble = new LeafBubble(10,
-`Limited time is the number one bottleneck of teamwork. Therefore, \
+`<p>Limited time is the number one bottleneck of teamwork. Therefore, \
 most of the time, discussion is done while writing. Teams cannot afford \
 time to match document structure, details and opinions between every \
-participant, and therefore resolve the conflicts  on-the-go.`);
+participant, and therefore resolve the conflicts on-the-go.</p>`);
       const b9: LeafBubble = new LeafBubble(9,
-`BusyWrite separate writing and merging. Normally, participants \
+`<p>BusyWrite separate writing and merging. Normally, participants \
 write on the same file, writing and merging simultaneously, which \
 is troublesome. The concept of participants writing different parts \
 and stacking them up to get a whole is an utopian thought; nobody is \
 certain if everyone understands the same thing. On BusyWrite, instead \
-of just writing straight to a file, users make bubbles`);
+of just writing straight to a file, users make bubbles</p>`);
         const b11: LeafBubble = new LeafBubble(11,
 `BusyWrite is the perfect solution for team writing. \
 The concept of writing as a team has been around for a long time, \

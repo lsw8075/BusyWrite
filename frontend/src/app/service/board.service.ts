@@ -24,7 +24,7 @@ export class BoardService {
     this.previewUpdateEventSource.next();
   }
 
-  createBubble(bubble: Bubble) {
+  editBubble(bubble: Bubble) {
     const newEditItem: EditItem = new EditItem(this.getId(), bubble);
     this.createBubbleEventSource.next(newEditItem);
   }
@@ -32,7 +32,12 @@ export class BoardService {
   public finishEdit(bubble: Bubble, content: string) {
     this._bubbleService.editBubble(bubble, content).then(() => {
       this.finishBubbleEditEventSource.next(bubble);
+      console.log(content);
     });
+  }
+
+  public updateEdit(bubble: Bubble, content: string) {
+    this._bubbleService.editBubble(bubble, content);
   }
 
   private getId(): number {
