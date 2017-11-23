@@ -49,6 +49,7 @@ import { CommentService } from './service/comment.service';
 import { DirectoryService } from './service/directory.service';
 import { DocumentService } from './service/document.service';
 import { NoteService } from './service/note.service';
+import { WebsocketService, WebsocketInternalService } from './service/websocket.service';
 
 import { EventBubbleService } from './service/event/event-bubble.service';
 
@@ -119,7 +120,9 @@ import { DialogModule } from 'primeng/primeng';
     DirectoryService,
     DocumentService,
     EventBubbleService,
-    NoteService
+    NoteService,
+    WebsocketService,
+    WebsocketInternalService,
   ],
   bootstrap: [AppComponent]
 })
