@@ -1,11 +1,47 @@
 <div *ngIf="bubble">
-  <p *ngFor="let comment of bubble.comments">
-    {{comment.content}}
-  </p>
+  <div>
+    <table>
+      <tr *ngFor="let comment of bubble.comments">
+        <th>Anonymous</th>
+        <td class="content">{{comment.content}}</td>
+        <td>
+          <i class="fa fa-pencil fa-fw"></i>
+          <i class="fa fa-trash fa-fw"></i>
+        </td>
+      </tr>
+      <tr *ngIf="newComment">
+        <th>Anonymous</th>
+        <td class="content">
+          <input (submit)="console.log('submit')" type="text" [(ngModel)]="newComment.content">
+        </td>
+        <td>
+          <i *ngIf="newComment.content" class="fa fa-check fa-fw"></i>
+        </td>
+      </tr>
+    </table>
+  </div>
 </div>
 
 <div *ngIf="suggestBubble">
-  <p *ngFor="let comment of suggestBubble.comments">
-    {{comment.content}}
-  </p>
+  <div>
+    <table>
+      <tr *ngFor="let comment of suggestBubble.comments">
+        <th>Anonymous</th>
+        <td class="content">{{comment.content}}</td>
+        <td>
+          <i class="fa fa-pencil fa-fw"></i>
+          <i class="fa fa-trash fa-fw"></i>
+        </td>
+      </tr>
+      <tr *ngIf="newComment">
+        <th>Anonymous</th>
+        <td class="content">
+          <input type="text" [(ngModel)]="newComment.content">
+        </td>
+        <td>
+          <i *ngIf="newComment.content" class="fa fa-check fa-fw"></i>
+        </td>
+      </tr>
+    </table>
+  </div>
 </div>
