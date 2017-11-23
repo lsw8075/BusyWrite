@@ -2,8 +2,14 @@
   WRAP!
 </button>
 
-<div (appClickOutside)="clearState($event)" *ngIf="rootBubble">
-  <ng-container *ngTemplateOutlet="bubbleUnit; context: { $implicit: rootBubble }"></ng-container>
+<div class="bubble-list">
+  <div class="ui-g">
+    <div class="ui-g-9 ui-md-offset-1 list-group-item">
+      <div (appClickOutside)="clearState($event)" *ngIf="rootBubble">
+        <ng-container *ngTemplateOutlet="bubbleUnit; context: { $implicit: rootBubble }"></ng-container>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- recursive unit -->

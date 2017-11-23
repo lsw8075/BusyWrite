@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output, HostListener } from '@angular/core';
+import { Component, EventEmitter, OnInit, OnDestroy, Output, HostListener } from '@angular/core';
 import { BubbleService } from '../service';
 import { BubbleType, Bubble, ActionType, MenuType } from '../service';
 import { InternalBubble, LeafBubble } from '../../../model/bubble';
@@ -10,7 +10,7 @@ import { EventBubbleService, BoardService } from '../service';
   styleUrls: ['./bubble-list-view.component.css'],
 
 })
-export class BubbleListViewComponent implements OnInit {
+export class BubbleListViewComponent implements OnInit, OnDestroy {
   menuType = MenuType;
   actionType = ActionType;
 
@@ -28,6 +28,17 @@ export class BubbleListViewComponent implements OnInit {
     this._refreshBubbleList();
     this._subscribeEvents();
   }
+
+  // when user closes
+  // @HostListener('window:unload', [ '$event' ])
+  // unloadHandler(event) {
+  //   alert('before unload');
+  // }
+
+  // @HostListener('window:beforeunload', [ '$event' ])
+  // beforeUnloadHander(event) {
+  //   alert('unload');
+  // }
 
   // host listener to check if user click outside
 
@@ -97,7 +108,7 @@ export class BubbleListViewComponent implements OnInit {
   public isWrapSelected(): boolean {
     return this._eventBubbleService.getActionState() === ActionType.wrap;
   }
-public createBubble(bubble: Bubble, menu: MenuType) {
+  public createBubble(bubble: Bubble, menu: MenuType) {
     this._eventBubbleService.setState(ActionType.create);
     let location = bubble.location;
     if (menu === MenuType.borderBottomMenu) {
@@ -131,7 +142,7 @@ public createBubble(bubble: Bubble, menu: MenuType) {
       }
     }
   }
-public deleteBubble(bubble: Bubble) {
+  public deleteBubble(bubble: Bubble) {
     if (bubble.id !== 0) {
       this._eventBubbleService.setState(ActionType.delete);
       this._bubbleService.deleteBubble(bubble)
@@ -209,6 +220,11 @@ public deleteBubble(bubble: Bubble) {
     });
 
     // must unsubscribe on Destroy
+  }
+
+  ngOnDestroy() {
+    alert('there might be unsaved changes');
+    this._eventBubbleService.unsubscribeAll();
   }
 
 } /* istanbul ignore next */

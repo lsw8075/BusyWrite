@@ -107,6 +107,17 @@ export class EventBubbleService {
     }
   }
 
+  public unsubscribeAll(): void {
+    this._sangjunBoardOpenEventSource.complete();
+    this._splitBubbleEventSource.complete();
+    this._popBubbleEventSource.complete();
+    this._wrapBubbleEventSource.complete();
+    this._createBubbleEventSource.complete();
+    this._editBubbleEventSource.complete();
+    this._deleteBubbleEventSource.complete();
+    this._flattenBubbleEventSource.complete();
+  }
+
   private _isBubbleInWrapList(bubble: Bubble): boolean {
     for (const b of this.wrapBubbles) {
       if (b.id === bubble.id) {

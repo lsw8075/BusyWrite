@@ -1,12 +1,6 @@
-.rootBubble {
-  background-color: #efefef;
-  border-radius: 10px;
-  padding: 2px;
-}
-
-.rootBubble:hover {
-  background-color: white;
-  border: none;
+.bubble-list {
+  height: 600px;
+  overflow-y: scroll;
 }
 
 .internalBubble {
@@ -34,7 +28,6 @@
 ::-moz-selection {
   background: #fff2a8;
 }
-
 
 .placeholder {
   padding: 3px 0px;

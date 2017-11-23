@@ -20,25 +20,31 @@
             <span class="caret"></span>
           </button>
           <ul *dropdownMenu class="dropdown-menu" role="menu">
-            <li role="menuitem"><a class="dropdown-item" (click)="splitBubble(); $event.stopPropagation()">
-              <i class="fa fa-scissors fa-fw"></i>
-              Split
-            </a></li>
-
-            <li role="menuitem"><a class="dropdown-item" (click)="wrapBubble(); $event.stopPropagation()">
-              <i class="fa fa-comments fa-fw"></i>
-              Wrap
-            </a></li>
-
-            <li role="menuitem"><a class="dropdown-item" (click)="editBubble(); $event.stopPropagation()">
-              <i class="fa fa-pencil fa-fw"></i>
-              Edit
-            </a></li>
+            <li role="menuitem">
+              <a class="dropdown-item" (click)="splitBubble(); $event.stopPropagation()">
+                <i class="fa fa-scissors fa-fw"></i>
+                Split
+              </a>
+            </li>
+            <li role="menuitem">
+              <a class="dropdown-item" (click)="wrapBubble(); $event.stopPropagation()">
+                <i class="fa fa-comments fa-fw"></i>
+                Wrap
+              </a>
+            </li>
+            <li role="menuitem">
+              <a class="dropdown-item" (click)="editBubble(); $event.stopPropagation()">
+                <i class="fa fa-pencil fa-fw"></i>
+                Edit
+              </a>
+            </li>
             <li class="divider dropdown-divider"></li>
-            <li role="menuitem"><a class="dropdown-item" (click)="deleteBubble(); $event.stopPropagation()">
-              <i class="fa fa-trash fa-fw"></i>
-              Delete
-            </a></li>
+            <li role="menuitem">
+              <a class="dropdown-item" (click)="deleteBubble(); $event.stopPropagation()">
+                <i class="fa fa-trash fa-fw"></i>
+                Delete
+              </a>
+            </li>
           </ul>
         </div>
         <button type="button" class="btn btn-primary btn-sm" (click)="openSangjunBoard(); $event.stopPropagation()">
@@ -49,37 +55,42 @@
     </div>
 
     <div *ngSwitchCase="menuType.internalMenu">
-
       <div class="btn-group" dropdown>
         <div *ngIf="!editLock">
           <button type="button" dropdownToggle class="btn btn-info btn-sm dropdown-toggle dropdown-toggle-split" (click)="$event.stopPropagation()">
             <span class="caret"></span>
           </button>
           <ul *dropdownMenu class="dropdown-menu" role="menu">
-            <li role="menuitem"><a class="dropdown-item" (click)="popBubble(); $event.stopPropagation()">
-              <i class="fa fa-ellipsis-v fa-fw"></i>
-              Pop
-            </a></li>
-
+            <li role="menuitem">
+              <a class="dropdown-item" (click)="popBubble(); $event.stopPropagation()">
+                <i class="fa fa-ellipsis-v fa-fw"></i>
+                Pop
+              </a>
+            </li>
             <li role="menuitem"><a class="dropdown-item" (click)="wrapBubble(); $event.stopPropagation()">
-              <i class="fa fa-comments fa-fw"></i>
-              Wrap
-            </a></li>
-
-            <li role="menuitem"><a class="dropdown-item" (click)="flattenBubble(); $event.stopPropagation()">
-              <i class="fa fa-stack-overflow fa-fw"></i>
-              Flatten
-            </a></li>
-
-            <li role="menuitem"><a class="dropdown-item" (click)="editBubble(); $event.stopPropagation()">
-              <i class="fa fa-pencil fa-fw"></i>
-              Edit
-            </a></li>
+                <i class="fa fa-comments fa-fw"></i>
+                Wrap
+              </a>
+            </li>
+            <li role="menuitem">
+              <a class="dropdown-item" (click)="flattenBubble(); $event.stopPropagation()">
+                <i class="fa fa-stack-overflow fa-fw"></i>
+                Flatten
+              </a>
+            </li>
+            <li role="menuitem">
+              <a class="dropdown-item" (click)="editBubble(); $event.stopPropagation()">
+                <i class="fa fa-pencil fa-fw"></i>
+                Edit
+              </a>
+            </li>
             <li class="divider dropdown-divider"></li>
-            <li role="menuitem"><a class="dropdown-item" (click)="deleteBubble(); $event.stopPropagation()">
+            <li role="menuitem">
+              <a class="dropdown-item" (click)="deleteBubble(); $event.stopPropagation()">
               <i class="fa fa-trash fa-fw"></i>
               Delete
-            </a></li>
+              </a>
+            </li>
           </ul>
         </div>
         <button type="button" class="btn btn-info btn-sm" (click)="openSangjunBoard(); $event.stopPropagation()">
