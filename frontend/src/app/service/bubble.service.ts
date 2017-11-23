@@ -78,11 +78,13 @@ export class BubbleService {
     return Promise.resolve(null);
   }
 
-  public popBubble(bubble: Bubble): Promise<void> {
+  public async popBubble(bubble: Bubble): Promise<void> {
     // check the assumptions
     if (bubble.parentBubble === null) {
       throw new Error('Cannot pop root bubble');
     }
+
+    await this.delay(1000);
 
     const parentBubble: InternalBubble = bubble.parentBubble;
     parentBubble.popChild(bubble);
@@ -170,6 +172,10 @@ export class BubbleService {
   private _getId(): number {
     tempId++;
     return tempId;
+  }
+
+  private delay(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 
 }

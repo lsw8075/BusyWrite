@@ -5,6 +5,10 @@ import { Bubble } from '../../model/bubble';
 @Injectable()
 export class EventBubbleService {
 
+  // for split
+  hightlightedText = '';
+  highlightOffset = 0;
+
   private actionState: ActionType;
   private selectState: SelectState;
 

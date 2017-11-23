@@ -42,7 +42,7 @@
         <app-bubble-menu *ngIf="isMenuOpen(bubble, menuType.leafMenu)" class="action"  [bubble]="bubble" [menu]="menuType.leafMenu"></app-bubble-menu>
         <div *ngIf="isBubbleContentShown(bubble); then owner else editLock"></div>
         <ng-template #owner>
-          <div [appLeafBubble]="bubble" (mouseup)="showSelectedText(bubble)" innerHtml="{{bubble.content}}"></div>
+          <div [appLeafBubble]="bubble" innerHtml="{{bubble.content}}"></div>
         </ng-template>
         <ng-template #editLock>
           <div [appLeafBubble]="bubble" class="editting">This bubble is being editted by {{bubble.whoIsEditting()}}</div>

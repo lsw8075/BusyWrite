@@ -16,9 +16,6 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
 
   rootBubble: Bubble; // bubbles that have root as parents
 
-  hightlightedText = '';
-  highlightOffset = 0;
-
   constructor(
     private _bubbleService: BubbleService,
     private _eventBubbleService: EventBubbleService,
@@ -51,30 +48,8 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
     this._eventBubbleService.clearState();
   }
 
-  // public openSangjunBoard(bubble: Bubble) {
-  //   this._eventBubbleService.setState(ActionType.openSangjun);
-  //   console.log(`[${bubble.id}] openSangjunBoard`);
-  //   this._eventBubbleService.clearState();
-  // }
-
-  private showSelectedText(bubble: Bubble) {
-    let text = '';
-    let startOffset = 0;
-    if (window.getSelection) {
-        text = window.getSelection().toString();
-        startOffset = window.getSelection().getRangeAt(0).startOffset;
-        console.log(window.getSelection().getRangeAt(0));
-    } else if ((document as any).selection && (document as any).selection.type !== 'Control') {
-        text = (document as any).selection.createRange().text;
-        startOffset = (document as any).selection.createRange().startOffset;
-    }
-    console.log(text, startOffset);
-    this.hightlightedText = text;
-    this.highlightOffset = startOffset;
-  }
-
   public splitBubble(bubble: Bubble) {
-    this._bubbleService.splitLeafBubble(bubble, this.hightlightedText, this.highlightOffset)
+    this._bubbleService.splitLeafBubble(bubble, this._eventBubbleService.hightlightedText, this._eventBubbleService.highlightOffset)
       .then(() => {
         this._refreshBubbleList();
         this._eventBubbleService.clearState();
@@ -158,7 +133,11 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
 
 
   public onClickEvent(bubble: Bubble, menu: MenuType, mouseEvent: MouseEvent): void {
-    this._eventBubbleService.selectBubble(bubble, menu);
+    if (this._eventBubbleService.getActionState() === ActionType.none) {
+      this._eventBubbleService.selectBubble(bubble, menu);
+    } else {
+      alert('please wait, your request is still pending');
+    }
   }
 
   public isMenuOpen(bubble, menuType): boolean {
