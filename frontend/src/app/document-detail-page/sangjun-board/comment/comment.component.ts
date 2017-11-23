@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
+import { SuggestBubble, Bubble } from '../../service'
 
 @Component({
   selector: 'app-comment',
@@ -6,6 +7,9 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./comment.component.css']
 })
 export class CommentComponent implements OnInit {
+
+  @Input() bubble: Bubble;
+  @Input() suggestBubble: SuggestBubble;
 
   constructor() { }
 

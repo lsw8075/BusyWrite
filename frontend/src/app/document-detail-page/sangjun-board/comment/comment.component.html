@@ -1,3 +1,11 @@
-<p>
-  comment works!
-</p>
+<div *ngIf="bubble">
+  <p *ngFor="let comment of bubble.comments">
+    {{comment.content}}
+  </p>
+</div>
+
+<div *ngIf="suggestBubble">
+  <p *ngFor="let comment of suggestBubble.comments">
+    {{comment.content}}
+  </p>
+</div>

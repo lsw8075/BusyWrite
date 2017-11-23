@@ -32,7 +32,7 @@ of just writing straight to a file, users make bubbles`);
         const b11: LeafBubble = new LeafBubble(11,
 `BusyWrite is the perfect solution for team writing. \
 The concept of writing as a team has been around for a long time, \
-by services like Google Docs, but the approaches are impractical and unproductive.`, -1, [sb2, sb4, sb1, sb3]);
+by services like Google Docs, but the approaches are impractical and unproductive.`, -1, [sb2, sb4, sb1, sb3], [c7, c8]);
             const b19: LeafBubble = new LeafBubble(19, `<strong>hey!</strong>`);
             const b18: LeafBubble = new LeafBubble(18,
 `BusyWrite helps you organize new ideas. New ideas are important, \
@@ -45,7 +45,7 @@ that are subject to change: lines, paragraphs and even other ideas!`);
           const b14: LeafBubble = new LeafBubble(14, 'handle short sentences');
           const b13: LeafBubble = new LeafBubble(13, `hello swpp team 1`);
         const b12: InternalBubble = new InternalBubble(12, [b13, b14, b16]);
-      const b8: InternalBubble = new InternalBubble(8, [b11, b12]);
+      const b8: InternalBubble = new InternalBubble(8, [b11, b12], [], [c6]);
     const b7: InternalBubble = new InternalBubble(7, [b8, b9, b10]);
     const b2: LeafBubble = new LeafBubble(2,
 `<h1>Sed ut perspiciatis</h1>, unde omnis iste natus error sit \

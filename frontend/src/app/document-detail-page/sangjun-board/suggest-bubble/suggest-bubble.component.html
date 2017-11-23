@@ -21,9 +21,10 @@
       <i class="fa fa-thumbs-up"></i>
       Thumbs up
     </button>
+    {{suggestBubble.thumbUps}}
   </div>
   <br>
 
   <h4>Comments</h4>
-  <app-comment></app-comment>
+  <app-comment [suggestBubble]="suggestBubble"></app-comment>
 </div>
