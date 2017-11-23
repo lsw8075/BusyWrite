@@ -241,7 +241,7 @@ deleteChild(childBubble: Bubble): void {
      }
   }
 
-wrapChildren(wrapList: Array<Bubble>): InternalBubble {
+wrapChildren(wrapBubble: InternalBubble, wrapList: Array<Bubble>): void {
 
     // no bubble to wrap
     if (wrapList.length < 1) {
@@ -259,7 +259,6 @@ wrapChildren(wrapList: Array<Bubble>): InternalBubble {
     // sort bubbles in order
     this._sortByLocation(wrapList);
     let startLocation = wrapList[0].location;
-    const startBubbleId = wrapList[0].id;
 
     // check for un-adjacency
     let locationChecker = startLocation;
@@ -267,7 +266,7 @@ wrapChildren(wrapList: Array<Bubble>): InternalBubble {
       if (bubble.location !== locationChecker) {
         throw new Error('given bubbles are un-ajacent');
       }
-      locationChecker ++;
+      locationChecker++;
     }
 
     // if wrap all children, return null, do nothing
@@ -276,9 +275,9 @@ wrapChildren(wrapList: Array<Bubble>): InternalBubble {
     }
 
     // make internal node
-    const wrapBubble: InternalBubble = new InternalBubble(startBubbleId, wrapList);
     wrapBubble.location = startLocation;
     wrapBubble.parentBubble = this;
+    wrapBubble.addChildren(...wrapList);
     // delete un-needed node
     this.childBubbles.splice(startLocation, wrapList.length, wrapBubble);
 
@@ -288,7 +287,6 @@ wrapChildren(wrapList: Array<Bubble>): InternalBubble {
       this.childBubbles[startLocation].location = startLocation;
       startLocation++;
     }
-    return wrapBubble;
   }
 
   flattenChild(bubble: Bubble): LeafBubble {

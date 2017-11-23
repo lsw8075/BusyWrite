@@ -72,7 +72,8 @@ export class BubbleService {
 
   public wrapBubble(wrapBubbleList: Array<Bubble>): Promise<void> {
     const parentBubble: InternalBubble = wrapBubbleList[0].parentBubble;
-    const wrapperBubble = parentBubble.wrapChildren(wrapBubbleList);
+    const wrapperBubble = new InternalBubble(this._getId(), null);
+    parentBubble.wrapChildren(wrapperBubble, wrapBubbleList);
     this.bubbleList = this.bubbleList.filter(b => !this._containsBubble(b, wrapBubbleList));
     this.bubbleList.push(wrapperBubble);
     return Promise.resolve(null);
