@@ -30,6 +30,16 @@ export class InternalBubbleDirective implements OnInit {
     }
   }
 
+  @HostBinding('style.border-left-color')
+  public get borderLeftColor(): string {
+    return (this.appInternalBubble.isMouseOver) ? 'rgb(157, 172, 255)' : 'transparent';
+  }
+
+  @HostBinding('style.border-right-color')
+  public get borderRightColor(): string {
+    return (this.appInternalBubble.isMouseOver) ? 'rgb(157, 172, 255)' : 'transparent';
+  }
+
   @HostBinding('style.margin')
   public get margin(): string {
     const height = this.appInternalBubble.getHeight();
@@ -45,6 +55,18 @@ export class InternalBubbleDirective implements OnInit {
   public setInternalBubbleStyle(): void {
     this.renderer.setStyle(this.el.nativeElement, 'border-left-width', `${this.lineWidth}px`);
     this.renderer.setStyle(this.el.nativeElement, 'border-right-width', `${this.lineWidth}px`);
+  }
+
+  @HostListener('mouseover', ['$event'])
+  onMouseOver($event) {
+    this.appInternalBubble.parentBubble.mouseOver(true);
+    event.stopPropagation();
+  }
+
+  @HostListener('mouseout', ['$event'])
+  onMouseOut($event) {
+    this.appInternalBubble.parentBubble.mouseOver(false);
+    event.stopPropagation();
   }
 
 }

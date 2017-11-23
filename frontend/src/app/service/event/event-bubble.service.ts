@@ -23,6 +23,7 @@ export class EventBubbleService {
   private _editBubbleEventSource = new Subject<Bubble>();
   private _deleteBubbleEventSource = new Subject<Bubble>();
   private _flattenBubbleEventSource = new Subject<Bubble>();
+  private _moveBubbleEventSource = new Subject<Bubble>();
 
   sangjunBoardOpenEvent$ = this._sangjunBoardOpenEventSource.asObservable();
   splitBubbleEvent$ = this._splitBubbleEventSource.asObservable();
@@ -32,6 +33,7 @@ export class EventBubbleService {
   editBubbleEvent$ = this._editBubbleEventSource.asObservable();
   deleteBubbleEvent$ = this._deleteBubbleEventSource.asObservable();
   flattenBubbleEvent$ = this._flattenBubbleEventSource.asObservable();
+  moveBubbleEvent$ = this._moveBubbleEventSource.asObservable();
 
   constructor() {
     this.actionState = ActionType.none;
@@ -63,7 +65,6 @@ export class EventBubbleService {
 
   public selectBubble(bubble: Bubble, menu: MenuType): void {
     if (this.selectState !== SelectState.multipleSelect) {
-      console.log('select buble');
       this.selectState = SelectState.singleSelect;
       this.selectedBubble = bubble;
       this.selectedMenuType = menu;
@@ -116,6 +117,7 @@ export class EventBubbleService {
     this._editBubbleEventSource.complete();
     this._deleteBubbleEventSource.complete();
     this._flattenBubbleEventSource.complete();
+    this._moveBubbleEventSource.complete();
   }
 
   private _isBubbleInWrapList(bubble: Bubble): boolean {
@@ -129,35 +131,49 @@ export class EventBubbleService {
 
 
   openSangjunBoard(bubble: Bubble): void {
+    this.setState(ActionType.openSangjun);
     this._sangjunBoardOpenEventSource.next(bubble);
   }
 
   splitBubble(bubble: Bubble): void {
+    this.setState(ActionType.split);
     this._splitBubbleEventSource.next(bubble);
   }
 
   popBubble(bubble: Bubble): void {
+    this.setState(ActionType.pop);
     this._popBubbleEventSource.next(bubble);
   }
 
   wrapBubble(bubble: Bubble): void {
+    this.setState(ActionType.wrap);
     this._wrapBubbleEventSource.next(bubble);
   }
 
   createBubble(bubble: Bubble, menu: MenuType): void {
+    this.setState(ActionType.create);
     this._createBubbleEventSource.next({bubble, menu});
   }
 
   editBubble(bubble: Bubble): void {
+    this.setState(ActionType.edit);
     this._editBubbleEventSource.next(bubble);
   }
 
   deleteBubble(bubble: Bubble): void {
+    this.setState(ActionType.delete);
     this._deleteBubbleEventSource.next(bubble);
   }
 
   flattenBubble(bubble: Bubble): void {
+    this.setState(ActionType.flatten);
     this._flattenBubbleEventSource.next(bubble);
+  }
+
+  moveBubble(bubble: Bubble): void {
+    this.setState(ActionType.move);
+    this.selectState = SelectState.moveSelect;
+    this._moveBubbleEventSource.next(bubble);
   }
 }
 
@@ -179,11 +195,13 @@ export enum ActionType {
   edit,
   delete,
   flatten,
-  insertNode
+  insertNode,
+  move
 }
 
 enum SelectState {
   none = 1,
   singleSelect,
-  multipleSelect
+  multipleSelect,
+  moveSelect
 }

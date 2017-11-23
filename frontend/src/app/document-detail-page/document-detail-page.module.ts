@@ -33,6 +33,8 @@ import { EventBubbleService } from './service';
 import { ClickOutsideDirective } from './directive/click-outside.directive';
 import { InternalBubbleDirective } from './directive/internal-bubble.directive';
 import { LeafBubbleDirective } from './directive/leaf-bubble.directive';
+import { StopClickPropagationDirective } from './directive/stop-click-propagation.directive';
+import { StopHoverPropagationDirective } from './directive/stop-hover-propagation.directive';
 
 import { DragulaModule } from 'ng2-dragula/ng2-dragula';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
@@ -64,6 +66,8 @@ import { DialogModule } from 'primeng/primeng';
     ClickOutsideDirective,
     InternalBubbleDirective,
     LeafBubbleDirective,
+    StopClickPropagationDirective,
+    StopHoverPropagationDirective
   ],
   imports: [
     BrowserModule,

@@ -51,11 +51,11 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
     this._eventBubbleService.clearState();
   }
 
-  public openSangjunBoard(bubble: Bubble) {
-    this._eventBubbleService.setState(ActionType.openSangjun);
-    console.log(`[${bubble.id}] openSangjunBoard`);
-    this._eventBubbleService.clearState();
-  }
+  // public openSangjunBoard(bubble: Bubble) {
+  //   this._eventBubbleService.setState(ActionType.openSangjun);
+  //   console.log(`[${bubble.id}] openSangjunBoard`);
+  //   this._eventBubbleService.clearState();
+  // }
 
   private showSelectedText(bubble: Bubble) {
     let text = '';
@@ -74,8 +74,6 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
   }
 
   public splitBubble(bubble: Bubble) {
-    console.log('split bubble');
-    this._eventBubbleService.setState(ActionType.split);
     this._bubbleService.splitLeafBubble(bubble, this.hightlightedText, this.highlightOffset)
       .then(() => {
         this._refreshBubbleList();
@@ -84,7 +82,6 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
   }
 
   public popBubble(bubble: Bubble) {
-    this._eventBubbleService.setState(ActionType.pop);
     this._bubbleService.popBubble(bubble)
       .then(() => {
         this._refreshBubbleList();
@@ -93,12 +90,7 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
   }
 
   public wrapBubble() {
-    this._eventBubbleService.setState(ActionType.wrap);
-  }
-
-  public wrapSelectedBubbles() {
-    const wrapBubbles: Array<Bubble> = this._eventBubbleService.wrapBubbles;
-    this._bubbleService.wrapBubble(wrapBubbles)
+    this._bubbleService.wrapBubble(this._eventBubbleService.wrapBubbles)
       .then(response => {
         this._refreshBubbleList();
         this._eventBubbleService.clearState();
@@ -108,8 +100,8 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
   public isWrapSelected(): boolean {
     return this._eventBubbleService.getActionState() === ActionType.wrap;
   }
+
   public createBubble(bubble: Bubble, menu: MenuType) {
-    this._eventBubbleService.setState(ActionType.create);
     let location = bubble.location;
     if (menu === MenuType.borderBottomMenu) {
       location++;
@@ -190,17 +182,11 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
   }
 
   private _subscribeEvents() {
-    this._eventBubbleService.sangjunBoardOpenEvent$.subscribe((bubble) => {
-      this.openSangjunBoard(bubble);
-    });
     this._eventBubbleService.splitBubbleEvent$.subscribe((bubble) => {
       this.splitBubble(bubble);
     });
     this._eventBubbleService.popBubbleEvent$.subscribe((bubble) => {
       this.popBubble(bubble);
-    });
-    this._eventBubbleService.wrapBubbleEvent$.subscribe((bubble) => {
-      this.wrapBubble();
     });
     this._eventBubbleService.createBubbleEvent$.subscribe((response) => {
       this.createBubble(response.bubble, response.menu);

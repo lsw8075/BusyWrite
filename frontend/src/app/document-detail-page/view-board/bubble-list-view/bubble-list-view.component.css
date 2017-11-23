@@ -4,16 +4,9 @@
 }
 
 .internalBubble {
-  border-color: transparent;
   border-left-style: solid;
   border-right-style: solid;
-
   border-radius: 6px;
-}
-
-.internalBubble:hover {
-  border-left-color: rgb(157, 172, 255);
-  border-right-color: rgb(157, 172, 255);
 }
 
 .leafBubble {
@@ -60,10 +53,4 @@
 
 .editting {
   background-color: gray;
-}
-
-.wrap {
-  position: -webkit-sticky;
-  position: sticky;
-  top: 0;
 }

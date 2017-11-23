@@ -16,7 +16,10 @@ export interface Bubble {
   comments: Array<Comment>;
   suggestBubbles: Array<SuggestBubble>;
 
+  isMouseOver: boolean;
+
   getHeight(): number;
+  mouseOver(over: boolean): void;
 
   addSuggestBubble(SB: Bubble): void;
   addComment(comment: Comment): void;
@@ -34,6 +37,8 @@ export class LeafBubble implements Bubble {
   type: BubbleType;
   parentBubble: InternalBubble = null;
   location: number;
+
+  isMouseOver: boolean;
 
   comments: Array<Comment> = [];
   suggestBubbles: Array<SuggestBubble> = [];
@@ -56,6 +61,7 @@ export class LeafBubble implements Bubble {
     this.content = content;
     this.ownerId = ownerId;
     this.suggestBubbles = suggestBubbles;
+    this.isMouseOver = false;
   }
 
   getEditLock(userId: number): boolean {
@@ -86,6 +92,10 @@ export class LeafBubble implements Bubble {
   getHeight(): number {
     const leafBubbleHeight = 1;
     return leafBubbleHeight;
+  }
+
+  mouseOver(over: boolean): void {
+    this.isMouseOver = over;
   }
 
   addSuggestBubble(SB: Bubble): void {
@@ -120,6 +130,8 @@ export class InternalBubble implements Bubble {
   parentBubble: InternalBubble = null;
   location: number;
 
+  isMouseOver: boolean;
+
   comments: Array<Comment> = [];
   suggestBubbles: Array<SuggestBubble> = [];
 
@@ -135,10 +147,24 @@ export class InternalBubble implements Bubble {
     this.location = -1;
     this.addChildren(...childBubbles);
     this.suggestBubbles = suggestBubbles;
+    this.isMouseOver = false;
   }
 
   getHeight(): number {
     return this.childBubbles.reduce((prev, curr) => Math.max(prev, curr.getHeight() + 1), 1);
+  }
+
+  mouseOver(over: boolean): void {
+    this.childBubbles.forEach(b => b.isMouseOver = over);
+    this.mouseOverPropagateParent(over);
+
+  }
+
+  private mouseOverPropagateParent(over: boolean): void {
+    this.isMouseOver = over;
+    if (this.parentBubble) {
+      this.parentBubble.mouseOverPropagateParent(over);
+    }
   }
 
   addSuggestBubble(SB: Bubble): void {
@@ -297,6 +323,7 @@ wrapChildren(wrapList: Array<Bubble>): InternalBubble {
       throw new Error(errorMsg);
     }
   }
+
   private _ischildBubble(bubble: Bubble): boolean {
     if (bubble.parentBubble === null) {
       return false;

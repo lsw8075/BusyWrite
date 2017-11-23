@@ -58,4 +58,8 @@ export class BubbleMenuComponent implements OnInit {
     this._eventBubbleService.flattenBubble(this.bubble);
   }
 
+  public moveBubble() {
+    this._eventBubbleService.moveBubble(this.bubble);
+  }
+
 } /* istanbul ignore next */
