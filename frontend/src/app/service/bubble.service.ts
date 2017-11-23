@@ -62,6 +62,11 @@ export class BubbleService {
     this._getChildrenList(bubble, deleteBubbleList);
     this.bubbleList = this.bubbleList.filter(b => !this._containsBubble(b, deleteBubbleList));
 
+    if (parentBubble.childBubbles.length === 1) {
+      const grandParentBubble: InternalBubble = parentBubble.parentBubble;
+      grandParentBubble.popChild(parentBubble);
+    }
+
     return Promise.resolve(null);
   }
 
