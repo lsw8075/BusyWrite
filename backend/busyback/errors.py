@@ -89,7 +89,15 @@ class BubbleIsLeafError(Error):
 '''
 
 
+class BubbleIsInternalError(Error):
+    def __init__(self, bubble):
+        self.bubble = bubble
+
 class InvalidWrapError(Error):
+    def __init__(self):
+        pass
+
+class InvalidSplitError(Error):
     def __init__(self):
         pass
 

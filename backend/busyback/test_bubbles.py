@@ -73,6 +73,7 @@ class BubblesTestCase(TestCase):
         with self.assertRaises(BubbleLockedError):
             do_move_normal_bubble(self.user1.id, self.bubble3.id, self.bubble2.id, 0)
 
+        self.bubble2.unlock(self.user2)
         owned = do_create_normal_bubble(self.user2.id, self.bubble2.id, 2, True, 'test owned')
 
         self.bubble2.unlock(self.user2)
@@ -80,8 +81,6 @@ class BubblesTestCase(TestCase):
         with self.assertRaises(BubbleOwnedError):
             do_move_normal_bubble(self.user1.id, owned.id, self.doc1root.id, 0)
 
-        with self.assertRaises(BubbleOwnedError):
-            do_move_normal_bubble(self.user1.id, self.bubble3.id, owned.id, 0)
 
 
     def test_hide_and_show_suggest(self):
@@ -140,13 +139,43 @@ class BubblesTestCase(TestCase):
         with self.assertRaises(BubbleLockedError):
             do_flatten_normal_bubble(self.user1.id, self.bubble2.id)
         
-        with self.assertRaises(BubbleIsLeafError):
-            do_flatten_normal_bubble(self.user1.id, self.bubble3.id)
         self.bubble2.unlock(self.user2)
         do_flatten_normal_bubble(self.user1.id, self.bubble2.id)
 
+    def test_do_split_leaf_bubble(self):
 
+        with self.assertRaises(InvalidSplitError):
+            do_split_leaf_bubble(self.user3.id, self.bubble3.id, [])
 
+        self.bubble4.lock(self.user2)
+        with self.assertRaises(BubbleLockedError):
+            do_split_leaf_bubble(self.user1.id, self.bubble4.id, ['Test', 'Bubble1'])
 
+        owned = do_create_normal_bubble(self.user2.id, self.bubble2.id, 2, True, 'test owned')
 
+        owned.unlock(self.user2)
+
+        with self.assertRaises(BubbleOwnedError):
+            do_split_leaf_bubble(self.user1.id, owned.id, ['test', 'owned'])
+
+        do_split_leaf_bubble(self.user1.id, self.bubble3.id, ['Test', 'Bubble2'])
+
+    def test_do_split_internal_bubble(self):
+
+        with self.assertRaises(BubbleIsLeafError):
+            do_split_internal_bubble(self.user1.id, self.bubble3.id, [1,2])
+
+        with self.assertRaises(InvalidSplitError):
+            do_split_internal_bubble(self.user3.id, self.bubble2.id, [])
+
+        self.bubble2.lock(self.user2)
+        with self.assertRaises(BubbleLockedError):
+            do_split_internal_bubble(self.user1.id, self.bubble2.id, [1])
+
+        self.bubble2.unlock(self.user2)
+
+        with self.assertRaises(InvalidSplitError):
+            do_split_internal_bubble(self.user1.id, self.bubble2.id, [1, 2, 7])
+
+        do_split_internal_bubble(self.user1.id, self.bubble2.id, [1])
 

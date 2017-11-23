@@ -35,7 +35,7 @@ def do_fetch_suggest_bubble(bubble_id: int):
     return bubble
 
 
-def do_fetch_bubbles(document_id: int):
+def do_fetch_normal_bubbles(document_id: int):
     try:
         document = Document.objects.get(id=document_id)
         bubbles = NormalBubble.objects.filter(document=document).values()
@@ -43,16 +43,29 @@ def do_fetch_bubbles(document_id: int):
         raise InternalError('Document has no bubble')
     return list(bubbles)
 
+def do_fetch_bubbles(d_id):
+    return do_fetch_normal_bubbles(d_id)
+
+def do_fetch_suggest_bubbles(document_id: int):
+    try:
+        document = Document.objects.get(id=document_id)
+        bubbles = NormalBubble.objects.filter(document=document)
+        suggests = SuggestBubble.objects.filter(normal_bubble=bubbles).values()
+    except Bubble.DoesNotExist:
+        raise InternalError('Document %d has no bubble' % document_id)
+    except SuggestBubble.DoesNotExist:
+        return []
+    return list(suggests)
+    
 def get_root_bubble(document_id: int):
     '''Get root bubble of a document'''
-    pass
-'''
     try:
-        bubbles = Bubble.objects.filter(id=document_id).all()
-    except:
-        raise InternalError('Document has no bubble')
-    bubbles.filter(parent)
-'''
+        root_bubble = NormalBubble.objects.filter(parent_bubble=None).get(id=document_id)
+    except NormalBubble.MultipleObjectsReturned:
+        raise InternalError('Document %d has multiple root bubble' % document_id)
+    except NormalBubble.DoesNotExist:
+        raise InternalError('Document %d has no root bubble' % document_id)
+    return root_bubble
 
 def do_create_normal_bubble(
     user_id: int,
@@ -71,6 +84,16 @@ def do_create_normal_bubble(
     child_count = parent_bubble.child_count()
     if location < 0 or child_count < location:
         raise InvalidLocationError(parent_bubble, location)
+
+    # check parent is leaf, locked
+
+#    if parent_bubble.is_leaf():
+#        raise BubbleIsLeafError(parent_bubble)
+
+    if parent_bubble.has_locked_ancestors() or parent_bubble.is_locked():
+        raise BubbleLockedError(parent_bubble)
+
+    # create a bubble
 
     new_bubble = create_normal(parent_bubble.document, content, parent_bubble, location)
 
@@ -109,12 +132,15 @@ def do_edit_normal_bubble(
  
     bubble = do_fetch_normal_bubble(bubble_id)
 
+    user = do_fetch_user(user_id)
     check_contributor(bubble, user_id)
     
-    if bubble.has_locked_directs():
+    if not bubble.is_leaf():
+        raise BubbleIsInternalError(bubble)
+
+    if bubble.has_locked_ancestors() or bubble.is_locked():
         raise BubbleLockedError(bubble)
     
-    user = do_fetch_user(user_id)
     if bubble.owned_by_other(user):
         raise BubbleOwnedError(bubble)
 
@@ -130,10 +156,13 @@ def do_move_normal_bubble(
     
     bubble = do_fetch_normal_bubble(bubble_id)
     new_parent = do_fetch_normal_bubble(new_parent_id)
-
+    user = do_fetch_user(user_id)
 
     check_contributor(bubble, user_id)
     
+    if new_parent.is_leaf():
+        raise BubbleIsLeafError(Bubble)
+
     if bubble.is_root():
         raise BubbleIsRootError(bubble)
 
@@ -143,16 +172,11 @@ def do_move_normal_bubble(
     if bubble.has_locked_ancestors():
         raise BubbleLockedError(bubble)
     
-    user = do_fetch_user(user_id)
     if bubble.owned_by_other(user):
         raise BubbleOwnedError(bubble)
 
-    if new_parent.is_locked():
+    if new_parent.has_locked_ancestors() or new_parent.is_locked():
         raise BubbleLockedError(new_parent)
-    
-    user = do_fetch_user(user_id)
-    if new_parent.owned_by_other(user):
-        raise BubbleOwnedError(new_parent)
 
     old_parent = bubble.parent_bubble
     old_parent.splice_children(bubble.location, 1, new_parent, new_location)
@@ -171,6 +195,7 @@ def do_delete_normal_bubble(
     '''Delete the normal bubble'''
 
     bubble = do_fetch_normal_bubble(bubble_id)
+    user = do_fetch_user(user_id)
 
     check_contributor(bubble, user_id)
 
@@ -180,8 +205,6 @@ def do_delete_normal_bubble(
     if bubble.has_locked_directs():
         raise BubbleLockedError(bubble)
 
-    
-    user = do_fetch_user(user_id)
     if bubble.owned_by_other(user):
         raise BubbleOwnedError(bubble)
 
@@ -219,7 +242,7 @@ def do_wrap_normal_bubble(
     ):
     '''Wrap the normal bubbles'''
 
-    if len(bubble_id_list) <= 1:
+    if len(bubble_id_list) < 1:
         raise InvalidWrapError()
 
     bubbles = []
@@ -229,6 +252,9 @@ def do_wrap_normal_bubble(
         bubbles.append(bubble)
 
     parent = bubbles[0].parent_bubble
+
+    if parent.has_locked_ancestors() or parent.is_locked():
+        raise BubbleIsLockedError(parent)
 
     check_contributor(bubbles[0], user_id)
 
@@ -259,17 +285,21 @@ def do_pop_normal_bubble(
     '''Pop the normal bubble'''
 
     bubble = do_fetch_normal_bubble(bubble_id)
+    user = do_fetch_user(user_id)
 
     check_contributor(bubble, user_id)
+
+    if bubble.is_leaf():
+        raise BubbleIsLeafError(bubble)
 
     if bubble.is_root():
         raise BubbleIsRootError(bubble)
 
-    if bubble.is_locked() or bubble.has_locked_descendants():
+    if bubble.has_locked_directs():
         raise BubbleLockedError(bubble)
 
-    if bubble.is_leaf():
-        raise BubbleIsLeafError(bubble)
+    if bubble.owned_by_other(user):
+        raise BubbleOwnedError(bubble)
 
     parent = bubble.parent_bubble
     parent.pop_child(bubble.location)
@@ -293,38 +323,90 @@ def do_flatten_normal_bubble(
     '''Flatten the normal bubble'''
 
     bubble = do_fetch_normal_bubble(bubble_id)
-
+    user = do_fetch_user(user_id)
     check_contributor(bubble, user_id)
 
-    if bubble.is_locked() or bubble.has_locked_descendants():
+    if bubble.has_locked_directs():
         raise BubbleLockedError(bubble)
 
-    if bubble.is_leaf():
-        raise BubbleIsLeafError(bubble)
+    if bubble.owned_by_other(user):
+        raise BubbleOwnedError(bubble)
 
     flatten_content = ''
 
 
-    user = do_fetch_user(user_id)
     cascaded_flatten_children(user, bubble)
 
     bubble.change_content(flatten_content)
 
 
-'''
 def do_split_leaf_bubble(
     user_id: int,
     bubble_id: int,
-    split_content_list: list # list of string
+    split_content_list: list
     ):
-    pass
+    '''Split the leaf bubble'''
 
+    if len(split_content_list) < 1:
+        raise InvalidSplitError()
+
+    bubble = do_fetch_normal_bubble(bubble_id)
+
+    check_contributor(bubble, user_id)
+
+    if not bubble.is_leaf():
+        raise BubbleIsInternalError(bubble)
+    
+    if bubble.has_locked_ancestors() or bubble.is_locked():
+        raise BubbleLockedError(bubble)
+
+    user = User.objects.get(id=user_id)
+    if bubble.owned_by_other(user):
+        raise BubbleOwnedError(bubble)
+
+    # convert leaf bubble to internal bubble
+    # whether bubble is leaf is determined by existence of child
+    # so, add child to the bubble
+
+    bubble.change_content('')
+
+    for idx, content in enumerate(split_content_list):
+        create_normal(bubble.document, content, bubble, idx)
+        
 def do_split_internal_bubble(
     user_id: int,
     bubble_id: int,
     split_location: list # list of int
     ):
-    pass
+    
+    if len(split_location) < 1:
+        raise InvalidSplitError()
 
+    bubble = do_fetch_normal_bubble(bubble_id)
 
-'''
+    check_contributor(bubble, user_id)
+
+    if bubble.is_leaf():
+        raise BubbleIsLeafError(bubble)
+
+    if bubble.has_locked_ancestors() or bubble.is_locked():
+        raise BubbleLockedError(bubble)
+
+    # check split location
+
+    split_location[:0] = [0]
+    split_location.append(bubble.child_count())
+
+    for idx in range(0, len(split_location) - 1):
+        split_first = split_location[idx]
+        split_last = split_location[idx + 1]
+
+        if split_last - split_first < 1:
+            raise InvalidSplitError()
+
+    for idx in range(0, len(split_location) - 1):
+        split_first = split_location[idx]
+        split_last = split_location[idx + 1]
+
+        bubble.wrap_children(split_first, split_last - split_first)
+        
