@@ -51,6 +51,7 @@ import { DocumentService } from './service/document.service';
 import { NoteService } from './service/note.service';
 
 import { EventBubbleService } from './service/event/event-bubble.service';
+import { EventSangjunBoardService } from './service/event/event-sangjun-board.service';
 
 import { DragulaModule } from 'ng2-dragula/ng2-dragula';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
@@ -119,6 +120,7 @@ import { DialogModule } from 'primeng/primeng';
     DirectoryService,
     DocumentService,
     EventBubbleService,
+    EventSangjunBoardService,
     NoteService
   ],
   bootstrap: [AppComponent]

@@ -1,49 +1,54 @@
 
 <div *ngIf="bubble">
-  <h3>Bubble {{bubble.id}}'s Details</h3>
 
-  <div class="form-check form-check-inline">
-    <label class="form-check-label">
-      <input class="form-check-input" type="checkbox" [(ngModel)]="isOBChecked"> Original Bubble
-    </label>
-  </div>
-  <div class="form-check form-check-inline">
-    <label class="form-check-label">
-      <input class="form-check-input" type="checkbox" [(ngModel)]="isSBChecked"> Suggest Bubbles
-    </label>
-  </div>
-  <div class="form-check form-check-inline">
-    <label class="form-check-label">
-      <input class="form-check-input" type="checkbox" [(ngModel)]="isCommentChecked"> Comments
-    </label>
+  <div *ngIf="selectedSB">
+    <app-suggest-bubble [suggestBubble]="selectedSB"></app-suggest-bubble>
   </div>
 
-  <div *ngIf="isOBChecked">
-    <h4>Original Bubble</h4>
-      <p class="obContent">{{bubble.getContent()}}</p>
-  </div>
+  <div *ngIf="!selectedSB">
+    <h3>Bubble {{bubble.id}}'s Details</h3>
 
-  <div *ngIf="isSBChecked">
-    <h4>Suggest Bubbles</h4>
-      <table>
-        <tr *ngFor="let suggestBubble of suggestBubbles">
-          <td>
-            <p class="sbContent" (click)="clickSuggestBubble(suggestBubble)">{{suggestBubble.content}}</p>
-          </td>
-          <td>
-            <button type="button" class="btn btn-primary btn-sm" (click)="clickThumbsUp(suggestBubble)">
-              <i class="fa fa-thumbs-up"></i>
-              Thumbs up
-            </button>
-          </td>
-          <td>{{suggestBubble.thumbUps}}</td>
-        </tr>
-      </table>
-  </div>
+    <div class="form-check form-check-inline">
+      <label class="form-check-label">
+        <input class="form-check-input" type="checkbox" [(ngModel)]="isOBChecked"> Original Bubble
+      </label>
+    </div>
+    <div class="form-check form-check-inline">
+      <label class="form-check-label">
+        <input class="form-check-input" type="checkbox" [(ngModel)]="isSBChecked"> Suggest Bubbles
+      </label>
+    </div>
+    <div class="form-check form-check-inline">
+      <label class="form-check-label">
+        <input class="form-check-input" type="checkbox" [(ngModel)]="isCommentChecked"> Comments
+      </label>
+    </div>
 
-  <div *ngIf="isCommentChecked">
-    <h4>Comments</h4>
-    <app-comment></app-comment>
-  </div>
+    <div *ngIf="isOBChecked">
+      <h4>Original Bubble</h4>
+      <p class="ob-content">{{bubble.getContent()}}</p>
+      <br>
+    </div>
 
+    <div *ngIf="isSBChecked">
+      <h4>Suggest Bubbles</h4>
+      <div *ngFor="let suggestBubble of suggestBubbles">
+        <p class="sb-content" (click)="clickSuggestBubble(suggestBubble)">{{suggestBubble.content}}</p>
+
+        <button type="button" class="btn btn-primary btn-sm" (click)="clickThumbsUp(suggestBubble)">
+          <i class="fa fa-thumbs-up"></i>
+          Thumbs up
+        </button>
+
+        {{suggestBubble.thumbUps}}
+        <br>
+      </div>
+      <br>
+    </div>
+
+    <div *ngIf="isCommentChecked">
+      <h4>Comments</h4>
+      <app-comment></app-comment>
+    </div>
+  </div>
 </div>
