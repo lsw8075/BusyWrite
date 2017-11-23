@@ -77,6 +77,10 @@ export class EventBubbleService {
         this.wrapBubbles[0].parentBubble.id === bubble.parentBubble.id) {
           if (this._isBubbleInWrapList(bubble)) {
             this.wrapBubbles = this.wrapBubbles.filter(b => b.id !== bubble.id);
+            if (this.wrapBubbles.length === 0) {
+              // if no bubbles are selected for wrap
+              this.clearState();
+            }
           } else {
             this.wrapBubbles.push(bubble);
           }
@@ -110,7 +114,8 @@ export class EventBubbleService {
   }
 
   public isMenuOpen(bubble: Bubble, menu: MenuType): boolean {
-    if (this.selectState === SelectState.singleSelect) {
+    if (this.selectState === SelectState.singleSelect &&
+        this.actionState === ActionType.none) {
       if ((bubble.id === this.selectedBubble.id) &&
           (menu === this.selectedMenuType)) {
           return true;
@@ -141,24 +146,31 @@ export class EventBubbleService {
     return false;
   }
 
-
   openSangjunBoard(bubble: Bubble): void {
-    this.setState(ActionType.openSangjun);
-    this._sangjunBoardOpenEventSource.next(bubble);
+    if (this.actionState === ActionType.none) {
+      this.setState(ActionType.openSangjun);
+      this._sangjunBoardOpenEventSource.next(bubble);
+    }
   }
 
   splitBubble(bubble: Bubble): void {
-    this.setState(ActionType.split);
-    this._splitBubbleEventSource.next(bubble);
+    if (this.actionState === ActionType.none) {
+      this.setState(ActionType.split);
+      this._splitBubbleEventSource.next(bubble);
+    }
   }
 
   popBubble(bubble: Bubble): void {
-    this.setState(ActionType.pop);
-    this._popBubbleEventSource.next(bubble);
+    if (this.actionState === ActionType.none) {
+      this.setState(ActionType.pop);
+      this._popBubbleEventSource.next(bubble);
+    }
   }
 
   wrapBubble(bubble: Bubble): void {
-    this.setState(ActionType.wrap);
+    if (this.actionState === ActionType.none) {
+      this.setState(ActionType.wrap);
+    }
   }
 
   wrap(): void {
@@ -166,28 +178,38 @@ export class EventBubbleService {
   }
 
   createBubble(bubble: Bubble, menu: MenuType): void {
-    this.setState(ActionType.create);
-    this._createBubbleEventSource.next({bubble, menu});
+    if (this.actionState === ActionType.none) {
+      this.setState(ActionType.create);
+      this._createBubbleEventSource.next({bubble, menu});
+    }
   }
 
   editBubble(bubble: Bubble): void {
-    this.setState(ActionType.edit);
-    this._editBubbleEventSource.next(bubble);
+    if (this.actionState === ActionType.none) {
+      this.setState(ActionType.edit);
+      this._editBubbleEventSource.next(bubble);
+    }
   }
 
   deleteBubble(bubble: Bubble): void {
-    this.setState(ActionType.delete);
-    this._deleteBubbleEventSource.next(bubble);
+    if (this.actionState === ActionType.none) {
+      this.setState(ActionType.delete);
+      this._deleteBubbleEventSource.next(bubble);
+    }
   }
 
   flattenBubble(bubble: Bubble): void {
-    this.setState(ActionType.flatten);
-    this._flattenBubbleEventSource.next(bubble);
+    if (this.actionState === ActionType.none) {
+      this.setState(ActionType.flatten);
+      this._flattenBubbleEventSource.next(bubble);
+    }
   }
 
   moveBubble(bubble: Bubble, menu: MenuType): void {
-    this.setState(ActionType.move);
-    this.selectState = SelectState.moveSelect;
+    if (this.actionState === ActionType.none) {
+      this.setState(ActionType.move);
+      this.selectState = SelectState.moveSelect;
+    }
   }
 }
 
