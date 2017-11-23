@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output, HostListener, ElementRef } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, HostListener } from '@angular/core';
 import { BubbleService } from '../service';
 import { BubbleType, Bubble, ActionType, MenuType } from '../service';
 import { InternalBubble, LeafBubble } from '../../../model/bubble';
@@ -8,6 +8,7 @@ import { EventBubbleService, BoardService } from '../service';
   selector: 'app-bubble-list-view',
   templateUrl: './bubble-list-view.component.html',
   styleUrls: ['./bubble-list-view.component.css'],
+
 })
 export class BubbleListViewComponent implements OnInit {
   menuType = MenuType;
@@ -20,7 +21,6 @@ export class BubbleListViewComponent implements OnInit {
 
   constructor(
     private _bubbleService: BubbleService,
-    private eRef: ElementRef,
     private _eventBubbleService: EventBubbleService,
     private _boardService: BoardService) {}
 
@@ -30,17 +30,15 @@ export class BubbleListViewComponent implements OnInit {
   }
 
   // host listener to check if user click outside
-  @HostListener('document:click', ['$event'])
-  clickout(event) {
-    if (!this.eRef.nativeElement.contains(event.target)) {
-      this._eventBubbleService.clearState();
-    }
-  }
+
   // @HostListener('document:keyup', ['$event'])
   // onKeyUp(ev: KeyboardEvent) {
   //   console.log(`The user just pressed ${ev.key}!`);
   // }
 
+  public clearState(event): void {
+    this._eventBubbleService.clearState();
+  }
 
   public openSangjunBoard(bubble: Bubble) {
     this._eventBubbleService.setState(ActionType.openSangjun);
@@ -48,7 +46,7 @@ export class BubbleListViewComponent implements OnInit {
     this._eventBubbleService.clearState();
   }
 
-  showSelectedText(bubble: Bubble) {
+  private showSelectedText(bubble: Bubble) {
     let text = '';
     let startOffset = 0;
     if (window.getSelection) {
@@ -173,52 +171,10 @@ public deleteBubble(bubble: Bubble) {
     return bubble.type === BubbleType.internalBubble;
   }
 
-  public setActionStyle(bubble: Bubble): object {
-    const height = bubble.getHeight();
-    const styles = {};
-    styles['right'] = `-${50 + height * 10}px`;
-    return styles;
-  }
-
-  public setInternalBubbleStyle(bubble: Bubble): object {
-    const height = bubble.getHeight();
-    const lineWidth = 2;
-    const space = 8;
-    const offset = -5;
-    const styles = {};
-    styles['border-left-width'] = `${lineWidth}px`;
-    styles['border-right-width'] = `${lineWidth}px`;
-    styles['margin'] = `0px -${offset + height * space}px`;
-    styles['padding'] = `0px ${offset + height * space - lineWidth}px`;
-
-    if (this._eventBubbleService.isBubbleSelected(bubble)) {
-      styles['background-color'] = `rgb(157, 172, 255)`;
-    }
-
-    return styles;
-  }
-
-  public setLeafBubbleStyle(bubble: Bubble): object {
-    const styles = {};
-    const lineWidth = 1;
-    styles['border-left-width'] = `${lineWidth}px`;
-    styles['border-right-width'] = `${lineWidth}px`;
-
-    if (this._eventBubbleService.isBubbleSelected(bubble)) {
-      styles['background-color'] = `rgb(157, 172, 255)`;
-    }
-
-    if (this._eventBubbleService.isBeingEditted(bubble)) {
-      styles['background-color'] = `red`;
-    }
-
-    return styles;
-  }
-
-
   private _refreshBubbleList() {
     this._bubbleService.getRootBubble().then(rootBubble => {
       this.rootBubble = rootBubble;
+      console.log('bubble list refreshed');
     });
   }
 

@@ -10,10 +10,8 @@
 }
 
 .internalBubble {
-  border-left-color: transparent;
+  border-color: transparent;
   border-left-style: solid;
-
-  border-right-color: transparent;
   border-right-style: solid;
 
   border-radius: 6px;
@@ -21,7 +19,6 @@
 
 .internalBubble:hover {
   border-left-color: rgb(157, 172, 255);
-
   border-right-color: rgb(157, 172, 255);
 }
 
@@ -29,7 +26,6 @@
   border-radius: 0px;
   padding: 0px 2px;
   margin: 0px 0px;
-
 }
 
 ::selection {
@@ -49,6 +45,7 @@
   float: right;
   position: absolute;
   z-index: 10;
+  right: -120px;
 }
 
 .placeholder-bottom:hover {
@@ -70,5 +67,10 @@
 
 .editting {
   background-color: gray;
+}
 
+.wrap {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
 }

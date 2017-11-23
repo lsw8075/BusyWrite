@@ -30,6 +30,10 @@ import { CommentService } from './service';
 import { NoteService } from './service';
 import { EventBubbleService } from './service';
 
+import { ClickOutsideDirective } from './directive/click-outside.directive';
+import { InternalBubbleDirective } from './directive/internal-bubble.directive';
+import { LeafBubbleDirective } from './directive/leaf-bubble.directive';
+
 import { DragulaModule } from 'ng2-dragula/ng2-dragula';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { QuillEditorModule } from 'ngx-quill-editor';
@@ -56,6 +60,10 @@ import { DialogModule } from 'primeng/primeng';
     CommentComponent,
     FilterBoardComponent,
     BoardManagerComponent,
+
+    ClickOutsideDirective,
+    InternalBubbleDirective,
+    LeafBubbleDirective,
   ],
   imports: [
     BrowserModule,
