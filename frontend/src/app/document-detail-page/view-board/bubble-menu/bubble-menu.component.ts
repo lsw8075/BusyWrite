@@ -13,17 +13,20 @@ export class BubbleMenuComponent implements OnInit {
   menuType = MenuType;
   @Input() menu: MenuType;
   @Input() bubble: Bubble;
-  editLock: boolean;
 
   constructor(
     private _bubbleSerivce: BubbleService,
     private _eventBubbleService: EventBubbleService) {
   }
 
-  ngOnInit() {
-    if (this.bubble.isBeingEditted()) {
-      this.editLock = true;
-    }
+  ngOnInit() {}
+
+  public isWrapSelected(): boolean {
+    return this._eventBubbleService.getActionState() === ActionType.wrap;
+  }
+
+  public isMoveSelected(): boolean {
+    return this._eventBubbleService.getActionState() === ActionType.move;
   }
 
   public openSangjunBoard() {
@@ -40,6 +43,10 @@ export class BubbleMenuComponent implements OnInit {
 
   public wrapBubble() {
     this._eventBubbleService.wrapBubble(this.bubble);
+  }
+
+  public wrap() {
+    this._eventBubbleService.wrap();
   }
 
   public createBubble() {
@@ -59,7 +66,16 @@ export class BubbleMenuComponent implements OnInit {
   }
 
   public moveBubble() {
-    this._eventBubbleService.moveBubble(this.bubble);
+    this._eventBubbleService.moveBubble(this.bubble, this.menu);
+  }
+
+  public getAction(): string {
+   switch (this._eventBubbleService.getActionState()) {
+     case ActionType.move:
+      return 'move bubble';
+     default:
+      return '';
+   }
   }
 
 } /* istanbul ignore next */

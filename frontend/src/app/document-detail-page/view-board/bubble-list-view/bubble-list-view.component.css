@@ -47,15 +47,14 @@
 }
 
 .bubbleUnit {
-  background-color: transparent;
   border-radius: 2px;
 }
 
 .editting {
   background-color: gray;
+  color: white;
+  height: 50px;
+  resize: vertical;
+  overflow-y: auto;
 }
 
-p {
-  padding: 0px;
-  margin: 0px;
-}

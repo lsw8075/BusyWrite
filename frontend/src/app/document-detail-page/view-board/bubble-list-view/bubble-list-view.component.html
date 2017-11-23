@@ -1,12 +1,14 @@
-<button *ngIf="isWrapSelected()" type="button" class="btn btn-primary btn-sm wrap" appStopClickPropagation (click)="wrapBubble(); ">
-  WRAP!
-</button>
+<div class="container ml-5 my-2">
+  <app-bubble-menu [bubble]="rootBubble" [menu]="menuType.topMenu"></app-bubble-menu>
+</div>
 
 <div class="bubble-list">
-  <div class="ui-g">
-    <div class="ui-g-9 ui-md-offset-1 list-group-item">
-      <div (appClickOutside)="clearState($event)" *ngIf="rootBubble">
-        <ng-container *ngTemplateOutlet="bubbleUnit; context: { $implicit: rootBubble }"></ng-container>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-9 offset-md-1 list-group-item">
+        <div (appClickOutside)="clearState($event)" *ngIf="rootBubble">
+          <ng-container *ngTemplateOutlet="bubbleUnit; context: { $implicit: rootBubble }"></ng-container>
+        </div>
       </div>
     </div>
   </div>
@@ -15,7 +17,7 @@
 <!-- recursive unit -->
 <ng-template #bubbleUnit let-bubble>
   <div class="bubbleUnit">
-    <div *ngIf="isInternal(bubble); then internal else leaf"></div>
+    <ng-container *ngIf="isInternal(bubble); then internal else leaf"></ng-container>
 
     <!-- internal bubble -->
     <ng-template #internal>
@@ -40,12 +42,20 @@
       <!-- leaf bubble content -->
       <div class="leafBubble" appStopClickPropagation (click)="onClickEvent(bubble, menuType.leafMenu, $event);">
         <app-bubble-menu *ngIf="isMenuOpen(bubble, menuType.leafMenu)" class="action"  [bubble]="bubble" [menu]="menuType.leafMenu"></app-bubble-menu>
-        <div class="text-center" *ngIf="!isBubbleContentShown(bubble)">
-          <span [style.color]="'green'">
-            <i class="fa fa-fw fa-pencil"></i>
-            This bubble is being editted by {{bubble.whoIsEditting()}}</span>
-        </div>
-        <div [appLeafBubble]="bubble" innerHtml="{{bubble.content}}"></div>
+        <ng-container *ngIf="isBubbleContentShown(bubble); then show else edit"></ng-container>
+        <ng-template #show>
+          <div [appLeafBubble]="bubble" innerHtml="{{bubble.content}}"></div>
+        </ng-template>
+        <ng-template #edit>
+          <div class="text-center">
+            <span [style.color]="'green'">
+              <i class="fa fa-fw fa-pencil"></i>
+              This bubble is being editted by {{bubble.whoIsEditting()}}
+            </span>
+          </div>
+          <div class="editting" innerHtml="{{bubble.content}}"></div>
+        </ng-template>
+
       </div>
 
       <!-- bottom border -->

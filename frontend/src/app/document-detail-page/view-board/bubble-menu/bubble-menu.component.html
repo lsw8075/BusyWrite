@@ -13,13 +13,31 @@
       </button>
     </div>
 
+    <div *ngSwitchCase="menuType.topMenu">
+      <div class="btn-group" role="group" aria-label="Top Menu">
+        <button type="button" class="btn btn-success" (click)="wrap()" [disabled]="!isWrapSelected()">
+          <i class="fa fa-square fa-fw"></i>
+          Wrap
+        </button>
+        <button type="button" class="btn btn-success" [disabled]="true">
+          <i [style.color]="'red'" class="fa fa-stack-overflow fa-fw"></i>
+          Flatten All
+        </button>
+        <button type="button" class="btn btn-success" [disabled]="true">
+          <i class="fa fa-search fa-fw"></i>
+          Search
+        </button>
+      </div>
+        {{getAction()}}
+    </div>
+
     <div *ngSwitchCase="menuType.leafMenu">
       <div class="btn-group" dropdown>
         <button type="button" dropdownToggle class="btn btn-primary btn-sm dropdown-toggle dropdown-toggle-split" appStopClickPropagation>
           <span class="caret"></span>
         </button>
         <ul *dropdownMenu class="dropdown-menu" role="menu">
-          <ng-container *ngIf="!editLock">
+          <ng-container *ngIf="!bubble.isBeingEditted()">
             <li role="menuitem">
               <a class="dropdown-item" (click)="splitBubble(); " appStopClickPropagation>
                 <i class="fa fa-scissors fa-fw"></i>
@@ -48,7 +66,7 @@
           </ng-container>
           <li role="menuitem">
             <a class="dropdown-item" (click)="wrapBubble(); " appStopClickPropagation>
-              <i class="fa fa-comments fa-fw"></i>
+              <i class="fa fa-square fa-fw"></i>
               Wrap
             </a>
           </li>
@@ -66,7 +84,7 @@
           <span class="caret"></span>
         </button>
         <ul *dropdownMenu class="dropdown-menu" role="menu">
-          <ng-container *ngIf="!editLock">
+          <ng-container *ngIf="!bubble.isBeingEditted()">
             <li role="menuitem">
               <a class="dropdown-item" (click)="flattenBubble(); " appStopClickPropagation>
                 <i class="fa fa-stack-overflow fa-fw"></i>
@@ -100,7 +118,7 @@
             </a>
           </li>
           <li role="menuitem"><a class="dropdown-item" (click)="wrapBubble(); " appStopClickPropagation>
-              <i class="fa fa-comments fa-fw"></i>
+              <i class="fa fa-square fa-fw"></i>
               Wrap
             </a>
           </li>

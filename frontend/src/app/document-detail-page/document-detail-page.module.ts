@@ -41,6 +41,7 @@ import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { QuillEditorModule } from 'ngx-quill-editor';
 import { AccordionModule } from 'ngx-bootstrap/accordion';
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
+import { AlertModule } from 'ngx-bootstrap/alert';
 
 import { TabViewModule } from 'primeng/primeng';
 import { ButtonModule } from 'primeng/primeng';
@@ -85,6 +86,7 @@ import { DialogModule } from 'primeng/primeng';
     DialogModule,
     AccordionModule.forRoot(),
     TooltipModule.forRoot(),
+    AlertModule.forRoot()
   ],
   exports: [
 

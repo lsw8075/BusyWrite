@@ -3,6 +3,7 @@ import { Bubble, BubbleType, LeafBubble, InternalBubble } from '../model/bubble'
 import { MockBubbleRoot, MockBubbleList } from '../model/bubble.mock';
 
 import 'rxjs/add/operator/toPromise';
+import { MenuType } from './event/event-bubble.service';
 
 let tempId = 30; // to be deleted after backend implemented
 
@@ -141,6 +142,22 @@ export class BubbleService {
     const wrapBubbleList = [];
     this._getChildrenList(bubble, wrapBubbleList);
     this.bubbleList = this.bubbleList.filter(b => !this._containsBubble(b, wrapBubbleList));
+
+    return Promise.resolve(null);
+  }
+
+  public moveBubble(bubble: Bubble, destBubble: Bubble, menu: MenuType): Promise<void> {
+    if (bubble.parentBubble === null) {
+      throw new Error('Cannot move root bubble');
+    }
+    const parentBubble: InternalBubble = bubble.parentBubble;
+    parentBubble.deleteChild(bubble);
+
+    let location = destBubble.location;
+    if (menu === MenuType.borderBottomMenu) {
+      location ++;
+    }
+    destBubble.parentBubble.insertChildren(location, bubble);
 
     return Promise.resolve(null);
   }

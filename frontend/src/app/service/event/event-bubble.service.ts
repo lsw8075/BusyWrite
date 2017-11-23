@@ -22,12 +22,12 @@ export class EventBubbleService {
   private _sangjunBoardOpenEventSource = new Subject<Bubble>();
   private _splitBubbleEventSource = new Subject<Bubble>();
   private _popBubbleEventSource = new Subject<Bubble>();
-  private _wrapBubbleEventSource = new Subject<Bubble>();
+  private _wrapBubbleEventSource = new Subject<void>();
   private _createBubbleEventSource = new Subject<{bubble: Bubble, menu: MenuType}>();
   private _editBubbleEventSource = new Subject<Bubble>();
   private _deleteBubbleEventSource = new Subject<Bubble>();
   private _flattenBubbleEventSource = new Subject<Bubble>();
-  private _moveBubbleEventSource = new Subject<Bubble>();
+  private _moveBubbleEventSource = new Subject<{moveBubble: Bubble, destBubble: Bubble, menu: MenuType}>();
 
   sangjunBoardOpenEvent$ = this._sangjunBoardOpenEventSource.asObservable();
   splitBubbleEvent$ = this._splitBubbleEventSource.asObservable();
@@ -51,7 +51,7 @@ export class EventBubbleService {
     if (this.actionState === ActionType.wrap) {
       this.wrapBubbles.push(this.selectedBubble);
       this.selectedBubble = null;
-      this.selectState = SelectState.multipleSelect;
+      this.selectState = SelectState.wrapSelect;
     }
   }
 
@@ -68,17 +68,25 @@ export class EventBubbleService {
   }
 
   public selectBubble(bubble: Bubble, menu: MenuType): void {
-    if (this.selectState !== SelectState.multipleSelect) {
+    if (this.selectState === SelectState.singleSelect ||
+        this.selectState === SelectState.none) {
       this.selectState = SelectState.singleSelect;
       this.selectedBubble = bubble;
       this.selectedMenuType = menu;
-    } else if (this.selectState === SelectState.multipleSelect &&
+    } else if (this.selectState === SelectState.wrapSelect &&
         this.wrapBubbles[0].parentBubble.id === bubble.parentBubble.id) {
           if (this._isBubbleInWrapList(bubble)) {
             this.wrapBubbles = this.wrapBubbles.filter(b => b.id !== bubble.id);
           } else {
             this.wrapBubbles.push(bubble);
           }
+    } else if (this.selectState === SelectState.moveSelect) {
+        if (menu === MenuType.borderBottomMenu ||
+            menu === MenuType.borderTopMenu) {
+          const destBubble = bubble;
+          const moveBubble = this.selectedBubble;
+          this._moveBubbleEventSource.next({moveBubble, destBubble, menu});
+        }
     } else {
       this.clearState();
     }
@@ -88,7 +96,7 @@ export class EventBubbleService {
     if (this.selectState === SelectState.singleSelect &&
         bubble.id === this.selectedBubble.id) {
          return true;
-    } else if (this.selectState === SelectState.multipleSelect) {
+    } else if (this.selectState === SelectState.wrapSelect) {
       return this._isBubbleInWrapList(bubble);
     } else {
       return false;
@@ -151,7 +159,10 @@ export class EventBubbleService {
 
   wrapBubble(bubble: Bubble): void {
     this.setState(ActionType.wrap);
-    this._wrapBubbleEventSource.next(bubble);
+  }
+
+  wrap(): void {
+    this._wrapBubbleEventSource.next();
   }
 
   createBubble(bubble: Bubble, menu: MenuType): void {
@@ -174,10 +185,9 @@ export class EventBubbleService {
     this._flattenBubbleEventSource.next(bubble);
   }
 
-  moveBubble(bubble: Bubble): void {
+  moveBubble(bubble: Bubble, menu: MenuType): void {
     this.setState(ActionType.move);
     this.selectState = SelectState.moveSelect;
-    this._moveBubbleEventSource.next(bubble);
   }
 }
 
@@ -186,7 +196,7 @@ export enum MenuType {
   borderBottomMenu,
   leafMenu,
   internalMenu,
-  multipleBubble,
+  topMenu
 }
 
 export enum ActionType {
@@ -206,6 +216,6 @@ export enum ActionType {
 enum SelectState {
   none = 1,
   singleSelect,
-  multipleSelect,
+  wrapSelect,
   moveSelect
 }

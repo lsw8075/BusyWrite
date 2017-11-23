@@ -72,10 +72,6 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
       });
   }
 
-  public isWrapSelected(): boolean {
-    return this._eventBubbleService.getActionState() === ActionType.wrap;
-  }
-
   public createBubble(bubble: Bubble, menu: MenuType) {
     let location = bubble.location;
     if (menu === MenuType.borderBottomMenu) {
@@ -105,8 +101,7 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
   public deleteBubble(bubble: Bubble) {
     if (bubble.id !== 0) {
       this._eventBubbleService.setState(ActionType.delete);
-      this._bubbleService.deleteBubble(bubble)
-        .then(() => {
+      this._bubbleService.deleteBubble(bubble).then(() => {
           this._eventBubbleService.clearState();
           this._refreshBubbleList();
         });
@@ -116,14 +111,18 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
   }
 
   public flattenBubble(bubble: Bubble) {
-    this._eventBubbleService.setState(ActionType.flatten);
-    this._bubbleService.flattenBubble(bubble)
-      .then(() => {
+    this._bubbleService.flattenBubble(bubble).then(() => {
         this._eventBubbleService.clearState();
         this._refreshBubbleList();
       });
   }
 
+  public moveBubble(bubble: Bubble, destBubble: Bubble, menu: MenuType) {
+    this._bubbleService.moveBubble(bubble, destBubble, menu).then(() => {
+      this._eventBubbleService.clearState();
+      this._refreshBubbleList();
+    });
+  }
 
   public onClickEvent(bubble: Bubble, menu: MenuType, mouseEvent: MouseEvent): void {
     const currActionState = this._eventBubbleService.getActionState();
@@ -166,6 +165,9 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
     this._eventBubbleService.createBubbleEvent$.subscribe((response) => {
       this.createBubble(response.bubble, response.menu);
     });
+    this._eventBubbleService.wrapBubbleEvent$.subscribe((response) => {
+      this.wrapBubble();
+    });
     this._eventBubbleService.editBubbleEvent$.subscribe((bubble) => {
       this.editBubble(bubble);
     });
@@ -175,9 +177,11 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
     this._eventBubbleService.flattenBubbleEvent$.subscribe((bubble) => {
       this.flattenBubble(bubble);
     });
-
     this._boardService.finishBubbleEditEvent$.subscribe((bubble) => {
       this.finishEdit(bubble);
+    });
+    this._eventBubbleService.moveBubbleEvent$.subscribe((response) => {
+      this.moveBubble(response.moveBubble, response.destBubble, response.menu);
     });
     // must unsubscribe on Destroy
   }
