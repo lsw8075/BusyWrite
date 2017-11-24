@@ -33,6 +33,7 @@ export class EditBoardComponent implements OnInit {
     this._boardService.createBubbleEvent$.subscribe((editItem: EditItem) => {
       this.createNewEditItem(editItem);
     });
+    this._boardService.getEditBubbles();
   }
 
   public finishEdit(editItem: EditItem) {

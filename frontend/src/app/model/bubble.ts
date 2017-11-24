@@ -162,15 +162,12 @@ export class InternalBubble implements Bubble {
   }
 
   mouseOver(over: boolean): void {
-    this.childBubbles.forEach(b => b.isMouseOver = over);
-    this.mouseOverPropagateParent(over);
-  }
-
-  private mouseOverPropagateParent(over: boolean): void {
-    this.isMouseOver = over;
-    if (this.parentBubble) {
-      this.parentBubble.mouseOverPropagateParent(over);
+    if (this.id !== 0) {
+      this.childBubbles.forEach(b => b.isMouseOver = over);
+      this.isMouseOver = over;
+      this.parentBubble.mouseOver(over);
     }
+
   }
 
   clearMouseEvent(): void {

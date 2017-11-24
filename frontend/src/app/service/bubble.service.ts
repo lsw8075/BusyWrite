@@ -23,6 +23,10 @@ export class BubbleService {
     return Promise.resolve(this.bubbleRoot);
   }
 
+  public getBubbleList(): Promise<Array<Bubble>> {
+    return Promise.resolve(this.bubbleList);
+  }
+
   public getBubbleById(id: number): Bubble {
     if (0 < id) {
       for (const bubble of this.bubbleList) {
@@ -150,16 +154,17 @@ export class BubbleService {
   public moveBubble(bubble: Bubble, destBubble: Bubble, menu: MenuType): Promise<void> {
     if (bubble.parentBubble === null) {
       throw new Error('Cannot move root bubble');
-    }
-    const parentBubble: InternalBubble = bubble.parentBubble;
-    parentBubble.deleteChild(bubble);
+    } else if (bubble.id !== destBubble.id) {
+      const parentBubble: InternalBubble = bubble.parentBubble;
+      parentBubble.deleteChild(bubble);
 
-    let location = destBubble.location;
-    if (menu === MenuType.borderBottomMenu) {
-      location ++;
-    }
-    destBubble.parentBubble.insertChildren(location, bubble);
+      let location = destBubble.location;
+      if (menu === MenuType.borderBottomMenu) {
+        location ++;
+      }
+      destBubble.parentBubble.insertChildren(location, bubble);
 
+    }
     return Promise.resolve(null);
   }
 
