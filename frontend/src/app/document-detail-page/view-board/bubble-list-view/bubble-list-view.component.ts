@@ -87,6 +87,7 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
       });
   }
   private finishEdit(bubble: Bubble) {
+    bubble.releaseLock();
     this._eventBubbleService.edittedBubble = null;
     this._refreshBubbleList();
   }
@@ -125,6 +126,7 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
   }
 
   public onClickEvent(bubble: Bubble, menu: MenuType, mouseEvent: MouseEvent): void {
+    console.log(bubble);
     const currActionState = this._eventBubbleService.getActionState();
     if (currActionState === ActionType.none ||
         currActionState === ActionType.wrap ||
@@ -150,6 +152,7 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
 
   private _refreshBubbleList() {
     this._bubbleService.getRootBubble().then(rootBubble => {
+      rootBubble.clearMouseEvent();
       this.rootBubble = rootBubble;
       console.log('bubble list refreshed');
     });

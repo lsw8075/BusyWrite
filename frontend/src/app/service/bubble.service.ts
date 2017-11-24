@@ -6,7 +6,7 @@ import 'rxjs/add/operator/toPromise';
 import { MenuType } from './event/event-bubble.service';
 
 let tempId = 30; // to be deleted after backend implemented
-
+const tempUserId = 1;
 @Injectable()
 export class BubbleService {
 
@@ -35,7 +35,6 @@ export class BubbleService {
   }
 
   public createBubble(parentBubble: InternalBubble, location: number, content: string): Promise<Bubble> {
-    const tempUserId = 1;
     const newBubble = new LeafBubble(this._getId(), content, tempUserId);
     parentBubble.insertChildren(location, newBubble);
     return Promise.resolve(newBubble);
@@ -44,8 +43,8 @@ export class BubbleService {
 
   public editBubble(bubble: Bubble, newContent: string): Promise<void> {
     if (bubble.type === BubbleType.leafBubble) {
+      (bubble as LeafBubble).getEditLock(tempUserId);
       (bubble as LeafBubble).content = newContent;
-      (bubble as LeafBubble).releaseLock();
       return Promise.resolve(null);
     } else {
       throw new Error('Cannot edit internal bubble');

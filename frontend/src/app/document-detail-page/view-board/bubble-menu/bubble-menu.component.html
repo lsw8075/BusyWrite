@@ -23,10 +23,10 @@
           <i [style.color]="'red'" class="fa fa-stack-overflow fa-fw"></i>
           Flatten All
         </button>
-        <button type="button" class="btn btn-success" [disabled]="true">
-          <i class="fa fa-search fa-fw"></i>
-          Search
-        </button>
+        <div class="input-group" appStopClickPropagation>
+          <input type="text" class="form-control" placeholder="Search for bubbles" appStopClickPropagation/>
+          <button type="button" class="btn btn-primary" appStopClickPropagation><i class="fa fa-fw fa-search"></i></button>
+        </div>
       </div>
         {{getAction()}}
     </div>

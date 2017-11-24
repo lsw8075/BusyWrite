@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs/Subject';
-import { Bubble } from '../../model/bubble';
+import { Bubble, LeafBubble } from '../../model/bubble';
 
+const tempUserId = 1;
 @Injectable()
 export class EventBubbleService {
 

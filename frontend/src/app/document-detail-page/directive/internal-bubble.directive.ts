@@ -32,12 +32,20 @@ export class InternalBubbleDirective implements OnInit {
 
   @HostBinding('style.border-left-color')
   public get borderLeftColor(): string {
-    return (this.appInternalBubble.isMouseOver) ? 'rgb(157, 172, 255)' : 'transparent';
+    if (this.appInternalBubble.isBeingEditted()) {
+      return `green`;
+    } else {
+      return (this.appInternalBubble.isMouseOver) ? 'rgb(157, 172, 255)' : 'transparent';
+    }
   }
 
   @HostBinding('style.border-right-color')
   public get borderRightColor(): string {
-    return (this.appInternalBubble.isMouseOver) ? 'rgb(157, 172, 255)' : 'transparent';
+    if (this.appInternalBubble.isBeingEditted()) {
+      return `green`;
+    } else {
+      return (this.appInternalBubble.isMouseOver) ? 'rgb(157, 172, 255)' : 'transparent';
+    }
   }
 
   @HostBinding('style.margin')

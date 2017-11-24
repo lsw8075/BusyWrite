@@ -18,8 +18,11 @@ export interface Bubble {
 
   isMouseOver: boolean;
 
+  releaseLock(): void;
+
   getHeight(): number;
   mouseOver(over: boolean): void;
+  clearMouseEvent(): void;
 
   addSuggestBubble(SB: Bubble): void;
   addComment(comment: Comment): void;
@@ -57,7 +60,7 @@ export class LeafBubble implements Bubble {
     this.id = id;
     this.type = BubbleType.leafBubble;
     this.location = -1; // location is -1 when orphan
-    this.editLock = (ownerId !== -1); // edit lock false if no owner
+    this.editLock = (ownerId === -1) ? false : true; // edit lock false if no owner
     this.content = content;
     this.ownerId = ownerId;
     this.suggestBubbles = suggestBubbles;
@@ -96,6 +99,10 @@ export class LeafBubble implements Bubble {
 
   mouseOver(over: boolean): void {
     this.isMouseOver = over;
+  }
+
+  clearMouseEvent(): void {
+    this.isMouseOver = false;
   }
 
   addSuggestBubble(SB: Bubble): void {
@@ -157,7 +164,6 @@ export class InternalBubble implements Bubble {
   mouseOver(over: boolean): void {
     this.childBubbles.forEach(b => b.isMouseOver = over);
     this.mouseOverPropagateParent(over);
-
   }
 
   private mouseOverPropagateParent(over: boolean): void {
@@ -165,6 +171,15 @@ export class InternalBubble implements Bubble {
     if (this.parentBubble) {
       this.parentBubble.mouseOverPropagateParent(over);
     }
+  }
+
+  clearMouseEvent(): void {
+    this.isMouseOver = false;
+    this.childBubbles.forEach(b => b.clearMouseEvent());
+  }
+
+  releaseLock(): void {
+    this.childBubbles.forEach(b => b.releaseLock());
   }
 
   addSuggestBubble(SB: Bubble): void {
