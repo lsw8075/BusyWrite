@@ -1,5 +1,6 @@
 import { Note } from './note';
 import { Comment } from './comment';
+import { User } from './user';
 
 export enum BubbleType {
   leafBubble,
@@ -12,21 +13,23 @@ export interface Bubble {
   type: BubbleType;
   parentBubble: InternalBubble;
   location: number;
+  thumbUps: number;
 
   comments: Array<Comment>;
   suggestBubbles: Array<SuggestBubble>;
+  watchUsers: Array<User>;
 
   getHeight(): number;
 
-  // addSuggestBubble(SB: Bubble): void;
-  // addComment(comment: Comment): void;
-  // deleteSuggestBubble(SB: Bubble): void;
-  // deleteComment(comment: Comment): void;
+  addSuggestBubble(suggestBubble: SuggestBubble): void;
+  addComment(comment: Comment): void;
+  deleteSuggestBubble(suggestBubble: SuggestBubble): void;
+  deleteComment(comment: Comment): void;
 
   getContent(): string;
   isBeingEditted(): boolean;
-  // getComments(): Array<Comment>;
-  // getSuggestBubbles(): Array<SuggestBubble>;
+  getComments(): Array<Comment>;
+  getSuggestBubbles(): Array<SuggestBubble>;
 } /* istanbul ignore next */
 
 export class LeafBubble implements Bubble {
@@ -34,9 +37,11 @@ export class LeafBubble implements Bubble {
   type: BubbleType;
   parentBubble: InternalBubble = null;
   location: number;
+  thumbUps: number;
 
   comments: Array<Comment> = [];
   suggestBubbles: Array<SuggestBubble> = [];
+  watchUsers: Array<User> = [];
 
   private editLock: boolean;
 
@@ -47,7 +52,10 @@ export class LeafBubble implements Bubble {
     id: number,
     content: string = '',
     ownerId: number = -1,
-    suggestBubbles: Array<SuggestBubble> = []) {
+    suggestBubbles: Array<SuggestBubble> = [],
+    comments: Array<Comment> = [],
+    watchUsers: Array<User> = [],
+    thumbUps: number = 0) {
 
     this.id = id;
     this.type = BubbleType.leafBubble;
@@ -56,6 +64,9 @@ export class LeafBubble implements Bubble {
     this.content = content;
     this.ownerId = ownerId;
     this.suggestBubbles = suggestBubbles;
+    this.comments = comments;
+    this.watchUsers = watchUsers;
+    this.thumbUps = thumbUps;
   }
 
   getEditLock(userId: number): boolean {
@@ -88,34 +99,38 @@ export class LeafBubble implements Bubble {
     return leafBubbleHeight;
   }
 
-  // split(): void {
+  addSuggestBubble(suggestBubble: SuggestBubble) {
+    this.suggestBubbles.push(suggestBubble);
+  }
 
-  // }
+  addComment(comment: Comment) {
+    this.comments.push(comment);
+  }
 
-  // addSuggestBubble(SB: Bubble): void {
+  deleteSuggestBubble(suggestBubble: SuggestBubble) {
+    let index: number = this.suggestBubbles.indexOf(suggestBubble);
+    if (index > -1) {
+      this.suggestBubbles.splice(index, 1);
+    }
+  }
 
-  // }
-  // addComment(comment: Comment): void {
-
-  // }
-
-  // deleteSuggestBubble(SB: Bubble): void {
-
-  // }
-  // deleteComment(comment: Comment): void {
-
-  // }
+  deleteComment(comment: Comment) {
+    let index: number = this.comments.indexOf(comment);
+    if (index > -1) {
+      this.comments.splice(index, 1);
+    }
+  }
 
   getContent(): string {
     return this.content;
   }
 
-  // getComments(): Array<Comment> {
-  //   return null;
-  // }
-  // getSuggestBubbles(): Array<SuggestBubble> {
-  //   return null;
-  // }
+  getComments(): Array<Comment> {
+    return null;
+  }
+  getSuggestBubbles(): Array<SuggestBubble> {
+    return null;
+  }
 } /* istanbul ignore next */
 
 export class InternalBubble implements Bubble {
@@ -123,51 +138,68 @@ export class InternalBubble implements Bubble {
   type: BubbleType;
   parentBubble: InternalBubble = null;
   location: number;
+  thumbUps: number;
 
   comments: Array<Comment> = [];
   suggestBubbles: Array<SuggestBubble> = [];
+  watchUsers: Array<User> = [];
 
   childBubbles: Array<Bubble> = [];
 
   constructor(
     id: number,
     childBubbles: Array<Bubble>,
-    suggestBubbles: Array<SuggestBubble> = []) {
+    suggestBubbles: Array<SuggestBubble> = [],
+    comments: Array<Comment> = [],
+    watchUsers: Array<User> = [],
+    thumbUps: number = 0) {
 
     this.id = id;
     this.type = BubbleType.internalBubble;
     this.location = -1;
     this.addChildren(...childBubbles);
     this.suggestBubbles = suggestBubbles;
+    this.comments = comments;
+    this.thumbUps = thumbUps;
+    this.watchUsers = watchUsers;
   }
 
   getHeight(): number {
     return this.childBubbles.reduce((prev, curr) => Math.max(prev, curr.getHeight() + 1), 1);
   }
 
-  // addSuggestBubble(SB: Bubble): void {
-
-  // }
-  // addComment(comment: Comment): void {
-
-  // }
-
-  // deleteSuggestBubble(SB: Bubble): void {
-
-  // }
-  // deleteComment(comment: Comment): void {
-
-  // }
-
   getContent(): string {
     return this.childBubbles.reduce((prev, curr) => prev + curr.getContent() + '\n', '').slice(0, -1);
   }
-  // getComments(): Array<Comment> {
-  //   return null;
-  // }
-  // getSuggestBubbles(): Array<SuggestBubble> {
-  //   return null;
-  // }
+  getComments(): Array<Comment> {
+    return null;
+  }
+  getSuggestBubbles(): Array<SuggestBubble> {
+    return null;
+  }
+
+  addSuggestBubble(suggestBubble: SuggestBubble) {
+    this.suggestBubbles.push(suggestBubble);
+  }
+
+  addComment(comment: Comment) {
+    this.comments.push(comment);
+  }
+
+  deleteSuggestBubble(suggestBubble: SuggestBubble) {
+    let index: number = this.suggestBubbles.indexOf(suggestBubble);
+    if (index > -1) {
+      this.suggestBubbles.splice(index, 1);
+    }
+  }
+
+  deleteComment(comment: Comment) {
+    let index: number = this.comments.indexOf(comment);
+    if (index > -1) {
+      this.comments.splice(index, 1);
+    }
+  }
+
 
   // ----
 
@@ -175,7 +207,7 @@ export class InternalBubble implements Bubble {
     return this.childBubbles.reduce((prev, curr) => prev || curr.isBeingEditted(), false);
   }
 
-insertChildren(location: number, ...bubbles: Array<Bubble>): void {
+  insertChildren(location: number, ...bubbles: Array<Bubble>): void {
     if ((location < 0) || (location > this.childBubbles.length + 1)) {
       throw new Error(`location ${location} is invalid`);
     } else {
@@ -204,14 +236,14 @@ insertChildren(location: number, ...bubbles: Array<Bubble>): void {
     }
   }
 
-deleteChild(childBubble: Bubble): void {
+  deleteChild(childBubble: Bubble): void {
     if (this._ischildBubble(childBubble)) {
       let location = childBubble.location;
       childBubble = null;
       this.childBubbles.splice(location, 1);
       while (location < this.childBubbles.length) {
         this.childBubbles[location].location--;
-        location ++;
+        location++;
       }
     } else {
       const errorMsg = `bubble(id: ${childBubble.id}) is not child of bubble(id: ${this.id})`;
@@ -219,7 +251,7 @@ deleteChild(childBubble: Bubble): void {
      }
   }
 
-wrapChildren(wrapList: Array<Bubble>): InternalBubble {
+  wrapChildren(wrapList: Array<Bubble>): InternalBubble {
 
     // no bubble to wrap
     if (wrapList.length < 1) {
@@ -245,7 +277,7 @@ wrapChildren(wrapList: Array<Bubble>): InternalBubble {
       if (bubble.location !== locationChecker) {
         throw new Error('given bubbles are un-ajacent');
       }
-      locationChecker ++;
+      locationChecker++;
     }
 
     // if wrap all children, return null, do nothing
@@ -261,7 +293,7 @@ wrapChildren(wrapList: Array<Bubble>): InternalBubble {
     this.childBubbles.splice(startLocation, wrapList.length, wrapBubble);
 
     // update location of rest bubbles
-    startLocation ++;
+    startLocation++;
     while (startLocation < this.childBubbles.length) {
       this.childBubbles[startLocation].location = startLocation;
       startLocation++;
@@ -321,16 +353,30 @@ export class SuggestBubble {
   type: BubbleType;
   content: string;
   comments: Array<Comment>;
+  thumbUps: number;
 
-   constructor(
-     id: number,
-     content: string,
-     comments: Array<Comment>
-   ) {
-     // must initialize all attributes
-     this.type = BubbleType.suggestBubble;
-     this.id = id;
-     this.content = content;
-     this.comments = comments;
-   }
+  constructor(
+    id: number,
+    content: string,
+    comments: Array<Comment>,
+    thumbUps: number = 0
+  ) {
+    // must initialize all attributes
+    this.type = BubbleType.suggestBubble;
+    this.id = id;
+    this.content = content;
+    this.comments = comments;
+    this.thumbUps = thumbUps;
+  }
+
+  addComment(comment: Comment) {
+    this.comments.push(comment);
+  }
+
+  deleteComment(comment: Comment) {
+    let index: number = this.comments.indexOf(comment);
+    if (index > -1) {
+      this.comments.splice(index, 1);
+    }
+  }
 } /* istanbul ignore next */

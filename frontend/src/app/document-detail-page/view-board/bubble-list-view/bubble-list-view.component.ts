@@ -44,7 +44,6 @@ export class BubbleListViewComponent implements OnInit {
 
   public openSangjunBoard(bubble: Bubble) {
     this._eventBubbleService.setState(ActionType.openSangjun);
-    console.log(`[${bubble.id}] openSangjunBoard`);
     this._eventBubbleService.clearState();
   }
 
@@ -54,18 +53,15 @@ export class BubbleListViewComponent implements OnInit {
     if (window.getSelection) {
         text = window.getSelection().toString();
         startOffset = window.getSelection().getRangeAt(0).startOffset;
-        console.log(window.getSelection().getRangeAt(0));
     } else if ((document as any).selection && (document as any).selection.type !== 'Control') {
         text = (document as any).selection.createRange().text;
         startOffset = (document as any).selection.createRange().startOffset;
     }
-    console.log(text, startOffset);
     this.hightlightedText = text;
     this.highlightOffset = startOffset;
   }
 
   public splitBubble(bubble: Bubble) {
-    console.log('split bubble');
     this._eventBubbleService.setState(ActionType.split);
     this._bubbleService.splitLeafBubble(bubble, this.hightlightedText, this.highlightOffset)
       .then(() => {
@@ -93,7 +89,6 @@ export class BubbleListViewComponent implements OnInit {
       .then(response => {
         this._refreshBubbleList();
         this._eventBubbleService.clearState();
-        console.log('hi');
       });
   }
 
@@ -135,7 +130,6 @@ public createBubble(bubble: Bubble, menu: MenuType) {
     }
   }
 public deleteBubble(bubble: Bubble) {
-    console.log('delete bubble');
     if (bubble.id !== 0) {
       this._eventBubbleService.setState(ActionType.delete);
       this._bubbleService.deleteBubble(bubble)
@@ -150,7 +144,6 @@ public deleteBubble(bubble: Bubble) {
 
   public flattenBubble(bubble: Bubble) {
     this._eventBubbleService.setState(ActionType.flatten);
-    console.log('flatten bubble');
     this._bubbleService.flattenBubble(bubble)
       .then(() => {
         this._eventBubbleService.clearState();
@@ -159,10 +152,9 @@ public deleteBubble(bubble: Bubble) {
   }
 
 
-public onClickEvent(bubble: Bubble, menu: MenuType, mouseEvent: MouseEvent): void {
-  console.log('clicked');
+  public onClickEvent(bubble: Bubble, menu: MenuType, mouseEvent: MouseEvent): void {
     this._eventBubbleService.selectBubble(bubble, menu);
-}
+  }
 
   public isMenuOpen(bubble, menuType): boolean {
     return this._eventBubbleService.isMenuOpen(bubble, menuType);
@@ -255,6 +247,8 @@ public onClickEvent(bubble: Bubble, menu: MenuType, mouseEvent: MouseEvent): voi
     this._boardService.finishBubbleEditEvent$.subscribe((bubble) => {
       this.finishEdit(bubble);
     });
+
+    // must unsubscribe on Destroy
   }
 
 } /* istanbul ignore next */

@@ -1,0 +1,38 @@
+table {
+  border-collapse: separate;
+  border-spacing: 1px;
+  text-align: left;
+  line-height: 1.5;
+  border-top: 1px solid #ccc;
+}
+
+table th {
+  padding: 10px;
+  vertical-align: middle;
+  text-align: center;
+  font-weight: bold;
+  width: 120px;
+  border-bottom: 1px solid #ccc;
+  background: #efefef;
+}
+
+table td {
+  padding-left: 10px;
+  vertical-align: middle;
+  border-bottom: 1px solid #ccc;
+}
+
+table td.content {
+  width: 350px;
+  padding-left: 10px;
+  vertical-align: middle;
+  border-bottom: 1px solid #ccc;
+}
+
+.fa:hover {
+  color: blue;
+}
+
+input, div {
+  width: inherit;
+}

@@ -63,7 +63,6 @@ export class EventBubbleService {
 
   public selectBubble(bubble: Bubble, menu: MenuType): void {
     if (this.selectState !== SelectState.multipleSelect) {
-      console.log('select buble');
       this.selectState = SelectState.singleSelect;
       this.selectedBubble = bubble;
       this.selectedMenuType = menu;
