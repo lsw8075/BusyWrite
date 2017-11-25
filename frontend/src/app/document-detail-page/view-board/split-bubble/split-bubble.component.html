@@ -1,5 +1,5 @@
 <div class="modal-header">
-  <div class="modal-title pull-left">
+  <div class="modal-title pull-left wrap-text" >
     <div *ngIf="bubble">
       <p (mousedown)="mouseDown=true;" (mouseup)="showSelectedText()">
         {{bubble.getContent()}}
@@ -11,7 +11,7 @@
   </button>
 </div>
 <div class="modal-body">
-  <div class="list-group">
+  <div class="list-group wrap-text">
     <div class="list-group-item">
       {{beforeText}}
     </div>
