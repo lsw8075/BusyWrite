@@ -1,3 +1,71 @@
-<p>
-  comment works!
-</p>
+<div *ngIf="bubble">
+  <div>
+    <table>
+      <tr *ngFor="let comment of bubble.comments">
+        <th>Anonymous</th>
+        <td class="content">
+          <div *ngIf="editId !== comment.id">
+            {{comment.content}}
+          </div>
+          <div *ngIf="editId === comment.id">
+            <input (keyup.enter)="clickCompleteEditComment(comment)" type="text" [(ngModel)]="editContent">
+          </div>
+        </td>
+        <td>
+          <div *ngIf="editId !== comment.id">
+            <i (click)="clickStartEditComment(comment)" class="fa fa-pencil fa-fw"></i>
+            <i (click)="clickDeleteComment(bubble, comment)" class="fa fa-trash fa-fw"></i>
+          </div>
+          <div *ngIf="editId === comment.id">
+            <i (click)="clickCompleteEditComment(comment)" *ngIf="editContent" class="fa fa-check fa-fw"></i>
+          </div>
+        </td>
+      </tr>
+      <tr *ngIf="newComment">
+        <th>Anonymous</th>
+        <td class="content">
+          <input (keyup.enter)="clickCreateComment(bubble)" type="text" [(ngModel)]="newComment.content">
+        </td>
+        <td>
+          <i (click)="clickCreateComment(bubble)" *ngIf="newComment.content" class="fa fa-check fa-fw"></i>
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<div *ngIf="suggestBubble">
+  <div>
+    <table>
+      <tr *ngFor="let comment of suggestBubble.comments">
+        <th>Anonymous</th>
+        <td class="content">
+          <div *ngIf="editId !== comment.id">
+            {{comment.content}}
+          </div>
+          <div *ngIf="editId === comment.id">
+            <input (keyup.enter)="clickCompleteEditComment(comment)" type="text" [(ngModel)]="editContent">
+          </div>
+        </td>
+        <td>
+          <div *ngIf="editId !== comment.id">
+            <i (click)="clickStartEditComment(comment)" class="fa fa-pencil fa-fw"></i>
+            <i (click)="clickDeleteComment(suggestBubble, comment)" class="fa fa-trash fa-fw"></i>
+          </div>
+          <div *ngIf="editId === comment.id">
+            <i (click)="clickCompleteEditComment(comment)" *ngIf="editContent" class="fa fa-check fa-fw"></i>
+          </div>
+        </td>
+      </tr>
+      <tr *ngIf="newComment">
+        <th>Anonymous</th>
+        <td class="content">
+          <input (keyup.enter)="clickCreateComment(suggestBubble)" type="text" [(ngModel)]="newComment.content">
+        </td>
+        <td>
+          <i (click)="clickCreateComment(suggestBubble)" *ngIf="newComment.content" class="fa fa-check fa-fw"></i>
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>

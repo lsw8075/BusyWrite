@@ -25,7 +25,6 @@ import { AuthenticationService } from './service/authentication.service';
 import { DirectoryService } from './service/directory.service';
 import { DocumentService } from './service/document.service';
 
-
 @NgModule({
   declarations: [
     AppComponent,

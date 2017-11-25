@@ -38,11 +38,14 @@ import { LeafBubbleDirective } from './directive/leaf-bubble.directive';
 import { StopClickPropagationDirective } from './directive/stop-click-propagation.directive';
 import { StopHoverPropagationDirective } from './directive/stop-hover-propagation.directive';
 
+import { EventSangjunBoardService } from './service';
+
 import { DragulaModule } from 'ng2-dragula/ng2-dragula';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { QuillEditorModule } from 'ngx-quill-editor';
 import { AccordionModule } from 'ngx-bootstrap/accordion';
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
+
 import { AlertModule } from 'ngx-bootstrap/alert';
 import { ModalModule } from 'ngx-bootstrap/modal';
 
@@ -101,7 +104,8 @@ import { DialogModule } from 'primeng/primeng';
     BubbleService,
     CommentService,
     NoteService,
-    EventBubbleService
+    EventBubbleService,
+    EventSangjunBoardService
   ],
   entryComponents: [SplitBubbleComponent]
 })

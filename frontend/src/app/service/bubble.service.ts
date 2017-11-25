@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Bubble, BubbleType, LeafBubble, InternalBubble } from '../model/bubble';
+import { Bubble, BubbleType, LeafBubble, InternalBubble, SuggestBubble } from '../model/bubble';
 import { MockBubbleRoot, MockBubbleList } from '../model/bubble.mock';
 
 import 'rxjs/add/operator/toPromise';
@@ -170,6 +170,39 @@ export class BubbleService {
     return Promise.resolve(null);
   }
 
+  public switchBubble(bubble: Bubble, suggestBubble: SuggestBubble): Bubble {
+    const newSB = new SuggestBubble(this._getId(), bubble.getContent(), bubble.comments, bubble.thumbUps);
+    if(bubble.type === BubbleType.leafBubble) {
+      let leafBubble = bubble as LeafBubble;
+
+      leafBubble.thumbUps = suggestBubble.thumbUps;
+      leafBubble.comments = suggestBubble.comments;
+      leafBubble.content = suggestBubble.content;
+
+      leafBubble.deleteSuggestBubble(suggestBubble);
+      leafBubble.addSuggestBubble(newSB);
+
+      return leafBubble;
+    }
+    else if(bubble.type === BubbleType.internalBubble) {
+      let internalBubble = bubble as InternalBubble;
+      let parentBubble = internalBubble.parentBubble;
+      let leafBubble = new LeafBubble(this._getId());
+
+      leafBubble.thumbUps = suggestBubble.thumbUps;
+      leafBubble.comments = suggestBubble.comments;
+      leafBubble.content = suggestBubble.content;
+      leafBubble.suggestBubbles = internalBubble.suggestBubbles;
+
+      leafBubble.deleteSuggestBubble(suggestBubble);
+      leafBubble.addSuggestBubble(newSB);
+
+      parentBubble.childBubbles[internalBubble.location] = leafBubble;
+
+      return leafBubble;
+    }
+  }
+
   private _getBubbleList(): Promise< Array<Bubble> > {
     this.bubbleRoot = MockBubbleRoot;
     return Promise.resolve(MockBubbleList);
@@ -205,4 +238,3 @@ export class BubbleService {
   }
 
 }
-
