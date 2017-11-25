@@ -3,6 +3,10 @@ import { BubbleType, Bubble, MenuType, ActionType } from '../service';
 import { BubbleService } from '../service';
 import { EventBubbleService } from '../../../service/event/event-bubble.service';
 
+import { BsModalService } from 'ngx-bootstrap/modal';
+import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
+
+import { SplitBubbleComponent } from '../split-bubble/split-bubble.component';
 @Component({
   selector: 'app-bubble-menu',
   templateUrl: './bubble-menu.component.html',
@@ -14,9 +18,13 @@ export class BubbleMenuComponent implements OnInit {
   @Input() menu: MenuType;
   @Input() bubble: Bubble;
 
+  bsModalRef: BsModalRef;
+
+
   constructor(
     private _bubbleSerivce: BubbleService,
-    private _eventBubbleService: EventBubbleService) {
+    private _eventBubbleService: EventBubbleService,
+    private _modalService: BsModalService) {
   }
 
   ngOnInit() {}
@@ -34,7 +42,8 @@ export class BubbleMenuComponent implements OnInit {
   }
 
   public splitBubble() {
-    this._eventBubbleService.splitBubble(this.bubble);
+    this.bsModalRef = this._modalService.show(SplitBubbleComponent);
+    this.bsModalRef.content.bubble = this.bubble;
   }
 
   public popBubble() {
@@ -73,6 +82,8 @@ export class BubbleMenuComponent implements OnInit {
    switch (this._eventBubbleService.getActionState()) {
      case ActionType.move:
       return 'move bubble';
+     case ActionType.split:
+      return 'split bubble';
      default:
       return '';
    }

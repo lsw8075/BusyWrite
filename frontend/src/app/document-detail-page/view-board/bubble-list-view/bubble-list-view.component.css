@@ -6,7 +6,7 @@
 .internalBubble {
   border-left-style: solid;
   border-right-style: solid;
-  border-radius: 6px;
+  border-radius: 10px;
 }
 
 .leafBubble {
@@ -23,7 +23,8 @@
 }
 
 .placeholder {
-  padding: 3px 0px;
+  padding: 5px 0px;
+  margin: none;
 }
 
 .action {
@@ -35,19 +36,15 @@
 }
 
 .placeholder-bottom:hover {
-  border-top-color: grey;
+  border-top-color: blue;
   border-top-style: solid;
-  border-top-width: 1px;
+  border-top-width: 3px;
 }
 
 .placeholder-top:hover {
-  border-bottom-color: grey;
+  border-bottom-color: blue;
   border-bottom-style: solid;
-  border-bottom-width: 1px;
-}
-
-.bubbleUnit {
-  border-radius: 2px;
+  border-bottom-width: 3px;
 }
 
 .editting {

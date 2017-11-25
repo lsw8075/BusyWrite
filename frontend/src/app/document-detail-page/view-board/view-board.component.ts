@@ -1,10 +1,11 @@
 import { Component, OnInit, Output } from '@angular/core';
 import { BubbleMenuComponent } from './bubble-menu/bubble-menu.component';
-import { MenuType, ActionType, Board } from './service';
+import { MenuType, ActionType, Board, Bubble } from './service';
 import { BubbleService } from './service';
 
 import { PreviewComponent } from './preview/preview.component';
 import { BoardService } from '../../service/board.service';
+import { EventBubbleService } from '../../service/event/event-bubble.service';
 
 @Component({
   selector: 'app-view-board',
@@ -15,16 +16,17 @@ import { BoardService } from '../../service/board.service';
 export class ViewBoardComponent implements OnInit {
 
   constructor(
-    private _boardService: BoardService,
-    private _bubbleService: BubbleService) {
+      private _boardService: BoardService,
+      private _bubbleService: BubbleService,
+      private _eventBubbleService: EventBubbleService) {
   }
 
   ngOnInit() {}
 
   previewClick(event) {
-    if (event.index === 1) {
-      this._boardService.updatePreview();
-    }
+      if (event.index === 1) {
+        this._boardService.updatePreview();
+      }
   }
 
   // public onShowBubbleMenuEvent() {

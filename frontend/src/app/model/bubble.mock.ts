@@ -11,7 +11,7 @@ import { Inject } from '@angular/core';
 
 
     const b17: LeafBubble = new LeafBubble(17,
-`<p>If you have troubles using our service check out our FAQ<a href="busywrite.ribosome.kr">busywrite FAQ</a></p>`);
+`<p>If you have troubles using our service check out our FAQ<a href="http://busywrite.ribosome.kr">busywrite FAQ</a></p>`);
     const b16: LeafBubble = new LeafBubble(16, 'Conclusion');
   const b15: InternalBubble = new InternalBubble(15, [b16, b17]);
       const b14: LeafBubble = new LeafBubble(14,
@@ -49,7 +49,7 @@ are impractical and unproductive. </p>');
     const b5: LeafBubble = new LeafBubble(5, '<h5>Introduction</h5>');
   const b4: InternalBubble = new InternalBubble(4, [b5, b6, b7]);
     const b3: LeafBubble = new LeafBubble(3, '<h3>Subtitle</h3>');
-    const b2: LeafBubble = new LeafBubble(2, '<h1>Title</h1>', 1);
+    const b2: LeafBubble = new LeafBubble(2, '<h1 class="ql-align-center">Title</h1>', 1);
   const b1: InternalBubble = new InternalBubble(1, [b2, b3]);
 const rootBubble: InternalBubble = new InternalBubble(0, [b1, b4, b8, b15]);
 const bubbleList: Array<Bubble> = [b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15, b16, b17];

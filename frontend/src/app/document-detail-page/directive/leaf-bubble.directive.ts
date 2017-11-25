@@ -52,20 +52,4 @@ export class LeafBubbleDirective implements OnInit {
     }
   }
 
-  @HostListener('mouseup')
-  private showSelectedText(bubble: Bubble) {
-    let text = '';
-    let startOffset = 0;
-    if (window.getSelection) {
-        text = window.getSelection().toString();
-        startOffset = window.getSelection().getRangeAt(0).startOffset;
-        console.log(window.getSelection().getRangeAt(0));
-    } else if ((document as any).selection && (document as any).selection.type !== 'Control') {
-        text = (document as any).selection.createRange().text;
-        startOffset = (document as any).selection.createRange().startOffset;
-    }
-    console.log(text, startOffset);
-    this._eventBubbleService.hightlightedText = text;
-    this._eventBubbleService.highlightOffset = startOffset;
-  }
 }

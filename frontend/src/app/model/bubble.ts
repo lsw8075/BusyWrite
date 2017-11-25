@@ -162,12 +162,10 @@ export class InternalBubble implements Bubble {
   }
 
   mouseOver(over: boolean): void {
-    if (this.id !== 0) {
-      this.childBubbles.forEach(b => b.isMouseOver = over);
-      this.isMouseOver = over;
-      this.parentBubble.mouseOver(over);
+    this.isMouseOver = over;
+    if (this.parentBubble !== null) {
+      this.childBubbles.forEach(b => b.mouseOver(over));
     }
-
   }
 
   clearMouseEvent(): void {
@@ -209,7 +207,7 @@ export class InternalBubble implements Bubble {
     return this.childBubbles.reduce((prev, curr) => prev || curr.isBeingEditted(), false);
   }
 
-insertChildren(location: number, ...bubbles: Array<Bubble>): void {
+  insertChildren(location: number, ...bubbles: Array<Bubble>): void {
     if ((location < 0) || (location > this.childBubbles.length + 1)) {
       throw new Error(`location ${location} is invalid`);
     } else {

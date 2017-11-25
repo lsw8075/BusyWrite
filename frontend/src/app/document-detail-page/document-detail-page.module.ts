@@ -24,6 +24,8 @@ import { FilterBoardComponent } from './filter-board/filter-board.component';
 
 import { BoardManagerComponent } from './board-manager/board-manager.component';
 
+import { SplitBubbleComponent } from './view-board/split-bubble/split-bubble.component';
+
 import { BoardService } from './service';
 import { BubbleService } from './service';
 import { CommentService } from './service';
@@ -42,6 +44,7 @@ import { QuillEditorModule } from 'ngx-quill-editor';
 import { AccordionModule } from 'ngx-bootstrap/accordion';
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
 import { AlertModule } from 'ngx-bootstrap/alert';
+import { ModalModule } from 'ngx-bootstrap/modal';
 
 import { TabViewModule } from 'primeng/primeng';
 import { ButtonModule } from 'primeng/primeng';
@@ -63,6 +66,7 @@ import { DialogModule } from 'primeng/primeng';
     CommentComponent,
     FilterBoardComponent,
     BoardManagerComponent,
+    SplitBubbleComponent,
 
     ClickOutsideDirective,
     InternalBubbleDirective,
@@ -86,7 +90,8 @@ import { DialogModule } from 'primeng/primeng';
     DialogModule,
     AccordionModule.forRoot(),
     TooltipModule.forRoot(),
-    AlertModule.forRoot()
+    AlertModule.forRoot(),
+    ModalModule.forRoot()
   ],
   exports: [
 
@@ -97,6 +102,7 @@ import { DialogModule } from 'primeng/primeng';
     CommentService,
     NoteService,
     EventBubbleService
-  ]
+  ],
+  entryComponents: [SplitBubbleComponent]
 })
 export class DocumentDetailPageModule { }

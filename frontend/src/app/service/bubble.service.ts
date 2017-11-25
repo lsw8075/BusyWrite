@@ -116,8 +116,10 @@ export class BubbleService {
       splittedChildren.push(prevBubble);
     }
 
-    const currBubble: LeafBubble = new LeafBubble(this._getId(), selectContent);
-    splittedChildren.push(currBubble);
+    if (selectContent) {
+      const currBubble: LeafBubble = new LeafBubble(this._getId(), selectContent);
+      splittedChildren.push(currBubble);
+    }
 
     if (endIndex !== originalContent.length - 1) {
       const nextBubble: LeafBubble = new LeafBubble(this._getId(), originalContent.substring(endIndex, originalContent.length));

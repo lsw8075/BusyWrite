@@ -6,10 +6,6 @@ const tempUserId = 1;
 @Injectable()
 export class EventBubbleService {
 
-  // for split
-  hightlightedText = '';
-  highlightOffset = 0;
-
   private actionState: ActionType;
   private selectState: SelectState;
 
@@ -21,7 +17,7 @@ export class EventBubbleService {
   wrapBubbles: Array<Bubble> = [];
 
   private _sangjunBoardOpenEventSource = new Subject<Bubble>();
-  private _splitBubbleEventSource = new Subject<Bubble>();
+  private _splitBubbleEventSource = new Subject<void>();
   private _popBubbleEventSource = new Subject<Bubble>();
   private _wrapBubbleEventSource = new Subject<void>();
   private _createBubbleEventSource = new Subject<{bubble: Bubble, menu: MenuType}>();
@@ -154,10 +150,10 @@ export class EventBubbleService {
     }
   }
 
-  splitBubble(bubble: Bubble): void {
+  splitBubble(): void {
     if (this.actionState === ActionType.none) {
       this.setState(ActionType.split);
-      this._splitBubbleEventSource.next(bubble);
+      this._splitBubbleEventSource.next();
     }
   }
 

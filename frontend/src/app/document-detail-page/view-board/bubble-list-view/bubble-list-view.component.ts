@@ -7,8 +7,8 @@ import { EventBubbleService, BoardService } from '../service';
 @Component({
   selector: 'app-bubble-list-view',
   templateUrl: './bubble-list-view.component.html',
-  styleUrls: ['./bubble-list-view.component.css'],
-
+  styleUrls: [
+    './bubble-list-view.component.css'],
 })
 export class BubbleListViewComponent implements OnInit, OnDestroy {
   menuType = MenuType;
@@ -48,12 +48,9 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
     this._eventBubbleService.clearState();
   }
 
-  public splitBubble(bubble: Bubble) {
-    this._bubbleService.splitLeafBubble(bubble, this._eventBubbleService.hightlightedText, this._eventBubbleService.highlightOffset)
-      .then(() => {
-        this._refreshBubbleList();
-        this._eventBubbleService.clearState();
-      });
+  public refreshState() {
+    this._refreshBubbleList();
+    this._eventBubbleService.clearState();
   }
 
   public popBubble(bubble: Bubble) {
@@ -159,9 +156,6 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
   }
 
   private _subscribeEvents() {
-    this._eventBubbleService.splitBubbleEvent$.subscribe((bubble) => {
-      this.splitBubble(bubble);
-    });
     this._eventBubbleService.popBubbleEvent$.subscribe((bubble) => {
       this.popBubble(bubble);
     });
@@ -185,6 +179,9 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
     });
     this._eventBubbleService.moveBubbleEvent$.subscribe((response) => {
       this.moveBubble(response.moveBubble, response.destBubble, response.menu);
+    });
+    this._eventBubbleService.splitBubbleEvent$.subscribe(() => {
+      this.refreshState();
     });
     // must unsubscribe on Destroy
   }
