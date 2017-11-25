@@ -44,7 +44,6 @@ export class BubbleListViewComponent implements OnInit {
 
   public openSangjunBoard(bubble: Bubble) {
     this._eventBubbleService.setState(ActionType.openSangjun);
-    console.log(`[${bubble.id}] openSangjunBoard`);
     this._eventBubbleService.clearState();
   }
 
@@ -54,18 +53,15 @@ export class BubbleListViewComponent implements OnInit {
     if (window.getSelection) {
         text = window.getSelection().toString();
         startOffset = window.getSelection().getRangeAt(0).startOffset;
-        console.log(window.getSelection().getRangeAt(0));
     } else if ((document as any).selection && (document as any).selection.type !== 'Control') {
         text = (document as any).selection.createRange().text;
         startOffset = (document as any).selection.createRange().startOffset;
     }
-    console.log(text, startOffset);
     this.hightlightedText = text;
     this.highlightOffset = startOffset;
   }
 
   public splitBubble(bubble: Bubble) {
-    console.log('split bubble');
     this._eventBubbleService.setState(ActionType.split);
     this._bubbleService.splitLeafBubble(bubble, this.hightlightedText, this.highlightOffset)
       .then(() => {

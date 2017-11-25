@@ -33,6 +33,6 @@ table td.content {
   color: blue;
 }
 
-input {
+input, div {
   width: inherit;
 }

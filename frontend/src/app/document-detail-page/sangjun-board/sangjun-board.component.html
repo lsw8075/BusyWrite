@@ -27,6 +27,21 @@
     <div *ngIf="isOBChecked">
       <h4>Original Bubble</h4>
       <p class="ob-content">{{bubble.getContent()}}</p>
+      <div>
+        <button *ngIf="!isWatching" type="button" class="btn btn-primary btn-sm" (click)="clickWatch()">
+          <i class="fa fa-eye fa-fw"></i>
+          Watch
+        </button>
+        <button *ngIf="isWatching" type="button" class="btn btn-primary btn-sm" (click)="clickUnwatch()">
+          <i class="fa fa-eye-slash fa-fw"></i>
+          Unwatch
+        </button>
+        <button type="button" class="btn btn-primary btn-sm" (click)="clickBubbleThumbsUp()">
+          <i class="fa fa-thumbs-up fa-fw"></i>
+          Thumbs up
+        </button>
+        {{bubble.thumbUps}}
+      </div>
       <br>
     </div>
 
@@ -35,11 +50,10 @@
       <div *ngFor="let suggestBubble of suggestBubbles">
         <p class="sb-content" (click)="clickSuggestBubble(suggestBubble)">{{suggestBubble.content}}</p>
 
-        <button type="button" class="btn btn-primary btn-sm" (click)="clickThumbsUp(suggestBubble)">
+        <button type="button" class="btn btn-primary btn-sm" (click)="clickSBThumbsUp(suggestBubble)">
           <i class="fa fa-thumbs-up fa-fw"></i>
           Thumbs up
         </button>
-
         {{suggestBubble.thumbUps}}
         <br>
       </div>

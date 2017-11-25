@@ -1,5 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { SuggestBubble, Bubble, Comment } from '../../service'
+import { SuggestBubble, Bubble, Comment } from '../../service';
+import { CommentService } from '../../service';
 
 @Component({
   selector: 'app-comment',
@@ -12,27 +13,36 @@ export class CommentComponent implements OnInit {
   @Input() suggestBubble: SuggestBubble;
 
   newComment: Comment;
+  editContent: string;
+  editId: number;
 
-  constructor() {
-    this.newComment = new Comment(-1, "", null);
+  constructor(private _commentService: CommentService) {
+    this.newComment = new Comment(_commentService.getCommentId(), "", null);
+    this.editId = -1;
   }
 
   ngOnInit() {
   }
 
-  clickEditComment(comment: Comment) {
+  clickStartEditComment(comment: Comment) {
+    this.editContent = comment.content;
+    this.editId = comment.id;
+  }
+
+  clickCompleteEditComment(comment: Comment) {
     console.log('edit comment');
+    comment.content = this.editContent;
+    this.editId = -1;
   }
 
-  clickDeleteComment(comment: Comment) {
-    this.bubble.deleteComment(comment);
-    console.log('delete comment');
+
+  clickDeleteComment(bubble: any, comment: Comment) {
+    bubble.deleteComment(comment);
   }
 
-  clickCreateComment() {
-    console.log('create comment');
-    this.bubble.addComment(this.newComment);
-    this.newComment = new Comment(-1, "", null);
+  clickCreateComment(bubble: any) {
+    bubble.addComment(this.newComment);
+    this.newComment = new Comment(this._commentService.getCommentId(), "", null);
   }
 
 }
