@@ -57,7 +57,9 @@
               </a>
             </li>
             <li role="menuitem">
-              <a class="dropdown-item" (click)="deleteBubble(); " appStopClickPropagation>
+              <a class="dropdown-item"
+                 tooltip="There is no going back"
+                 placement="left" (click)="deleteBubble(); " appStopClickPropagation>
                 <i class="fa fa-trash fa-fw"></i>
                 Delete
               </a>

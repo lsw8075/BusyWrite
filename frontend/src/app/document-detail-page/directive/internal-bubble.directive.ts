@@ -34,8 +34,10 @@ export class InternalBubbleDirective implements OnInit {
   public get borderLeftColor(): string {
     if (this.appInternalBubble.isBeingEditted()) {
       return `green`;
+    } else if (this.appInternalBubble.parentBubble.id === 0) {
+      return this.selectedColor;
     } else {
-      return (this.appInternalBubble.isMouseOver) ? 'rgb(157, 172, 255)' : 'transparent';
+      return (this.appInternalBubble.isMouseOver) ? this.selectedColor : 'transparent';
     }
   }
 
@@ -43,8 +45,10 @@ export class InternalBubbleDirective implements OnInit {
   public get borderRightColor(): string {
     if (this.appInternalBubble.isBeingEditted()) {
       return `green`;
+    } else if (this.appInternalBubble.parentBubble.id === 0) {
+      return this.selectedColor;
     } else {
-      return (this.appInternalBubble.isMouseOver) ? 'rgb(157, 172, 255)' : 'transparent';
+      return (this.appInternalBubble.isMouseOver) ? this.selectedColor : 'transparent';
     }
   }
 
