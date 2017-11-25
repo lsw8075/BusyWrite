@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs/Subject';
 import { Board, EditItem } from '../model/board';
-import { Bubble } from '../model/bubble';
+import { Bubble, BubbleType, LeafBubble } from '../model/bubble';
 import { BubbleService } from './bubble.service';
 
+const tempUserId = 1;
 
 @Injectable()
 export class BoardService {
@@ -18,13 +19,14 @@ export class BoardService {
   createBubbleEvent$ = this.createBubbleEventSource.asObservable();
   finishBubbleEditEvent$ = this.finishBubbleEditEventSource.asObservable();
 
-  constructor(private _bubbleService: BubbleService) {}
+  constructor(private _bubbleService: BubbleService) {
+  }
 
   updatePreview() {
     this.previewUpdateEventSource.next();
   }
 
-  createBubble(bubble: Bubble) {
+  editBubble(bubble: Bubble) {
     const newEditItem: EditItem = new EditItem(this.getId(), bubble);
     this.createBubbleEventSource.next(newEditItem);
   }
@@ -32,7 +34,20 @@ export class BoardService {
   public finishEdit(bubble: Bubble, content: string) {
     this._bubbleService.editBubble(bubble, content).then(() => {
       this.finishBubbleEditEventSource.next(bubble);
+      console.log(content);
     });
+  }
+
+  public getEditBubbles(): void {
+    this._bubbleService.getBubbleList().then(bubbles =>
+      bubbles.filter(b => (b.type !== BubbleType.internalBubble) && ((b as LeafBubble).ownerId === tempUserId))
+             .forEach((b) => {
+              this.editBubble(b);
+            }));
+  }
+
+  public updateEdit(bubble: Bubble, content: string) {
+    this._bubbleService.editBubble(bubble, content);
   }
 
   private getId(): number {

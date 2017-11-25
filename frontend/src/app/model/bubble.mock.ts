@@ -17,66 +17,50 @@ const sb3: SuggestBubble = new SuggestBubble(3, 'BusyWrite helps you organize ne
 const sb4: SuggestBubble = new SuggestBubble(4, '4th suggest bubble', []);
 const sb5: SuggestBubble = new SuggestBubble(5, 'http://busywrite.ribosome.kr', []);
 
-  const b15: LeafBubble = new LeafBubble(15, '<i>we are team !</i>');
-      const b10: LeafBubble = new LeafBubble(10,
-`Limited time is the number one bottleneck of teamwork. Therefore, \
-most of the time, discussion is done while writing. Teams cannot afford \
-time to match document structure, details and opinions between every \
-participant, and therefore resolve the conflicts  on-the-go.`);
-      const b9: LeafBubble = new LeafBubble(9,
-`BusyWrite separate writing and merging. Normally, participants \
-write on the same file, writing and merging simultaneously, which \
-is troublesome. The concept of participants writing different parts \
-and stacking them up to get a whole is an utopian thought; nobody is \
-certain if everyone understands the same thing. On BusyWrite, instead \
-of just writing straight to a file, users make bubbles`);
-        const b11: LeafBubble = new LeafBubble(11,
-`BusyWrite is the perfect solution for team writing. \
-The concept of writing as a team has been around for a long time, \
-by services like Google Docs, but the approaches are impractical and unproductive.`, -1, [sb2, sb4, sb1, sb3], [c7, c8]);
-            const b19: LeafBubble = new LeafBubble(19, `<strong>hey!</strong>`);
-            const b18: LeafBubble = new LeafBubble(18,
-`BusyWrite helps you organize new ideas. New ideas are important, \
-but they result in lots of changes. Accepting new ideas is hostile, \
-as it is unknown what revisions are needed and how many. BusyWrite \
-shows users new ideas in a sidebar. It shows each idea with parts \
-that are subject to change: lines, paragraphs and even other ideas!`);
-            const b17: LeafBubble = new LeafBubble(17, `<a href="http://busywrite.ribosome.kr">BusyWrite</a>`);
-          const b16: InternalBubble = new InternalBubble(16, [b17, b18, b19]);
-          const b14: LeafBubble = new LeafBubble(14, 'handle short sentences');
-          const b13: LeafBubble = new LeafBubble(13, `hello swpp team 1`);
-        const b12: InternalBubble = new InternalBubble(12, [b13, b14, b16]);
-      const b8: InternalBubble = new InternalBubble(8, [b11, b12], [sb5], [c6]);
-    const b7: InternalBubble = new InternalBubble(7, [b8, b9, b10]);
-    const b2: LeafBubble = new LeafBubble(2,
-`<h1>Sed ut perspiciatis</h1>, unde omnis iste natus error sit \
-voluptatem accusantium doloremque laudantium, totam rem aperiam \
-eaque ipsa, quae ab illo inventore veritatis et quasi architecto \
-beatae vitae dicta sunt, explicabo. Nemo enim ipsam voluptatem, quia \
-voluptas sit, aspernatur aut odit aut fugit, sed quia consequuntur \
-magni dolores eos, qui ratione voluptatem sequi nesciunt, neque porro quisquam est, qui do`);
-      const b5: LeafBubble = new LeafBubble(5,
-`lorem ipsum, quia dolor sit amet consectetur adipisci velit, sed quia non numquam \
-eius modi tempora incidunt, ut labore et dolore magnam aliquam quaerat voluptatem. \
-Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, \
-nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit, \
-qui in ea voluptate velit esse, quam nihil molestiae consequatur, vel illum, \
-qui dolorem eum fugiat, quo voluptas nulla pariatur?`);
-      const b6: LeafBubble = new LeafBubble(6,
-`At vero eos et accusamus et iusto odio dignissimos ducimus, qui blanditiis praesentium \
-voluptatum deleniti atque corrupti, quos dolores et quas molestias excepturi sint, \
-obcaecati cupiditate non provident, similique sunt in culpa, qui officia deserunt \
-mollitia animi, id est laborum`);
-    const b3: InternalBubble = new InternalBubble(3, [b5, b6]);
-    const b4: LeafBubble = new LeafBubble(4,
-`et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. \
-Nam libero tempore, cum soluta nobis est eligendi optio, cumque nihil impedit, \
-quo minus id, quod maxime placeat, facere possimus, omnis voluptas assumenda est, \
-omnis dolor repellendus.`);
-  const b1: InternalBubble = new InternalBubble(1, [b7, b2, b3, b4]);
-const rootBubble: InternalBubble = new InternalBubble(0, [b1, b15]);
-const bubbleList: Array<Bubble> = [b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15, b16, b17, b18, b19];
-b5.getEditLock(2);
+    const b17: LeafBubble = new LeafBubble(17,
+`<p>If you have troubles using our service check out our FAQ<a href="http://busywrite.ribosome.kr">busywrite FAQ</a></p>`);
+    const b16: LeafBubble = new LeafBubble(16, 'Conclusion');
+  const b15: InternalBubble = new InternalBubble(15, [b16, b17]);
+      const b14: LeafBubble = new LeafBubble(14,
+`<p>BusyWrite, is not just a web service, nor thousands lines of code; it is a member of your team. \
+It works to accelerate your team. It links with other services to analyze your notes and create \
+automatic bubbles, busy bubbles. Information relevant to your team’s work is crawled and made into \
+bubbles. Busy bubbles are created from messengers like slack, from other note services like evernote, \
+or from anywhere on the web. It will search google or wikipedia to grab relevant contents into bubbles \
+with citation. BusyWrite will make sure the whole web is on your side.</p>`);
+      const b13: LeafBubble = new LeafBubble(13, 'Body 1');
+    const b12: InternalBubble = new InternalBubble(12, [b13, b14]);
+      const b11: LeafBubble = new LeafBubble(11,
+`<p>BusyWrite separate writing and merging. Normally, participants write on the same file, \
+writing and merging simultaneously, which is troublesome. The concept of participants writing \
+different parts and stacking them up to get a whole is an utopian thought; nobody is certain if \
+everyone understands the same thing. On BusyWrite, instead of just writing straight to a file, \
+users make bubbles. A bubble is a unit of thought that users write on. With bubbles, \
+several people can write simultaneously and merge after resolving conflicts. \
+Bubbles will help you cherry-pick your own version of the draft.</p>`);
+      const b10: LeafBubble = new LeafBubble(10, 'Body 1');
+    const b9: InternalBubble = new InternalBubble(9, [b10, b11]);
+  const b8: InternalBubble = new InternalBubble(8, [b9, b12]);
+    const b7: LeafBubble = new LeafBubble(7,
+`<p>Limited time is the number one bottleneck of teamwork. Therefore, most of the time, \
+discussion is done while writing. Teams cannot afford time to match document structure, \
+details and opinions between every participant, and therefore resolve the conflicts on-the-go. \
+However, this is troublesome with pre-existing services. Often, several people write the same thing. \
+Often, two people realize they have different opinions after writing. Often, time is wasted unifying \
+words and styles. Often, 20% of people do 80% of the work. These are all caused by not able to discuss \
+properly on-the-go. That’s why we want to help teams with BusyWrite, a service to speed up team collaboration.</p>`);
+    const b6: LeafBubble = new LeafBubble(6,
+'<p>BusyWrite is the perfect solution for team writing. The concept of writing as a \
+team has been around for a long time, by services like Google Docs, but the approaches \
+are impractical and unproductive. </p>', -1, [sb2, sb4, sb1, sb3], [c7, c8]);
+    const b5: LeafBubble = new LeafBubble(5, '<h5>Introduction</h5>');
+  const b4: InternalBubble = new InternalBubble(4, [b5, b6, b7], [sb5], [c6]);
+    const b3: LeafBubble = new LeafBubble(3, '<h3>Subtitle</h3>');
+    const b2: LeafBubble = new LeafBubble(2, '<h1 class="ql-align-center">Title</h1>', 1);
+  const b1: InternalBubble = new InternalBubble(1, [b2, b3]);
+const rootBubble: InternalBubble = new InternalBubble(0, [b1, b4, b8, b15]);
+const bubbleList: Array<Bubble> = [b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15, b16, b17];
+b14.getEditLock(2);
 
 export { rootBubble as MockBubbleRoot };
 export { bubbleList as MockBubbleList };

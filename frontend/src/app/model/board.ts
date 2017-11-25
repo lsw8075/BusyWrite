@@ -1,5 +1,7 @@
 import { Bubble } from './bubble';
 
+const tempUserID = 1;
+
 export class Board {
 }
 

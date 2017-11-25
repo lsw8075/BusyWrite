@@ -19,7 +19,13 @@ export interface Bubble {
   suggestBubbles: Array<SuggestBubble>;
   watchUsers: Array<User>;
 
+  isMouseOver: boolean;
+
+  releaseLock(): void;
+
   getHeight(): number;
+  mouseOver(over: boolean): void;
+  clearMouseEvent(): void;
 
   addSuggestBubble(suggestBubble: SuggestBubble): void;
   addComment(comment: Comment): void;
@@ -38,6 +44,8 @@ export class LeafBubble implements Bubble {
   parentBubble: InternalBubble = null;
   location: number;
   thumbUps: number;
+
+  isMouseOver: boolean;
 
   comments: Array<Comment> = [];
   suggestBubbles: Array<SuggestBubble> = [];
@@ -60,10 +68,11 @@ export class LeafBubble implements Bubble {
     this.id = id;
     this.type = BubbleType.leafBubble;
     this.location = -1; // location is -1 when orphan
-    this.editLock = (ownerId !== -1); // edit lock false if no owner
+    this.editLock = (ownerId === -1) ? false : true; // edit lock false if no owner
     this.content = content;
     this.ownerId = ownerId;
     this.suggestBubbles = suggestBubbles;
+    this.isMouseOver = false;
     this.comments = comments;
     this.watchUsers = watchUsers;
     this.thumbUps = thumbUps;
@@ -97,6 +106,14 @@ export class LeafBubble implements Bubble {
   getHeight(): number {
     const leafBubbleHeight = 1;
     return leafBubbleHeight;
+  }
+
+  mouseOver(over: boolean): void {
+    this.isMouseOver = over;
+  }
+
+  clearMouseEvent(): void {
+    this.isMouseOver = false;
   }
 
   addSuggestBubble(suggestBubble: SuggestBubble) {
@@ -140,6 +157,8 @@ export class InternalBubble implements Bubble {
   location: number;
   thumbUps: number;
 
+  isMouseOver: boolean;
+
   comments: Array<Comment> = [];
   suggestBubbles: Array<SuggestBubble> = [];
   watchUsers: Array<User> = [];
@@ -159,6 +178,7 @@ export class InternalBubble implements Bubble {
     this.location = -1;
     this.addChildren(...childBubbles);
     this.suggestBubbles = suggestBubbles;
+    this.isMouseOver = false;
     this.comments = comments;
     this.thumbUps = thumbUps;
     this.watchUsers = watchUsers;
@@ -168,12 +188,30 @@ export class InternalBubble implements Bubble {
     return this.childBubbles.reduce((prev, curr) => Math.max(prev, curr.getHeight() + 1), 1);
   }
 
+  mouseOver(over: boolean): void {
+    this.isMouseOver = over;
+    if (this.parentBubble !== null) {
+      this.childBubbles.forEach(b => b.mouseOver(over));
+    }
+  }
+
+  clearMouseEvent(): void {
+    this.isMouseOver = false;
+    this.childBubbles.forEach(b => b.clearMouseEvent());
+  }
+
+  releaseLock(): void {
+    this.childBubbles.forEach(b => b.releaseLock());
+  }
+
   getContent(): string {
     return this.childBubbles.reduce((prev, curr) => prev + curr.getContent() + '\n', '').slice(0, -1);
   }
+
   getComments(): Array<Comment> {
     return null;
   }
+
   getSuggestBubbles(): Array<SuggestBubble> {
     return null;
   }
@@ -199,7 +237,6 @@ export class InternalBubble implements Bubble {
       this.comments.splice(index, 1);
     }
   }
-
 
   // ----
 
@@ -251,8 +288,7 @@ export class InternalBubble implements Bubble {
      }
   }
 
-  wrapChildren(wrapList: Array<Bubble>): InternalBubble {
-
+  wrapChildren(wrapBubble: InternalBubble, wrapList: Array<Bubble>): void {
     // no bubble to wrap
     if (wrapList.length < 1) {
       throw new Error('wrapList contains no bubble');
@@ -269,7 +305,6 @@ export class InternalBubble implements Bubble {
     // sort bubbles in order
     this._sortByLocation(wrapList);
     let startLocation = wrapList[0].location;
-    const startBubbleId = wrapList[0].id;
 
     // check for un-adjacency
     let locationChecker = startLocation;
@@ -286,9 +321,9 @@ export class InternalBubble implements Bubble {
     }
 
     // make internal node
-    const wrapBubble: InternalBubble = new InternalBubble(startBubbleId, wrapList);
     wrapBubble.location = startLocation;
     wrapBubble.parentBubble = this;
+    wrapBubble.addChildren(...wrapList);
     // delete un-needed node
     this.childBubbles.splice(startLocation, wrapList.length, wrapBubble);
 
@@ -298,7 +333,6 @@ export class InternalBubble implements Bubble {
       this.childBubbles[startLocation].location = startLocation;
       startLocation++;
     }
-    return wrapBubble;
   }
 
   flattenChild(bubble: Bubble): LeafBubble {
@@ -333,6 +367,7 @@ export class InternalBubble implements Bubble {
       throw new Error(errorMsg);
     }
   }
+
   private _ischildBubble(bubble: Bubble): boolean {
     if (bubble.parentBubble === null) {
       return false;

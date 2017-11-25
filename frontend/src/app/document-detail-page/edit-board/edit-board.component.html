@@ -18,7 +18,7 @@
                     </button>
                   </span>
                 </div>
-                <app-edit-item (focus)="focusEditItem(editItem)" [editItem]="editItem"></app-edit-item>
+                <app-edit-item (update)="updateEditItem(editItem)" (focus)="focusEditItem(editItem, $event)" [editItem]="editItem"></app-edit-item>
             </accordion-group>
           </div>
         </div>

@@ -31,6 +31,7 @@ export class SangjunBoardComponent implements OnInit {
       this.isCommentChecked = true;
       this.isWatching = false;
       this.selectedSB = null;
+      _eventBubbleService.clearState();
     });
 
     _eventSangjunBoardService._backButtonClickEvent$.subscribe(() => {

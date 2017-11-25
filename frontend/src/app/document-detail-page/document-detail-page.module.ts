@@ -24,11 +24,20 @@ import { FilterBoardComponent } from './filter-board/filter-board.component';
 
 import { BoardManagerComponent } from './board-manager/board-manager.component';
 
+import { SplitBubbleComponent } from './view-board/split-bubble/split-bubble.component';
+
 import { BoardService } from './service';
 import { BubbleService } from './service';
 import { CommentService } from './service';
 import { NoteService } from './service';
 import { EventBubbleService } from './service';
+
+import { ClickOutsideDirective } from './directive/click-outside.directive';
+import { InternalBubbleDirective } from './directive/internal-bubble.directive';
+import { LeafBubbleDirective } from './directive/leaf-bubble.directive';
+import { StopClickPropagationDirective } from './directive/stop-click-propagation.directive';
+import { StopHoverPropagationDirective } from './directive/stop-hover-propagation.directive';
+
 import { EventSangjunBoardService } from './service';
 
 import { DragulaModule } from 'ng2-dragula/ng2-dragula';
@@ -36,6 +45,9 @@ import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { QuillEditorModule } from 'ngx-quill-editor';
 import { AccordionModule } from 'ngx-bootstrap/accordion';
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
+
+import { AlertModule } from 'ngx-bootstrap/alert';
+import { ModalModule } from 'ngx-bootstrap/modal';
 
 import { TabViewModule } from 'primeng/primeng';
 import { ButtonModule } from 'primeng/primeng';
@@ -57,6 +69,13 @@ import { DialogModule } from 'primeng/primeng';
     CommentComponent,
     FilterBoardComponent,
     BoardManagerComponent,
+    SplitBubbleComponent,
+
+    ClickOutsideDirective,
+    InternalBubbleDirective,
+    LeafBubbleDirective,
+    StopClickPropagationDirective,
+    StopHoverPropagationDirective
   ],
   imports: [
     BrowserModule,
@@ -74,6 +93,8 @@ import { DialogModule } from 'primeng/primeng';
     DialogModule,
     AccordionModule.forRoot(),
     TooltipModule.forRoot(),
+    AlertModule.forRoot(),
+    ModalModule.forRoot()
   ],
   exports: [
 
@@ -85,6 +106,7 @@ import { DialogModule } from 'primeng/primeng';
     NoteService,
     EventBubbleService,
     EventSangjunBoardService
-  ]
+  ],
+  entryComponents: [SplitBubbleComponent]
 })
 export class DocumentDetailPageModule { }

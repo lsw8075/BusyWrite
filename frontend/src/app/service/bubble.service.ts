@@ -3,9 +3,10 @@ import { Bubble, BubbleType, LeafBubble, InternalBubble, SuggestBubble } from '.
 import { MockBubbleRoot, MockBubbleList } from '../model/bubble.mock';
 
 import 'rxjs/add/operator/toPromise';
+import { MenuType } from './event/event-bubble.service';
 
 let tempId = 30; // to be deleted after backend implemented
-
+const tempUserId = 1;
 @Injectable()
 export class BubbleService {
 
@@ -22,6 +23,10 @@ export class BubbleService {
     return Promise.resolve(this.bubbleRoot);
   }
 
+  public getBubbleList(): Promise<Array<Bubble>> {
+    return Promise.resolve(this.bubbleList);
+  }
+
   public getBubbleById(id: number): Bubble {
     if (0 < id) {
       for (const bubble of this.bubbleList) {
@@ -34,7 +39,6 @@ export class BubbleService {
   }
 
   public createBubble(parentBubble: InternalBubble, location: number, content: string): Promise<Bubble> {
-    const tempUserId = 1;
     const newBubble = new LeafBubble(this._getId(), content, tempUserId);
     parentBubble.insertChildren(location, newBubble);
     return Promise.resolve(newBubble);
@@ -43,8 +47,8 @@ export class BubbleService {
 
   public editBubble(bubble: Bubble, newContent: string): Promise<void> {
     if (bubble.type === BubbleType.leafBubble) {
+      (bubble as LeafBubble).getEditLock(tempUserId);
       (bubble as LeafBubble).content = newContent;
-      (bubble as LeafBubble).releaseLock();
       return Promise.resolve(null);
     } else {
       throw new Error('Cannot edit internal bubble');
@@ -62,22 +66,32 @@ export class BubbleService {
     this._getChildrenList(bubble, deleteBubbleList);
     this.bubbleList = this.bubbleList.filter(b => !this._containsBubble(b, deleteBubbleList));
 
+    if (parentBubble.childBubbles.length === 1) {
+      const grandParentBubble: InternalBubble = parentBubble.parentBubble;
+      grandParentBubble.popChild(parentBubble);
+    }
+
     return Promise.resolve(null);
   }
 
   public wrapBubble(wrapBubbleList: Array<Bubble>): Promise<void> {
-    const parentBubble: InternalBubble = wrapBubbleList[0].parentBubble;
-    const wrapperBubble = parentBubble.wrapChildren(wrapBubbleList);
-    this.bubbleList = this.bubbleList.filter(b => !this._containsBubble(b, wrapBubbleList));
-    this.bubbleList.push(wrapperBubble);
+    if (wrapBubbleList.length > 1) {
+      const parentBubble: InternalBubble = wrapBubbleList[0].parentBubble;
+      const wrapperBubble = new InternalBubble(this._getId(), null);
+      parentBubble.wrapChildren(wrapperBubble, wrapBubbleList);
+      this.bubbleList = this.bubbleList.filter(b => !this._containsBubble(b, wrapBubbleList));
+      this.bubbleList.push(wrapperBubble);
+    }
     return Promise.resolve(null);
   }
 
-  public popBubble(bubble: Bubble): Promise<void> {
+  public async popBubble(bubble: Bubble): Promise<void> {
     // check the assumptions
     if (bubble.parentBubble === null) {
       throw new Error('Cannot pop root bubble');
     }
+
+    await this.delay(1000);
 
     const parentBubble: InternalBubble = bubble.parentBubble;
     parentBubble.popChild(bubble);
@@ -102,8 +116,10 @@ export class BubbleService {
       splittedChildren.push(prevBubble);
     }
 
-    const currBubble: LeafBubble = new LeafBubble(this._getId(), selectContent);
-    splittedChildren.push(currBubble);
+    if (selectContent) {
+      const currBubble: LeafBubble = new LeafBubble(this._getId(), selectContent);
+      splittedChildren.push(currBubble);
+    }
 
     if (endIndex !== originalContent.length - 1) {
       const nextBubble: LeafBubble = new LeafBubble(this._getId(), originalContent.substring(endIndex, originalContent.length));
@@ -134,6 +150,23 @@ export class BubbleService {
     this._getChildrenList(bubble, wrapBubbleList);
     this.bubbleList = this.bubbleList.filter(b => !this._containsBubble(b, wrapBubbleList));
 
+    return Promise.resolve(null);
+  }
+
+  public moveBubble(bubble: Bubble, destBubble: Bubble, menu: MenuType): Promise<void> {
+    if (bubble.parentBubble === null) {
+      throw new Error('Cannot move root bubble');
+    } else if (bubble.id !== destBubble.id) {
+      const parentBubble: InternalBubble = bubble.parentBubble;
+      parentBubble.deleteChild(bubble);
+
+      let location = destBubble.location;
+      if (menu === MenuType.borderBottomMenu) {
+        location ++;
+      }
+      destBubble.parentBubble.insertChildren(location, bubble);
+
+    }
     return Promise.resolve(null);
   }
 
@@ -168,7 +201,6 @@ export class BubbleService {
 
       return leafBubble;
     }
-
   }
 
   private _getBubbleList(): Promise< Array<Bubble> > {
@@ -199,6 +231,10 @@ export class BubbleService {
   private _getId(): number {
     tempId++;
     return tempId;
+  }
+
+  private delay(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 
 }
