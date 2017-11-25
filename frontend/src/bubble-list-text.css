@@ -1,3 +1,11 @@
+.bubble-show {
+  tab-size: 4;
+  -moz-tab-size: 4;
+  text-align: left;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
 
 .bubble-show > * {
   cursor: text;

@@ -1,0 +1,7 @@
+.wrap-text {
+  tab-size: 4;
+  -moz-tab-size: 4;
+  text-align: left;
+  display: inline-block;
+  word-break: break-word;
+}
