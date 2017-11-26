@@ -1,44 +1,28 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
-
 import { HttpModule } from '@angular/http';
 import { FormsModule } from '@angular/forms';
 import { APP_BASE_HREF } from '@angular/common';
 
 import { AppComponent } from './app.component';
-import { DocumentDetailPageModule } from './document-detail-page/document-detail-page.module';
-import { AlertPageModule } from './alert-page/alert-page.module';
 
-import { LandingComponent } from './landing/landing.component';
-import { SigninComponent } from './signin/signin.component';
+import { LandingComponent } from './shared/components/landing/landing.component';
 
-import { MainPageComponent } from './main-page/main-page.component';
-import { SideNavigationComponent } from './main-page/side-navigation/side-navigation.component';
-import { BrowserComponent } from './main-page/browser/browser.component';
-import { SharePopupComponent } from './main-page/share-popup/share-popup.component';
-
-import { AppRoutingModule } from './route/app-routing.module';
-
-import { AuthenticationService } from './service/authentication.service';
-
-import { DirectoryService } from './service/directory.service';
-import { DocumentService } from './service/document.service';
+import { AppRoutingModule } from './shared/route/app-routing.module';
 
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { StoreRouterConnectingModule } from '@ngrx/router-store';
-import { StateManagerModule } from './state-manager/state-manager.module';
 
+import { DocumentStateModule } from './document/document-state.module';
+import { AuthenticationStateModule } from './auth/auth-state.module';
+import { AlertStateModule } from './alert/alert-state.module';
+import { MainStateModule } from './file/main-state.module';
 
 @NgModule({
   declarations: [
     AppComponent,
     LandingComponent,
-    SigninComponent,
-    MainPageComponent,
-    SideNavigationComponent,
-    BrowserComponent,
-    SharePopupComponent,
   ],
   imports: [
     FormsModule,
@@ -46,19 +30,19 @@ import { StateManagerModule } from './state-manager/state-manager.module';
     BrowserModule,
     BrowserAnimationsModule,
     HttpModule,
-    DocumentDetailPageModule,
-    AlertPageModule,
-    StateManagerModule,
+
     StoreRouterConnectingModule,
     StoreDevtoolsModule.instrument({
       maxAge: 25 //  Retains last 25 states
-    })
+    }),
+
+    DocumentStateModule,
+    AuthenticationStateModule,
+    AlertStateModule,
+    MainStateModule
   ],
   providers: [
     {provide: APP_BASE_HREF, useValue: '/'},
-    AuthenticationService,
-    DirectoryService,
-    DocumentService,
   ],
   bootstrap: [AppComponent]
 })

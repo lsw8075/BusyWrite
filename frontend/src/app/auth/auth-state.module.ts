@@ -1,0 +1,41 @@
+import { NgModule } from '@angular/core';
+import { HttpModule } from '@angular/http';
+import { CommonModule } from '@angular/common';
+
+import { StoreModule } from '@ngrx/store';
+import { EffectsModule } from '@ngrx/effects';
+import { StoreRouterConnectingModule } from '@ngrx/router-store';
+
+// Reducers
+// import { reducers } from './index';
+
+// Effects
+// import { BubbleEffects } from './effects/bubble.effect';
+
+import { SigninPageModule } from './components/signin-page.module';
+
+// services
+
+import { AuthenticationService } from './services/authentication.service';
+
+@NgModule({
+  imports: [
+    CommonModule,
+    HttpModule,
+    // StoreModule.forRoot(reducers),
+    // EffectsModule.forRoot([
+    //   BubbleEffects
+    // ]),
+    StoreRouterConnectingModule,
+    SigninPageModule
+  ],
+  declarations: [],
+  exports: [
+    StoreModule,
+    EffectsModule,
+  ],
+  providers: [
+    AuthenticationService
+  ]
+})
+export class AuthenticationStateModule { }
