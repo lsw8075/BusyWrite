@@ -4,6 +4,11 @@ import { BubbleType, Bubble, ActionType, MenuType } from '../service';
 import { InternalBubble, LeafBubble } from '../../../model/bubble';
 import { EventBubbleService, BoardService } from '../service';
 
+import { Store } from '@ngrx/store';
+import { Observable } from 'rxjs/Observable';
+import { State } from '../../../state-manager/index';
+import * as BubbleAction from '../../../state-manager/bubble/actions/bubble.action';
+
 @Component({
   selector: 'app-bubble-list-view',
   templateUrl: './bubble-list-view.component.html',
@@ -15,11 +20,19 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
   actionType = ActionType;
 
   @Input() rootBubble: Bubble; // bubbles that have root as parents
+  selectedBubble: Bubble;
+  selectedMenu: MenuType;
 
   constructor(
+    private _store: Store<State>,
     private _bubbleService: BubbleService,
     private _eventBubbleService: EventBubbleService,
-    private _boardService: BoardService) {}
+    private _boardService: BoardService) {
+      this._store.select('bubble').subscribe(bubble => {
+        this.selectedBubble = bubble.selectedBubble;
+        this.selectedMenu = bubble.selectedMenu;
+      });
+    }
 
   ngOnInit() {
     this._subscribeEvents();
@@ -53,11 +66,11 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
   }
 
   public popBubble(bubble: Bubble) {
-    this._bubbleService.popBubble(bubble)
-      .then(() => {
-        this._refreshBubbleList();
-        this._eventBubbleService.clearState();
-      });
+    // this._bubbleService.popBubble(bubble)
+    //   .then(() => {
+    //     this._refreshBubbleList();
+    //     this._eventBubbleService.clearState();
+    //   });
   }
 
   public wrapBubble() {
@@ -122,19 +135,14 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
   }
 
   public onClickEvent(bubble: Bubble, menu: MenuType, mouseEvent: MouseEvent): void {
-    console.log(bubble);
-    const currActionState = this._eventBubbleService.getActionState();
-    if (currActionState === ActionType.none ||
-        currActionState === ActionType.wrap ||
-        currActionState === ActionType.move) {
-      this._eventBubbleService.selectBubble(bubble, menu);
-    } else {
-      alert('please wait, your request is still pending');
-    }
+    this._store.dispatch(new BubbleAction.Select({bubble, menu}));
   }
 
-  public isMenuOpen(bubble, menuType): boolean {
-    return this._eventBubbleService.isMenuOpen(bubble, menuType);
+  public isMenuOpen(bubble, menu): boolean {
+    if (this.selectedBubble) {
+      return (bubble.id === this.selectedBubble.id) && (menu === this.selectedMenu);
+    }
+    return false;
   }
 
   public isBubbleContentShown(bubble): boolean {

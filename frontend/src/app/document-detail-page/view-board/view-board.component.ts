@@ -8,15 +8,15 @@ import { BoardService } from '../../service/board.service';
 import { EventBubbleService } from '../../service/event/event-bubble.service';
 
 import { Store } from '@ngrx/store';
-
 import { Observable } from 'rxjs/Observable';
-import * as fromBubble from '../../state-manager/bubble/reducers/bubble.reducer';
+import { State } from '../../state-manager/index';
 import * as BubbleAction from '../../state-manager/bubble/actions/bubble.action';
 
 @Component({
   selector: 'app-view-board',
   templateUrl: './view-board.component.html',
   styleUrls: ['./view-board.component.css'],
+
 })
 
 export class ViewBoardComponent implements OnInit {
@@ -24,12 +24,12 @@ export class ViewBoardComponent implements OnInit {
   rootBubble$: Observable<Bubble>;
 
   constructor(
-      private _store: Store<fromBubble.BubbleState>,
+      private _store: Store<State>,
       private _boardService: BoardService,
       private _bubbleService: BubbleService,
       private _eventBubbleService: EventBubbleService) {
-        this.rootBubble$ = _store.select(fromBubble.getRootBubble);
-        this.rootBubble$.subscribe((bubble) => {
+        this.rootBubble$ = _store.select('bubble').map(bubble => bubble.rootBubble);
+        this._store.select('bubble').subscribe((bubble) => {
           console.log(bubble);
         });
   }

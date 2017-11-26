@@ -25,7 +25,7 @@ import { BubbleEffects } from './bubble/effects/bubble.effect';
   declarations: [],
   exports: [
     StoreModule,
-    // EffectsModule,
+    EffectsModule,
   ],
 })
 export class StateManagerModule { }

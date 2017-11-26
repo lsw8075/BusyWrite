@@ -8,12 +8,14 @@ import { BubbleReducer } from './bubble/reducers/bubble.reducer';
 
 import { BubbleState } from './bubble/reducers/bubble.reducer';
 
+
 export interface State {
   bubble: BubbleState;
-
+  router: RouterReducerState;
 }
 
 export const reducers = {
-  Bubble: BubbleReducer
+  bubble: BubbleReducer,
+  router: routerReducer,
 };
 

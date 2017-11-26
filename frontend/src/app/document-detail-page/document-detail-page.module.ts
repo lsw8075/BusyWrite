@@ -53,7 +53,6 @@ import { TabViewModule } from 'primeng/primeng';
 import { ButtonModule } from 'primeng/primeng';
 import { EditorModule } from 'primeng/primeng';
 import { DialogModule } from 'primeng/primeng';
-import { StateManagerModule } from '../state-manager/state-manager.module';
 
 @NgModule({
   declarations: [
@@ -95,8 +94,7 @@ import { StateManagerModule } from '../state-manager/state-manager.module';
     AccordionModule.forRoot(),
     TooltipModule.forRoot(),
     AlertModule.forRoot(),
-    ModalModule.forRoot(),
-    StateManagerModule
+    ModalModule.forRoot()
   ],
   exports: [
 
