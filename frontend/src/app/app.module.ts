@@ -25,6 +25,11 @@ import { AuthenticationService } from './service/authentication.service';
 import { DirectoryService } from './service/directory.service';
 import { DocumentService } from './service/document.service';
 
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+import { StoreRouterConnectingModule } from '@ngrx/router-store';
+import { StateManagerModule } from './state-manager/state-manager.module';
+
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -42,7 +47,10 @@ import { DocumentService } from './service/document.service';
     BrowserAnimationsModule,
     HttpModule,
     DocumentDetailPageModule,
-    AlertPageModule
+    AlertPageModule,
+    StateManagerModule,
+    StoreRouterConnectingModule,
+
   ],
   providers: [
     {provide: APP_BASE_HREF, useValue: '/'},
