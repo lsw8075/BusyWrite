@@ -50,7 +50,9 @@ import { StateManagerModule } from './state-manager/state-manager.module';
     AlertPageModule,
     StateManagerModule,
     StoreRouterConnectingModule,
-
+    StoreDevtoolsModule.instrument({
+      maxAge: 25 //  Retains last 25 states
+    })
   ],
   providers: [
     {provide: APP_BASE_HREF, useValue: '/'},

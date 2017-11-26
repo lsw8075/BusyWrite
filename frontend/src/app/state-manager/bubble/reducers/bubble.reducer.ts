@@ -31,7 +31,5 @@ export function BubbleReducer(state: BubbleState = initialState, action: BUBBLE.
   }
 }
 
-export const getRootBubble = (state: BubbleState) => {
-  console.log(state);
-  return state.rootBubble; };
+export const getRootBubble = (state: BubbleState) => state.rootBubble;
 export const getBubbleList = (state: BubbleState) => state.bubbleList;

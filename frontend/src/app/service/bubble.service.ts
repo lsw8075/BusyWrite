@@ -172,7 +172,7 @@ export class BubbleService {
 
   public switchBubble(bubble: Bubble, suggestBubble: SuggestBubble): Bubble {
     const newSB = new SuggestBubble(this._getId(), bubble.getContent(), bubble.comments, bubble.thumbUps);
-    if(bubble.type === BubbleType.leafBubble) {
+    if (bubble.type === BubbleType.leafBubble) {
       let leafBubble = bubble as LeafBubble;
 
       leafBubble.thumbUps = suggestBubble.thumbUps;

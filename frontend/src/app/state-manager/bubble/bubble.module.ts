@@ -10,14 +10,12 @@ import { EffectsModule } from '@ngrx/effects';
 // import { BookExistsGuard } from './guards/book-exists';
 
 import { BubbleReducer } from './reducers/bubble.reducer';
-import { BubbleComponentModule } from './components/bubble-component.module';
 import { BubbleEffects } from './effects/bubble.effect';
 
 @NgModule({
   imports: [
     CommonModule,
     StoreModule.forFeature('bubble', BubbleReducer),
-    BubbleComponentModule,
     EffectsModule.forFeature([BubbleEffects]),
   ],
   declarations: [

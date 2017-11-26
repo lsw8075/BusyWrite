@@ -18,7 +18,7 @@ import 'rxjs/add/observable/fromPromise';
 import * as BUBBLE from '../actions/bubble.action';
 import { Bubble, BubbleType, InternalBubble, LeafBubble, SuggestBubble } from '../index';
 
-import { BubbleService } from '../service/bubble.service';
+import { BubbleService } from '../../../service/bubble.service';
 
 
 @Injectable()

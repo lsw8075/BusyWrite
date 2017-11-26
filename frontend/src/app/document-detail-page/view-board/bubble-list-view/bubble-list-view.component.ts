@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, OnDestroy, Output, HostListener } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, OnDestroy, Output, HostListener } from '@angular/core';
 import { BubbleService } from '../service';
 import { BubbleType, Bubble, ActionType, MenuType } from '../service';
 import { InternalBubble, LeafBubble } from '../../../model/bubble';
@@ -14,7 +14,7 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
   menuType = MenuType;
   actionType = ActionType;
 
-  rootBubble: Bubble; // bubbles that have root as parents
+  @Input() rootBubble: Bubble; // bubbles that have root as parents
 
   constructor(
     private _bubbleService: BubbleService,
@@ -22,7 +22,6 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
     private _boardService: BoardService) {}
 
   ngOnInit() {
-    this._refreshBubbleList();
     this._subscribeEvents();
   }
 

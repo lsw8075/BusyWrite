@@ -1,1 +1,1 @@
-export { Bubble, BubbleType, InternalBubble, LeafBubble, SuggestBubble } from './model/bubble';
+export { Bubble, BubbleType, InternalBubble, LeafBubble, SuggestBubble } from '../../model/bubble';
