@@ -49,7 +49,8 @@ import { CommentService } from './service/comment.service';
 import { DirectoryService } from './service/directory.service';
 import { DocumentService } from './service/document.service';
 import { NoteService } from './service/note.service';
-import { WebsocketService, WebsocketInternalService } from './service/websocket.service';
+import { WebSocketService } from 'angular2-websocket-service';
+import { ServerSocket } from './service/websocket.service';
 
 import { EventBubbleService } from './service/event/event-bubble.service';
 
@@ -121,8 +122,8 @@ import { DialogModule } from 'primeng/primeng';
     DocumentService,
     EventBubbleService,
     NoteService,
-    WebsocketService,
-    WebsocketInternalService,
+    WebSocketService,
+    ServerSocket,
   ],
   bootstrap: [AppComponent]
 })

@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Bubble, BubbleType, LeafBubble, InternalBubble } from '../model/bubble';
 import { MockBubbleRoot, MockBubbleList } from '../model/bubble.mock';
-import { Message, WebsocketService } from './websocket.service';
+import { Subscription } from 'rxjs/Subscription';
+import { ServerSocket } from './websocket.service';
 
 import 'rxjs/add/operator/toPromise';
 
@@ -11,14 +12,22 @@ let tempId = 30; // to be deleted after backend implemented
 @Injectable()
 export class BubbleService {
 
-    currentDocumentId: Number;
-    bubbleList: Array<Bubble> = [];
-    bubbleRoot: InternalBubble;
+    private socketSubscription: Subscription;
+    private currentDocumentId: Number;
+    private bubbleList: Array<Bubble> = [];
+    private bubbleRoot: InternalBubble;
 
-    constructor(private wsService: WebsocketService)  {
-        wsService.messages.subscribe(msg => {
-                console.log("Responnse from websocket: " + msg);
-                this.channelMessageHandler(msg);
+    constructor(private socket: ServerSocket)  {
+        /* TODO: decide whether it's better to connect the user all time
+                 (a.k.a. connect socket at constructor())
+                 or to connect when user opens document-detail page
+                 and disconnect when user closes document-detail page
+                 (a.k.a. connect socket at openDocument()) */
+        const stream = this.socket.connect();
+
+        this.socketSubscription = stream.subscribe(message => {
+                console.log('recevied message from server: ', message)
+                this.channelMessageHandler(message);
         });
         if (USE_MOCK) {
             this._getBubbleList().then(bubbleList => {
@@ -26,10 +35,14 @@ export class BubbleService {
             });
         }
     }
-
-    channelMessageHandler(msg: Message) {
     
-        let data = JSON.parse(msg.message);
+    ngOnDestroy() {
+        this.socketSubscription.unsubscribe();
+    }
+
+    channelMessageHandler(msg) {
+    
+        let data = JSON.parse(msg);
         // TODO: check if data has appropriate elements
         let command = data.header;
         let accept = data.accept;
@@ -67,19 +80,15 @@ export class BubbleService {
     }
     
     public openDocument(documentId) {
-        let m: Message = {
-            message: JSON.stringify({'header': 'open_document', 
-                             'text': {'document_id': documentId.toString()}})
-        };
-        this.wsService.messages.next(m);
+        const m: String  = JSON.stringify({'header': 'open_document', 
+                'text': {'document_id': documentId.toString()}});
+        this.socket.send(m);
     }
 
     public closeDocument(documentId) {
-        let m: Message = {
-            message: JSON.stringify({'header': 'close_document', 
-                             'text': {'document_id': documentId.toString()}})
-        };
-        this.wsService.messages.next();
+        const m: String = JSON.stringify({'header': 'close_document', 
+                'text': {'document_id': documentId.toString()}});
+        this.socket.send(m);
     }
 
     public getRootBubble(): Promise<Bubble> {

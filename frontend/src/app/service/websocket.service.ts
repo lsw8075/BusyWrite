@@ -1,61 +1,29 @@
 import { Injectable } from '@angular/core';
-import * as Rx from 'rxjs/Rx';
+import { QueueingSubject } from 'queueing-subject';
+import { Observable } from 'rxjs/Observable';
+import { WebSocketService } from 'angular2-websocket-service';
+import 'rxjs/add/operator/share';
 
-const WS_URL = 'wss://echo.websocket.org/';
-
-export interface Message {
-    message: string,
-}
-
+/* reference: www.npmjs.com/package/angular2-websocket-service */
 @Injectable()
-export class WebsocketInternalService {
+export class ServerSocket {
     
-    constructor() {}
+    private inputStream: QueueingSubject<String>;
+    public outputStream: Observable<String>;
 
-    private subject: Rx.Subject<MessageEvent>;
+    constructor(private socketFactory: WebSocketService) {}
 
-    public connect(url): Rx.Subject<MessageEvent> {
-        if (!this.subject) {
-            this.subject = this.create(url);
-            console.log("Succesfully connected: " + url);
-        }
-        return this.subject;
+    public connect() {
+        if (this.outputStream)
+            return this.outputStream;
+
+        return this.outputStream = this.socketFactory.connect(
+                'ws://localhost:8000',
+                this.inputStream = new QueueingSubject<String>()
+        ).share();
     }
 
-    public create(url): Rx.Subject<MessageEvent> {
-        let ws = new WebSocket(url);
-        let observable = Rx.Observable.create((obs: Rx.Observer<MessageEvent>) => {
-                ws.onmessage = obs.next.bind(obs);
-                ws.onerror = obs.error.bind(obs);
-                ws.onclose = obs.complete.bind(obs);
-                return ws.close.bind(ws);
-        })
-        let observer = {
-            next: (data: Object) => {
-                    if (ws.readyState === WebSocket.OPEN) {
-                        ws.send(JSON.stringify(data));
-                    }
-            }
-        }
-
-        return Rx.Subject.create(observer, observable);
+    public send (message: String): void {
+        this.inputStream.next(message);
     }
 }
-
-@Injectable()
-export class WebsocketService {
-
-    public messages: Rx.Subject<Message>;
-
-    constructor(private wsiService: WebsocketInternalService) {
-        this.messages = <Rx.Subject<Message>> wsiService
-            .connect(WS_URL)
-            .map((response: MessageEvent): Message => {
-                    let data = JSON.parse(response.data);
-                    return {
-                        message: data
-                    }
-            });
-    }
-}
-
