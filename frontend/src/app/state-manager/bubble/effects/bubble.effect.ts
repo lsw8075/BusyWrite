@@ -25,13 +25,19 @@ import { BubbleService } from '../../../service/bubble.service';
 @Injectable()
 export class BubbleEffects {
   @Effect()
-  load$: Observable<Action> = this.action$
-    .ofType<fromBubble.Load>(fromBubble.LOAD)
-    .map(action => action.payload)
-    .mergeMap(query => {
+  load$: Observable<Action> = this.action$.ofType<fromBubble.Load>(fromBubble.LOAD)
+    .map(action => action.payload).mergeMap(query => {
       return Observable.fromPromise(this.bubbleService.getRootBubble())
         .map((bubble: Bubble) => new fromBubble.LoadComplete(bubble))
         .catch(err => of(new fromBubble.LoadError(err)));
+    });
+
+  @Effect()
+  pop$: Observable<Action> = this.action$.ofType<fromBubble.Pop>(fromBubble.POP)
+    .map(action => action.payload).mergeMap(query => {
+      return Observable.fromPromise(this.bubbleService.popBubble(query))
+        .map(() => new fromBubble.PopComplete(query))
+        .catch(err => of(new fromBubble.PopError(err)));
     });
 
   constructor(

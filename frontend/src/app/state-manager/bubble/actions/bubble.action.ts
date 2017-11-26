@@ -64,7 +64,7 @@ export class Pop implements Action {
 
 export class PopComplete implements Action {
   readonly type = POP_COMPLETE;
-  constructor(public payload: void) {}
+  constructor(public payload: Bubble) {}
 }
 
 export class PopError implements Action {

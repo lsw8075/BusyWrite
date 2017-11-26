@@ -7,6 +7,12 @@ import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 
 import { SplitBubbleComponent } from '../split-bubble/split-bubble.component';
+
+import { Store } from '@ngrx/store';
+import { Observable } from 'rxjs/Observable';
+import { State } from '../../../state-manager/index';
+import * as BubbleAction from '../../../state-manager/bubble/actions/bubble.action';
+
 @Component({
   selector: 'app-bubble-menu',
   templateUrl: './bubble-menu.component.html',
@@ -22,6 +28,7 @@ export class BubbleMenuComponent implements OnInit {
 
 
   constructor(
+    private _store: Store<State>,
     private _bubbleSerivce: BubbleService,
     private _eventBubbleService: EventBubbleService,
     private _modalService: BsModalService) {
@@ -47,7 +54,7 @@ export class BubbleMenuComponent implements OnInit {
   }
 
   public popBubble() {
-    this._eventBubbleService.popBubble(this.bubble);
+    this._store.dispatch(new BubbleAction.Pop(this.bubble));
   }
 
   public wrapBubble() {
