@@ -35,7 +35,6 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
     }
 
   ngOnInit() {
-    this._subscribeEvents();
   }
 
   // when user closes
@@ -90,7 +89,7 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
     }
     this._bubbleService.createBubble(bubble.parentBubble, location, 'empty bubble')
       .then(response => {
-        this._boardService.editBubble(response);
+  //      this._boardService.editBubble(response);
         this._eventBubbleService.clearState();
         this._refreshBubbleList();
       });
@@ -103,7 +102,7 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
   public editBubble(bubble: Bubble) {
     if (bubble.type === BubbleType.leafBubble &&
         this.isBubbleContentShown(bubble)) {
-      this._boardService.editBubble(bubble);
+    //  this._boardService.editBubble(bubble);
       this._eventBubbleService.clearState();
       this._refreshBubbleList();
     }
@@ -160,37 +159,6 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
       this.rootBubble = rootBubble;
       console.log('bubble list refreshed');
     });
-  }
-
-  private _subscribeEvents() {
-    this._eventBubbleService.popBubbleEvent$.subscribe((bubble) => {
-      this.popBubble(bubble);
-    });
-    this._eventBubbleService.createBubbleEvent$.subscribe((response) => {
-      this.createBubble(response.bubble, response.menu);
-    });
-    this._eventBubbleService.wrapBubbleEvent$.subscribe((response) => {
-      this.wrapBubble();
-    });
-    this._eventBubbleService.editBubbleEvent$.subscribe((bubble) => {
-      this.editBubble(bubble);
-    });
-    this._eventBubbleService.deleteBubbleEvent$.subscribe((bubble) => {
-      this.deleteBubble(bubble);
-    });
-    this._eventBubbleService.flattenBubbleEvent$.subscribe((bubble) => {
-      this.flattenBubble(bubble);
-    });
-    this._boardService.finishBubbleEditEvent$.subscribe((bubble) => {
-      this.finishEdit(bubble);
-    });
-    this._eventBubbleService.moveBubbleEvent$.subscribe((response) => {
-      this.moveBubble(response.moveBubble, response.destBubble, response.menu);
-    });
-    this._eventBubbleService.splitBubbleEvent$.subscribe(() => {
-      this.refreshState();
-    });
-    // must unsubscribe on Destroy
   }
 
   ngOnDestroy() {

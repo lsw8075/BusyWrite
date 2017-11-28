@@ -66,15 +66,17 @@ export class BubbleMenuComponent implements OnInit {
   }
 
   public createBubble() {
-    this._eventBubbleService.createBubble(this.bubble, this.menu);
+    const bubble = this.bubble;
+    const menu = this.menu
+    this._store.dispatch(new BubbleAction.Create({bubble, menu}));
   }
 
   public editBubble() {
-    this._eventBubbleService.editBubble(this.bubble);
+    this._store.dispatch(new BubbleAction.Edit(this.bubble));
   }
 
   public deleteBubble() {
-    this._eventBubbleService.deleteBubble(this.bubble);
+    this._store.dispatch(new BubbleAction.Delete(this.bubble));
   }
 
   public flattenBubble() {

@@ -157,13 +157,6 @@ export class EventBubbleService {
     }
   }
 
-  popBubble(bubble: Bubble): void {
-    if (this.actionState === ActionType.none) {
-      this.setState(ActionType.pop);
-      this._popBubbleEventSource.next(bubble);
-    }
-  }
-
   wrapBubble(bubble: Bubble): void {
     if (this.actionState === ActionType.none) {
       this.setState(ActionType.wrap);
@@ -178,13 +171,6 @@ export class EventBubbleService {
     if (this.actionState === ActionType.none) {
       this.setState(ActionType.create);
       this._createBubbleEventSource.next({bubble, menu});
-    }
-  }
-
-  editBubble(bubble: Bubble): void {
-    if (this.actionState === ActionType.none) {
-      this.setState(ActionType.edit);
-      this._editBubbleEventSource.next(bubble);
     }
   }
 
