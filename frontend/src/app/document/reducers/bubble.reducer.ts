@@ -98,12 +98,7 @@ function createBubble(bubble: Bubble, menu: MenuType) {
   } else if (menu !== MenuType.borderTopMenu) {
     throw new Error('create bubble invoked with not border');
   }
-  this._bubbleService.createBubble(bubble.parentBubble, location, 'empty bubble')
-    .then(response => {
-      this._boardService.editBubble(response);
-      this._eventBubbleService.clearState();
-      this._refreshBubbleList();
-    });
+
 }
 
 function editBubble(bubble: Bubble, newContent: string) {

@@ -64,6 +64,14 @@ export class BubbleEffects {
       return Observable.of(new fromBubble.EditComplete(query.bubble));
     });
 
+  @Effect()
+  edit$: Observable<Action> = this.action$.ofType<fromBubble.Edit>(fromBubble.EDIT)
+    .map(action => action.payload).mergeMap(query => {
+      return Observable.fromPromise(this.bubbleService.editBubble(query))
+        .map(() => new fromBubble.EditComplete(query))
+        .catch(err => of(new fromBubble.EditError(err)));
+    });
+
   constructor(
     private action$: Actions,
     private bubbleService: BubbleService

@@ -49,6 +49,7 @@ export class BubbleService {
     if (bubble.type !== BubbleType.leafBubble) {
       throw new Error('Cannot edit internal bubble');
     }
+    console.log('[edit]');
     await this.delay(1000);
     return Promise.resolve(null);
   }
