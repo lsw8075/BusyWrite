@@ -45,32 +45,19 @@ export class BubbleService {
   }
 
 
-  public editBubble(bubble: Bubble, newContent: string): Promise<void> {
-    if (bubble.type === BubbleType.leafBubble) {
-      (bubble as LeafBubble).getEditLock(tempUserId);
-      (bubble as LeafBubble).content = newContent;
-      return Promise.resolve(null);
-    } else {
+  public async editBubble(bubble: Bubble): Promise<void> {
+    if (bubble.type !== BubbleType.leafBubble) {
       throw new Error('Cannot edit internal bubble');
     }
+    await this.delay(1000);
+    return Promise.resolve(null);
   }
 
-  public deleteBubble(bubble: Bubble): Promise<void> {
+  public async deleteBubble(bubble: Bubble): Promise<void> {
     if (bubble.parentBubble === null) {
       throw new Error('Cannot delete root bubble');
     }
-    const parentBubble: InternalBubble = bubble.parentBubble;
-    parentBubble.deleteChild(bubble);
-
-    const deleteBubbleList = [];
-    this._getChildrenList(bubble, deleteBubbleList);
-    this.bubbleList = this.bubbleList.filter(b => !this._containsBubble(b, deleteBubbleList));
-
-    if (parentBubble.childBubbles.length === 1) {
-      const grandParentBubble: InternalBubble = parentBubble.parentBubble;
-      grandParentBubble.popChild(parentBubble);
-    }
-
+    await this.delay(1000);
     return Promise.resolve(null);
   }
 
@@ -90,13 +77,7 @@ export class BubbleService {
     if (bubble.parentBubble === null) {
       throw new Error('Cannot pop root bubble');
     }
-
     await this.delay(1000);
-
-    const parentBubble: InternalBubble = bubble.parentBubble;
-    parentBubble.popChild(bubble);
-    this.bubbleList = this.bubbleList.filter(b => b.id !== bubble.id);
-
     return Promise.resolve(null);
   }
 

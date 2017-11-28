@@ -30,7 +30,7 @@ export class ViewBoardComponent implements OnInit {
       private _eventBubbleService: EventBubbleService) {
         this.rootBubble$ = _store.select('bubble').map(bubble => bubble.rootBubble);
         this._store.select('bubble').subscribe((bubble) => {
-          console.log(bubble);
+    //      console.log(bubble);
         });
   }
 
@@ -40,7 +40,7 @@ export class ViewBoardComponent implements OnInit {
 
   previewClick(event) {
       if (event.index === 1) {
-        this._boardService.updatePreview();
+  //      this._boardService.updatePreview();
       }
   }
 
@@ -57,4 +57,3 @@ export class ViewBoardComponent implements OnInit {
   // }
 
 } /* istanbul ignore next */
-

@@ -30,14 +30,14 @@ export class EditBoardComponent implements OnInit {
         return handle.className === 'handle';
       }
     });
-    this._boardService.createBubbleEvent$.subscribe((editItem: EditItem) => {
+  /*  this._boardService.createBubbleEvent$.subscribe((editItem: EditItem) => {
       this.createNewEditItem(editItem);
     });
-    this._boardService.getEditBubbles();
+    this._boardService.getEditBubbles();*/
   }
 
   public finishEdit(editItem: EditItem) {
-    this._boardService.finishEdit(editItem.bubble, editItem.content);
+//    this._boardService.finishEdit(editItem.bubble, editItem.content);
     this.editItems = this.editItems.filter(e => e.id !== editItem.id);
   }
 
@@ -51,7 +51,7 @@ export class EditBoardComponent implements OnInit {
   }
 
   public updateEditItem(editItem: EditItem) {
-    this._boardService.updateEdit(editItem.bubble, editItem.content);
+//    this._boardService.updateEdit(editItem.bubble, editItem.content);
   }
 
   addNote() {

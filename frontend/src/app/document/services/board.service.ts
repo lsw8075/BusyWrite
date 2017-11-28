@@ -21,7 +21,7 @@ export class BoardService {
 
   constructor(private _bubbleService: BubbleService) {
   }
-
+/*
   updatePreview() {
     this.previewUpdateEventSource.next();
   }
@@ -54,5 +54,5 @@ export class BoardService {
     this.tempId ++;
     return this.tempId;
   }
-
+*/
 }
