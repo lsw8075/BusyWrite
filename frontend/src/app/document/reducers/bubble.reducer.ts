@@ -63,6 +63,24 @@ export function BubbleReducer(state: BubbleState = initialState, action: fromBub
       const bubble = action.payload;
       return {...state, loading: false};
     }
+    case fromBubble.WRAP:
+      return {...state, loading: true};
+    case fromBubble.WRAP_COMPLETE: {
+      const bubble = action.payload;
+      return {...state, loading: false};
+    }
+    case fromBubble.MERGE:
+      return {...state, loading: true};
+    case fromBubble.MERGE_COMPLETE: {
+      const bubble = action.payload;
+      return {...state, loading: false};
+    }
+    case fromBubble.SPLIT:
+      return {...state, loading: true};
+    case fromBubble.SPLIT_COMPLETE: {
+      const bubble = action.payload;
+      return {...state, loading: false};
+    }
     default:
       return state;
   }
@@ -108,6 +126,17 @@ function editBubble(bubble: Bubble, newContent: string) {
   } else {
     throw new Error('Cannot edit internal bubble');
   }
+}
+
+function wrapBubble(wrapBubbleList: Array<Bubble>): Promise<void> {
+  if (wrapBubbleList.length > 1) {
+    const parentBubble: InternalBubble = wrapBubbleList[0].parentBubble;
+    const wrapperBubble = new InternalBubble(this._getId(), null);
+    parentBubble.wrapChildren(wrapperBubble, wrapBubbleList);
+    this.bubbleList = this.bubbleList.filter(b => !this._containsBubble(b, wrapBubbleList));
+    this.bubbleList.push(wrapperBubble);
+  }
+  return Promise.resolve(null);
 }
 
 export const getRootBubble = (state: BubbleState) => state.rootBubble;

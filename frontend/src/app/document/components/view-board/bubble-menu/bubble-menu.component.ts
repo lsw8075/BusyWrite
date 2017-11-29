@@ -49,6 +49,7 @@ export class BubbleMenuComponent implements OnInit {
   }
 
   public splitBubble() {
+    this._store.dispatch(new BubbleAction.Split(this.bubble));
     this.bsModalRef = this._modalService.show(SplitBubbleComponent);
     this.bsModalRef.content.bubble = this.bubble;
   }
@@ -77,6 +78,10 @@ export class BubbleMenuComponent implements OnInit {
 
   public deleteBubble() {
     this._store.dispatch(new BubbleAction.Delete(this.bubble));
+  }
+
+  public mergeBubble() {
+    this._store.dispatch(new BubbleAction.Merge(this.bubble));
   }
 
   public flattenBubble() {

@@ -62,14 +62,21 @@ export class BubbleService {
     return Promise.resolve(null);
   }
 
-  public wrapBubble(wrapBubbleList: Array<Bubble>): Promise<void> {
-    if (wrapBubbleList.length > 1) {
-      const parentBubble: InternalBubble = wrapBubbleList[0].parentBubble;
-      const wrapperBubble = new InternalBubble(this._getId(), null);
-      parentBubble.wrapChildren(wrapperBubble, wrapBubbleList);
-      this.bubbleList = this.bubbleList.filter(b => !this._containsBubble(b, wrapBubbleList));
-      this.bubbleList.push(wrapperBubble);
+  public async wrapBubble(wrapBubbleList: Array<Bubble>): Promise<void> {
+    if (wrapBubbleList.length <= 1) {
+      throw new Error('Cannot wrap one bubble');
     }
+    await this.delay(1000);
+    return Promise.resolve(null);
+  }
+
+  public async mergeBubble(bubble: Bubble): Promise<void> {
+    await this.delay(1000);
+    return Promise.resolve(null);
+  }
+
+  public async splitBubble(bubble: Bubble): Promise<void> {
+    await this.delay(1000);
     return Promise.resolve(null);
   }
 

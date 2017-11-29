@@ -64,6 +64,18 @@ export class EditError implements Action {
 export const WRAP = '[Bubble] wrap';
 export const WRAP_COMPLETE = '[Bubble] wrap Complete';
 export const WRAP_ERROR = '[Bubble] wrap Error';
+export class Wrap implements Action {
+  readonly type = WRAP;
+  constructor(public payload: Array<Bubble>) {}
+}
+export class WrapComplete implements Action {
+  readonly type = WRAP_COMPLETE;
+  constructor(public payload: Array<Bubble>) {}
+}
+export class WrapError implements Action {
+  readonly type = WRAP_ERROR;
+  constructor(public payload: string) {}
+}
 
 export const POP = '[Bubble] pop';
 export const POP_COMPLETE = '[Bubble] pop Complete';
@@ -84,10 +96,34 @@ export class PopError implements Action {
 export const MERGE = '[Bubble] merge';
 export const MERGE_COMPLETE = '[Bubble] merge Complete';
 export const MERGE_ERROR = '[Bubble] merge Error';
+export class Merge implements Action {
+  readonly type = MERGE;
+  constructor(public payload: Bubble) {}
+}
+export class MergeComplete implements Action {
+  readonly type = MERGE_COMPLETE;
+  constructor(public payload: Bubble) {}
+}
+export class MergeError implements Action {
+  readonly type = MERGE_ERROR;
+  constructor(public payload: string) {}
+}
 
 export const SPLIT = '[Bubble] split';
 export const SPLIT_COMPLETE = '[Bubble] split Complete';
 export const SPLIT_ERROR = '[Bubble] split Error';
+export class Split implements Action {
+  readonly type = SPLIT;
+  constructor(public payload: Bubble) {}
+}
+export class SplitComplete implements Action {
+  readonly type = SPLIT_COMPLETE;
+  constructor(public payload: Bubble) {}
+}
+export class SplitError implements Action {
+  readonly type = SPLIT_ERROR;
+  constructor(public payload: string) {}
+}
 
 export const DELETE = '[Bubble] delete';
 export const DELETE_COMPLETE = '[Bubble] delete Complete';
@@ -116,9 +152,18 @@ export type Actions =
   | Edit
   | EditComplete
   | EditError
+  | Wrap
+  | WrapComplete
+  | WrapError
   | Pop
   | PopComplete
   | PopError
+  | Merge
+  | MergeComplete
+  | MergeError
+  | Split
+  | SplitComplete
+  | SplitError
   | Delete
   | DeleteComplete
   | DeleteError;
