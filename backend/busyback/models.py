@@ -23,6 +23,9 @@ class Directory(models.Model):
     	related_name='parent_directory'
     )
 
+    def is_owner(self, user):
+        return self.owner.id == user
+
 class Document(models.Model):
     title = models.TextField()
     contributors = models.ManyToManyField(
@@ -32,6 +35,10 @@ class Document(models.Model):
 
     def is_contributed_by(self, user_id):
         return self.contributors.filter(id__exact=user_id).exists()
+
+    def add_contributor(self, user):
+        self.contributor.add(user)
+        self.save()
 
 class Note(models.Model):
     content = models.TextField()
@@ -61,16 +68,23 @@ class Bubble(models.Model):
         timestamp = timezone.now()
         self.save()
 
-    def has_locked_directs(self):
-        # overrided by NormalBubble
-        return False
-
     def change_content(self, content):
         '''Change bubble's content'''
-        if self.has_locked_directs():
-            raise BubbleLockedError(self)
         self.content = content
         self.touch()
+
+    def is_voted_by(self, user):
+        return self.voters.filter(id=user.id).exists()
+
+    def vote(self, user):
+        if not self.is_voted_by(user):
+            self.voters.add(user)
+        self.save()
+
+    def unvote(self, user):
+        if self.is_voted_by(user):
+            self.voters.remove(user)
+        self.save()
 
 class NormalBubble(Bubble):
     location = models.IntegerField(null=True)
@@ -104,7 +118,7 @@ class NormalBubble(Bubble):
             self.parent_bubble.touch()
 
     def child_count(self):
-        return len(self.child_bubbles.all().values())
+        return self.child_bubbles.count()
 
     def is_leaf(self):
         '''check if self is leaf bubble'''
@@ -120,7 +134,7 @@ class NormalBubble(Bubble):
     # lock methods
 
     def has_locked_ancestors(self):
-        '''Check self/any ancestor bubble is locked'''
+        '''Check any ancestor bubble is locked'''
         # check self is root
         if self.is_root():
             return False
@@ -169,10 +183,11 @@ class NormalBubble(Bubble):
     # so in the view you just create with dummy location.
 
     def fetch_child(self, location):
-        return self.child_bubbles.get(location=location)
-
-    def list_children(self):
-        return list(self.child_bubbles.all().values())
+        try:
+            child = self.child_bubbles.get(location=location)
+        except NormalBubble.DoesNotExist:
+            raise InvalidLocationError(self, location)
+        return child
 
     def adjust_children_location(self, start, adjust):
         children = self.child_bubbles.all()
@@ -182,16 +197,23 @@ class NormalBubble(Bubble):
             child.save()
     
     def splice_children(self, location, splice_count=0, new_parent=None, new_location=0, splice_list=[]):
-
+        ''' Method splice_children : Bubble version of JS splice
+            first, detach splice_count children from location of internal bubble self
+            next, if new_parent is not None, insert detached children into new_parent's new_location 
+            else, just delete the children
+            finally, insert bubbles in splice_list to the location
+        '''
         # assert when self == new_parent, splice_list is empty
         if new_parent is not None and self.id == new_parent.id and splice_list != []:
             raise InternalError('invaild use of splice_children')
 
         # mark target childrens to be unaffected by adjusting
+        splice_end = location + splice_count
         for child in self.child_bubbles.all():
             if (location <= child.location and
-                child.location < location + splice_count):
+                child.location < splice_end):
                 child.location = -child.location
+                child.save()
 
         # adjust location (order is matter)
         self.adjust_children_location(location + splice_count, len(splice_list) - splice_count)

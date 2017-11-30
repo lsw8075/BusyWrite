@@ -2,51 +2,29 @@ from django.test import TestCase
 from .models import *
 from .mock_db_setup import mockDBSetup
 from .errors import *
+from .bubbles import create_normal
 
 class BubbleModelTestCase(TestCase):
     
     def setUp(self):
         mockDBSetup(self)
 
-    def test_touch(self):
-        '''
-        from time import sleep
-        # test cascaded touch
-        old_timestamp2 = str(self.bubble2.timestamp)
-        old_timestamp4 = str(self.bubble4.timestamp)
-        sleep(0.1)
-        self.bubble4.touch()
-        new_timestamp2 = str(self.bubble2.timestamp)
-        new_timestamp4 = str(self.bubble4.timestamp)
-        self.assertNotEqual(old_timestamp2, new_timestamp2)
-        self.assertNotEqual(old_timestamp4, new_timestamp4)
-        print(old_timestamp4)
-        print(new_timestamp4)
-        # does not work correctly because of caching?
-        '''
-        pass
-
-    def test_has_locked_directs(self):
-        # always false for suggest bubbles
-        self.assertFalse(self.suggest1.has_locked_directs())
-
-        #
-
     def test_bubble_change_content(self):
-        # unlocked
         self.bubble3.change_content('asdf')
         self.assertEqual(self.bubble3.content, 'asdf')
-
-        # raise on locked
-        self.bubble3.lock(self.user1)
-        with self.assertRaises(BubbleLockedError):
-            self.bubble3.change_content('asdf')
 
     def test_child_count(self):
         self.assertEqual(self.bubble2.child_count(), 3)
     
     def test_is_leaf(self):
         self.assertTrue(self.bubble4.is_leaf())
+
+    def test_vote(self):
+        self.bubble4.vote(self.user1);
+        self.assertTrue(self.bubble4.is_voted_by(self.user1))
+        self.assertFalse(self.bubble4.is_voted_by(self.user2))
+        self.bubble4.unvote(self.user1);
+        self.assertFalse(self.bubble4.is_voted_by(self.user1))        
 
     def test_bubble_lock(self):
         # lock bubble 2
@@ -68,4 +46,12 @@ class BubbleModelTestCase(TestCase):
         # doubly unlock bubble 2
         self.bubble2.unlock(self.user1)
 
-        
+        self.assertFalse(self.bubble5.has_locked_directs())
+
+    def test_fetch_child(self):
+        # get child 1 of child 1 of doc1root
+        self.assertEqual(self.doc1root.fetch_child(1).fetch_child(1).id, self.bubble5.id)
+
+        # with invalid location
+        with self.assertRaises(InvalidLocationError):
+            self.doc1root.fetch_child(100)

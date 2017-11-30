@@ -1,6 +1,6 @@
 from django.test import TestCase
 from .models import *
-from .mock_db_setup import mockDBSetup
+from .mock_db_setup import *
 from .errors import *
 from .bubbles import *
 
@@ -11,171 +11,236 @@ class BubblesTestCase(TestCase):
 
     def test_check_contributor(self):
         with self.assertRaises(UserIsNotContributorError):
-            check_contributor(self.bubble1, self.user3.id)
+            check_contributor(self.user3.id, self.bubble1)
         
         with self.assertRaises(UserIsNotContributorError):
-            check_contributor(self.suggest1, self.user3.id)
+            check_suggest_contributor(self.user3.id, self.suggest1)
+
+        check_contributor(self.user1.id, self.bubble1)
+        check_suggest_contributor(self.user1.id, self.suggest1)
 
     def test_do_fetch_bubble(self):
-        self.assertEqual(do_fetch_normal_bubble(4).id, 4)
-        self.assertEqual(do_fetch_suggest_bubble(10).id, 10)
 
         with self.assertRaises(BubbleDoesNotExistError):
-            do_fetch_normal_bubble(100)
+            do_fetch_normal_bubble(self.user1.id, self.doc1, 100)
 
         with self.assertRaises(BubbleDoesNotExistError):
-            do_fetch_suggest_bubble(100)
+            do_fetch_suggest_bubble(self.user1.id, self.doc1, 100)
 
-#def test_do_fetch_bubbles(self):
-#do_fetch_bubbles(1)
+        self.assertEqual(do_fetch_normal_bubble(self.user1.id, self.doc1, 4).id, 4)
+        self.assertEqual(do_fetch_suggest_bubble(self.user1.id, self.doc1, 10).id, 10)
+
+    def test_do_fetch_bubbles(self):
+        emptydoc = Document.objects.create(title='error doc')
+        emptydoc.contributors.add(self.user1)
+        emptydoc.save()
+        
+        with self.assertRaises(InternalError):
+            do_fetch_bubbles(self.user1.id, emptydoc.id)
+
+        with self.assertRaises(InternalError):
+            do_fetch_normal_bubbles(self.user1.id, emptydoc.id)
+
+        with self.assertRaises(InternalError):
+            do_fetch_suggest_bubbles(self.user1.id, emptydoc.id)
+
+        bubbles = do_fetch_normal_bubbles(self.user1.id, self.doc1.id)
+        suggests = do_fetch_suggest_bubbles(self.user1.id, self.doc1.id)
+
     def test_get_root_bubble(self):
-        get_root_bubble(1)
+        emptydoc = Document.objects.create(title='error doc')
+        
+        with self.assertRaises(InternalError):
+            get_root_bubble(self.user1.id, emptydoc.id)
+        
+        multi1 = create_normal(self.doc1, 'multi1')
+        multi2 = create_normal(self.doc1, 'multi2')
+
+        with self.assertRaises(InternalError):
+            get_root_bubble(self.user1.id, emptydoc.id)
+
+        self.assertTrue(get_root_bubble(self.user1.id, self.doc1.id).id, self.doc1root)
 
     def test_do_create_normal_bubble(self):
-        do_create_normal_bubble(self.user1.id, self.bubble2.id, 1, False, 'test content')
-        do_create_normal_bubble(self.user1.id, self.bubble2.id, 1, True, 'test content')
+        do_create_normal_bubble(self.user1.id, self.doc1.id, self.bubble2.id, 1, False, 'test content')
+        new_bubble = do_create_normal_bubble(self.user1.id, self.doc1.id, self.bubble2.id, 2, True, 'test content')
+
+        self.assertEqual(self.bubble2.fetch_child(2).id, new_bubble.id)
 
         with self.assertRaises(InvalidLocationError):
-            do_create_normal_bubble(self.user1.id, self.bubble2.id, 100, True, 'test content')
+            do_create_normal_bubble(self.user1.id, self.doc1.id, self.bubble2.id, 100, True, 'test content')
+        
+        
+        self.bubble3.lock(self.user2)
 
+        with self.assertRaises(BubbleLockedError):
+            do_create_normal_bubble(self.user1.id, self.doc1.id, self.bubble3.id, 0, False, 'test_content')
 
     def test_do_create_suggest_bubble(self):
-         do_create_suggest_bubble(self.user1.id, self.bubble4.id, 'new suggest')
-
+        new_suggest = do_create_suggest_bubble(self.user1.id, self.doc1.id, self.bubble4.id, 'new suggest')
+        
     def test_do_edit_normal_bubble(self):
-        do_edit_normal_bubble(self.user1.id, self.bubble4.id, 'sample edit')
+        do_edit_normal_bubble(self.user1.id, self.doc1.id, self.bubble4.id, 'sample edit')
+
+        with self.assertRaises(BubbleIsInternalError):
+            do_edit_normal_bubble(self.user1.id, self.doc1.id, self.bubble2.id, 'asdf')
 
         self.bubble4.lock(self.user3)
         with self.assertRaises(BubbleLockedError):
-            do_edit_normal_bubble(self.user1.id, self.bubble4.id, 'edit fail due to lock')
+            do_edit_normal_bubble(self.user1.id, self.doc1.id, self.bubble4.id, 'edit fail due to lock')
+
         
-        owned = do_create_normal_bubble(self.user2.id, self.bubble2.id, 2, True, 'test owned')
+        owned = do_create_normal_bubble(self.user2.id, self.doc1.id, self.bubble2.id, 2, True, 'test owned')
 
         owned.unlock(self.user2)
 
         with self.assertRaises(BubbleOwnedError):
-            do_edit_normal_bubble(self.user1.id, owned.id, 'edit fail due to ownership')
+            do_edit_normal_bubble(self.user1.id, self.doc1.id, owned.id, 'edit fail due to ownership')
         
     def test_do_move_normal_bubble(self):
 
-        do_move_normal_bubble(self.user1.id, self.bubble1.id, self.bubble2.id, 2)
+        do_move_normal_bubble(self.user1.id, self.doc1.id, self.bubble1.id, self.bubble2.id, 2)
+
+        with self.assertRaises(BubbleIsLeafError):
+            do_move_normal_bubble(self.user1.id, self.doc1.id, self.bubble1.id, self.bubble4.id, 0)
         
         with self.assertRaises(BubbleIsRootError):
-            do_move_normal_bubble(self.user1.id, self.doc1root.id, self.doc1root.id, 0)
+            do_move_normal_bubble(self.user1.id, self.doc1.id, self.doc1root.id, self.doc1root.id, 0)
 
         with self.assertRaises(NotInSameDocumentError):
-            do_move_normal_bubble(self.user1.id, self.bubble5.id, self.doc2root.id, 0)
+            do_move_normal_bubble(self.user2.id, self.doc1.id, self.bubble5.id, self.doc2root.id, 0)
 
         self.bubble2.lock(self.user2)
         with self.assertRaises(BubbleLockedError):
-            do_move_normal_bubble(self.user1.id, self.bubble4.id, self.doc1root.id, 0)
+            do_move_normal_bubble(self.user1.id, self.doc1.id, self.bubble4.id, self.doc1root.id, 0)
 
         with self.assertRaises(BubbleLockedError):
-            do_move_normal_bubble(self.user1.id, self.bubble3.id, self.bubble2.id, 0)
+            do_move_normal_bubble(self.user1.id, self.doc1.id, self.bubble3.id, self.bubble2.id, 0)
 
         self.bubble2.unlock(self.user2)
-        owned = do_create_normal_bubble(self.user2.id, self.bubble2.id, 2, True, 'test owned')
+        owned = do_create_normal_bubble(self.user2.id, self.doc1.id, self.bubble2.id, 2, True, 'test owned')
 
         self.bubble2.unlock(self.user2)
         owned.unlock(self.user2)
         with self.assertRaises(BubbleOwnedError):
-            do_move_normal_bubble(self.user1.id, owned.id, self.doc1root.id, 0)
+            do_move_normal_bubble(self.user1.id, self.doc1.id, owned.id, self.doc1root.id, 0)
 
 
 
     def test_hide_and_show_suggest(self):
-        do_hide_suggest_bubble(self.user1.id, self.suggest1.id)
-        do_show_suggest_bubble(self.user1.id, self.suggest1.id)
+        do_hide_suggest_bubble(self.user1.id, self.doc1.id, self.suggest1.id)
+        do_show_suggest_bubble(self.user1.id, self.doc1.id, self.suggest1.id)
     
 
     def test_do_delete_normal_bubble(self):
         with self.assertRaises(BubbleIsRootError):
-            do_delete_normal_bubble(self.user1.id, self.doc1root.id)
+            do_delete_normal_bubble(self.user1.id, self.doc1.id, self.doc1root.id)
 
         self.bubble4.lock(self.user2)
         with self.assertRaises(BubbleLockedError):
-            do_delete_normal_bubble(self.user1.id, self.bubble4.id)
-        owned = do_create_normal_bubble(self.user2.id, self.doc1root.id, 2, True, 'test owned')
+            do_delete_normal_bubble(self.user1.id, self.doc1.id, self.bubble4.id)
+        owned = do_create_normal_bubble(self.user2.id, self.doc1.id, self.doc1root.id, 2, True, 'test owned')
         owned.unlock(self.user2)
 
         with self.assertRaises(BubbleOwnedError):
-            do_delete_normal_bubble(self.user1.id, owned.id)
+            do_delete_normal_bubble(self.user1.id, self.doc1.id, owned.id)
 
         self.bubble4.unlock(self.user2)
-        do_delete_normal_bubble(self.user1.id, self.bubble2.id)
+        do_delete_normal_bubble(self.user1.id, self.doc1.id, self.bubble2.id)
 
 
 
     def test_do_wrap_normal_bubble(self):
         with self.assertRaises(InvalidWrapError):
-            do_wrap_normal_bubble(self.user1.id, [])
+            do_wrap_normal_bubble(self.user1.id, self.doc1.id, [])
 
         with self.assertRaises(InvalidWrapError):
-            do_wrap_normal_bubble(self.user1.id, [self.bubble2.id, self.bubble5.id])
+            do_wrap_normal_bubble(self.user1.id, self.doc1.id, [self.bubble2.id, self.bubble5.id])
 
         with self.assertRaises(InvalidWrapError):
-            do_wrap_normal_bubble(self.user1.id, [self.bubble4.id, self.bubble6.id])
+            do_wrap_normal_bubble(self.user1.id, self.doc1.id, [self.bubble4.id, self.bubble6.id])
 
-        do_wrap_normal_bubble(self.user1.id, [self.bubble4.id, self.bubble5.id])
-
+        do_wrap_normal_bubble(self.user1.id, self.doc1.id, [self.bubble4.id, self.bubble5.id])
 
     def test_do_pop_normal_bubble(self):
         with self.assertRaises(BubbleIsRootError):
-            do_pop_normal_bubble(self.user1.id, self.doc1root.id)
+            do_pop_normal_bubble(self.user1.id, self.doc1.id, self.doc1root.id)
 
         self.bubble4.lock(self.user2)
         with self.assertRaises(BubbleLockedError):
-            do_pop_normal_bubble(self.user1.id, self.bubble2.id)
+            do_pop_normal_bubble(self.user1.id, self.doc1.id, self.bubble2.id)
         
         with self.assertRaises(BubbleIsLeafError):
-            do_pop_normal_bubble(self.user1.id, self.bubble3.id)
+            do_pop_normal_bubble(self.user1.id, self.doc1.id, self.bubble3.id)
 
         self.bubble4.unlock(self.user2)
-        do_pop_normal_bubble(self.user1.id, self.bubble2.id)
+        do_pop_normal_bubble(self.user1.id, self.doc1.id, self.bubble2.id)
 
+      
     def test_do_flatten_normal_bubble(self):
 
         self.bubble2.lock(self.user2)
         with self.assertRaises(BubbleLockedError):
-            do_flatten_normal_bubble(self.user1.id, self.bubble2.id)
+            do_flatten_normal_bubble(self.user1.id, self.doc1.id, self.bubble2.id)
         
         self.bubble2.unlock(self.user2)
-        do_flatten_normal_bubble(self.user1.id, self.bubble2.id)
+        do_flatten_normal_bubble(self.user1.id, self.doc1.id, self.bubble2.id)
+
+        
 
     def test_do_split_leaf_bubble(self):
 
         with self.assertRaises(InvalidSplitError):
-            do_split_leaf_bubble(self.user3.id, self.bubble3.id, [])
+            do_split_leaf_bubble(self.user3.id, self.doc1.id, self.bubble3.id, [])
 
         self.bubble4.lock(self.user2)
         with self.assertRaises(BubbleLockedError):
-            do_split_leaf_bubble(self.user1.id, self.bubble4.id, ['Test', 'Bubble1'])
+            do_split_leaf_bubble(self.user1.id, self.doc1.id, self.bubble4.id, ['Test', 'Bubble1'])
 
-        owned = do_create_normal_bubble(self.user2.id, self.bubble2.id, 2, True, 'test owned')
+        owned = do_create_normal_bubble(self.user2.id, self.doc1.id, self.bubble2.id, 2, True, 'test owned')
 
         owned.unlock(self.user2)
 
         with self.assertRaises(BubbleOwnedError):
-            do_split_leaf_bubble(self.user1.id, owned.id, ['test', 'owned'])
+            do_split_leaf_bubble(self.user1.id, self.doc1.id, owned.id, ['test', 'owned'])
 
-        do_split_leaf_bubble(self.user1.id, self.bubble3.id, ['Test', 'Bubble2'])
+        do_split_leaf_bubble(self.user1.id, self.doc1.id, self.bubble3.id, ['Test', 'Bubble2'])
 
     def test_do_split_internal_bubble(self):
 
         with self.assertRaises(BubbleIsLeafError):
-            do_split_internal_bubble(self.user1.id, self.bubble3.id, [1,2])
+            do_split_internal_bubble(self.user1.id, self.doc1.id, self.bubble3.id, [1,2])
 
         with self.assertRaises(InvalidSplitError):
-            do_split_internal_bubble(self.user3.id, self.bubble2.id, [])
+            do_split_internal_bubble(self.user3.id, self.doc1.id, self.bubble2.id, [])
 
         self.bubble2.lock(self.user2)
         with self.assertRaises(BubbleLockedError):
-            do_split_internal_bubble(self.user1.id, self.bubble2.id, [1])
+            do_split_internal_bubble(self.user1.id, self.doc1.id, self.bubble2.id, [1])
 
         self.bubble2.unlock(self.user2)
 
         with self.assertRaises(InvalidSplitError):
-            do_split_internal_bubble(self.user1.id, self.bubble2.id, [1, 2, 7])
+            do_split_internal_bubble(self.user1.id, self.doc1.id, self.bubble2.id, [1, 2, 7])
 
-        do_split_internal_bubble(self.user1.id, self.bubble2.id, [1])
+        do_split_internal_bubble(self.user1.id, self.doc1.id, self.bubble2.id, [1])
 
+    def test_do_vote_bubble(self):
+        do_vote_bubble(self.user1.id, self.doc1.id, self.suggest1.id)
+        self.assertTrue(self.suggest1.is_voted_by(self.user1))
+        do_unvote_bubble(self.user1.id, self.doc1.id, self.suggest1.id)
+        self.assertFalse(self.suggest1.is_voted_by(self.user1))
+
+    def test_do_switch_bubble(self):
+        do_switch_bubble(self.user1.id, self.doc1.id, self.suggest1.id)
+        # reload it
+        reload_bubbles(self, [1])
+        reload_suggests(self, [1])
+        self.assertEqual(self.bubble1.content, 'TestSuggest1')
+        self.assertEqual(self.suggest1.content, 'TestBubble1')
+
+        do_switch_bubble(self.user1.id, self.doc1.id, self.suggest2.id)
+        # reload it
+        reload_bubbles(self, [2])
+        reload_suggests(self, [2])
+        self.assertEqual(self.bubble2.content, 'TestSuggest2')
