@@ -4,6 +4,8 @@ import { MockBubbleRoot, MockBubbleList } from '../model/bubble.mock';
 import { Subscription } from 'rxjs/Subscription';
 import { ServerSocket } from './websocket.service';
 
+import { Headers, Http } from '@angular/http';
+
 import 'rxjs/add/operator/toPromise';
 
 let USE_MOCK = true;
@@ -17,7 +19,7 @@ export class BubbleService {
     private bubbleList: Array<Bubble> = [];
     private bubbleRoot: InternalBubble;
 
-    constructor(private socket: ServerSocket)  {
+    constructor(private socket: ServerSocket, private http: Http)  {
         /* TODO: decide whether it's better to connect the user all time
                  (a.k.a. connect socket at constructor())
                  or to connect when user opens document-detail page
@@ -29,6 +31,18 @@ export class BubbleService {
                 console.log('recevied message from server: ', message)
                 this.channelMessageHandler(message);
         });
+
+        /* Test purpose */
+        this.http.post('api/signin', JSON.stringify({'username': 'swpp', 'password': 'swpp'}), {headers: new Headers({'Content-Type': 'application/json'})})
+            .toPromise()
+            .then(() => { 
+                this.openDocument(1);
+                this.getBubbleList();
+                this._createBubble(1, 0, 'this is new bubble');
+                this.closeDocument(1);
+            }
+        );
+
         if (USE_MOCK) {
             this._getBubbleList().then(bubbleList => {
                 this.bubbleList = bubbleList;
@@ -46,32 +60,44 @@ export class BubbleService {
         // TODO: check if data has appropriate elements
         let command = data.header;
         let accept = data.accept;
-        let text = data.text;
+        let body = data.body;
 
         if (command === 'open_document') {
             if (accept === 'True') {
-                this.currentDocumentId = Number(text.document_id);
+                console.log('received open_document success');
+                this.currentDocumentId = Number(body.document_id);
                 // call whatever function that starts up document_detail page setting
             } else {
+                console.log('received open_document fail');
                 // call whatever funtion that waits to start up document_detail page
                 // and let it know it has failed
             }
         } else if (command === 'close_document') {
             if (accept === 'True') {
+                console.log('received close_document success');
                 this.currentDocumentId = 0;
             } else {
+
+                console.log('received close_document fail');
                 // TODO: decide whether to send it again or not
             }
         } else if (command === 'get_bubble_list') {
             if (accept === 'True') {
-                this.bubbleList = text.content;
+                //this.bubbleList = body.content;
+                console.log('received get_bubble_list success');
+                console.log(body.content);
+
             } else {
                 // TODO: decide what to do
+                console.log('received get_bubble_list fail');
             }
         } else if (command === 'create_bubble') {
             if (accept === 'True') {
                 // change bubbleslist and push it into appropriate Subject<Bubble> 
+                console.log('received create_bubble success');
             } else {
+
+                console.log('received create_bubble fail');
                 // TODO: if it is THIS user that has sent the request,
                 // (need to distinguish!!! maybe we need to add user_id field)
                 // tell user it has failed by calling whatever function
@@ -80,14 +106,33 @@ export class BubbleService {
     }
     
     public openDocument(documentId) {
-        const m: String  = JSON.stringify({'header': 'open_document', 
-                'text': {'document_id': documentId.toString()}});
+        const m: string  = JSON.stringify({'text':
+                {'header': 'open_document', 
+                'body': {'document_id': documentId.toString()}}});
+        console.log('send open_document');
         this.socket.send(m);
     }
 
     public closeDocument(documentId) {
-        const m: String = JSON.stringify({'header': 'close_document', 
-                'text': {'document_id': documentId.toString()}});
+        const m: string = JSON.stringify({'text':
+                {'header': 'close_document', 
+                'body': {'document_id': documentId.toString()}}});
+        this.socket.send(m);
+    }
+
+    public getBubbleList() {
+        const m: string = JSON.stringify({'text':
+                {'header': 'get_bubble_list',
+                'body': {'empty': 'empty'}}});
+        this.socket.send(m);
+    }
+
+    public _createBubble(parentId: number, loc: number, content: string) {
+        const m: string = JSON.stringify({'text':
+                {'header': 'create_bubble',
+                'body': {'parent': parentId.toString(), 
+                'location': loc.toString(),
+                'content': content}}});
         this.socket.send(m);
     }
 
