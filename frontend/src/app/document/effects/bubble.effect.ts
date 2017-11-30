@@ -72,6 +72,31 @@ export class BubbleEffects {
         .catch(err => of(new fromBubble.EditError(err)));
     });
 
+  @Effect()
+  wrap$: Observable<Action> = this.action$.ofType<fromBubble.Wrap>(fromBubble.WRAP)
+    .map(action => action.payload).mergeMap(query => {
+      return Observable.fromPromise(this.bubbleService.wrapBubble(query))
+        .map(() => new fromBubble.WrapComplete(query))
+        .catch(err => of(new fromBubble.WrapError(err)));
+    });
+
+  @Effect()
+  merge$: Observable<Action> = this.action$.ofType<fromBubble.Merge>(fromBubble.MERGE)
+    .map(action => action.payload).mergeMap(query => {
+      return Observable.fromPromise(this.bubbleService.mergeBubble(query))
+        .map(() => new fromBubble.MergeComplete(query))
+        .catch(err => of(new fromBubble.MergeError(err)));
+    });
+
+  @Effect()
+  split$: Observable<Action> = this.action$.ofType<fromBubble.Split>(fromBubble.SPLIT)
+    .map(action => action.payload).mergeMap(query => {
+      return Observable.fromPromise(this.bubbleService.splitBubble(query))
+        .map(() => new fromBubble.SplitComplete(query))
+        .catch(err => of(new fromBubble.SplitError(err)));
+    });
+
+
   constructor(
     private action$: Actions,
     private bubbleService: BubbleService
