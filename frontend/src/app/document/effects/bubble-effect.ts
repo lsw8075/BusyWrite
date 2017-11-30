@@ -18,7 +18,7 @@ import 'rxjs/add/observable/of';
 import 'rxjs/observable/of';
 import 'rxjs/add/observable/fromPromise';
 
-import * as fromBubble from '../actions/bubble.action';
+import * as fromBubble from '../actions/bubble-action';
 import { Bubble, BubbleType, InternalBubble, LeafBubble, SuggestBubble } from '../models/bubble';
 
 import { BubbleService } from '../services/bubble.service';

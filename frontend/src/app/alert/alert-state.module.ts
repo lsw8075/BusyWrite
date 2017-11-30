@@ -4,7 +4,6 @@ import { CommonModule } from '@angular/common';
 
 import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
-import { StoreRouterConnectingModule } from '@ngrx/router-store';
 
 // Reducers
 // import { reducers } from './index';
@@ -22,11 +21,10 @@ import { AlertService } from './services/alert.service';
   imports: [
     CommonModule,
     HttpModule,
-    // StoreModule.forRoot(reducers),
-    // EffectsModule.forRoot([
-    //   BubbleEffects
+    // StoreModule.forFeature('alert', AlertReducer),
+    // EffectsModule.forFeature([
+    //   AlertEffects
     // ]),
-    StoreRouterConnectingModule,
     AlertPageModule
   ],
   declarations: [],

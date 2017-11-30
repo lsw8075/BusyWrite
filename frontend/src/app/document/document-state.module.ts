@@ -7,11 +7,13 @@ import { EffectsModule } from '@ngrx/effects';
 import { StoreRouterConnectingModule } from '@ngrx/router-store';
 
 // Reducers
-import { reducers } from './index';
+import { BubbleReducer } from './reducers/reducer';
 
 // Effects
-import { BubbleEffects } from './effects/bubble.effect';
+import { BubbleEffects } from './effects/bubble-effect';
 
+
+// Module
 import { DocumentDetailPageModule } from './components/document-detail-page.module';
 
 // services
@@ -28,11 +30,10 @@ import { DocumentService } from './services/document.service';
   imports: [
     CommonModule,
     HttpModule,
-    StoreModule.forRoot(reducers),
-    EffectsModule.forRoot([
+    StoreModule.forFeature('bubble', BubbleReducer),
+    EffectsModule.forFeature([
       BubbleEffects
     ]),
-    StoreRouterConnectingModule,
     DocumentDetailPageModule
   ],
   declarations: [],

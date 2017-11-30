@@ -4,46 +4,57 @@ import { NgModule } from '@angular/core';
 import { HttpModule } from '@angular/http';
 import { FormsModule } from '@angular/forms';
 import { APP_BASE_HREF } from '@angular/common';
-
-import { AppComponent } from './app.component';
-
-import { LandingComponent } from './shared/components/landing/landing.component';
-
-import { AppRoutingModule } from './shared/route/app-routing.module';
+import { RouterModule, Routes } from '@angular/router';
 
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
-import { StoreRouterConnectingModule } from '@ngrx/router-store';
+import { StoreRouterConnectingModule, RouterStateSerializer } from '@ngrx/router-store';
+import { StoreModule } from '@ngrx/store';
+import { EffectsModule } from '@ngrx/effects';
 
-import { DocumentStateModule } from './document/document-state.module';
-import { AuthenticationStateModule } from './auth/auth-state.module';
-import { AlertStateModule } from './alert/alert-state.module';
-import { MainStateModule } from './file/main-state.module';
+import { AppComponent } from './app.component';
+import { LandingComponent } from './shared/components/landing/landing.component';
+import { NavbarComponent } from './shared/components/navbar/navbar.component';
+
+import { reducers, CustomSerializer } from './shared/reducer';
+import { RouterEffects } from './shared/route/route-effect';
+
+const routes: Routes = [
+    { path: '', redirectTo: 'users/signin', pathMatch: 'full' }, // for easy testing, temporary
+    { path: 'landing', pathMatch: 'full', component: LandingComponent },
+    { path: 'users', loadChildren: './user/user-state.module.ts#UserStateModule'},
+    { path: 'documents', loadChildren: './document/document-state.module.ts#DocumentStateModule' },
+    { path: 'files', loadChildren: './file/file-state.module.ts#FileStateModule' },
+    { path: 'alerts', loadChildren: './alert/alert-state.module.ts#AlertStateModule' },
+    { path: '**', redirectTo: 'users/signin' }
+];
+
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    LandingComponent,
-  ],
-  imports: [
-    FormsModule,
-    AppRoutingModule,
-    BrowserModule,
-    BrowserAnimationsModule,
-    HttpModule,
-
-    StoreRouterConnectingModule,
-    StoreDevtoolsModule.instrument({
-      maxAge: 25 //  Retains last 25 states
-    }),
-
-    DocumentStateModule,
-    AuthenticationStateModule,
-    AlertStateModule,
-    MainStateModule
-  ],
-  providers: [
-    {provide: APP_BASE_HREF, useValue: '/'},
-  ],
+    declarations: [
+        AppComponent,
+        LandingComponent,
+        NavbarComponent
+    ],
+    imports: [
+        FormsModule,
+        BrowserModule,
+        BrowserAnimationsModule,
+        HttpModule,
+        RouterModule.forRoot(routes),
+        StoreModule.forRoot(reducers),
+        EffectsModule.forRoot([
+            RouterEffects
+        ]),
+        StoreDevtoolsModule.instrument({ maxAge: 25   }),
+        StoreRouterConnectingModule,
+    ],
+    providers: [
+        { provide: RouterStateSerializer, useClass: CustomSerializer },
+        { provide: APP_BASE_HREF, useValue: '/'},
+    ],
+    exports: [
+        StoreModule
+    ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

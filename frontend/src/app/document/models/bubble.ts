@@ -1,4 +1,6 @@
-import { Note, Comment, User } from '../index';
+import { Note } from './note';
+import { Comment } from './comment';
+import { User } from '../../user/models/user';
 
 export enum BubbleType {
   leafBubble,

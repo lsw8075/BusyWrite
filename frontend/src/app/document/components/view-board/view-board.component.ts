@@ -9,8 +9,11 @@ import { EventBubbleService } from '../../services/event/event-bubble.service';
 
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
-import { State } from '../../index';
-import * as BubbleAction from '../../actions/bubble.action';
+
+import * as fromDocument from '../../reducers/reducer';
+import * as BubbleAction from '../../actions/bubble-action';
+import * as RouterAction from '../../../shared/route/route-action';
+
 
 @Component({
   selector: 'app-view-board',
@@ -24,13 +27,13 @@ export class ViewBoardComponent implements OnInit {
   rootBubble$: Observable<Bubble>;
 
   constructor(
-      private _store: Store<State>,
+      private _store: Store<fromDocument.State>,
       private _boardService: BoardService,
       private _bubbleService: BubbleService,
       private _eventBubbleService: EventBubbleService) {
-        this.rootBubble$ = _store.select('bubble').map(bubble => bubble.rootBubble);
-        this._store.select('bubble').subscribe((bubble) => {
-    //      console.log(bubble);
+        this.rootBubble$ = _store.select(fromDocument.getBubbleState).map(bubbleState => bubbleState.rootBubble);
+        this._store.select(fromDocument.getBubbleState).subscribe((bubble) => {
+         console.log(bubble);
         });
   }
 

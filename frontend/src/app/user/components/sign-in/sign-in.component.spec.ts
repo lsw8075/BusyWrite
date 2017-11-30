@@ -5,22 +5,23 @@ import { NgForm } from '@angular/forms';
 import { DebugElement } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
-import { SigninComponent } from './signin.component';
-import { AuthenticationService } from '../service/authentication.service';
+import { SignInComponent } from './sign-in.component';
 
 @Component({
   selector: 'app-navigation',
   template: `<p>app-navigation</p>`
 })
-class MockNavigationComponent { }
+class MockNavigationComponent {
+
+}
 
 class MockAuthenticationService { // extends UserService ?
   public userLogin(inputVal: any): void { }
 }
 
 describe('SignInComponent', () => {
-  let component: SigninComponent;
-  let fixture: ComponentFixture<SigninComponent>;
+  let component: SignInComponent;
+  let fixture: ComponentFixture<SignInComponent>;
   let mockService: AuthenticationService;
   let button: HTMLButtonElement;
   let emailInput: HTMLInputElement;
@@ -28,15 +29,13 @@ describe('SignInComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ SigninComponent, MockNavigationComponent ],
-      imports: [ FormsModule, RouterTestingModule ],
-      providers: [{provide: AuthenticationService, useClass: MockAuthenticationService}],
+      declarations: [ SignInComponent, MockNavigationComponent ],
+      imports: [ FormsModule, RouterTestingModule ]
     })
     .compileComponents()
     .then(() => {
-      fixture = TestBed.createComponent(SigninComponent);
+      fixture = TestBed.createComponent(SignInComponent);
       component = fixture.componentInstance;
-      mockService = TestBed.get(AuthenticationService);
       button = fixture.debugElement.nativeElement.querySelector('button');
       emailInput = fixture.debugElement.nativeElement.querySelector('input[type=email]');
       passwordInput = fixture.debugElement.nativeElement.querySelector('input[type=password]');

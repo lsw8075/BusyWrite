@@ -2,8 +2,8 @@
   <p-tabPanel header="Edit">
     <div *ngIf="editItems">
       <accordion>
-        <div class='container' [dragula]='"note-bag"' [dragulaModel]='notes'>
-          <div *ngFor="let editItem of editItems">
+        <ng-container class='container' [dragula]='"note-bag"' [dragulaModel]='notes'>
+          <ng-container *ngFor="let editItem of editItems">
             <accordion-group #group>
                 <div accordion-heading>
                   <span class="badge badge-pill badge-info">
@@ -20,8 +20,8 @@
                 </div>
                 <app-edit-item (update)="updateEditItem(editItem)" (focus)="focusEditItem(editItem, $event)" [editItem]="editItem"></app-edit-item>
             </accordion-group>
-          </div>
-        </div>
+          </ng-container>
+        </ng-container>
       </accordion>
     </div>
   </p-tabPanel>

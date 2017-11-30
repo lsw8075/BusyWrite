@@ -6,8 +6,11 @@ import { EventBubbleService, BoardService } from '../service';
 
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
-import { State } from '../../../index';
-import * as BubbleAction from '../../../actions/bubble.action';
+
+import * as fromDocument from '../../../reducers/reducer';
+import * as BubbleAction from '../../../actions/bubble-action';
+import * as RouterAction from '../../../../shared/route/route-action';
+
 
 @Component({
   selector: 'app-bubble-list-view',
@@ -24,11 +27,11 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
   selectedMenu: MenuType;
 
   constructor(
-    private _store: Store<State>,
+    private _store: Store<fromDocument.State>,
     private _bubbleService: BubbleService,
     private _eventBubbleService: EventBubbleService,
     private _boardService: BoardService) {
-      this._store.select('bubble').subscribe(bubble => {
+      this._store.select(fromDocument.getBubbleState).subscribe(bubble => {
         this.selectedBubble = bubble.selectedBubble;
         this.selectedMenu = bubble.selectedMenu;
       });

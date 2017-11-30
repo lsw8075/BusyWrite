@@ -13,7 +13,11 @@ const c8: Comment = new Comment(8, '8th comment', null);
 
 const sb1: SuggestBubble = new SuggestBubble(1, '1st suggest bubble', [c1, c2]);
 const sb2: SuggestBubble = new SuggestBubble(2, '2nd suggest bubble', [c3]);
-const sb3: SuggestBubble = new SuggestBubble(3, 'BusyWrite helps you organize new ideas. New ideas are important, but they result in lots of changes. Accepting new ideas is hostile, as it is unknown what revisions are needed and how many. BusyWrite shows users new ideas in a sidebar. It shows each idea with parts that are subject to change: lines, paragraphs and even other ideas!', [c5, c4]);
+const sb3: SuggestBubble = new SuggestBubble(3,
+'BusyWrite helps you organize new ideas. New ideas are important, but they result in lots of changes. \
+Accepting new ideas is hostile, as it is unknown what revisions are needed and how many. BusyWrite shows \
+users new ideas in a sidebar. It shows each idea with parts that are subject to change: lines, paragraphs \
+and even other ideas!', [c5, c4]);
 const sb4: SuggestBubble = new SuggestBubble(4, '4th suggest bubble', []);
 const sb5: SuggestBubble = new SuggestBubble(5, 'http://busywrite.ribosome.kr', []);
 

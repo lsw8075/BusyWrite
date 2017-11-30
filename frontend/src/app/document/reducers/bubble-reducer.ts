@@ -3,7 +3,7 @@ import { Action } from '@ngrx/store';
 import { Bubble, BubbleType, InternalBubble, LeafBubble } from '../models/bubble';
 import { MenuType } from '../services/event/event-bubble.service';
 
-import * as fromBubble from '../actions/bubble.action';
+import * as fromBubble from '../actions/bubble-action';
 
 export interface BubbleState {
   rootBubble: InternalBubble;

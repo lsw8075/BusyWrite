@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { DragulaService } from 'ng2-dragula/ng2-dragula';
 
 import { Note, NoteService, Bubble, BoardService, EditItem } from './service';
@@ -10,7 +10,7 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
   templateUrl: './edit-board.component.html',
   styleUrls: ['./edit-board.component.css']
 })
-export class EditBoardComponent implements OnInit {
+export class EditBoardComponent implements OnInit, OnDestroy {
 
   notes: Array<Note>;
   editItems: Array<EditItem>;
@@ -19,8 +19,8 @@ export class EditBoardComponent implements OnInit {
     private _dragulaService: DragulaService,
     private _noteService: NoteService,
     private _boardService: BoardService,
-    private _eventBubbleService: EventBubbleService
-  ) { }
+    private _eventBubbleService: EventBubbleService) {
+  }
 
   ngOnInit() {
     this._getNotes();
@@ -72,6 +72,10 @@ export class EditBoardComponent implements OnInit {
     this._noteService.updateNote(note).then(response => {
       console.log('note changed!');
     });
+  }
+
+  ngOnDestroy() {
+    this._dragulaService.destroy('note-bag');
   }
 
   public toComment(note: Note) {

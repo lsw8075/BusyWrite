@@ -1,4 +1,4 @@
-import { User } from '../index';
+import { User } from '../../user/models/user';
 
 export class Comment {
   id: number;

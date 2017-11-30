@@ -1,5 +1,6 @@
 import { Action } from '@ngrx/store';
-import { Bubble, MenuType } from '../index';
+import { Bubble } from '../models/bubble';
+import { MenuType } from '../services/event/event-bubble.service';
 
 export const LOAD = '[Bubble] Load';
 export const LOAD_COMPLETE = '[Bubble] load Complete';

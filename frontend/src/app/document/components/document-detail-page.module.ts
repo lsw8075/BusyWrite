@@ -1,9 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpModule } from '@angular/http';
 import { FormsModule } from '@angular/forms';
-import { BrowserModule } from '@angular/platform-browser';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { RouterModule, Routes } from '@angular/router';
 
 import { DocumentDetailPageComponent } from './document-detail-page.component';
 
@@ -46,6 +44,10 @@ import { ButtonModule } from 'primeng/primeng';
 import { EditorModule } from 'primeng/primeng';
 import { DialogModule } from 'primeng/primeng';
 
+const routes: Routes = [
+    {path: '', component: DocumentDetailPageComponent},
+];
+
 @NgModule({
   declarations: [
     DocumentDetailPageComponent,
@@ -70,11 +72,9 @@ import { DialogModule } from 'primeng/primeng';
     StopHoverPropagationDirective
   ],
   imports: [
-    BrowserModule,
-    BrowserAnimationsModule,
-    HttpModule,
     FormsModule,
     CommonModule,
+    RouterModule.forChild(routes),
     TabViewModule,
     BsDropdownModule.forRoot(),
     ButtonModule,

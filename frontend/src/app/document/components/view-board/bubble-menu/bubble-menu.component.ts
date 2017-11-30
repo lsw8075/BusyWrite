@@ -10,8 +10,11 @@ import { SplitBubbleComponent } from '../split-bubble/split-bubble.component';
 
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
-import { State } from '../../../index';
-import * as BubbleAction from '../../../actions/bubble.action';
+
+import * as fromDocument from '../../../reducers/reducer';
+import * as BubbleAction from '../../../actions/bubble-action';
+import * as RouterAction from '../../../../shared/route/route-action';
+
 
 @Component({
   selector: 'app-bubble-menu',
@@ -28,7 +31,7 @@ export class BubbleMenuComponent implements OnInit {
 
 
   constructor(
-    private _store: Store<State>,
+    private _store: Store<fromDocument.State>,
     private _bubbleSerivce: BubbleService,
     private _eventBubbleService: EventBubbleService,
     private _modalService: BsModalService) {
@@ -68,7 +71,7 @@ export class BubbleMenuComponent implements OnInit {
 
   public createBubble() {
     const bubble = this.bubble;
-    const menu = this.menu
+    const menu = this.menu;
     this._store.dispatch(new BubbleAction.Create({bubble, menu}));
   }
 
