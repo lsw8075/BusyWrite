@@ -1,10 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { DocumentService } from './service';
+import { BubbleService } from '../services/bubble.service';
+import { ServerSocket } from '../services/websocket.service';
 
 @Component({
   selector: 'app-document-detail-page',
   templateUrl: './document-detail-page.component.html',
-  styleUrls: ['./document-detail-page.component.css']
+  styleUrls: ['./document-detail-page.component.css'],
+  providers: [ ServerSocket, BubbleService ],
 })
 
 export class DocumentDetailPageComponent implements OnInit {
@@ -12,6 +15,7 @@ export class DocumentDetailPageComponent implements OnInit {
   documentTitle = '';
   shouldShowTitleError = false;
   displayTitleEditDialog = false;
+
 
   constructor(
     private _documentService: DocumentService

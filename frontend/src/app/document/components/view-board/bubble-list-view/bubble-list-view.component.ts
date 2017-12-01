@@ -157,11 +157,6 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
   }
 
   private _refreshBubbleList() {
-    this._bubbleService.getRootBubble().then(rootBubble => {
-      rootBubble.clearMouseEvent();
-      this.rootBubble = rootBubble;
-      console.log('bubble list refreshed');
-    });
   }
 
   ngOnDestroy() {

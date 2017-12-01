@@ -25,7 +25,7 @@ SECRET_KEY = '3eo_an-r@r9$b89k7-=b$t3q7teb$)0+48ir2y^i7@#r7kc5_='
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['ec2-18-216-199-179.us-east-2.compute.amazonaws.com']
 
 
 # Application definition
@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 	'channels',
+    'django_extensions',
 ]
 
 CHANNEL_LAYERS = {

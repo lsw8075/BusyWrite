@@ -10,6 +10,7 @@ matrix:
         - pip install django coverage coveralls
         - pip install -U channels
         - pip install -U asgi_redis
+        - pip install django_extensions
       before_script:
         - cd backend
         - python3 manage.py migrate
@@ -41,6 +42,8 @@ matrix:
         - npm install
         - npm install coveralls
         - npm install -g @angular/cli
+        - npm install -S angular2-websocket-service
+        - npm install -S queueing-subject
       script:
         - ng test --code-coverage --watch false
         - ng e2e

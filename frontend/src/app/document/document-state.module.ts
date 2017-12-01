@@ -25,6 +25,8 @@ import { NoteService } from './services/note.service';
 import { EventBubbleService } from './services/event/event-bubble.service';
 import { EventSangjunBoardService } from './services/event/event-sangjun-board.service';
 import { DocumentService } from './services/document.service';
+import { WebSocketService } from 'angular2-websocket-service';
+import { ServerSocket } from './services/websocket.service';
 
 @NgModule({
   imports: [
@@ -49,6 +51,8 @@ import { DocumentService } from './services/document.service';
     EventBubbleService,
     EventSangjunBoardService,
     DocumentService,
+    WebSocketService,
+    ServerSocket,
   ]
 })
 export class DocumentStateModule { }

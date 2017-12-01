@@ -16,21 +16,9 @@ export class PreviewComponent implements OnInit {
   constructor(
     private _boardService: BoardService,
     private _bubbleService: BubbleService) {
-
-    _boardService.previewUpdateEvent$.subscribe(() => {
-      this.refreshList();
-    });
   }
 
   ngOnInit() {
-    this.refreshList();
-  }
-
-  public refreshList() {
-      this._bubbleService.getRootBubble().then(rootBubble => {
-      console.log('preview updated');
-      this.rootBubble = rootBubble;
-    });
   }
 
 } /* istanbul ignore next */

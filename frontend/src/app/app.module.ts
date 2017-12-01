@@ -14,7 +14,6 @@ import { EffectsModule } from '@ngrx/effects';
 import { AppComponent } from './app.component';
 import { LandingComponent } from './shared/components/landing/landing.component';
 import { NavbarComponent } from './shared/components/navbar/navbar.component';
-
 import { reducers, CustomSerializer } from './shared/reducer';
 import { RouterEffects } from './shared/route/route-effect';
 
@@ -55,6 +54,6 @@ const routes: Routes = [
     exports: [
         StoreModule
     ],
-  bootstrap: [AppComponent]
+    bootstrap: [AppComponent]
 })
 export class AppModule { }
