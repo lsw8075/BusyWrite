@@ -27,3 +27,5 @@ def mockDBSetup(m):
     m.suggest1 = create_suggest(m.bubble1,'TestSuggest1')
     m.suggest2 = create_suggest(m.bubble2,'TestSuggest2')
 
+    m.bubble7 = create_normal(m.doc2,'TestBubble2-1',m.doc2root,0)
+    m.bubble8 = create_normal(m.doc2,'TestBubble2-2',m.doc2root,1)
