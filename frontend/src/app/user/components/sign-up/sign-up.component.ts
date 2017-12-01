@@ -22,7 +22,7 @@ export class SignUpComponent implements OnInit {
 
   public onSubmit(f: NgForm): void {
     if (f.valid) {
-      const inputValue: {name: string, username: string, password: string} = f.value;
+      const inputValue: {username: string, password: string} = f.value;
       this._store.dispatch(new UserAction.SignUp(inputValue));
     }
     console.log(f.value);

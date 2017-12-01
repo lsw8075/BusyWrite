@@ -49,7 +49,6 @@ export class RedirectSignUp implements Action {
 export class SignUp implements Action {
     readonly type = SIGNUP;
     constructor(public payload: {
-        name: string,
         username: string,
         password: string}) {}
 }

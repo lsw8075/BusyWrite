@@ -29,15 +29,10 @@ export class BubbleService {
         });
 
         /* Test purpose */
-        this.http.post('api/signin', JSON.stringify({'username': 'swpp', 'password': 'swpp'}), {headers: new Headers({'Content-Type': 'application/json'})})
-            .toPromise()
-            .then(() => { 
-                this.openDocument(1);
-                this.getBubbleListMine();
-                this._createBubble(1, 0, 'this is new bubble');
-                this.closeDocument(1);
-            }
-        );
+        this.openDocument(1);
+        this.getBubbleListMine();
+        this._createBubble(1, 0, 'this is new bubble');
+        this.closeDocument(1);
 
         if (USE_MOCK) {
             this._getBubbleList().then(bubbleList => {
@@ -45,13 +40,13 @@ export class BubbleService {
             });
         }
     }
-    
+
     ngOnDestroy() {
         this.socketSubscription.unsubscribe();
     }
 
     channelMessageHandler(msg) {
-    
+
         let data = JSON.parse(msg);
         // TODO: check if data has appropriate elements
         let command = data.header;
@@ -89,7 +84,7 @@ export class BubbleService {
             }
         } else if (command === 'create_bubble') {
             if (accept === 'True') {
-                // change bubbleslist and push it into appropriate Subject<Bubble> 
+                // change bubbleslist and push it into appropriate Subject<Bubble>
                 console.log('received create_bubble success');
             } else {
 
@@ -100,10 +95,10 @@ export class BubbleService {
             }
         }
     }
-    
+
     public openDocument(documentId) {
         const m: string  = JSON.stringify({'text':
-                {'header': 'open_document', 
+                {'header': 'open_document',
                 'body': {'document_id': documentId.toString()}}});
         console.log('send open_document');
         this.socket.send(m);
@@ -111,7 +106,7 @@ export class BubbleService {
 
     public closeDocument(documentId) {
         const m: string = JSON.stringify({'text':
-                {'header': 'close_document', 
+                {'header': 'close_document',
                 'body': {'document_id': documentId.toString()}}});
         this.socket.send(m);
     }
@@ -126,7 +121,7 @@ export class BubbleService {
     public _createBubble(parentId: number, loc: number, content: string) {
         const m: string = JSON.stringify({'text':
                 {'header': 'create_bubble',
-                'body': {'parent': parentId.toString(), 
+                'body': {'parent': parentId.toString(),
                 'location': loc.toString(),
                 'content': content}}});
         this.socket.send(m);

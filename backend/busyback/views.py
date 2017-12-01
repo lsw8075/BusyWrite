@@ -44,6 +44,7 @@ def signout(request):
 
 @ensure_csrf_cookie
 def token(request):
+    print('got token')
     if request.method == 'GET':
         return HttpResponse(status=204)
     else:
