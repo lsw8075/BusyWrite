@@ -8,8 +8,8 @@ import 'rxjs/add/operator/share';
 @Injectable()
 export class ServerSocket {
 
-    private inputStream: QueueingSubject<String>;
-    public outputStream: Observable<String>;
+    private inputStream: QueueingSubject<any>;
+    public outputStream: Observable<any>;
 
     constructor(private socketFactory: WebSocketService) {}
 
@@ -17,14 +17,16 @@ export class ServerSocket {
         if (this.outputStream) {
             return this.outputStream;
         }
-
+        
+        console.log("connecting websocket...");
         return this.outputStream = this.socketFactory.connect(
                 'ws://localhost:8000',
-                this.inputStream = new QueueingSubject<String>()
+                this.inputStream = new QueueingSubject<any>()
         ).share();
     }
 
-    public send (message: String): void {
+    public send (message: any): void {
         this.inputStream.next(message);
+        console.log("send message: ", message);
     }
 }

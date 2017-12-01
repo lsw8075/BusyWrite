@@ -4,14 +4,19 @@ import { MockBubbleRoot, MockBubbleList } from '../models/bubble.mock';
 import { Subscription } from 'rxjs/Subscription';
 import { ServerSocket } from './websocket.service';
 
+import { Store } from '@ngrx/store';
 import { Headers, Http } from '@angular/http';
 
 import 'rxjs/add/operator/toPromise';
 import { MenuType } from './event/event-bubble.service';
 
+import * as Reducer from '../reducers/reducer';
+import * as BubbleAction from '../actions/bubble-action';
+
 let USE_MOCK = true;
 let tempId = 30; // to be deleted after backend implemented
 const tempUserId = 1;
+
 @Injectable()
 export class BubbleService {
 
@@ -20,9 +25,12 @@ export class BubbleService {
     private bubbleList: Array<Bubble> = [];
     private bubbleRoot: InternalBubble;
 
-    constructor(private socket: ServerSocket, private http: Http)  {
-        const stream = this.socket.connect();
-
+    constructor(
+            private _store: Store<Reducer.State>,
+            private _socket: ServerSocket, 
+            private _http: Http)  {
+        const stream = this._socket.connect();
+        console.log(stream);
         this.socketSubscription = stream.subscribe(message => {
                 console.log('recevied message from server: ', message);
                 this.channelMessageHandler(message);
@@ -47,7 +55,9 @@ export class BubbleService {
 
     channelMessageHandler(msg) {
 
-        let data = JSON.parse(msg);
+        console.log(msg);
+        let data = msg;
+        //let data = JSON.parse(msg);
         // TODO: check if data has appropriate elements
         let command = data.header;
         let accept = data.accept;
@@ -74,6 +84,8 @@ export class BubbleService {
             }
         } else if (command === 'get_bubble_list') {
             if (accept === 'True') {
+                // TODO: convert content into bubble list
+                //this._store.dispatch(new BubbleAction.LoadComplete(bubble))
                 //this.bubbleList = body.content;
                 console.log('received get_bubble_list success');
                 console.log(body.content);
@@ -97,34 +109,30 @@ export class BubbleService {
     }
 
     public openDocument(documentId) {
-        const m: string  = JSON.stringify({'text':
-                {'header': 'open_document',
-                'body': {'document_id': documentId.toString()}}});
+        const m = {'header': 'open_document',
+                'body': {'document_id': documentId.toString()}};
         console.log('send open_document');
-        this.socket.send(m);
+        this._socket.send(m);
     }
 
     public closeDocument(documentId) {
-        const m: string = JSON.stringify({'text':
-                {'header': 'close_document',
-                'body': {'document_id': documentId.toString()}}});
-        this.socket.send(m);
+        const m = {'header': 'close_document',
+                'body': {'document_id': documentId.toString()}};
+        this._socket.send(m);
     }
 
     public getBubbleListMine() {
-        const m: string = JSON.stringify({'text':
-                {'header': 'get_bubble_list',
-                'body': {'empty': 'empty'}}});
-        this.socket.send(m);
+        const m = {'header': 'get_bubble_list',
+                'body': {'empty': 'empty'}};
+        this._socket.send(m);
     }
 
     public _createBubble(parentId: number, loc: number, content: string) {
-        const m: string = JSON.stringify({'text':
-                {'header': 'create_bubble',
+        const m = {'header': 'create_bubble',
                 'body': {'parent': parentId.toString(),
                 'location': loc.toString(),
-                'content': content}}});
-        this.socket.send(m);
+                'content': content}};
+        this._socket.send(m);
     }
 
   public getBubbleList(): Promise<Array<Bubble>> {
