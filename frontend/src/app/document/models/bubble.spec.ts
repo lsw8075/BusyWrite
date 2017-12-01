@@ -305,4 +305,3 @@ describe('RootBubble', () => {
 
 describe('SuggestBubble', () => {
 });
-

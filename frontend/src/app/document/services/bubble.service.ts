@@ -24,7 +24,7 @@ export class BubbleService {
         const stream = this.socket.connect();
 
         this.socketSubscription = stream.subscribe(message => {
-                console.log('recevied message from server: ', message)
+                console.log('recevied message from server: ', message);
                 this.channelMessageHandler(message);
         });
 
