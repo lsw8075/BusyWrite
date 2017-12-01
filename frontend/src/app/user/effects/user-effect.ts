@@ -15,6 +15,7 @@ import { async } from 'rxjs/scheduler/async';
 import { empty } from 'rxjs/observable/empty';
 import 'rxjs/add/observable/of';
 import 'rxjs/add/observable/fromPromise';
+import { Http, Headers } from '@angular/http';
 
 import * as UserModel from '../models/user';
 import * as fromUser from '../actions/user-action';
@@ -23,13 +24,30 @@ import { InjectSetupWrapper } from '@angular/core/testing';
 
 @Injectable()
 export class UserEffects {
+
+    private signInUrl = '/api/signin';
+    private signUpUrl = '/api/signup';
+    private signOutUrl = '/api/signout';
+    private tokenUrl = '/api/token';
+
+    private headers = new Headers({'Content-Type': 'application/json'});
+
     @Effect()
     signin$: Observable<Action> = this.action$.ofType<fromUser.SignIn>(fromUser.SIGNIN)
-        .map(action => action.payload).mergeMap(query => {
-            const tempUser: UserModel.User = new UserModel.User(1, 'swpp@snu.ac.kr', 'iluvswpp');
-            console.log('signin');
-            return Observable.of(new fromUser.SignInSuccess(tempUser));
-    });
+        .map(action => action.payload).mergeMap(query =>
+            this._http
+            .get(this.tokenUrl).toPromise()
+            .then(() => this.headers.append('X-CSRFToken', this.getCookie('csrftoken')))
+            .then(() =>  this._http.post(this.signInUrl, JSON.stringify(query), {headers: this.headers}).toPromise()
+            .then(res => res.status))
+            .then(status => {
+                if (status === 403) {
+                    return (new fromUser.SignInFail('username or password is wrong'));
+                } else if (status === 200) {
+                    return (new fromUser.SignInSuccess(null));
+                }
+            })
+    );
 
     @Effect()
     signinSuccess$: Observable<Action> = this.action$.ofType<fromUser.SignInSuccess>(fromUser.SIGNIN_SUCCESS)
@@ -46,8 +64,9 @@ export class UserEffects {
     @Effect()
     signup$: Observable<Action> = this.action$.ofType<fromUser.SignUp>(fromUser.SIGNUP)
         .map(action => action.payload).mergeMap(query =>
-            Observable.of(new fromRouter.GoByUrl('users/signin'))
-        );
+            this._http.get(this.signOutUrl).toPromise().then(response => response.status).then(status => {
+                return new fromRouter.GoByUrl('users/signin');
+        }));
 
     @Effect()
     signout$: Observable<Action> = this.action$.ofType<fromUser.SignOut>(fromUser.SIGNOUT)
@@ -55,6 +74,15 @@ export class UserEffects {
             Observable.of(new fromRouter.GoByUrl('users/signin'))
         );
 
+    getCookie(name) {
+        const value = ';' + document.cookie;
+        const parts = value.split(';' + name + '=');
+        if (parts.length === 2) {
+            return parts.pop().split(';').shift();
+        }
+    }
+
   constructor(
-    private action$: Actions) {}
+    private action$: Actions,
+    private _http: Http) {}
 }

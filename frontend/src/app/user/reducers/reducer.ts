@@ -11,5 +11,5 @@ export { UserReducer };
 
 export const getUserState = createFeatureSelector<UserState>('agent');
 
-export const getUser = createSelector(getUserState,
-    (state: UserState) => state.user);
+export const getSignedIn = createSelector(getUserState,
+    (state: UserState) => state.signedIn);

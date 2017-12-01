@@ -16,7 +16,7 @@ export class NavbarComponent implements OnInit {
     isLoggedIn: Observable<boolean>;
 
     constructor(private _store: Store<fromRoot.State>) {
-        this.isLoggedIn = this._store.select(fromRoot.getUserState).map(userState => userState.user !== null);
+        this.isLoggedIn = this._store.select(fromRoot.getUserState).map(userState => userState.signedIn);
     }
 
     ngOnInit() { }

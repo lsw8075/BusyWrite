@@ -2,13 +2,13 @@ import * as fromUser from '../actions/user-action';
 import { User } from '../models/user';
 
 export interface UserState {
-    user: User;
+    signedIn: boolean;
     loading: boolean;
     error: string;
 }
 
 export const initialState: UserState = {
-    user: null,
+    signedIn: false,
     loading: false,
     error: '',
 };
@@ -20,11 +20,11 @@ export function UserReducer(state = initialState, action: any): UserState {
     case fromUser.SIGNIN:
         return {...state, loading: true};
     case fromUser.SIGNIN_SUCCESS:
-        return {...state, loading: false, user: action.payload};
+        return {...state, loading: false, signedIn: true};
     case fromUser.SIGNIN_FAIL:
         return {...state, loading: false, error: action.payload};
     case fromUser.SIGNOUT:
-        return {...state, loading: false, user: null};
+        return {...state, loading: false, signedIn: false};
     default:
         return state;
   }

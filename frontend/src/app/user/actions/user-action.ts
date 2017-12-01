@@ -56,7 +56,7 @@ export class SignUp implements Action {
 
 export class SignUpSuccess implements Action {
     readonly type = SIGNUP_SUCCESS;
-    constructor(public payload: User) {}
+    constructor(public payload ?: void) {}
 }
 
 export class SignUpFail implements Action {
