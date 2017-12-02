@@ -556,14 +556,27 @@ def do_switch_bubble(
     do_flatten_normal_bubble(user_id, document_id, binded_bubble.id)
 
     with transaction.atomic():
+        # switch content
         switch_content = suggest.content
         suggest.change_content(binded_bubble.content)
         binded_bubble.change_content(switch_content)
+
+        # switch voters
+        suggest_voters = []
+        binded_voters = []
+        for voter in suggest.voters.all():
+            suggest_voters.append(voter)
+            suggest.voters.remove(voter)
+        for voter in binded_bubble.voters.all():
+            binded_voters.append(voter)
+            binded_bubble.voters.remove(voter)
+        for voter in suggest_voters:
+            binded_bubble.voters.add(voter)
+        for voter in binded_voters:
+            suggest.voters.add(voter)
+
+        # TODO : switch comments
         suggest.save()
         binded_bubble.save()
-
-    # TODO : switch voters info
-
-
     return binded_bubble
 

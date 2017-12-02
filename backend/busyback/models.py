@@ -64,7 +64,6 @@ class Bubble(models.Model):
     )
 
     def touch(self):
-        timestamp = timezone.now()
         self.save()
 
     def change_content(self, content):

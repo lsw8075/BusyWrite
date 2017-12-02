@@ -3,7 +3,7 @@ from .models import *
 from .mock_db_setup import *
 from .errors import *
 from .bubbles import *
-from .debug import print_bubble_tree
+from .debug import *
 
 class BubblesTestCase(TestCase):
     
@@ -12,10 +12,10 @@ class BubblesTestCase(TestCase):
 
     def test_check_contributor(self):
         with self.assertRaises(UserIsNotContributorError):
-            check_contributor(self.user3.id, self.bubble1)
+            check_contributor(self.user1.id, self.doc2root)
         
         with self.assertRaises(UserIsNotContributorError):
-            check_suggest_contributor(self.user3.id, self.suggest1)
+            check_suggest_contributor(self.user3.id, self.suggest4)
 
         check_contributor(self.user1.id, self.bubble1)
         check_suggest_contributor(self.user1.id, self.suggest1)
@@ -238,6 +238,10 @@ class BubblesTestCase(TestCase):
         self.assertFalse(self.suggest1.is_voted_by(self.user1))
 
     def test_do_switch_bubble(self):
+
+        do_vote_bubble(self.user1.id, self.doc1.id, self.suggest1.id)
+        do_vote_bubble(self.user2.id, self.doc1.id, self.suggest1.id)
+
         do_switch_bubble(self.user1.id, self.doc1.id, self.suggest1.id)
         # reload it
         reload_bubbles(self, [1])
@@ -245,7 +249,20 @@ class BubblesTestCase(TestCase):
         self.assertEqual(self.bubble1.content, 'TestSuggest1')
         self.assertEqual(self.suggest1.content, 'TestBubble1')
 
+
+        do_vote_bubble(self.user1.id, self.doc1.id, self.suggest1.id)
+        do_vote_bubble(self.user3.id, self.doc1.id, self.suggest1.id)
+        do_switch_bubble(self.user1.id, self.doc1.id, self.suggest1.id)
+        reload_bubbles(self, [1])
+        reload_suggests(self, [1])
+
+        do_switch_bubble(self.user1.id, self.doc1.id, self.suggest1.id)
+
+        reload_bubbles(self, [1])
+        reload_suggests(self, [1])
+
         do_switch_bubble(self.user1.id, self.doc1.id, self.suggest2.id)
+  
         # reload it
         reload_bubbles(self, [2])
         reload_suggests(self, [2])

@@ -13,6 +13,7 @@ def mockDBSetup(m):
     m.doc2 = Document.objects.create(title='TestDoc2')
     m.doc1.contributors.add(m.user1)
     m.doc1.contributors.add(m.user2)
+    m.doc1.contributors.add(m.user3)
     m.doc2.contributors.add(m.user2)
 
     m.doc1root = create_normal(m.doc1)
@@ -32,6 +33,7 @@ def mockDBSetup(m):
 
     m.bubble7 = create_normal(m.doc2,'TestBubble2-1',m.doc2root,0)
     m.bubble8 = create_normal(m.doc2,'TestBubble2-2',m.doc2root,1)
+    m.suggest4 = create_suggest(m.bubble7,'TestSuggest4')
 
 def reload_bubbles(m, reload_list=None):
     if reload_list is None:
