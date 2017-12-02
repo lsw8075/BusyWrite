@@ -103,7 +103,6 @@ function _containsBubble(bubble: Bubble, bubbleList: Array<Bubble>): boolean {
 
 function getBubbleById(bubbleList: Array<Bubble>, id: number): Bubble {
   const bList = bubbleList.filter((bubble) => (bubble.id === id));
-    console.log(bubbleList, id);
   if (bList.length === 0) {
     throw new Error('Does not exist with this id');
   }
