@@ -58,7 +58,6 @@ class Note(models.Model):
 
 class Bubble(models.Model):
     content = models.TextField()
-    timestamp = models.DateTimeField()
     voters = models.ManyToManyField(
     	User,
     	related_name='voted_bubbles'
@@ -212,7 +211,7 @@ class NormalBubble(Bubble):
         for child in self.child_bubbles.all():
             if (location <= child.location and
                 child.location < splice_end):
-                child.location = -child.location
+                child.location = -child.location - 1
                 child.save()
 
         # adjust location (order is matter)
@@ -225,7 +224,7 @@ class NormalBubble(Bubble):
         for child in self.child_bubbles.all():
             if child.location < 0:
                 if new_parent is not None:
-                    child.location = -child.location - location + new_location
+                    child.location = -1 - child.location - location + new_location
                     child.parent_bubble = new_parent
                     child.save()
                 else:

@@ -2,14 +2,15 @@ from .models import *
 from .errors import *
 from .users import do_fetch_user
 from .documents import do_fetch_document
+from .debug import print_bubble_tree
 from django.utils import timezone
 from django.db import transaction
 
 def create_normal(doc, content='', parent=None, location=0):
-    return NormalBubble.objects.create(content=content, timestamp=timezone.now(), document=doc, location=location, parent_bubble=parent)
+    return NormalBubble.objects.create(content=content, document=doc, location=location, parent_bubble=parent)
 
 def create_suggest(bind, content):
-    return SuggestBubble.objects.create(content=content, timestamp=timezone.now(), normal_bubble=bind, hidden=False)
+    return SuggestBubble.objects.create(content=content, normal_bubble=bind, hidden=False)
 
 def check_contributor(user_id, bubble):
     '''Check user is contributor of document which bubble is located'''
@@ -81,15 +82,14 @@ def do_fetch_bubbles(
 
 def do_fetch_suggest_bubbles(
     user_id: int,
-    document_id: int
+    document_id: int,
+    bubble_id: int
     ):
-    document = do_fetch_document(user_id, document_id)
-    if not document.is_contributed_by(user_id):
-        raise UserIsNotContributorError(user_id, doc_id)
-    bubbles = NormalBubble.objects.filter(document=document)
-    if len(bubbles) == 0:
-        raise InternalError('Document %d has no bubble' % document_id)
-    suggests = SuggestBubble.objects.filter(normal_bubble=bubbles).values()
+    try:
+        bubble = NormalBubble.objects.get(id=bubble_id)
+    except:
+        raise BubbleDoesNotExistError(bubble_id)
+    suggests = SuggestBubble.objects.filter(normal_bubble=bubble).values()
     if len(suggests) == 0:
         return []
     suggests = list(suggests)
@@ -241,9 +241,10 @@ def do_move_normal_bubble(
     if new_parent.has_locked_ancestors() or new_parent.is_locked():
         raise BubbleLockedError(new_parent.id)
 
+    parent = bubble.parent_bubble
     with transaction.atomic():
-        bubble.parent_bubble.splice_children(bubble.location, 1, new_parent, new_location)
-
+        parent.splice_children(bubble.location, 1, new_parent, new_location)
+    
     return new_parent
 
 def cascaded_delete_children(user, bubble):

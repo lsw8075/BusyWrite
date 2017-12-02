@@ -75,7 +75,6 @@ class BubbleModelTestCase(TestCase):
             tleaf2.append(create_normal(self.doc1, 'Leaf 2-' + str(i), tinternal2, i))
             tleaf3.append(create_normal(self.doc1, 'Leaf 3-' + str(i), tinternal3, i))
         
-        print_bubble_tree(troot, 1)
 
         # do splice
         tinternal1.splice_children(2, 3, tinternal2, 3, tleafnew)
@@ -83,7 +82,6 @@ class BubbleModelTestCase(TestCase):
         # internal1: 10 11 A0 A1 A2 A3 A4 A5 15
         # internal2: 20 21 22 12 13 14 23 24 25
 
-        print_bubble_tree(troot, 1)
 
         # check internal 1
         self.assertEqual(tinternal1.fetch_child(1).id, tleaf1[1].id)
