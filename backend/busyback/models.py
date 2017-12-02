@@ -216,10 +216,10 @@ class NormalBubble(Bubble):
                 child.save()
 
         # adjust location (order is matter)
-        self.adjust_children_location(location + splice_count, len(splice_list) - splice_count)
+        self.adjust_children_location(splice_end, len(splice_list) - splice_count)
 
         if new_parent is not None:
-            self.adjust_children_location(new_location, splice_count)
+            new_parent.adjust_children_location(new_location, splice_count)
         
         # process target childrens
         for child in self.child_bubbles.all():
