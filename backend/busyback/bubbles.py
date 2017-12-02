@@ -12,6 +12,13 @@ def create_normal(doc, content='', parent=None, location=0):
 def create_suggest(bind, content):
     return SuggestBubble.objects.create(content=content, normal_bubble=bind, hidden=False)
 
+def fetch_bubble(bubble_id):
+    try:
+        bubble = Bubble.objects.get(id=bubble_id)
+    except Bubble.DoesNotExist:
+        raise BubbleDoesNotExistError(bubble_id)
+    return bubble
+
 def check_contributor(user_id, bubble):
     '''Check user is contributor of document which bubble is located'''
     document = bubble.document

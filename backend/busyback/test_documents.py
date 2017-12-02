@@ -10,6 +10,7 @@ class DocumentTestCase(TestCase):
         mockDBSetup(self)
 
     def test_do_fetch_document(self):
+        
         pass
 
     def test_do_create_document(self):

@@ -33,7 +33,22 @@ def mockDBSetup(m):
     m.bubble8 = create_normal(m.doc2,'TestBubble2-2',m.doc2root,1)
     m.suggest4 = create_suggest(m.bubble7,'TestSuggest4')
 
-def reload_bubbles(m, reload_list=None):
+    m.comment1 = CommentUnderNormal.objects.create(content='Com1', owner=m.user1, bubble=m.bubble1, order=0)
+    m.comment2 = CommentUnderNormal.objects.create(content='Com2', owner=m.user1, bubble=m.bubble1, order=1)
+    m.comment3 = CommentUnderSuggest.objects.create(content='Com3', owner=m.user1, bubble=m.suggest1, order=0)
+    m.comment4 = CommentUnderNormal.objects.create(content='Com4', owner=m.user2, bubble=m.doc2root, order=0)
+    m.comment5 = CommentUnderSuggest.objects.create(content='Com5', owner=m.user2, bubble=m.suggest4, order=0)
+
+    m.bubble1.next_comment_order = 2
+    m.suggest1.next_comment_order = 1
+    m.doc2root.next_comment_order = 1
+    m.suggest1.next_comment_order = 1
+    m.bubble1.save()
+    m.suggest1.save()
+    m.doc2root.save()
+    m.suggest4.save()
+
+def reload_bubbles(m, reload_list=None): # pragma: no cover
     if reload_list is None:
         reload_list = [1,2,3,4,5,6,7,8]
     for no in reload_list:
@@ -54,7 +69,7 @@ def reload_bubbles(m, reload_list=None):
         elif no == 8:
             m.bubble8 = NormalBubble.objects.get(id=m.bubble8.id)
 
-def reload_suggests(m, reload_list=None):
+def reload_suggests(m, reload_list=None): # pragma: no cover
     if reload_list is None:
         reload_list = [1, 2, 3]
     for no in reload_list:
@@ -64,3 +79,19 @@ def reload_suggests(m, reload_list=None):
             m.suggest2 = SuggestBubble.objects.get(id=m.suggest2.id)
         elif no == 3:
             m.suggest3 = SuggestBubble.objects.get(id=m.suggest3.id)
+
+
+def reload_comments(m, reload_list=None): # pragma: no cover
+    if reload_list is None:
+        reload_list = [1, 2, 3, 4]
+    for no in reload_list:
+        if no == 1:
+            m.comment1 = CommentUnderNormal.objects.get(id=m.comment1.id)
+        elif no == 2:
+            m.comment2 = CommentUnderNormal.objects.get(id=m.comment2.id)
+        elif no == 3:
+            m.comment3 = CommentUnderSuggest.objects.get(id=m.comment3.id)
+        elif no == 4:
+            m.comment4 = CommentUnderNormal.objects.get(id=m.comment4.id)
+        elif no == 5:
+            m.comment5 = CommentUnderSuggest.objects.get(id=m.comment5.id)
