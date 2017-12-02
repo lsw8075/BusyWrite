@@ -67,7 +67,7 @@ export class BubbleService {
             if (accept === 'True') {
                 console.log('received open_document success');
                 this.currentDocumentId = Number(body.document_id);
-                // call whatever function that starts up document_detail page setting
+                // call whatever action that starts up document_detail page setting
             } else {
                 console.log('received open_document fail');
                 // call whatever funtion that waits to start up document_detail page

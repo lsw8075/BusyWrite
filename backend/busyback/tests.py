@@ -12,6 +12,9 @@ import pdb
 # Connection and disconnection should always succeed unless server is down 
 class ChannelConnectTestCase(ChannelTestCase):
     def setUp(self):
+        u1 = User.objects.create_user(username='swpp')
+        u1.set_password('swpp')
+        u1.save()
         self.client = WSClient()
         self.client.login(username='swpp', password='swpp')
 
@@ -162,6 +165,9 @@ class ChannelReceiveTestCaseTwo(ChannelTestCase):
         d2.contributors.add(u2)
         d2.save()
  
+        d1.contributors.add(u2)
+        d1.save()
+
         self.client = HttpClient()
         self.client.login(username='swpp', password='swpp')
 
@@ -234,8 +240,30 @@ class ChannelReceiveTestCaseTwo(ChannelTestCase):
         self.assertEqual(result['header'], 'create_bubble')
         self.assertEqual(result['accept'], 'False')
         self.assertEqual(result['body'], 'body does not follow format')
+ 
+    def test_create_bubble_body_invalid_format(self):
+        message = {'header': 'create_bubble', 'body': {'parent': '1', 'location': '1', 'content': 'wow'}}
+        self.client.send('websocket.receive', content={'order':1}, text=str(message))
+        self.client.consume('websocket.receive')
+        result = self.client.receive()
+        self.assertEqual(result['header'], 'create_bubble')
+        self.assertEqual(result['accept'], 'False')
+        self.assertEqual(result['body'], 'invalid location')
     
     def test_create_bubble_success(self):
+       
+        sndClient = HttpClient()
+        sndClient.login(username='gonssam', password='gonssam')
+        sndClient.send_and_consume("websocket.connect", content={"text": {"header": "connect"}})
+        sndClient.receive()
+        sndClient.send('websocket.receive', content={'order':0}, 
+                text=str({"header": "open_document", "body": {"document_id": "1"}}))
+        sndClient.consume('websocket.receive')
+        result = sndClient.receive()
+        
+        self.assertEqual(result['header'], 'open_document')
+        self.assertEqual(result['accept'], 'True')
+
         message = {'header': 'create_bubble', 'body': {'parent': '1', 'location': '0', 'content': 'wow'}}
         self.client.send("websocket.receive", content={'order':1}, text=str(message))
         self.client.consume('websocket.receive')
@@ -243,5 +271,8 @@ class ChannelReceiveTestCaseTwo(ChannelTestCase):
         self.assertEqual(result['header'], 'create_bubble')
         self.assertEqual(result['body']['location'], '0')
         self.assertEqual(result['body']['content'], 'wow')
-   
-        #TODO: check if group gets the message
+        
+        result = sndClient.receive()
+        self.assertEqual(result['header'], 'create_bubble')
+        self.assertEqual(result['body']['location'], '0')
+        self.assertEqual(result['body']['content'], 'wow')
