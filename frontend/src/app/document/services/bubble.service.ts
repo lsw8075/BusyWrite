@@ -67,44 +67,53 @@ export class BubbleService {
             if (accept === 'True') {
                 console.log('received open_document success');
                 this.currentDocumentId = Number(body.document_id);
-                // call whatever action that starts up document_detail page setting
+                this._store.dispatch(new BubbleAction.OpenComplete(Number(body.document_id)));
             } else {
                 console.log('received open_document fail');
-                // call whatever funtion that waits to start up document_detail page
-                // and let it know it has failed
+                this._store.dispatch(new BubbleAction.OpenError(body));
             }
         } else if (command === 'close_document') {
             if (accept === 'True') {
                 console.log('received close_document success');
                 this.currentDocumentId = 0;
             } else {
-
                 console.log('received close_document fail');
                 // TODO: decide whether to send it again or not
             }
         } else if (command === 'get_bubble_list') {
             if (accept === 'True') {
-                // TODO: convert content into bubble list
-                //this._store.dispatch(new BubbleAction.LoadComplete(bubble))
-                //this.bubbleList = body.content;
                 console.log('received get_bubble_list success');
                 console.log(body.content);
-
+                // TODO: sangjun i believe you 
+                // const bubble = (body.content)
+                //this._store.dispatch(new BubbleAction.LoadComplete(bubble))
             } else {
                 // TODO: decide what to do
                 console.log('received get_bubble_list fail');
             }
         } else if (command === 'create_bubble') {
             if (accept === 'True') {
+                // if (body.who === )
                 // change bubbleslist and push it into appropriate Subject<Bubble>
                 console.log('received create_bubble success');
             } else {
-
                 console.log('received create_bubble fail');
                 // TODO: if it is THIS user that has sent the request,
                 // (need to distinguish!!! maybe we need to add user_id field)
                 // tell user it has failed by calling whatever function
             }
+        } else if (command === 'create_suggest_bubble') {
+            if (accept === 'True') {
+                console.log('received create_suggest_bubble success');
+            } else {
+                console.log('received create_suggest_bubble fail');
+            }
+        } else if (command === 'edit_bubble') {
+            if (accept === 'True') {
+                console.log('received edit_bubble success');
+            } else {
+                console.log('received edit_bubble fail');
+            } 
         }
     }
 
