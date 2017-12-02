@@ -8,10 +8,10 @@ export enum BubbleType {
   suggestBubble
 } /* istanbul ignore next */
 
-export interface Bubble {
+export interface BubbleTemp {
   id: number;
   type: BubbleType;
-  parentBubble: InternalBubble;
+  parentBubble: InternalBubbleTemp;
   location: number;
   thumbUps: number;
 
@@ -38,10 +38,10 @@ export interface Bubble {
   getSuggestBubbles(): Array<SuggestBubble>;
 } /* istanbul ignore next */
 
-export class LeafBubble implements Bubble {
+export class LeafBubble implements BubbleTemp {
   id: number;
   type: BubbleType;
-  parentBubble: InternalBubble = null;
+  parentBubble: InternalBubbleTemp = null;
   location: number;
   thumbUps: number;
 
@@ -150,10 +150,10 @@ export class LeafBubble implements Bubble {
   }
 } /* istanbul ignore next */
 
-export class InternalBubble implements Bubble {
+export class InternalBubbleTemp implements BubbleTemp {
   id: number;
   type: BubbleType;
-  parentBubble: InternalBubble = null;
+  parentBubble: InternalBubbleTemp = null;
   location: number;
   thumbUps: number;
 
@@ -163,11 +163,11 @@ export class InternalBubble implements Bubble {
   suggestBubbles: Array<SuggestBubble> = [];
   watchUsers: Array<User> = [];
 
-  childBubbles: Array<Bubble> = [];
+  childBubbles: Array<BubbleTemp> = [];
 
   constructor(
     id: number,
-    childBubbles: Array<Bubble>,
+    childBubbles: Array<BubbleTemp>,
     suggestBubbles: Array<SuggestBubble> = [],
     comments: Array<Comment> = [],
     watchUsers: Array<User> = [],
@@ -244,7 +244,7 @@ export class InternalBubble implements Bubble {
     return this.childBubbles.reduce((prev, curr) => prev || curr.isBeingEditted(), false);
   }
 
-  insertChildren(location: number, ...bubbles: Array<Bubble>): void {
+  insertChildren(location: number, ...bubbles: Array<BubbleTemp>): void {
     if ((location < 0) || (location > this.childBubbles.length + 1)) {
       throw new Error(`location ${location} is invalid`);
     } else {
@@ -263,7 +263,7 @@ export class InternalBubble implements Bubble {
 
   }
 
-  addChildren(...bubbles: Array<Bubble>): void {
+  addChildren(...bubbles: Array<BubbleTemp>): void {
     let location = this.childBubbles.length;
     for (const bubble of bubbles) {
       bubble.location = location;
@@ -273,7 +273,7 @@ export class InternalBubble implements Bubble {
     }
   }
 
-  deleteChild(childBubble: Bubble): void {
+  deleteChild(childBubble: BubbleTemp): void {
     if (this._ischildBubble(childBubble)) {
       let location = childBubble.location;
       childBubble = null;
@@ -288,7 +288,7 @@ export class InternalBubble implements Bubble {
      }
   }
 
-  wrapChildren(wrapBubble: InternalBubble, wrapList: Array<Bubble>): void {
+  wrapChildren(wrapBubble: InternalBubbleTemp, wrapList: Array<BubbleTemp>): void {
     // no bubble to wrap
     if (wrapList.length < 1) {
       throw new Error('wrapList contains no bubble');
@@ -335,7 +335,7 @@ export class InternalBubble implements Bubble {
     }
   }
 
-  flattenChild(bubble: Bubble): LeafBubble {
+  flattenChild(bubble: BubbleTemp): LeafBubble {
     if (this._ischildBubble(bubble) && (bubble.type === BubbleType.internalBubble)) {
       const id = bubble.id;
       const location = bubble.location;
@@ -354,9 +354,9 @@ export class InternalBubble implements Bubble {
     }
   }
 
-  public popChild(bubble: Bubble): void {
+  public popChild(bubble: BubbleTemp): void {
     if (this._ischildBubble(bubble) && (bubble.type === BubbleType.internalBubble)) {
-      const newChildren = (bubble as InternalBubble).childBubbles;
+      const newChildren = (bubble as InternalBubbleTemp).childBubbles;
       const location = bubble.location;
       this.deleteChild(bubble);
       this.insertChildren(location, ...newChildren);
@@ -368,7 +368,7 @@ export class InternalBubble implements Bubble {
     }
   }
 
-  private _ischildBubble(bubble: Bubble): boolean {
+  private _ischildBubble(bubble: BubbleTemp): boolean {
     if (bubble.parentBubble === null) {
       return false;
     } else {
@@ -376,8 +376,8 @@ export class InternalBubble implements Bubble {
     }
   }
 
-  private _sortByLocation(bubbleList: Array<Bubble>) {
-    bubbleList.sort(function(a: Bubble, b: Bubble) {
+  private _sortByLocation(bubbleList: Array<BubbleTemp>) {
+    bubbleList.sort(function(a: BubbleTemp, b: BubbleTemp) {
       return a.location - b.location;
     });
   }

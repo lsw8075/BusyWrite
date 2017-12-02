@@ -1,5 +1,5 @@
 import { Action } from '@ngrx/store';
-import { Bubble } from '../models/bubble';
+import { BubbleTemp } from '../models/bubble-temp';
 import { MenuType } from '../services/event/event-bubble.service';
 
 export const OPEN = '[Document] open';
@@ -18,43 +18,43 @@ export class OpenError implements Action {
   constructor(public payload: string) {}
 }
 
-export const LOAD = '[Bubble] Load';
-export const LOAD_COMPLETE = '[Bubble] load Complete';
-export const LOAD_ERROR = '[Bubble] load Error';
+export const LOAD = '[BubbleTemp] Load';
+export const LOAD_COMPLETE = '[BubbleTemp] load Complete';
+export const LOAD_ERROR = '[BubbleTemp] load Error';
 export class Load implements Action {
   readonly type = LOAD;
   constructor(public payload: number) {}
 }
 export class LoadComplete implements Action {
   readonly type = LOAD_COMPLETE;
-  constructor(public payload: Array<Bubble>) {}
+  constructor(public payload: Array<BubbleTemp>) {}
 }
 export class LoadError implements Action {
   readonly type = LOAD_ERROR;
   constructor(public payload: string) {}
 }
 
-export const SELECT = '[Bubble] Select';
+export const SELECT = '[BubbleTemp] Select';
 export class Select implements Action {
   readonly type = SELECT;
   constructor(public payload: {
-    bubble: Bubble,
+    bubble: BubbleTemp,
     menu: MenuType}) {}
 }
 
-export const CREATE = '[Bubble] create';
-export const CREATE_COMPLETE = '[Bubble] create Complete';
-export const CREATE_ERROR = '[Bubble] create Error';
+export const CREATE = '[BubbleTemp] create';
+export const CREATE_COMPLETE = '[BubbleTemp] create Complete';
+export const CREATE_ERROR = '[BubbleTemp] create Error';
 export class Create implements Action {
   readonly type = CREATE;
   constructor(public payload: {
-    bubble: Bubble,
+    bubble: BubbleTemp,
     menu: MenuType}) {}
 }
 export class CreateComplete implements Action {
   readonly type = CREATE_COMPLETE;
   constructor(public payload: {
-    bubble: Bubble,
+    bubble: BubbleTemp,
     menu: MenuType}) {}
 }
 export class CreateError implements Action {
@@ -62,97 +62,97 @@ export class CreateError implements Action {
   constructor(public payload: string) {}
 }
 
-export const EDIT = '[Bubble] edit (check if can get edit lock)';
-export const EDIT_UPDATE = '[Bubble] edit update';
-export const EDIT_COMPLETE = '[Bubble] edit Complete';
-export const EDIT_ERROR = '[Bubble] edit Error';
+export const EDIT = '[BubbleTemp] edit (check if can get edit lock)';
+export const EDIT_UPDATE = '[BubbleTemp] edit update';
+export const EDIT_COMPLETE = '[BubbleTemp] edit Complete';
+export const EDIT_ERROR = '[BubbleTemp] edit Error';
 export class Edit implements Action {
   readonly type = EDIT;
-  constructor(public payload: Bubble) {}
+  constructor(public payload: BubbleTemp) {}
 }
 export class EditComplete implements Action {
   readonly type = EDIT_COMPLETE;
-  constructor(public payload: Bubble) {}
+  constructor(public payload: BubbleTemp) {}
 }
 export class EditError implements Action {
   readonly type = EDIT_ERROR;
   constructor(public payload: string) {}
 }
 
-export const WRAP = '[Bubble] wrap';
-export const WRAP_COMPLETE = '[Bubble] wrap Complete';
-export const WRAP_ERROR = '[Bubble] wrap Error';
+export const WRAP = '[BubbleTemp] wrap';
+export const WRAP_COMPLETE = '[BubbleTemp] wrap Complete';
+export const WRAP_ERROR = '[BubbleTemp] wrap Error';
 export class Wrap implements Action {
   readonly type = WRAP;
-  constructor(public payload: Array<Bubble>) {}
+  constructor(public payload: Array<BubbleTemp>) {}
 }
 export class WrapComplete implements Action {
   readonly type = WRAP_COMPLETE;
-  constructor(public payload: Array<Bubble>) {}
+  constructor(public payload: Array<BubbleTemp>) {}
 }
 export class WrapError implements Action {
   readonly type = WRAP_ERROR;
   constructor(public payload: string) {}
 }
 
-export const POP = '[Bubble] pop';
-export const POP_COMPLETE = '[Bubble] pop Complete';
-export const POP_ERROR = '[Bubble] pop Error';
+export const POP = '[BubbleTemp] pop';
+export const POP_COMPLETE = '[BubbleTemp] pop Complete';
+export const POP_ERROR = '[BubbleTemp] pop Error';
 export class Pop implements Action {
   readonly type = POP;
-  constructor(public payload: Bubble) {}
+  constructor(public payload: BubbleTemp) {}
 }
 export class PopComplete implements Action {
   readonly type = POP_COMPLETE;
-  constructor(public payload: Bubble) {}
+  constructor(public payload: BubbleTemp) {}
 }
 export class PopError implements Action {
   readonly type = POP_ERROR;
   constructor(public payload: string) {}
 }
 
-export const MERGE = '[Bubble] merge';
-export const MERGE_COMPLETE = '[Bubble] merge Complete';
-export const MERGE_ERROR = '[Bubble] merge Error';
+export const MERGE = '[BubbleTemp] merge';
+export const MERGE_COMPLETE = '[BubbleTemp] merge Complete';
+export const MERGE_ERROR = '[BubbleTemp] merge Error';
 export class Merge implements Action {
   readonly type = MERGE;
-  constructor(public payload: Bubble) {}
+  constructor(public payload: BubbleTemp) {}
 }
 export class MergeComplete implements Action {
   readonly type = MERGE_COMPLETE;
-  constructor(public payload: Bubble) {}
+  constructor(public payload: BubbleTemp) {}
 }
 export class MergeError implements Action {
   readonly type = MERGE_ERROR;
   constructor(public payload: string) {}
 }
 
-export const SPLIT = '[Bubble] split';
-export const SPLIT_COMPLETE = '[Bubble] split Complete';
-export const SPLIT_ERROR = '[Bubble] split Error';
+export const SPLIT = '[BubbleTemp] split';
+export const SPLIT_COMPLETE = '[BubbleTemp] split Complete';
+export const SPLIT_ERROR = '[BubbleTemp] split Error';
 export class Split implements Action {
   readonly type = SPLIT;
-  constructor(public payload: Bubble) {}
+  constructor(public payload: BubbleTemp) {}
 }
 export class SplitComplete implements Action {
   readonly type = SPLIT_COMPLETE;
-  constructor(public payload: Bubble) {}
+  constructor(public payload: BubbleTemp) {}
 }
 export class SplitError implements Action {
   readonly type = SPLIT_ERROR;
   constructor(public payload: string) {}
 }
 
-export const DELETE = '[Bubble] delete';
-export const DELETE_COMPLETE = '[Bubble] delete Complete';
-export const DELETE_ERROR = '[Bubble] delete Error';
+export const DELETE = '[BubbleTemp] delete';
+export const DELETE_COMPLETE = '[BubbleTemp] delete Complete';
+export const DELETE_ERROR = '[BubbleTemp] delete Error';
 export class Delete implements Action {
   readonly type = DELETE;
-  constructor(public payload: Bubble) {}
+  constructor(public payload: BubbleTemp) {}
 }
 export class DeleteComplete implements Action {
   readonly type = DELETE_COMPLETE;
-  constructor(public payload: Bubble) {}
+  constructor(public payload: BubbleTemp) {}
 }
 export class DeleteError implements Action {
   readonly type = DELETE_ERROR;

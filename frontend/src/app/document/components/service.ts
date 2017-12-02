@@ -7,7 +7,7 @@ export { EventBubbleService, MenuType, ActionType } from '../services/event/even
 export { EventSangjunBoardService } from '../services/event/event-sangjun-board.service';
 
 export { Board } from '../models/board';
-export { BubbleType, Bubble, SuggestBubble } from '../models/bubble';
+export { BubbleType, BubbleTemp, SuggestBubble } from '../models/bubble-temp';
 export { Comment } from '../models/comment';
 export { Note } from '../models/note';
 export { EditItem } from '../models/board';

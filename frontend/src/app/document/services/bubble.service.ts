@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Bubble, BubbleType, LeafBubble, InternalBubble, SuggestBubble } from '../models/bubble';
+import { BubbleTemp, BubbleType, LeafBubble, InternalBubbleTemp, SuggestBubble } from '../models/bubble-temp';
 import { MockBubbleRoot, MockBubbleList } from '../models/bubble.mock';
 import { Subscription } from 'rxjs/Subscription';
 import { ServerSocket } from './websocket.service';
@@ -22,8 +22,8 @@ export class BubbleService {
 
     private socketSubscription: Subscription;
     private currentDocumentId: Number;
-    private bubbleList: Array<Bubble> = [];
-    private bubbleRoot: InternalBubble;
+    private bubbleList: Array<BubbleTemp> = [];
+    private bubbleRoot: InternalBubbleTemp;
 
     constructor(
             private _store: Store<Reducer.State>,
@@ -96,7 +96,7 @@ export class BubbleService {
             }
         } else if (command === 'create_bubble') {
             if (accept === 'True') {
-                // change bubbleslist and push it into appropriate Subject<Bubble>
+                // change bubbleslist and push it into appropriate Subject<BubbleTemp>
                 console.log('received create_bubble success');
             } else {
 
@@ -136,11 +136,11 @@ export class BubbleService {
         this._socket.send(m);
     }
 
-  public getBubbleList(): Promise<Array<Bubble>> {
+  public getBubbleList(): Promise<Array<BubbleTemp>> {
     return Promise.resolve(this.bubbleList);
   }
 
-    public getBubbleById(id: number): Bubble {
+    public getBubbleById(id: number): BubbleTemp {
         if (0 < id) {
             for (const bubble of this.bubbleList) {
                 if (bubble.id === id) {
@@ -151,14 +151,14 @@ export class BubbleService {
         throw new Error('bubble with index ' + id + ' does not exist');
     }
 
-  public createBubble(parentBubble: InternalBubble, location: number, content: string): Promise<Bubble> {
+  public createBubble(parentBubble: InternalBubbleTemp, location: number, content: string): Promise<BubbleTemp> {
     const newBubble = new LeafBubble(this._getId(), content, tempUserId);
     parentBubble.insertChildren(location, newBubble);
     return Promise.resolve(newBubble);
   }
 
 
-  public async editBubble(bubble: Bubble): Promise<void> {
+  public async editBubble(bubble: BubbleTemp): Promise<void> {
     if (bubble.type !== BubbleType.leafBubble) {
       throw new Error('Cannot edit internal bubble');
     }
@@ -167,7 +167,7 @@ export class BubbleService {
     return Promise.resolve(null);
   }
 
-  public async deleteBubble(bubble: Bubble): Promise<void> {
+  public async deleteBubble(bubble: BubbleTemp): Promise<void> {
     if (bubble.parentBubble === null) {
       throw new Error('Cannot delete root bubble');
     }
@@ -175,7 +175,7 @@ export class BubbleService {
     return Promise.resolve(null);
   }
 
-  public async wrapBubble(wrapBubbleList: Array<Bubble>): Promise<void> {
+  public async wrapBubble(wrapBubbleList: Array<BubbleTemp>): Promise<void> {
     if (wrapBubbleList.length <= 1) {
       throw new Error('Cannot wrap one bubble');
     }
@@ -183,17 +183,17 @@ export class BubbleService {
     return Promise.resolve(null);
   }
 
-  public async mergeBubble(bubble: Bubble): Promise<void> {
+  public async mergeBubble(bubble: BubbleTemp): Promise<void> {
     await this.delay(1000);
     return Promise.resolve(null);
   }
 
-  public async splitBubble(bubble: Bubble): Promise<void> {
+  public async splitBubble(bubble: BubbleTemp): Promise<void> {
     await this.delay(1000);
     return Promise.resolve(null);
   }
 
-  public async popBubble(bubble: Bubble): Promise<void> {
+  public async popBubble(bubble: BubbleTemp): Promise<void> {
     // check the assumptions
     if (bubble.parentBubble === null) {
       throw new Error('Cannot pop root bubble');
@@ -203,7 +203,7 @@ export class BubbleService {
   }
 
   // split Leaf bubble
-  public splitLeafBubble(bubble: Bubble, selectContent: string, startIndex: number): Promise<void> {
+  public splitLeafBubble(bubble: BubbleTemp, selectContent: string, startIndex: number): Promise<void> {
     const originalContent = bubble.getContent();
 
     if (originalContent.indexOf(selectContent) === -1) {
@@ -211,7 +211,7 @@ export class BubbleService {
     }
     const endIndex: number = startIndex + selectContent.length;
 
-    const splittedChildren: Array<Bubble> = [];
+    const splittedChildren: Array<BubbleTemp> = [];
 
     if (startIndex !== 0) {
       const prevBubble: LeafBubble = new LeafBubble(this._getId(), originalContent.substring(0, startIndex));
@@ -228,9 +228,9 @@ export class BubbleService {
       splittedChildren.push(nextBubble);
     }
 
-    const wrapBubble = new InternalBubble(this._getId(), splittedChildren);
+    const wrapBubble = new InternalBubbleTemp(this._getId(), splittedChildren);
 
-    const parentBubble: InternalBubble = bubble.parentBubble;
+    const parentBubble: InternalBubbleTemp = bubble.parentBubble;
     const location = bubble.location;
     parentBubble.deleteChild(bubble);
     this.bubbleList = this.bubbleList.filter(b => b.id !== bubble.id);
@@ -240,11 +240,11 @@ export class BubbleService {
     return Promise.resolve(null);
   }
 
-  public flattenBubble(bubble: Bubble): Promise<void> {
+  public flattenBubble(bubble: BubbleTemp): Promise<void> {
     if (bubble.parentBubble === null) {
       throw new Error('Cannot flatten root bubble');
     }
-    const parentBubble: InternalBubble = bubble.parentBubble;
+    const parentBubble: InternalBubbleTemp = bubble.parentBubble;
     const flattenedBubble = parentBubble.flattenChild(bubble);
     this.bubbleList.push(flattenedBubble);
 
@@ -255,11 +255,11 @@ export class BubbleService {
     return Promise.resolve(null);
   }
 
-  public moveBubble(bubble: Bubble, destBubble: Bubble, menu: MenuType): Promise<void> {
+  public moveBubble(bubble: BubbleTemp, destBubble: BubbleTemp, menu: MenuType): Promise<void> {
     if (bubble.parentBubble === null) {
       throw new Error('Cannot move root bubble');
     } else if (bubble.id !== destBubble.id) {
-      const parentBubble: InternalBubble = bubble.parentBubble;
+      const parentBubble: InternalBubbleTemp = bubble.parentBubble;
       parentBubble.deleteChild(bubble);
 
       let location = destBubble.location;
@@ -272,7 +272,7 @@ export class BubbleService {
     return Promise.resolve(null);
   }
 
-  public switchBubble(bubble: Bubble, suggestBubble: SuggestBubble): Bubble {
+  public switchBubble(bubble: BubbleTemp, suggestBubble: SuggestBubble): BubbleTemp {
     const newSB = new SuggestBubble(this._getId(), bubble.getContent(), bubble.comments, bubble.thumbUps);
     if (bubble.type === BubbleType.leafBubble) {
       let leafBubble = bubble as LeafBubble;
@@ -287,7 +287,7 @@ export class BubbleService {
       return leafBubble;
     }
     else if(bubble.type === BubbleType.internalBubble) {
-      let internalBubble = bubble as InternalBubble;
+      let internalBubble = bubble as InternalBubbleTemp;
       let parentBubble = internalBubble.parentBubble;
       let leafBubble = new LeafBubble(this._getId());
 
@@ -305,12 +305,12 @@ export class BubbleService {
     }
   }
 
-  private _getBubbleList(): Promise< Array<Bubble> > {
+  private _getBubbleList(): Promise< Array<BubbleTemp> > {
     this.bubbleRoot = MockBubbleRoot;
     return Promise.resolve(MockBubbleList);
   }
 
-  private _containsBubble(bubble: Bubble, bubbleList: Array<Bubble>): boolean {
+  private _containsBubble(bubble: BubbleTemp, bubbleList: Array<BubbleTemp>): boolean {
     for (const b of this.bubbleList) {
       if (b.id === bubble.id) {
         return true;
@@ -319,11 +319,11 @@ export class BubbleService {
     return false;
   }
 
-  private _getChildrenList(bubble: Bubble, childrenList: Array<Bubble>): void {
+  private _getChildrenList(bubble: BubbleTemp, childrenList: Array<BubbleTemp>): void {
     bubble.id = -1; // this is check later if a bubble is not properly erased
     childrenList.push(bubble);
     if (bubble.type !== BubbleType.leafBubble) {
-      const children = (bubble as InternalBubble).childBubbles;
+      const children = (bubble as InternalBubbleTemp).childBubbles;
       for (const child of children) {
         this._getChildrenList(child, childrenList);
       }

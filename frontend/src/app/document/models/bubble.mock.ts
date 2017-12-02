@@ -1,4 +1,4 @@
-import { Bubble, LeafBubble, InternalBubble, SuggestBubble } from './bubble';
+import { BubbleTemp, LeafBubble, InternalBubbleTemp, SuggestBubble } from './bubble-temp';
 import { Comment } from './comment';
 import { Inject } from '@angular/core';
 
@@ -24,7 +24,7 @@ const sb5: SuggestBubble = new SuggestBubble(5, 'http://busywrite.ribosome.kr', 
     const b17: LeafBubble = new LeafBubble(17,
 `<p>If you have troubles using our service check out our FAQ<a href="http://busywrite.ribosome.kr">busywrite FAQ</a></p>`);
     const b16: LeafBubble = new LeafBubble(16, 'Conclusion');
-  const b15: InternalBubble = new InternalBubble(15, [b16, b17]);
+  const b15: InternalBubbleTemp = new InternalBubbleTemp(15, [b16, b17]);
       const b14: LeafBubble = new LeafBubble(14,
 `<p>BusyWrite, is not just a web service, nor thousands lines of code; it is a member of your team. \
 It works to accelerate your team. It links with other services to analyze your notes and create \
@@ -33,7 +33,7 @@ bubbles. Busy bubbles are created from messengers like slack, from other note se
 or from anywhere on the web. It will search google or wikipedia to grab relevant contents into bubbles \
 with citation. BusyWrite will make sure the whole web is on your side.</p>`);
       const b13: LeafBubble = new LeafBubble(13, 'Body 1');
-    const b12: InternalBubble = new InternalBubble(12, [b13, b14]);
+    const b12: InternalBubbleTemp = new InternalBubbleTemp(12, [b13, b14]);
       const b11: LeafBubble = new LeafBubble(11,
 `<p>BusyWrite separate writing and merging. Normally, participants write on the same file, \
 writing and merging simultaneously, which is troublesome. The concept of participants writing \
@@ -43,8 +43,8 @@ users make bubbles. A bubble is a unit of thought that users write on. With bubb
 several people can write simultaneously and merge after resolving conflicts. \
 Bubbles will help you cherry-pick your own version of the draft.</p>`);
       const b10: LeafBubble = new LeafBubble(10, 'Body 1');
-    const b9: InternalBubble = new InternalBubble(9, [b10, b11]);
-  const b8: InternalBubble = new InternalBubble(8, [b9, b12]);
+    const b9: InternalBubbleTemp = new InternalBubbleTemp(9, [b10, b11]);
+  const b8: InternalBubbleTemp = new InternalBubbleTemp(8, [b9, b12]);
     const b7: LeafBubble = new LeafBubble(7,
 `<p>Limited time is the number one bottleneck of teamwork. Therefore, most of the time, \
 discussion is done while writing. Teams cannot afford time to match document structure, \
@@ -58,12 +58,12 @@ properly on-the-go. That’s why we want to help teams with BusyWrite, a service
 team has been around for a long time, by services like Google Docs, but the approaches \
 are impractical and unproductive. </p>', -1, [sb2, sb4, sb1, sb3], [c7, c8]);
     const b5: LeafBubble = new LeafBubble(5, '<h5>Introduction</h5>');
-  const b4: InternalBubble = new InternalBubble(4, [b5, b6, b7], [sb5], [c6]);
+  const b4: InternalBubbleTemp = new InternalBubbleTemp(4, [b5, b6, b7], [sb5], [c6]);
     const b3: LeafBubble = new LeafBubble(3, '<h3>Subtitle</h3>');
     const b2: LeafBubble = new LeafBubble(2, '<h1 class="ql-align-center">Title</h1>', 1);
-  const b1: InternalBubble = new InternalBubble(1, [b2, b3]);
-const rootBubble: InternalBubble = new InternalBubble(0, [b1, b4, b8, b15]);
-const bubbleList: Array<Bubble> = [b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15, b16, b17];
+  const b1: InternalBubbleTemp = new InternalBubbleTemp(1, [b2, b3]);
+const rootBubble: InternalBubbleTemp = new InternalBubbleTemp(0, [b1, b4, b8, b15]);
+const bubbleList: Array<BubbleTemp> = [b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15, b16, b17];
 b14.getEditLock(2);
 
 export { rootBubble as MockBubbleRoot };

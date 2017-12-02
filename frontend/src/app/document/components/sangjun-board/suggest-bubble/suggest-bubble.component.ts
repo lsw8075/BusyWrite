@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { SuggestBubble } from '../../../models/bubble';
+import { SuggestBubble } from '../../../models/bubble-temp';
 import { EventSangjunBoardService } from '../../../services/event/event-sangjun-board.service';
 
 @Component({

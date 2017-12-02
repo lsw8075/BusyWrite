@@ -19,7 +19,7 @@ import 'rxjs/observable/of';
 import 'rxjs/add/observable/fromPromise';
 
 import * as fromBubble from '../actions/bubble-action';
-import { Bubble, BubbleType, InternalBubble, LeafBubble, SuggestBubble } from '../models/bubble';
+import { BubbleTemp, BubbleType, InternalBubbleTemp, LeafBubble, SuggestBubble } from '../models/bubble-temp';
 
 import { BubbleService } from '../services/bubble.service';
 
@@ -46,7 +46,7 @@ export class BubbleEffects {
   load$: Observable<Action> = this.action$.ofType<fromBubble.Load>(fromBubble.LOAD)
     .map(action => action.payload).mergeMap(query => {
       return Observable.fromPromise(this.bubbleService.getBubbleList())
-        .map((bubbleList: Array<Bubble>) => new fromBubble.LoadComplete(bubbleList))
+        .map((bubbleList: Array<BubbleTemp>) => new fromBubble.LoadComplete(bubbleList))
         .catch(err => of(new fromBubble.LoadError(err)));
     });
 

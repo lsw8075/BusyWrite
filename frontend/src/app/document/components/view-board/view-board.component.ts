@@ -1,6 +1,6 @@
 import { Component, OnInit, Output, ChangeDetectionStrategy } from '@angular/core';
 import { BubbleMenuComponent } from './bubble-menu/bubble-menu.component';
-import { MenuType, ActionType, Board, Bubble } from './service';
+import { MenuType, ActionType, Board, BubbleTemp } from './service';
 import { BubbleService } from './service';
 
 import { PreviewComponent } from './preview/preview.component';
@@ -15,6 +15,8 @@ import * as BubbleAction from '../../actions/bubble-action';
 import * as RouterAction from '../../../shared/route/route-action';
 
 
+import { BubbleJsonHelper } from '../../models/bubble-json-helper';
+
 @Component({
   selector: 'app-view-board',
   templateUrl: './view-board.component.html',
@@ -24,7 +26,7 @@ import * as RouterAction from '../../../shared/route/route-action';
 
 export class ViewBoardComponent implements OnInit {
 
-  rootBubble$: Observable<Bubble>;
+  rootBubble$: Observable<BubbleTemp>;
 
   constructor(
       private _store: Store<fromDocument.State>,

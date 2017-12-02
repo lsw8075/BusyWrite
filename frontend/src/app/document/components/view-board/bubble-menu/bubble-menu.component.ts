@@ -1,5 +1,5 @@
 import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
-import { BubbleType, Bubble, MenuType, ActionType } from '../service';
+import { BubbleType, BubbleTemp, MenuType, ActionType } from '../service';
 import { BubbleService } from '../service';
 import { EventBubbleService } from '../../../services/event/event-bubble.service';
 
@@ -25,7 +25,7 @@ export class BubbleMenuComponent implements OnInit {
 
   menuType = MenuType;
   @Input() menu: MenuType;
-  @Input() bubble: Bubble;
+  @Input() bubble: BubbleTemp;
 
   bsModalRef: BsModalRef;
 

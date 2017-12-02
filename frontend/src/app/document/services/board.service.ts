@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs/Subject';
 import { Board, EditItem } from '../models/board';
-import { Bubble, BubbleType, LeafBubble } from '../models/bubble';
+import { BubbleTemp, BubbleType, LeafBubble } from '../models/bubble-temp';
 import { BubbleService } from './bubble.service';
 
 const tempUserId = 1;
@@ -13,7 +13,7 @@ export class BoardService {
 
   private previewUpdateEventSource = new Subject<void>();
   private createBubbleEventSource = new Subject<EditItem>();
-  private finishBubbleEditEventSource = new Subject<Bubble>();
+  private finishBubbleEditEventSource = new Subject<BubbleTemp>();
 
   previewUpdateEvent$ = this.previewUpdateEventSource.asObservable();
   createBubbleEvent$ = this.createBubbleEventSource.asObservable();
@@ -26,12 +26,12 @@ export class BoardService {
     this.previewUpdateEventSource.next();
   }
 
-  editBubble(bubble: Bubble) {
+  editBubble(bubble: BubbleTemp) {
     const newEditItem: EditItem = new EditItem(this.getId(), bubble);
     this.createBubbleEventSource.next(newEditItem);
   }
 
-  public finishEdit(bubble: Bubble, content: string) {
+  public finishEdit(bubble: BubbleTemp, content: string) {
     this._bubbleService.editBubble(bubble, content).then(() => {
       this.finishBubbleEditEventSource.next(bubble);
       console.log(content);
@@ -46,7 +46,7 @@ export class BoardService {
             }));
   }
 
-  public updateEdit(bubble: Bubble, content: string) {
+  public updateEdit(bubble: BubbleTemp, content: string) {
     this._bubbleService.editBubble(bubble, content);
   }
 

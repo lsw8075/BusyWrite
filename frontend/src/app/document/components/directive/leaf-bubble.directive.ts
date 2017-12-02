@@ -1,13 +1,13 @@
 import { Directive, ElementRef, Renderer2, HostListener, HostBinding, Input, TemplateRef, ViewContainerRef, OnInit } from '@angular/core';
 import { EventBubbleService } from '../service';
-import { Bubble } from '../service';
+import { BubbleTemp } from '../service';
 
 @Directive({
   selector: '[appLeafBubble]'
 })
 export class LeafBubbleDirective implements OnInit {
 
-  @Input() appLeafBubble: Bubble;
+  @Input() appLeafBubble: BubbleTemp;
 
   private selectedColor = `rgb(157, 172, 255)`;
   private editColor = `rgb(100, 100, 100)`;

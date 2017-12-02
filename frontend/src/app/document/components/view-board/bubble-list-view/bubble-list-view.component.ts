@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, OnDestroy, Output, HostListener } from '@angular/core';
 import { BubbleService } from '../service';
-import { BubbleType, Bubble, ActionType, MenuType } from '../service';
-import { InternalBubble, LeafBubble } from '../../../models/bubble';
+import { BubbleType, BubbleTemp, ActionType, MenuType } from '../service';
+import { InternalBubbleTemp, LeafBubble } from '../../../models/bubble-temp';
 import { EventBubbleService, BoardService } from '../service';
 
 import { Store } from '@ngrx/store';
@@ -22,8 +22,8 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
   menuType = MenuType;
   actionType = ActionType;
 
-  @Input() rootBubble: Bubble; // bubbles that have root as parents
-  selectedBubble: Bubble;
+  @Input() rootBubble: BubbleTemp; // bubbles that have root as parents
+  selectedBubble: BubbleTemp;
   selectedMenu: MenuType;
 
   constructor(
@@ -68,7 +68,7 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
     this._eventBubbleService.clearState();
   }
 
-  public popBubble(bubble: Bubble) {
+  public popBubble(bubble: BubbleTemp) {
     // this._bubbleService.popBubble(bubble)
     //   .then(() => {
     //     this._refreshBubbleList();
@@ -84,7 +84,7 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
       });
   }
 
-  public createBubble(bubble: Bubble, menu: MenuType) {
+  public createBubble(bubble: BubbleTemp, menu: MenuType) {
     let location = bubble.location;
     if (menu === MenuType.borderBottomMenu) {
       location++;
@@ -98,12 +98,12 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
         this._refreshBubbleList();
       });
   }
-  private finishEdit(bubble: Bubble) {
+  private finishEdit(bubble: BubbleTemp) {
     bubble.releaseLock();
     this._eventBubbleService.edittedBubble = null;
     this._refreshBubbleList();
   }
-  public editBubble(bubble: Bubble) {
+  public editBubble(bubble: BubbleTemp) {
     if (bubble.type === BubbleType.leafBubble &&
         this.isBubbleContentShown(bubble)) {
     //  this._boardService.editBubble(bubble);
@@ -111,7 +111,7 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
       this._refreshBubbleList();
     }
   }
-  public deleteBubble(bubble: Bubble) {
+  public deleteBubble(bubble: BubbleTemp) {
     if (bubble.id !== 0) {
       this._eventBubbleService.setState(ActionType.delete);
       this._bubbleService.deleteBubble(bubble).then(() => {
@@ -123,21 +123,21 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
     }
   }
 
-  public flattenBubble(bubble: Bubble) {
+  public flattenBubble(bubble: BubbleTemp) {
     this._bubbleService.flattenBubble(bubble).then(() => {
         this._eventBubbleService.clearState();
         this._refreshBubbleList();
       });
   }
 
-  public moveBubble(bubble: Bubble, destBubble: Bubble, menu: MenuType) {
+  public moveBubble(bubble: BubbleTemp, destBubble: BubbleTemp, menu: MenuType) {
     this._bubbleService.moveBubble(bubble, destBubble, menu).then(() => {
       this._eventBubbleService.clearState();
       this._refreshBubbleList();
     });
   }
 
-  public onClickEvent(bubble: Bubble, menu: MenuType, mouseEvent: MouseEvent): void {
+  public onClickEvent(bubble: BubbleTemp, menu: MenuType, mouseEvent: MouseEvent): void {
     this._store.dispatch(new BubbleAction.Select({bubble, menu}));
   }
 
@@ -153,7 +153,7 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
            (bubble.whoIsEditting() === 1);
   }
 
-  public isInternal(bubble: Bubble): Boolean {
+  public isInternal(bubble: BubbleTemp): Boolean {
     return bubble.type === BubbleType.internalBubble;
   }
 

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { EventBubbleService } from '../../services/event/event-bubble.service';
 import { EventSangjunBoardService } from '../../services/event/event-sangjun-board.service';
 import { BubbleService } from '../../services/bubble.service';
-import { Bubble, SuggestBubble } from '../../models/bubble';
+import { BubbleTemp, SuggestBubble } from '../../models/bubble-temp';
 
 @Component({
   selector: 'app-sangjun-board',
@@ -14,7 +14,7 @@ export class SangjunBoardComponent implements OnInit {
   isSBChecked = true;
   isCommentChecked = true;
   isWatching = false;
-  bubble: Bubble;
+  bubble: BubbleTemp;
   selectedSB: SuggestBubble;
   suggestBubbles: Array<SuggestBubble>;
 

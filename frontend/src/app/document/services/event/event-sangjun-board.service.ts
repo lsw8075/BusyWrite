@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs/Subject';
-import { SuggestBubble } from '../../models/bubble';
+import { SuggestBubble } from '../../models/bubble-temp';
 
 @Injectable()
 export class EventSangjunBoardService {
