@@ -32,8 +32,6 @@ def do_create_document(
     title: str
     ):
 
-    # TODO : check the directory is user's
-    
     user = do_fetch_user(user_id)
     
     document = Document.objects.create(title=title)
@@ -72,5 +70,3 @@ def do_fetch_contributors(
 
     document = do_fetch_document(document_id)
     return list(document.contributors.all().values())
-
-
