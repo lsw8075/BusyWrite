@@ -253,6 +253,7 @@ def cascaded_delete_children(user, bubble):
             raise BubbleOwnedError(bubble.id)
         cascaded_delete_children(user, child)
         bubble.delete_children(child.location, 1)
+        NormalBubble.delete(child)
 
 def do_delete_normal_bubble(
     user_id: int,
@@ -389,12 +390,14 @@ def do_pop_normal_bubble(
 flatten_content = ''
 
 def cascaded_flatten_children(user, bubble):
+    s = bubble.content
     for child in bubble.child_bubbles.all():
         if child.owned_by_other(user):
             raise BubbleOwnedError()
-        cascaded_flatten_children(user, child)
+        s = s + cascaded_flatten_children(user, child)
         bubble.delete_children(child.location, 1)
-    flattened_content = flatten_content + bubble.content
+        NormalBubble.delete(child)
+    return s
 
 def do_flatten_normal_bubble(
     user_id: int,
@@ -419,8 +422,8 @@ def do_flatten_normal_bubble(
     flatten_content = ''
 
     with transaction.atomic():
-        cascaded_flatten_children(user, bubble)
-        bubble.change_content(flatten_content)
+        content = cascaded_flatten_children(user, bubble)
+        bubble.change_content(content)
 
     return bubble
 

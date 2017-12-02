@@ -191,7 +191,9 @@ class BubblesTestCase(TestCase):
             do_flatten_normal_bubble(self.user1.id, self.doc1.id, self.bubble2.id)
         
         self.bubble2.unlock(self.user2)
+        print_bubble_tree(self.doc1root, 1)
         do_flatten_normal_bubble(self.user1.id, self.doc1.id, self.bubble2.id)
+        print_bubble_tree(self.doc1root, 1)
 
 
     def test_do_split_leaf_bubble(self):
