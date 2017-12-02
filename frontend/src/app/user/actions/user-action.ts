@@ -33,7 +33,7 @@ export class SignIn implements Action {
 
 export class SignInSuccess implements Action {
     readonly type = SIGNIN_SUCCESS;
-    constructor(public payload: User) {}
+    constructor(public payload: number) {}
 }
 
 export class SignInFail implements Action {

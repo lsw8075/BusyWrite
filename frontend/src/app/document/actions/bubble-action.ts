@@ -159,6 +159,42 @@ export class DeleteError implements Action {
   constructor(public payload: string) {}
 }
 
+export const OTHERS_CREATE = '[BubbleTemp] others create';
+export const OTHERS_EDIT = '[BubbleTemp] others edit';
+export const OTHERS_WRAP = '[BubbleTemp] others wrap';
+export const OTHERS_POP = '[BubbleTemp] others pop';
+export const OTHERS_MERGE = '[BubbleTemp] others merge';
+export const OTHERS_SPLIT = '[BubbleTemp] others split';
+export const OTHERS_DELETE = '[BubbleTemp] others delete';
+export class OthersCreate implements Action {
+  readonly type = OTHERS_CREATE;
+  constructor(public payload: BubbleTemp) {}
+}
+export class OthersEdit implements Action {
+  readonly type = OTHERS_EDIT;
+  constructor(public payload: BubbleTemp) {}
+}
+export class OthersWrap implements Action {
+  readonly type = OTHERS_WRAP;
+  constructor(public payload: BubbleTemp) {}
+}
+export class OthersPop implements Action {
+  readonly type = OTHERS_POP;
+  constructor(public payload: BubbleTemp) {}
+}
+export class OthersMerge implements Action {
+  readonly type = OTHERS_MERGE;
+  constructor(public payload: BubbleTemp) {}
+}
+export class OthersSplit implements Action {
+  readonly type = OTHERS_SPLIT;
+  constructor(public payload: BubbleTemp) {}
+}
+export class OthersDelete implements Action {
+  readonly type = OTHERS_DELETE;
+  constructor(public payload: BubbleTemp) {}
+}
+
 export type Actions =
   | Open
   | OpenComplete
@@ -187,4 +223,10 @@ export type Actions =
   | SplitError
   | Delete
   | DeleteComplete
-  | DeleteError;
+  | DeleteError
+  | OthersCreate
+  | OthersEdit
+  | OthersWrap
+  | OthersPop
+  | OthersMerge
+  | OthersDelete;

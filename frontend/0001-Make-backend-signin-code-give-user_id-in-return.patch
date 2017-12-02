@@ -1,0 +1,56 @@
+From 9c338ea75a42e494d52180608094172c7f533486 Mon Sep 17 00:00:00 2001
+From: Dajung Je <ss01363@naver.com>
+Date: Sat, 2 Dec 2017 04:12:21 -0800
+Subject: [PATCH 1/2] Make backend signin code give user_id in return
+
+---
+ backend/busyback/test_users.py | 8 ++++++--
+ backend/busyback/views.py      | 2 +-
+ 2 files changed, 7 insertions(+), 3 deletions(-)
+
+diff --git a/backend/busyback/test_users.py b/backend/busyback/test_users.py
+index 80f6336..4e8ccab 100644
+--- a/backend/busyback/test_users.py
++++ b/backend/busyback/test_users.py
+@@ -1,4 +1,4 @@
+-from django.test import TestCase
++from django.test import TestCase, Client
+ from .models import *
+ from .mock_db_setup import mockDBSetup
+ from .errors import *
+@@ -20,6 +20,7 @@ class UsersTestCase(TestCase):
+ class SignInTestCase(TestCase):
+ 
+     def setUp(self):
++        self.client = Client()
+         self.user1 = User.objects.create_user(username='testuser1', email='test1@test.com', password='1234')
+         self.user2 = User.objects.create_user(username='testuser2', email='test2@test.com', password='5678')
+         self.user3 = User.objects.create_user(username='testuser3', email='test3@test.com', password='9090')
+@@ -61,7 +62,10 @@ class SignInTestCase(TestCase):
+         self.assertEqual(405, self.send('PUT', 'signup', {'username': 'testuser4', 'password': '5678'}))
+ 
+     def test_signin(self):
+-        self.assertEqual(200, self.send('POST', 'signin', {'username': 'testuser2', 'password': '5678'}))
++        response = self.client.post('/api/signin', json.dumps({'username': 'testuser2', 'password': '5678'}), content_type='applicaton/json')
++        
++        self.assertEqual(200, response.status_code)
++        self.assertEqual(json.loads(response.content.decode())['user_id'], self.user2.id)
+ 
+         self.assertEqual(401, self.send('POST', 'signin', {'username': 'testuser2', 'password': '1234'}))
+ 
+diff --git a/backend/busyback/views.py b/backend/busyback/views.py
+index 54f1ed8..d7681b3 100644
+--- a/backend/busyback/views.py
++++ b/backend/busyback/views.py
+@@ -31,7 +31,7 @@ def signin(request):
+             return HttpResponse(status=401) # unauthorized
+         else:
+             login(request, user)
+-            return HttpResponse(status=200)
++            return JsonResponse({'user_id': user.id})
+     else:
+         return HttpResponseNotAllowed(['POST'])
+ 
+-- 
+2.14.1
+
