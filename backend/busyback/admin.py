@@ -1,8 +1,7 @@
 from django.contrib import admin
-from .models import Directory, Document, Note, Bubble, NormalBubble, SuggestBubble, Comment, News, Invitation, SharedLink, Notification
+from .models import Document, Note, Bubble, NormalBubble, SuggestBubble, Comment, News, Invitation, SharedLink, Notification
 
 # Register your models here.
-admin.site.register(Directory)
 admin.site.register(Document)
 admin.site.register(Note)
 admin.site.register(Bubble)

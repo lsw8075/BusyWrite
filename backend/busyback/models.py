@@ -4,28 +4,6 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from .errors import *
 
-class Directory(models.Model):
-    name = models.TextField()
-    owner = models.ForeignKey(
-    	User,
-    	related_name='directories',
-    	null=False
-    )
-    parent_directory = models.ForeignKey(
-    	'Directory',
-    	related_name='child_directories',
-    	null=True # root directory has no parent
-    )
-    # need to check if this info matches Document.contributors info
-    # when user is added as contributor, or document is deleted from directory
-    child_documents = models.ManyToManyField(
-    	'Document',
-    	related_name='parent_directory'
-    )
-
-    def is_owner(self, user):
-        return self.owner.id == user
-
 class Document(models.Model):
     title = models.TextField()
     contributors = models.ManyToManyField(
