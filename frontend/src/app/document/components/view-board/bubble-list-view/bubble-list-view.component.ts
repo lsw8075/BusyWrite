@@ -34,6 +34,7 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
       this._store.select(fromDocument.getBubbleState).subscribe(bubble => {
         this.selectedBubble = bubble.selectedBubble;
         this.selectedMenu = bubble.selectedMenu;
+        this.rootBubble = bubble.rootBubble;
       });
     }
 

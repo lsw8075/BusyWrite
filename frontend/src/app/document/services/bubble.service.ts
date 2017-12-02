@@ -27,7 +27,7 @@ export class BubbleService {
 
     constructor(
             private _store: Store<Reducer.State>,
-            private _socket: ServerSocket, 
+            private _socket: ServerSocket,
             private _http: Http)  {
         const stream = this._socket.connect();
         console.log(stream);
@@ -108,11 +108,12 @@ export class BubbleService {
         }
     }
 
-    public openDocument(documentId) {
+    public openDocument(documentId): Promise<void> {
         const m = {'header': 'open_document',
                 'body': {'document_id': documentId.toString()}};
         console.log('send open_document');
         this._socket.send(m);
+        return Promise.resolve(null);
     }
 
     public closeDocument(documentId) {

@@ -2,10 +2,12 @@ import { Action } from '@ngrx/store';
 
 import { Bubble, BubbleType, InternalBubble, LeafBubble } from '../models/bubble';
 import { MenuType } from '../services/event/event-bubble.service';
+import { MockBubbleRoot } from '../models/bubble.mock';
 
 import * as fromBubble from '../actions/bubble-action';
 
 export interface BubbleState {
+  documentId: number;
   rootBubble: InternalBubble;
   bubbleList: Bubble[];
   selectedBubble: Bubble;
@@ -15,6 +17,7 @@ export interface BubbleState {
 }
 
 const initialState: BubbleState = {
+  documentId: -1,
   rootBubble: null,
   bubbleList: [],
   selectedBubble: null,
@@ -29,9 +32,11 @@ export function BubbleReducer(state: BubbleState = initialState, action: fromBub
       const selection = action.payload as {bubble: Bubble, menu: MenuType};
       return {...state, selectedBubble: selection.bubble, selectedMenu: selection.menu};
     case fromBubble.LOAD:
-      return {...state, loading: true};
-    case fromBubble.LOAD_COMPLETE:
-      return {...state, rootBubble: action.payload, loading: false};
+      return {...state, loading: true, documentId: action.payload};
+    case fromBubble.LOAD_COMPLETE: {
+      const root = MockBubbleRoot;
+      return {...state, bubbleList: action.payload, rootBubble: root, loading: false};
+    }
     case fromBubble.LOAD_ERROR:
       return {...state, error: action.payload};
     case fromBubble.POP:
@@ -94,6 +99,15 @@ function _containsBubble(bubble: Bubble, bubbleList: Array<Bubble>): boolean {
     }
   }
   return false;
+}
+
+function getBubbleById(bubbleList: Array<Bubble>, id: number): Bubble {
+  const bList = bubbleList.filter((bubble) => (bubble.id === id));
+    console.log(bubbleList, id);
+  if (bList.length === 0) {
+    throw new Error('Does not exist with this id');
+  }
+  return bList[0];
 }
 
 function deleteBubble(bubble: Bubble) {

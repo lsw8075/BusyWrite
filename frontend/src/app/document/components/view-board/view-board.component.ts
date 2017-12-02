@@ -38,7 +38,7 @@ export class ViewBoardComponent implements OnInit {
   }
 
   ngOnInit() {
-    this._store.dispatch(new BubbleAction.Load(null));
+    this._store.dispatch(new BubbleAction.Open(1));
   }
 
   previewClick(event) {

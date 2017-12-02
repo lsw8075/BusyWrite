@@ -2,16 +2,32 @@ import { Action } from '@ngrx/store';
 import { Bubble } from '../models/bubble';
 import { MenuType } from '../services/event/event-bubble.service';
 
+export const OPEN = '[Document] open';
+export const OPEN_COMPLETE = '[Document] open complete';
+export const OPEN_ERROR = '[Document] open error';
+export class Open implements Action {
+  readonly type = OPEN;
+  constructor(public payload: number) {}
+}
+export class OpenComplete implements Action {
+  readonly type = OPEN_COMPLETE;
+  constructor(public payload: number) {}
+}
+export class OpenError implements Action {
+  readonly type = OPEN_ERROR;
+  constructor(public payload: string) {}
+}
+
 export const LOAD = '[Bubble] Load';
 export const LOAD_COMPLETE = '[Bubble] load Complete';
 export const LOAD_ERROR = '[Bubble] load Error';
 export class Load implements Action {
   readonly type = LOAD;
-  constructor(public payload: void) {}
+  constructor(public payload: number) {}
 }
 export class LoadComplete implements Action {
   readonly type = LOAD_COMPLETE;
-  constructor(public payload: Bubble) {}
+  constructor(public payload: Array<Bubble>) {}
 }
 export class LoadError implements Action {
   readonly type = LOAD_ERROR;
@@ -144,6 +160,9 @@ export class DeleteError implements Action {
 }
 
 export type Actions =
+  | Open
+  | OpenComplete
+  | OpenError
   | Load
   | LoadComplete
   | LoadError
