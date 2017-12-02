@@ -74,6 +74,10 @@ class CommentDoesNotExistError(Error):
     def __init__(self, comment):
         self.comment = comment
 
+class DocumentDoesNotExistError(Error):
+    def __init__(self, document):
+        self.document = document
+
 class NoteDoesNotExistError(Error):
     def __init__(self, note):
         self.note = note

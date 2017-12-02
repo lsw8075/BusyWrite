@@ -10,21 +10,23 @@ class DocumentTestCase(TestCase):
         mockDBSetup(self)
 
     def test_do_fetch_document(self):
-        
+        with self.assertRaises(DocumentDoesNotExistError):
+            do_fetch_document(self.user1.id, 100)
+
+        with self.assertRaises(UserIsNotContributorError):
+            do_fetch_document(self.user1.id, self.doc2.id)
+
+        do_fetch_document(self.user1.id, self.doc1.id)
         pass
 
+    def test_do_fetch_documents(self):
+        do_fetch_documents(self.user1.id)
+        do_fetch_documents(self.user4.id)
+       
     def test_do_create_document(self):
-        pass
-
-    def test_do_delete_document(self):
-        pass
-
-    def test_check_contributor(self):
-        pass
-
-    def test_do_add_contributor(self):
-        pass
+        do_create_document(self.user1.id, 'Create Document')
 
     def test_do_fetch_contributors(self):
-        pass
+        cont = do_fetch_contributors(self.user1.id, self.doc1.id)
+        self.assertEqual(cont[0]['id'], self.user1.id)
 
