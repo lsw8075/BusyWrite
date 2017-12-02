@@ -25,17 +25,6 @@ def check_suggest_contributor(user_id, suggest):
     if not document.is_contributed_by(user_id):
         raise UserIsNotContributorError(user_id, document.id)
 
-def do_fetch_bubble(
-    user_id: int,
-    document_id: int,
-    bubble_id: int
-    ):
-    try:
-        bubble = Bubble.objects.get(id=bubble_id)
-    except Bubble.DoesNotExist:
-        raise BubbleDoesNotExistError(bubble_id)
-    return bubble
-
 def do_fetch_normal_bubble(
     user_id: int,
     document_id: int,
@@ -74,12 +63,6 @@ def do_fetch_normal_bubbles(
     bubbles = list(bubbles)
     return bubbles
 
-def do_fetch_bubbles(
-    user_id: int,
-    document_id: int
-    ):
-    return do_fetch_normal_bubbles(user_id, document_id)
-
 def do_fetch_suggest_bubbles(
     user_id: int,
     document_id: int,
@@ -101,7 +84,8 @@ def get_root_bubble(
     ):
     '''Get root bubble of a document'''
     try:
-        root_bubble = NormalBubble.objects.filter(parent_bubble=None).get(id=document_id)
+        document = do_fetch_document(user_id, document_id)
+        root_bubble = NormalBubble.objects.filter(parent_bubble=None).get(document=document)
     except NormalBubble.MultipleObjectsReturned:
         raise InternalError('Document %d has multiple root bubble' % document_id)
     except NormalBubble.DoesNotExist:
@@ -249,6 +233,8 @@ def do_move_normal_bubble(
 
 def cascaded_delete_children(user, bubble):
     for child in bubble.child_bubbles.all():
+        if child.is_locked():
+            raise BubbleLockedError(bubble.id)
         if child.owned_by_other(user):
             raise BubbleOwnedError(bubble.id)
         cascaded_delete_children(user, child)
@@ -331,9 +317,6 @@ def do_wrap_normal_bubble(
 
     parent = bubbles[0].parent_bubble
 
-    if parent.has_locked_ancestors() or parent.is_locked():
-        raise BubbleIsLockedError(parent.id)
-
     check_contributor(user_id, bubbles[0])
 
     # check all bubbles sharing one parent
@@ -379,8 +362,6 @@ def do_pop_normal_bubble(
     if bubble.has_locked_directs():
         raise BubbleLockedError(bubble.id)
 
-    if bubble.owned_by_other(user):
-        raise BubbleOwnedError(bubble.id)
 
     with transaction.atomic():
         bubble.parent_bubble.pop_child(bubble.location)
@@ -392,6 +373,8 @@ flatten_content = ''
 def cascaded_flatten_children(user, bubble):
     s = bubble.content
     for child in bubble.child_bubbles.all():
+        if child.is_locked():
+            raise BubbleLockedError(bubble.id)
         if child.owned_by_other(user):
             raise BubbleOwnedError()
         s = s + cascaded_flatten_children(user, child)

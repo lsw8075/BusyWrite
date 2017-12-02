@@ -36,24 +36,31 @@ class BubblesTestCase(TestCase):
         emptydoc.save()
         
         with self.assertRaises(InternalError):
-            do_fetch_bubbles(self.user1.id, emptydoc.id)
-
-        with self.assertRaises(InternalError):
             do_fetch_normal_bubbles(self.user1.id, emptydoc.id)
+
+        with self.assertRaises(UserIsNotContributorError):
+            do_fetch_normal_bubbles(self.user1.id, self.doc2.id)
+
+        with self.assertRaises(BubbleDoesNotExistError):
+            do_fetch_suggest_bubbles(self.user1.id, self.doc1.id, 100)
 
         bubbles = do_fetch_normal_bubbles(self.user1.id, self.doc1.id)
         suggests = do_fetch_suggest_bubbles(self.user1.id, self.doc1.id, self.bubble1.id)
         self.assertEqual(len(bubbles), 7)
         self.assertEqual(len(suggests), 2)
 
+        suggests = do_fetch_suggest_bubbles(self.user1.id, self.doc1.id, self.bubble4.id)
+        self.assertEqual(len(suggests), 0)
+
     def test_get_root_bubble(self):
         emptydoc = Document.objects.create(title='error doc')
-        
+        emptydoc.contributors.add(self.user1)
+
         with self.assertRaises(InternalError):
             get_root_bubble(self.user1.id, emptydoc.id)
         
-        multi1 = create_normal(self.doc1, 'multi1')
-        multi2 = create_normal(self.doc1, 'multi2')
+        multi1 = create_normal(emptydoc)
+        multi2 = create_normal(emptydoc)
 
         with self.assertRaises(InternalError):
             get_root_bubble(self.user1.id, emptydoc.id)
@@ -130,6 +137,9 @@ class BubblesTestCase(TestCase):
 
         do_move_normal_bubble(self.user1.id, self.doc1.id, self.bubble1.id, self.bubble2.id, 2)
 
+    def test_do_unlock_bubble(self):
+        self.bubble3.lock(self.user2)
+        do_unlock_bubble(self.user2.id, self.doc1.id, self.bubble3.id)
 
     def test_hide_and_show_suggest(self):
         do_hide_suggest_bubble(self.user1.id, self.doc1.id, self.suggest1.id)
@@ -191,12 +201,13 @@ class BubblesTestCase(TestCase):
             do_flatten_normal_bubble(self.user1.id, self.doc1.id, self.bubble2.id)
         
         self.bubble2.unlock(self.user2)
-        print_bubble_tree(self.doc1root, 1)
         do_flatten_normal_bubble(self.user1.id, self.doc1.id, self.bubble2.id)
-        print_bubble_tree(self.doc1root, 1)
 
 
     def test_do_split_leaf_bubble(self):
+
+        with self.assertRaises(BubbleIsInternalError):
+            do_split_leaf_bubble(self.user1.id, self.doc1.id, self.bubble2.id, ['1234', '5678'])
 
         with self.assertRaises(InvalidSplitError):
             do_split_leaf_bubble(self.user3.id, self.doc1.id, self.bubble3.id, [])
@@ -240,6 +251,20 @@ class BubblesTestCase(TestCase):
         self.assertFalse(self.suggest1.is_voted_by(self.user1))
 
     def test_do_switch_bubble(self):
+
+        self.bubble1.lock(self.user2)
+        with self.assertRaises(BubbleLockedError):
+            do_switch_bubble(self.user1.id, self.doc1.id, self.suggest1.id)
+        self.bubble1.unlock(self.user2)
+
+        
+        owned = do_create_normal_bubble(self.user2.id, self.doc1.id, self.doc1root.id, 3, True, 'test owned')
+        owned.unlock(self.user2)
+
+        owned_suggest = create_suggest(owned, 'hello')
+
+        with self.assertRaises(BubbleOwnedError):
+            do_switch_bubble(self.user3.id, self.doc1.id, owned_suggest.id)
 
         do_vote_bubble(self.user1.id, self.doc1.id, self.suggest1.id)
         do_vote_bubble(self.user2.id, self.doc1.id, self.suggest1.id)
