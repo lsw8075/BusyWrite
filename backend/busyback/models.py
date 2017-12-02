@@ -247,7 +247,7 @@ class NormalBubble(Bubble):
         return self
 
     def wrap_children(self, location, wrap_count):
-        wrapper = NormalBubble.objects.create(document=self.document, content='', timestamp=timezone.now(), location=0)
+        wrapper = NormalBubble.objects.create(document=self.document, content='', location=0)
         self.splice_children(location, wrap_count, wrapper, 0, [wrapper])
         return wrapper
 
