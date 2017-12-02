@@ -1,4 +1,4 @@
-from django.test import TestCase
+from django.test import TestCase, Client
 from .models import *
 from .mock_db_setup import mockDBSetup
 from .errors import *
@@ -20,6 +20,7 @@ class UsersTestCase(TestCase):
 class SignInTestCase(TestCase):
 
     def setUp(self):
+        self.client = Client()
         self.user1 = User.objects.create_user(username='testuser1', email='test1@test.com', password='1234')
         self.user2 = User.objects.create_user(username='testuser2', email='test2@test.com', password='5678')
         self.user3 = User.objects.create_user(username='testuser3', email='test3@test.com', password='9090')
@@ -61,7 +62,10 @@ class SignInTestCase(TestCase):
         self.assertEqual(405, self.send('PUT', 'signup', {'username': 'testuser4', 'password': '5678'}))
 
     def test_signin(self):
-        self.assertEqual(200, self.send('POST', 'signin', {'username': 'testuser2', 'password': '5678'}))
+        response = self.client.post('/api/signin', json.dumps({'username': 'testuser2', 'password': '5678'}), content_type='applicaton/json')
+        
+        self.assertEqual(200, response.status_code)
+        self.assertEqual(json.loads(response.content.decode())['user_id'], self.user2.id)
 
         self.assertEqual(401, self.send('POST', 'signin', {'username': 'testuser2', 'password': '1234'}))
 
