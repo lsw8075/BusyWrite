@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, Output, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { BubbleMenuComponent } from './bubble-menu/bubble-menu.component';
 import { MenuType, ActionType, Board, BubbleTemp } from './service';
 import { BubbleService } from './service';
@@ -19,45 +19,55 @@ import { Bubble, BubbleType, InternalBubble, LeafBubble } from '../../models/bub
 import { BubbleJsonHelper } from '../../models/bubble-json-helper';
 
 @Component({
-  selector: 'app-view-board',
-  templateUrl: './view-board.component.html',
-  styleUrls: ['./view-board.component.css'],
-
+    selector: 'app-view-board',
+    templateUrl: './view-board.component.html',
+    styleUrls: ['./view-board.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class ViewBoardComponent implements OnInit {
 
-  rootBubble$: Observable<Bubble>;
+    rootBubble$: Observable<Bubble>;
 
-  bubbleList: Array<Bubble>;
-  rootBubble: Bubble;
+    bubbleList: Array<Bubble>;
+    rootBubble: Bubble;
 
   constructor(
     private _store: Store<fromDocument.State>,
+    private ref: ChangeDetectorRef,
     private _boardService: BoardService,
     private _bubbleService: BubbleService,
     private _eventBubbleService: EventBubbleService) {
-      let cnt = 0;
-      this.rootBubble$ = _store.select(fromDocument.getBubbleState).map(bubbleState => bubbleState.rootBubble);
-      this._store.select(fromDocument.getBubbleState).subscribe((res) => {
-        console.log(cnt++);
-        for (let bubble of res.bubbleList) {
-          if (bubble.type === BubbleType.internalBubble) {
-           const internalBubble = bubble as InternalBubble;
-           let msg = {id: internalBubble.id, parentBubbleId: internalBubble.parentBubbleId, childBubbleIds: internalBubble.childBubbleIds, location: internalBubble.location};
-           console.log(msg);
-          }
-          else if (bubble.type === BubbleType.leafBubble) {
-            const leafBubble = bubble as LeafBubble;
-            let msg = {id: leafBubble.id, content: leafBubble.content.substr(0,10), parentBubbleId: leafBubble.parentBubbleId, location: leafBubble.location};
-            console.log(msg);
-          }
-        }
-
-        this.bubbleList = res.bubbleList;
-        this.rootBubble = res.rootBubble;
-      });
-  }
+        let cnt = 0;
+        this.rootBubble$ = _store.select(fromDocument.getBubbleState).map(bubbleState => bubbleState.rootBubble);
+        this._store.select(fromDocument.getBubbleState).subscribe((res) => {
+            console.log(cnt++);
+            for (const bubble of res.bubbleList) {
+                if (bubble.type === BubbleType.internalBubble) {
+                const internalBubble = bubble as InternalBubble;
+                const msg = {
+                    id: internalBubble.id,
+                    parentBubbleId: internalBubble.parentBubbleId,
+                    childBubbleIds: internalBubble.childBubbleIds,
+                    location: internalBubble.location};
+                console.log(msg);
+            } else if (bubble.type === BubbleType.leafBubble) {
+                    const leafBubble = bubble as LeafBubble;
+                    const msg = {
+                        id: leafBubble.id,
+                        content: leafBubble.content.substr(0, 10),
+                        parentBubbleId: leafBubble.parentBubbleId,
+                        location: leafBubble.location};
+                    console.log(msg);
+                }
+            }
+            this.rootBubble = res.rootBubble;
+        });
+        this._store.select(fromDocument.getBubbleList).subscribe(bubbleList => {
+            console.log('state changed', bubbleList);
+            this.bubbleList = bubbleList;
+        });
+    }
 
   ngOnInit() {
     this._store.dispatch(new BubbleAction.Open(1));

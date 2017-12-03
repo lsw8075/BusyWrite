@@ -50,7 +50,13 @@ export function BubbleReducer(state: BubbleState = initialState, action: fromBub
     case fromBubble.DELETE_COMPLETE: {
       const bubble = action.payload;
       deleteBubble(state.bubbleList, bubble.id);
-      return {...state, loading: false};
+      return {
+          ...state,
+          loading: false,
+          bubbleList: [
+              ...state.bubbleList
+          ]
+          };
     }
     case fromBubble.CREATE:
       return {...state, selectedBubble: action.payload.bubble, selectedMenu: action.payload.menu, loading: true};
@@ -87,6 +93,10 @@ export function BubbleReducer(state: BubbleState = initialState, action: fromBub
     default:
       return state;
   }
+}
+
+function BubbleListReducer(state, action) {
+    // nested reducer
 }
 
 function _containsBubble(bubble: Bubble, bubbleList: Array<Bubble>): boolean {
@@ -133,7 +143,7 @@ function deleteChildBubbles(bubbleList: Array<Bubble>, id: number) {
       }
     }
     removeBubbleById(bubbleList, bubble.id);
-  } catch(err) {
+  } catch (err) {
   //  throw err;
   }
 }
@@ -151,7 +161,7 @@ function deleteBubble(bubbleList: Array<Bubble>, id: number) {
       const childBubble = getBubbleById(bubbleList, parentBubble.childBubbleIds[i]);
       childBubble.location = i;
     }
-  } catch(err) {
+  } catch (err) {
   //  throw err;
   }
 }
