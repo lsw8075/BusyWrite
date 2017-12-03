@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs/Subject';
-import { BubbleTemp, LeafBubble } from '../../models/bubble-temp';
+import { BubbleTemp, LeafBubbleTemp } from '../../models/bubble-temp';
 
 const tempUserId = 1;
 @Injectable()

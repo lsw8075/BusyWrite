@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, OnDestroy, Output, HostListener } from '@angular/core';
 import { BubbleService } from '../service';
 import { BubbleType, BubbleTemp, ActionType, MenuType } from '../service';
-import { InternalBubbleTemp, LeafBubble } from '../../../models/bubble-temp';
+import { InternalBubbleTemp, LeafBubbleTemp } from '../../../models/bubble-temp';
 import { EventBubbleService, BoardService } from '../service';
 
 import { Store } from '@ngrx/store';
@@ -31,11 +31,11 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
     private _bubbleService: BubbleService,
     private _eventBubbleService: EventBubbleService,
     private _boardService: BoardService) {
-      this._store.select(fromDocument.getBubbleState).subscribe(bubble => {
-        this.selectedBubble = bubble.selectedBubble;
-        this.selectedMenu = bubble.selectedMenu;
-        this.rootBubble = bubble.rootBubble;
-      });
+      // this._store.select(fromDocument.getBubbleState).subscribe(bubble => {
+      //   this.selectedBubble = bubble.selectedBubble;
+      //   this.selectedMenu = bubble.selectedMenu;
+      //   this.rootBubble = bubble.rootBubble;
+      // });
     }
 
   ngOnInit() {
@@ -77,11 +77,11 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
   }
 
   public wrapBubble() {
-    this._bubbleService.wrapBubble(this._eventBubbleService.wrapBubbles)
-      .then(response => {
-        this._refreshBubbleList();
-        this._eventBubbleService.clearState();
-      });
+    // this._bubbleService.wrapBubble(this._eventBubbleService.wrapBubbles)
+    //   .then(response => {
+    //     this._refreshBubbleList();
+    //     this._eventBubbleService.clearState();
+    //   });
   }
 
   public createBubble(bubble: BubbleTemp, menu: MenuType) {
@@ -91,12 +91,12 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
     } else if (menu !== MenuType.borderTopMenu) {
       throw new Error('create bubble invoked with not border');
     }
-    this._bubbleService.createBubble(bubble.parentBubble, location, 'empty bubble')
-      .then(response => {
-  //      this._boardService.editBubble(response);
-        this._eventBubbleService.clearState();
-        this._refreshBubbleList();
-      });
+  //   this._bubbleService.createBubble(bubble.parentBubble, location, 'empty bubble')
+  //     .then(response => {
+  // //      this._boardService.editBubble(response);
+  //       this._eventBubbleService.clearState();
+  //       this._refreshBubbleList();
+  //     });
   }
   private finishEdit(bubble: BubbleTemp) {
     bubble.releaseLock();
@@ -114,31 +114,31 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
   public deleteBubble(bubble: BubbleTemp) {
     if (bubble.id !== 0) {
       this._eventBubbleService.setState(ActionType.delete);
-      this._bubbleService.deleteBubble(bubble).then(() => {
-          this._eventBubbleService.clearState();
-          this._refreshBubbleList();
-        });
+      // this._bubbleService.deleteBubble(bubble).then(() => {
+      //     this._eventBubbleService.clearState();
+      //     this._refreshBubbleList();
+      //   });
     } else {
       throw new Error('Cannot delete root bubble');
     }
   }
 
   public flattenBubble(bubble: BubbleTemp) {
-    this._bubbleService.flattenBubble(bubble).then(() => {
-        this._eventBubbleService.clearState();
-        this._refreshBubbleList();
-      });
+    // this._bubbleService.flattenBubble(bubble).then(() => {
+    //     this._eventBubbleService.clearState();
+    //     this._refreshBubbleList();
+    //   });
   }
 
   public moveBubble(bubble: BubbleTemp, destBubble: BubbleTemp, menu: MenuType) {
-    this._bubbleService.moveBubble(bubble, destBubble, menu).then(() => {
-      this._eventBubbleService.clearState();
-      this._refreshBubbleList();
-    });
+    // this._bubbleService.moveBubble(bubble, destBubble, menu).then(() => {
+    //   this._eventBubbleService.clearState();
+    //   this._refreshBubbleList();
+    // });
   }
 
   public onClickEvent(bubble: BubbleTemp, menu: MenuType, mouseEvent: MouseEvent): void {
-    this._store.dispatch(new BubbleAction.Select({bubble, menu}));
+  //  this._store.dispatch(new BubbleAction.Select({bubble, menu}));
   }
 
   public isMenuOpen(bubble, menu): boolean {

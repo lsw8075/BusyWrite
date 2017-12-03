@@ -28,9 +28,9 @@ export class SplitBubbleComponent implements OnInit {
 
   public split() {
     if (this.highlightedText || (this.afterText && this.beforeText)) {
-      this._bubbleService.splitLeafBubble(this.bubble, this.highlightedText, this.highlightOffset).then(() => {
-        this._eventBubbleService.splitBubble();
-      });
+      // this._bubbleService.splitLeafBubble(this.bubble, this.highlightedText, this.highlightOffset).then(() => {
+      //   this._eventBubbleService.splitBubble();
+      // });
     }
   }
 

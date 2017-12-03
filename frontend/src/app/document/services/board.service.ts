@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs/Subject';
 import { Board, EditItem } from '../models/board';
-import { BubbleTemp, BubbleType, LeafBubble } from '../models/bubble-temp';
+import { BubbleTemp, BubbleType, LeafBubbleTemp } from '../models/bubble-temp';
 import { BubbleService } from './bubble.service';
 
 const tempUserId = 1;
@@ -40,7 +40,7 @@ export class BoardService {
 
   public getEditBubbles(): void {
     this._bubbleService.getBubbleList().then(bubbles =>
-      bubbles.filter(b => (b.type !== BubbleType.internalBubble) && ((b as LeafBubble).ownerId === tempUserId))
+      bubbles.filter(b => (b.type !== BubbleType.internalBubble) && ((b as LeafBubbleTemp).ownerId === tempUserId))
              .forEach((b) => {
               this.editBubble(b);
             }));

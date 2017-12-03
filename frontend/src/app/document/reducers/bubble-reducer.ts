@@ -1,6 +1,6 @@
 import { Action } from '@ngrx/store';
 
-import { BubbleTemp, BubbleType, InternalBubbleTemp, LeafBubble } from '../models/bubble-temp';
+import { Bubble, BubbleType, InternalBubble, LeafBubble } from '../models/bubble';
 import { MenuType } from '../services/event/event-bubble.service';
 import { MockBubbleRoot } from '../models/bubble.mock';
 
@@ -8,9 +8,9 @@ import * as fromBubble from '../actions/bubble-action';
 
 export interface BubbleState {
   documentId: number;
-  rootBubble: InternalBubbleTemp;
-  bubbleList: BubbleTemp[];
-  selectedBubble: BubbleTemp;
+  rootBubble: InternalBubble;
+  bubbleList: Bubble[];
+  selectedBubble: Bubble;
   selectedMenu: MenuType;
   loading: boolean;
   error: string;
@@ -29,7 +29,7 @@ const initialState: BubbleState = {
 export function BubbleReducer(state: BubbleState = initialState, action: fromBubble.Actions) {
   switch (action.type) {
     case fromBubble.SELECT:
-      const selection = action.payload as {bubble: BubbleTemp, menu: MenuType};
+      const selection = action.payload as {bubble: Bubble, menu: MenuType};
       return {...state, selectedBubble: selection.bubble, selectedMenu: selection.menu};
     case fromBubble.LOAD:
       return {...state, loading: true, documentId: action.payload};
@@ -43,9 +43,6 @@ export function BubbleReducer(state: BubbleState = initialState, action: fromBub
       return {...state, loading: true};
     case fromBubble.POP_COMPLETE: {
       const bubble = action.payload;
-      const parentBubble: InternalBubbleTemp = bubble.parentBubble;
-      parentBubble.popChild(bubble);
-      state.bubbleList = state.bubbleList.filter(b => b.id !== bubble.id);
       return {...state, loading: false};
     }
     case fromBubble.DELETE:
@@ -92,7 +89,7 @@ export function BubbleReducer(state: BubbleState = initialState, action: fromBub
   }
 }
 
-function _containsBubble(bubble: BubbleTemp, bubbleList: Array<BubbleTemp>): boolean {
+function _containsBubble(bubble: Bubble, bubbleList: Array<Bubble>): boolean {
   for (const b of this.bubbleList) {
     if (b.id === bubble.id) {
       return true;
@@ -101,7 +98,7 @@ function _containsBubble(bubble: BubbleTemp, bubbleList: Array<BubbleTemp>): boo
   return false;
 }
 
-function getBubbleById(bubbleList: Array<BubbleTemp>, id: number): BubbleTemp {
+function getBubbleById(bubbleList: Array<Bubble>, id: number): Bubble {
   const bList = bubbleList.filter((bubble) => (bubble.id === id));
   if (bList.length === 0) {
     throw new Error('Does not exist with this id');
@@ -109,47 +106,20 @@ function getBubbleById(bubbleList: Array<BubbleTemp>, id: number): BubbleTemp {
   return bList[0];
 }
 
-function deleteBubble(bubble: BubbleTemp) {
-  if (bubble.parentBubble === null) {
-    throw new Error('Cannot delete root bubble');
-  }
-
-  const parentBubble: InternalBubbleTemp = bubble.parentBubble;
-  parentBubble.deleteChild(bubble);
-
-  if (parentBubble.childBubbles.length === 1) {
-    const grandParentBubble: InternalBubbleTemp = parentBubble.parentBubble;
-    grandParentBubble.popChild(parentBubble);
-  }
-}
-
-function createBubble(bubble: BubbleTemp, menu: MenuType) {
-  let location = bubble.location;
-  if (menu === MenuType.borderBottomMenu) {
-    location++;
-  } else if (menu !== MenuType.borderTopMenu) {
-    throw new Error('create bubble invoked with not border');
-  }
+function deleteBubble(bubble: Bubble) {
 
 }
 
-function editBubble(bubble: BubbleTemp, newContent: string) {
-  if (bubble.type === BubbleType.leafBubble) {
-//    (bubble as LeafBubble).getEditLock(tempUserId);
-    (bubble as LeafBubble).content = newContent;
-  } else {
-    throw new Error('Cannot edit internal bubble');
-  }
+function createBubble(bubble: Bubble, menu: MenuType) {
+
 }
 
-function wrapBubble(wrapBubbleList: Array<BubbleTemp>): Promise<void> {
-  if (wrapBubbleList.length > 1) {
-    const parentBubble: InternalBubbleTemp = wrapBubbleList[0].parentBubble;
-    const wrapperBubble = new InternalBubbleTemp(this._getId(), null);
-    parentBubble.wrapChildren(wrapperBubble, wrapBubbleList);
-    this.bubbleList = this.bubbleList.filter(b => !this._containsBubble(b, wrapBubbleList));
-    this.bubbleList.push(wrapperBubble);
-  }
+function editBubble(bubble: Bubble, newContent: string) {
+
+}
+
+function wrapBubble(wrapBubbleList: Array<Bubble>): Promise<void> {
+
   return Promise.resolve(null);
 }
 

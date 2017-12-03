@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { SuggestBubble, BubbleTemp, Comment } from '../../service';
+import { SuggestBubbleTemp, BubbleTemp, Comment } from '../../service';
 import { CommentService } from '../../service';
 
 @Component({
@@ -10,7 +10,7 @@ import { CommentService } from '../../service';
 export class CommentComponent implements OnInit {
 
   @Input() bubble: BubbleTemp;
-  @Input() suggestBubble: SuggestBubble;
+  @Input() suggestBubble: SuggestBubbleTemp;
 
   newComment: Comment;
   editContent: string;

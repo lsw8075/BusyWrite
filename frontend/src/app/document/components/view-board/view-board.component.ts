@@ -33,10 +33,10 @@ export class ViewBoardComponent implements OnInit {
       private _boardService: BoardService,
       private _bubbleService: BubbleService,
       private _eventBubbleService: EventBubbleService) {
-        this.rootBubble$ = _store.select(fromDocument.getBubbleState).map(bubbleState => bubbleState.rootBubble);
-        this._store.select(fromDocument.getBubbleState).subscribe((bubble) => {
-         console.log(bubble);
-        });
+        // this.rootBubble$ = _store.select(fromDocument.getBubbleState).map(bubbleState => bubbleState.rootBubble);
+        // this._store.select(fromDocument.getBubbleState).subscribe((bubble) => {
+        //  console.log(bubble);
+        // });
   }
 
   ngOnInit() {

@@ -52,17 +52,17 @@ export class BubbleMenuComponent implements OnInit {
   }
 
   public splitBubble() {
-    this._store.dispatch(new BubbleAction.Split(this.bubble));
+  //  this._store.dispatch(new BubbleAction.Split(this.bubble));
     this.bsModalRef = this._modalService.show(SplitBubbleComponent);
     this.bsModalRef.content.bubble = this.bubble;
   }
 
   public popBubble() {
-    this._store.dispatch(new BubbleAction.Pop(this.bubble));
+  //  this._store.dispatch(new BubbleAction.Pop(this.bubble));
   }
 
   public wrapBubble() {
-    this._eventBubbleService.wrapBubble(this.bubble);
+  //  this._eventBubbleService.wrapBubble(this.bubble);
   }
 
   public wrap() {
@@ -72,19 +72,19 @@ export class BubbleMenuComponent implements OnInit {
   public createBubble() {
     const bubble = this.bubble;
     const menu = this.menu;
-    this._store.dispatch(new BubbleAction.Create({bubble, menu}));
+  //  this._store.dispatch(new BubbleAction.Create({bubble, menu}));
   }
 
   public editBubble() {
-    this._store.dispatch(new BubbleAction.Edit(this.bubble));
+  //  this._store.dispatch(new BubbleAction.Edit(this.bubble));
   }
 
   public deleteBubble() {
-    this._store.dispatch(new BubbleAction.Delete(this.bubble));
+  //  this._store.dispatch(new BubbleAction.Delete(this.bubble));
   }
 
   public mergeBubble() {
-    this._store.dispatch(new BubbleAction.Merge(this.bubble));
+  //  this._store.dispatch(new BubbleAction.Merge(this.bubble));
   }
 
   public flattenBubble() {

@@ -16,7 +16,7 @@ export interface BubbleTemp {
   thumbUps: number;
 
   comments: Array<Comment>;
-  suggestBubbles: Array<SuggestBubble>;
+  suggestBubbles: Array<SuggestBubbleTemp>;
   watchUsers: Array<User>;
 
   isMouseOver: boolean;
@@ -27,18 +27,18 @@ export interface BubbleTemp {
   mouseOver(over: boolean): void;
   clearMouseEvent(): void;
 
-  addSuggestBubble(suggestBubble: SuggestBubble): void;
+  addSuggestBubble(suggestBubble: SuggestBubbleTemp): void;
   addComment(comment: Comment): void;
-  deleteSuggestBubble(suggestBubble: SuggestBubble): void;
+  deleteSuggestBubble(suggestBubble: SuggestBubbleTemp): void;
   deleteComment(comment: Comment): void;
 
   getContent(): string;
   isBeingEditted(): boolean;
   getComments(): Array<Comment>;
-  getSuggestBubbles(): Array<SuggestBubble>;
+  getSuggestBubbles(): Array<SuggestBubbleTemp>;
 } /* istanbul ignore next */
 
-export class LeafBubble implements BubbleTemp {
+export class LeafBubbleTemp implements BubbleTemp {
   id: number;
   type: BubbleType;
   parentBubble: InternalBubbleTemp = null;
@@ -48,7 +48,7 @@ export class LeafBubble implements BubbleTemp {
   isMouseOver: boolean;
 
   comments: Array<Comment> = [];
-  suggestBubbles: Array<SuggestBubble> = [];
+  suggestBubbles: Array<SuggestBubbleTemp> = [];
   watchUsers: Array<User> = [];
 
   private editLock: boolean;
@@ -60,7 +60,7 @@ export class LeafBubble implements BubbleTemp {
     id: number,
     content: string = '',
     ownerId: number = -1,
-    suggestBubbles: Array<SuggestBubble> = [],
+    suggestBubbles: Array<SuggestBubbleTemp> = [],
     comments: Array<Comment> = [],
     watchUsers: Array<User> = [],
     thumbUps: number = 0) {
@@ -116,7 +116,7 @@ export class LeafBubble implements BubbleTemp {
     this.isMouseOver = false;
   }
 
-  addSuggestBubble(suggestBubble: SuggestBubble) {
+  addSuggestBubble(suggestBubble: SuggestBubbleTemp) {
     this.suggestBubbles.push(suggestBubble);
   }
 
@@ -124,7 +124,7 @@ export class LeafBubble implements BubbleTemp {
     this.comments.push(comment);
   }
 
-  deleteSuggestBubble(suggestBubble: SuggestBubble) {
+  deleteSuggestBubble(suggestBubble: SuggestBubbleTemp) {
     const index: number = this.suggestBubbles.indexOf(suggestBubble);
     if (index > -1) {
       this.suggestBubbles.splice(index, 1);
@@ -145,7 +145,7 @@ export class LeafBubble implements BubbleTemp {
   getComments(): Array<Comment> {
     return null;
   }
-  getSuggestBubbles(): Array<SuggestBubble> {
+  getSuggestBubbles(): Array<SuggestBubbleTemp> {
     return null;
   }
 } /* istanbul ignore next */
@@ -160,7 +160,7 @@ export class InternalBubbleTemp implements BubbleTemp {
   isMouseOver: boolean;
 
   comments: Array<Comment> = [];
-  suggestBubbles: Array<SuggestBubble> = [];
+  suggestBubbles: Array<SuggestBubbleTemp> = [];
   watchUsers: Array<User> = [];
 
   childBubbles: Array<BubbleTemp> = [];
@@ -168,7 +168,7 @@ export class InternalBubbleTemp implements BubbleTemp {
   constructor(
     id: number,
     childBubbles: Array<BubbleTemp>,
-    suggestBubbles: Array<SuggestBubble> = [],
+    suggestBubbles: Array<SuggestBubbleTemp> = [],
     comments: Array<Comment> = [],
     watchUsers: Array<User> = [],
     thumbUps: number = 0) {
@@ -212,11 +212,11 @@ export class InternalBubbleTemp implements BubbleTemp {
     return null;
   }
 
-  getSuggestBubbles(): Array<SuggestBubble> {
+  getSuggestBubbles(): Array<SuggestBubbleTemp> {
     return null;
   }
 
-  addSuggestBubble(suggestBubble: SuggestBubble) {
+  addSuggestBubble(suggestBubble: SuggestBubbleTemp) {
     this.suggestBubbles.push(suggestBubble);
   }
 
@@ -224,7 +224,7 @@ export class InternalBubbleTemp implements BubbleTemp {
     this.comments.push(comment);
   }
 
-  deleteSuggestBubble(suggestBubble: SuggestBubble) {
+  deleteSuggestBubble(suggestBubble: SuggestBubbleTemp) {
     const index: number = this.suggestBubbles.indexOf(suggestBubble);
     if (index > -1) {
       this.suggestBubbles.splice(index, 1);
@@ -335,12 +335,12 @@ export class InternalBubbleTemp implements BubbleTemp {
     }
   }
 
-  flattenChild(bubble: BubbleTemp): LeafBubble {
+  flattenChild(bubble: BubbleTemp): LeafBubbleTemp {
     if (this._ischildBubble(bubble) && (bubble.type === BubbleType.internalBubble)) {
       const id = bubble.id;
       const location = bubble.location;
       const content = bubble.getContent();
-      const newLeaf: LeafBubble = new LeafBubble(id, content);
+      const newLeaf: LeafBubbleTemp = new LeafBubbleTemp(id, content);
       newLeaf.location = location;
       newLeaf.parentBubble = this;
       this.childBubbles.splice(location, 1, newLeaf);
@@ -383,7 +383,7 @@ export class InternalBubbleTemp implements BubbleTemp {
   }
 } /* istanbul ignore next */
 
-export class SuggestBubble {
+export class SuggestBubbleTemp {
   id: number;
   type: BubbleType;
   content: string;

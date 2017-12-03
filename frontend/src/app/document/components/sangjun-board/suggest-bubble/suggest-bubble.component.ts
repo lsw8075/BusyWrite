@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { SuggestBubble } from '../../../models/bubble-temp';
+import { SuggestBubbleTemp } from '../../../models/bubble-temp';
 import { EventSangjunBoardService } from '../../../services/event/event-sangjun-board.service';
 
 @Component({
@@ -11,7 +11,7 @@ import { EventSangjunBoardService } from '../../../services/event/event-sangjun-
 export class SuggestBubbleComponent implements OnInit {
 
   @Input()
-  suggestBubble: SuggestBubble;
+  suggestBubble: SuggestBubbleTemp;
 
   constructor(private _eventSangjunBoardService: EventSangjunBoardService) { }
 
