@@ -74,8 +74,6 @@ class BubblesTestCase(TestCase):
         
         self.bubble3.lock(self.user2)
 
-        with self.assertRaises(BubbleLockedError):
-            do_create_normal_bubble(self.user1.id, self.doc1.id, self.bubble3.id, 0, False, 'test_content')
 
         do_create_normal_bubble(self.user1.id, self.doc1.id, self.bubble2.id, 1, False, 'test content')
         new_bubble = do_create_normal_bubble(self.user1.id, self.doc1.id, self.bubble2.id, 2, True, 'test content')
@@ -270,6 +268,7 @@ class BubblesTestCase(TestCase):
         do_vote_bubble(self.user2.id, self.doc1.id, self.suggest1.id)
 
         do_switch_bubble(self.user1.id, self.doc1.id, self.suggest1.id)
+        
         # reload it
         reload_bubbles(self, [1])
         reload_suggests(self, [1])
@@ -294,5 +293,4 @@ class BubblesTestCase(TestCase):
         reload_bubbles(self, [2])
         reload_suggests(self, [2])
         self.assertEqual(self.bubble2.content, 'TestSuggest2')
-
 

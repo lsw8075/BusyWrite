@@ -269,6 +269,7 @@ class CommentUnderSuggest(Comment):
     	related_name='comments',
     	null=False
     )
+
 class News(models.Model):
     receiver = models.ForeignKey(
     	User,

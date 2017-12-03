@@ -64,7 +64,7 @@ def do_fetch_normal_bubbles(
     document = do_fetch_document(user_id, document_id)
     if not document.is_contributed_by(user_id):
         raise UserIsNotContributorError(user_id, doc_id)
-    bubbles = NormalBubble.objects.filter(document=document).values()
+    bubbles = document.bubbles.values()
     if len(bubbles) == 0:
         raise InternalError('Document has no bubble')
     bubbles = list(bubbles)
@@ -79,7 +79,7 @@ def do_fetch_suggest_bubbles(
         bubble = NormalBubble.objects.get(id=bubble_id)
     except:
         raise BubbleDoesNotExistError(bubble_id)
-    suggests = SuggestBubble.objects.filter(normal_bubble=bubble).values()
+    suggests = bubble.suggest_bubbles.values()
     if len(suggests) == 0:
         return []
     suggests = list(suggests)
@@ -123,9 +123,6 @@ def do_create_normal_bubble(
 
 #    if parent_bubble.is_leaf():
 #        raise BubbleIsLeafError(parent_bubble)
-
-    if parent_bubble.has_locked_ancestors() or parent_bubble.is_locked():
-        raise BubbleLockedError(parent_bubble.id)
 
     # create a bubble
     with transaction.atomic():
@@ -568,7 +565,29 @@ def do_switch_bubble(
         for voter in binded_voters:
             suggest.voters.add(voter)
 
-        # TODO : switch comments
+        # switch comments
+        suggest_comments = []
+        binded_comments = []
+        for comment in suggest.comments.all():
+            com_data = (comment.content, comment.owner, comment.order)
+            suggest_comments.append(com_data)
+            comment.delete()
+        for comment in binded_bubble.comments.all():
+            com_data = (comment.content, comment.owner, comment.order)
+            binded_comments.append(com_data)
+            comment.delete()
+
+        next_comment_order_suggest = suggest.next_comment_order
+        next_comment_order_normal = binded_bubble.next_comment_order
+        suggest.next_comment_order = next_comment_order_normal
+        binded_bubble.next_comment_order = next_comment_order_suggest
+        for com_data in suggest_comments:
+            (content, owner, order) = com_data
+            CommentUnderNormal.objects.create(content=content, owner=owner, order=order, bubble=binded_bubble)
+        for com_data in binded_comments:
+            (content, owner, order) = com_data
+            CommentUnderSuggest.objects.create(content=content, owner=owner, order=order, bubble=suggest)        
+
         suggest.save()
         binded_bubble.save()
     return binded_bubble

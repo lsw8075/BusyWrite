@@ -18,7 +18,7 @@ def print_suggests(bubble):
         print()
 
 def print_comments(bubble):
-    print()
-    print('Normal: ' + str(bubble.content) + ' ' + bubble.next_comment_order + ' comments: ')
-    for comment in bubble.comments:
-        print('  ' + comment.order + ': ' + comments.content)
+    print('print comments')
+    print('Bubble: ' + str(bubble.content) + ' ' + str(bubble.next_comment_order) + ' comments: ')
+    for comment in bubble.comments.all():
+        print('  ' + str(comment.order) + ': ' + comment.content)
