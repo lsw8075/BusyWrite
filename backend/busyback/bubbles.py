@@ -42,6 +42,8 @@ def do_fetch_normal_bubble(
         check_contributor(user_id, bubble)
     except NormalBubble.DoesNotExist:
         raise BubbleDoesNotExistError(bubble_id)
+    if bubble.document.id != document_id:
+        raise DocumentMismatchError()
     return bubble
 
 def do_fetch_suggest_bubble(
@@ -54,6 +56,8 @@ def do_fetch_suggest_bubble(
         check_suggest_contributor(user_id, bubble)
     except SuggestBubble.DoesNotExist:
         raise BubbleDoesNotExistError(bubble_id)
+    if bubble.normal_bubble.document.id != document_id:
+        raise DocumentMismatchError()
     return bubble
 
 
@@ -79,6 +83,8 @@ def do_fetch_suggest_bubbles(
         bubble = NormalBubble.objects.get(id=bubble_id)
     except:
         raise BubbleDoesNotExistError(bubble_id)
+    if bubble.document.id != document_id:
+        raise DocumentMismatchError()
     suggests = bubble.suggest_bubbles.values()
     if len(suggests) == 0:
         return []

@@ -27,8 +27,8 @@ class BubblesTestCase(TestCase):
 
         with self.assertRaises(BubbleDoesNotExistError):
             do_fetch_suggest_bubble(self.user1.id, self.doc1, 100)
-        self.assertEqual(do_fetch_normal_bubble(self.user1.id, self.doc1, self.bubble4.id).content, 'TestLeaf1')
-        self.assertEqual(do_fetch_suggest_bubble(self.user1.id, self.doc1, self.suggest2.id).content, 'TestSuggest2')
+        self.assertEqual(do_fetch_normal_bubble(self.user1.id, self.doc1.id, self.bubble4.id).content, 'TestLeaf1')
+        self.assertEqual(do_fetch_suggest_bubble(self.user1.id, self.doc1.id, self.suggest2.id).content, 'TestSuggest2')
 
     def test_do_fetch_bubbles(self):
         emptydoc = Document.objects.create(title='error doc')
@@ -115,7 +115,7 @@ class BubblesTestCase(TestCase):
         with self.assertRaises(BubbleIsRootError):
             do_move_normal_bubble(self.user1.id, self.doc1.id, self.doc1root.id, self.doc1root.id, 0)
 
-        with self.assertRaises(NotInSameDocumentError):
+        with self.assertRaises(DocumentMismatchError):
             do_move_normal_bubble(self.user2.id, self.doc1.id, self.bubble5.id, self.doc2root.id, 0)
 
         self.bubble2.lock(self.user2)
