@@ -10,6 +10,8 @@ import { EventBubbleService } from '../../services/event/event-bubble.service';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
 
+import * as fromUser from '../../../user/reducers/reducer';
+
 import * as fromDocument from '../../reducers/reducer';
 import * as BubbleAction from '../../actions/bubble-action';
 import * as RouterAction from '../../../shared/route/route-action';
@@ -29,8 +31,6 @@ export class ViewBoardComponent implements OnInit {
 
     rootBubble$: Observable<Bubble>;
     bubbleList$: Observable<Array<Bubble>>;
-    bubbleList: Array<Bubble>;
-    rootBubble: Bubble;
 
   constructor(
     private _store: Store<fromDocument.State>,
@@ -39,18 +39,20 @@ export class ViewBoardComponent implements OnInit {
     private _eventBubbleService: EventBubbleService) {
         let cnt = 0;
         this.rootBubble$ = _store.select(fromDocument.getBubbleState).map(bubbleState => bubbleState.rootBubble);
+        this.bubbleList$ = _store.select(fromDocument.getBubbleList);
+
         this._store.select(fromDocument.getBubbleState).subscribe((res) => {
             console.log(cnt++);
             for (const bubble of res.bubbleList) {
                 if (bubble.type === BubbleType.internalBubble) {
-                const internalBubble = bubble as InternalBubble;
-                const msg = {
-                    id: internalBubble.id,
-                    parentBubbleId: internalBubble.parentBubbleId,
-                    childBubbleIds: internalBubble.childBubbleIds,
-                    location: internalBubble.location};
-                console.log(msg);
-            } else if (bubble.type === BubbleType.leafBubble) {
+                    const internalBubble = bubble as InternalBubble;
+                    const msg = {
+                        id: internalBubble.id,
+                        parentBubbleId: internalBubble.parentBubbleId,
+                        childBubbleIds: internalBubble.childBubbleIds,
+                        location: internalBubble.location};
+                    console.log(msg);
+                } else if (bubble.type === BubbleType.leafBubble) {
                     const leafBubble = bubble as LeafBubble;
                     const msg = {
                         id: leafBubble.id,
@@ -61,38 +63,16 @@ export class ViewBoardComponent implements OnInit {
                 }
             }
             console.log(res.bubbleList);
-            this.bubbleList = res.bubbleList;
-            this.rootBubble = res.rootBubble;
+
         });
-        this.bubbleList$ = this._store.select(fromDocument.getBubbleList);
+
+        // this._store.select(fromUser.getUserId).subscribe((res) => {
+        //     console.log('[user id]', res);
+        // });
     }
 
     ngOnInit() {
         this._store.dispatch(new BubbleAction.Open(1));
-    }
-
-    clickDelete(bubble: Bubble) {
-        this._store.dispatch(new BubbleAction.Delete(bubble));
-    }
-
-    clickPop(bubble: Bubble) {
-        this._store.dispatch(new BubbleAction.Pop(bubble));
-    }
-
-    clickCreateAbove(bubble: Bubble) {
-        this._store.dispatch(new BubbleAction.Create({bubble: bubble, isAbove: true}));
-    }
-
-    clickCreateBelow(bubble: Bubble) {
-        this._store.dispatch(new BubbleAction.Create({bubble: bubble, isAbove: false}));
-    }
-
-    clickEdit(bubble: Bubble) {
-        this._store.dispatch(new BubbleAction.Edit(bubble));
-    }
-
-    clickFlatten(bubble: Bubble) {
-        this._store.dispatch(new BubbleAction.Flatten(bubble));
     }
 
   previewClick(event) {

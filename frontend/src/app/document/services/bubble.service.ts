@@ -171,37 +171,37 @@ export class BubbleService {
     return Promise.resolve(null);
   }
 
-  public async mergeBubble(bubble: Bubble): Promise<void> {
+  public async mergeBubble(bubbleId: number): Promise<void> {
     await this.delay(1000);
     return Promise.resolve(null);
   }
 
-  public async splitBubble(bubble: Bubble): Promise<void> {
+  public async splitBubble(bubbleId: number): Promise<void> {
     await this.delay(1000);
     return Promise.resolve(null);
   }
 
-    public async flattenBubble(bubble: Bubble): Promise<Bubble> {
+    public async flattenBubble(bubbleId: number): Promise<Bubble> {
         await this.delay(1000);
         return Promise.resolve(new LeafBubble(this._getTempBubbleId()));
     }
 
-    public async editBubble(bubble: Bubble): Promise<void> {
+    public async editBubble(bubbleId: number): Promise<void> {
         await this.delay(1000);
         return Promise.resolve(null);
     }
 
-    public async deleteBubble(bubble: Bubble): Promise<void> {
+    public async deleteBubble(bubbleId: number): Promise<void> {
         await this.delay(1000);
         return Promise.resolve(null);
     }
 
-    public async popBubble(bubble: Bubble): Promise<void> {
+    public async popBubble(bubbleId: number): Promise<void> {
         await this.delay(1000);
         return Promise.resolve(null);
     }
 
-    public async createBubble(bubble: Bubble, isAbove: boolean): Promise<Bubble> {
+    public async createBubble(bubbleId: number, isAbove: boolean): Promise<Bubble> {
         await this.delay(1000);
         return Promise.resolve(new LeafBubble(this._getTempBubbleId(), 'new string'));
     }

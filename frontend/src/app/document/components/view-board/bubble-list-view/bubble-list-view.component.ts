@@ -60,14 +60,30 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
   //   console.log(`The user just pressed ${ev.key}!`);
   // }
 
-  clickDelete(bubble: Bubble) {
-    this._store.dispatch(new BubbleAction.Delete(bubble));
-  }
 
-  clickRefresh() {
-    console.log('refreshState');
-    this._store.dispatch(new BubbleAction.Refresh(null));
-  }
+    clickDelete(bubble: Bubble) {
+        this._store.dispatch(new BubbleAction.Delete(bubble.id));
+    }
+
+    clickPop(bubble: Bubble) {
+        this._store.dispatch(new BubbleAction.Pop(bubble.id));
+    }
+
+    clickCreateAbove(bubble: Bubble) {
+        this._store.dispatch(new BubbleAction.Create({bubbleId: bubble.id, isAbove: true}));
+    }
+
+    clickCreateBelow(bubble: Bubble) {
+        this._store.dispatch(new BubbleAction.Create({bubbleId: bubble.id, isAbove: false}));
+    }
+
+    clickEdit(bubble: Bubble) {
+        this._store.dispatch(new BubbleAction.Edit(bubble.id));
+    }
+
+    clickFlatten(bubble: Bubble) {
+        this._store.dispatch(new BubbleAction.Flatten(bubble.id));
+    }
 
   public clearState(event): void {
     this._eventBubbleService.clearState();

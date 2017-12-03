@@ -69,22 +69,22 @@ export class BubbleEffects {
   @Effect()
   create$: Observable<Action> = this.action$.ofType<fromBubble.Create>(fromBubble.CREATE)
     .map(action => action.payload).mergeMap(query => {
-      return Observable.fromPromise(this.bubbleService.createBubble(query.bubble, query.isAbove))
-        .map((newBubble) => new fromBubble.CreateComplete({bubble: query.bubble, isAbove: query.isAbove, newBubble: newBubble}))
+      return Observable.fromPromise(this.bubbleService.createBubble(query.bubbleId, query.isAbove))
+        .map((newBubble) => new fromBubble.CreateComplete({bubbleId: query.bubbleId, isAbove: query.isAbove, newBubble: newBubble}))
         .catch(err => of(new fromBubble.CreateError(err)));
     });
 
   @Effect()
   createComplete$: Observable<Action> = this.action$.ofType<fromBubble.CreateComplete>(fromBubble.CREATE_COMPLETE)
     .map(action => action.payload).mergeMap(query => {
-      return Observable.of(new fromBubble.EditComplete({bubble: query.bubble, newContent: "newly created"}));
+      return Observable.of(new fromBubble.EditComplete({bubbleId: query.bubbleId, newContent: "newly created"}));
     });
 
   @Effect()
   edit$: Observable<Action> = this.action$.ofType<fromBubble.Edit>(fromBubble.EDIT)
     .map(action => action.payload).mergeMap(query => {
       return Observable.fromPromise(this.bubbleService.editBubble(query))
-        .map(() => new fromBubble.EditComplete({bubble: query, newContent: "newly editted"}))
+        .map(() => new fromBubble.EditComplete({bubbleId: query, newContent: "newly editted"}))
         .catch(err => of(new fromBubble.EditError(err)));
     });
 
@@ -116,7 +116,7 @@ export class BubbleEffects {
   flatten$: Observable<Action> = this.action$.ofType<fromBubble.Flatten>(fromBubble.FLATTEN)
     .map(action => action.payload).mergeMap(query => {
       return Observable.fromPromise(this.bubbleService.flattenBubble(query))
-        .map((newBubble) => new fromBubble.FlattenComplete({bubble: query, newBubble: newBubble}))
+        .map((newBubble) => new fromBubble.FlattenComplete({bubbleId: query, newBubble: newBubble}))
         .catch(err => of(new fromBubble.FlattenError(err)));
     });
 
