@@ -254,7 +254,7 @@ def ws_receive(message):
         # do_create_bubble creates bubble and give edit lock to user
         try:
             result = do_create_normal_bubble(message.user.id, int(document_id), 
-                    int(body['parent']), int(body['location']), True, body['content'])
+                    int(body['parent']), int(body['location']), False, body['content'])
         except InvalidLocationError:
             message.reply_channel.send({"text":
                     json.dumps({'header': 'create_bubble', 'accept': 'False', 'body': 'invalid location'})})
@@ -340,15 +340,16 @@ def ws_receive(message):
     #####################
 
     elif command == 'edit_bubble':
-        if set(body.keys()) != set(('bubble_id', 'content')):
+        if set(body.keys()) != set(('bubble_id', )):
             message.reply_channel.send({"text":
                 json.dumps({'header': 'edit_bubble', 'accept': 'False',
                         'body': 'body does not follow format'})})
             return
 
         try:
+            # TODO: remove content field of the function
             result = do_edit_normal_bubble(message.user.id, int(document_id),
-                    int(body['bubble_id']), body['content'])
+                    int(body['bubble_id']), '')
         except BubbleIsInternalError:
             message.reply_channel.send({"text":
                 json.dumps({'header': 'edit_bubble', 'accept': 'False',
@@ -371,7 +372,7 @@ def ws_receive(message):
 
         Group('document_detail-'+document_id, channel_layer=message.channel_layer).send({"text":
             json.dumps({'header': 'edit_bubble', 'accept': 'True', 
-            'body': {'who': message.user.id, 'bubble_id': body['bubble_id'], 'content': body['content']}})})
+            'body': {'who': message.user.id, 'bubble_id': body['bubble_id']}})})
         return
 
 
@@ -418,6 +419,7 @@ def ws_receive(message):
     ########################################
     ##   Discard Editting Normal Bubble   ##
     ########################################
+
 
     #####################################
     ##   Release Ownership of Bubble   ##
@@ -531,7 +533,7 @@ def ws_receive(message):
     #####################
 
     elif command == 'move_bubble':
-        if set(body.keys()) != set(('buble_id', 'new_parent_id', 'new_location')):
+        if set(body.keys()) != set(('bubble_id', 'new_parent_id', 'new_location')):
             message.reply_channel.send({"text":
                     json.dumps({'header': 'move_bubble', 'accept': 'False', 'body': 'body does not follow format'})})
             return
@@ -612,64 +614,6 @@ def ws_receive(message):
         return
 
 
-    ###############################
-    ##   Split Internal Bubble   ##
-    ###############################
-
-        
-    ###########################
-    ##   Split Leaf Bubble   ##
-    ###########################
-
-    elif command == 'split_leaf_bubble':
-        if set(body.keys()) != set(('bubble_id', 'split_content_list')):
-            message.reply_channel.send({"text":
-                    json.dumps({'header': 'split_leaf_bubble', 'accept': 'False', 'body': 'body does not follow format'})})
-            return
-        try:
-            do_wrap_normal_bubble(message.user.id, int(document_id), int(body['bubble_id']), body['split_content_list'])
-        except BubbleDoesNotExistError:
-            message.reply_channel.send({"text":
-                    json.dumps({"header": "split_leaf_bubble", "accept": 'False',
-                            'body': 'bubble does not exist for the id'})})
-            return
-        except InvalidSplitError:
-            message.reply_channel.send({"text":
-                    json.dumps({"header": "split_leaf_bubble", "accept": 'False',
-                            'body': 'this kind of wrap cannot happen'})})
-            return
-        except BubbleLockedError:
-            message.reply_channel.send({"text":
-                    json.dumps({"header": "split_leaf_bubble", "accept": 'False',
-                            'body': "one of new parent bubble's relatives is being editted"})})
-            return
-        except BubbleOwnedError:
-            message.reply_channel.send({"text":
-                    json.dumps({"header": "split_leaf_bubble", "accept": "False",
-                            'body': 'bubble is being claimed ownership of'})})
-            return
-        except BubbleIsInternalError:
-            message.reply_channel.send({"text":
-                    json.dumps({"header": "split_leaf_bubble", "accept": "False",
-                            'body': 'internal bubble cannot be handled by split_leaf_bubble'})})
-            return
-        except:
-            message.reply_channel.send({"text":
-                    json.dumps({"header": "split_leaf_bubble", "accept": 'False', 'body': 'unknown error'})})
-            return
-                            
-        Group('document_detail-'+document_id, channel_layer=message.channel_layer).send({"text":
-                json.dumps({'header': 'split_leaf_bubble', 'accept': 'True',
-                        'body': {'who': message.user.id, 'bubble_id': body['bubble_id'],
-                        'split_content_list': body['split_content_list']}})})
-        return
- 
-
-    ######################
-    ##   Merge Bubble   ##
-    ######################
-
-
     ####################
     ##   Pop Bubble   ##
     ####################
@@ -718,6 +662,73 @@ def ws_receive(message):
                         'body': {'who': message.user.id, 'bubble_id': body['bubble_id']}})})
         return
  
+
+    ###############################
+    ##   Split Internal Bubble   ##
+    ###############################
+
+        
+    ###########################
+    ##   Split Leaf Bubble   ##
+    ###########################
+
+    elif command == 'split_leaf_bubble':
+        if set(body.keys()) != set(('bubble_id', 'split_content_list')):
+            message.reply_channel.send({"text":
+                    json.dumps({'header': 'split_leaf_bubble', 'accept': 'False', 'body': 'body does not follow format'})})
+            return
+        try:
+            result = do_split_leaf_bubble(message.user.id, int(document_id), int(body['bubble_id']), body['split_content_list'])
+        except BubbleDoesNotExistError:
+            message.reply_channel.send({"text":
+                    json.dumps({"header": "split_leaf_bubble", "accept": 'False',
+                            'body': 'bubble does not exist for the id'})})
+            return
+        except InvalidSplitError:
+            message.reply_channel.send({"text":
+                    json.dumps({"header": "split_leaf_bubble", "accept": 'False',
+                            'body': 'this kind of wrap cannot happen'})})
+            return
+        except BubbleLockedError:
+            message.reply_channel.send({"text":
+                    json.dumps({"header": "split_leaf_bubble", "accept": 'False',
+                            'body': "one of new parent bubble's relatives is being editted"})})
+            return
+        except BubbleOwnedError:
+            message.reply_channel.send({"text":
+                    json.dumps({"header": "split_leaf_bubble", "accept": "False",
+                            'body': 'bubble is being claimed ownership of'})})
+            return
+        except BubbleIsInternalError:
+            message.reply_channel.send({"text":
+                    json.dumps({"header": "split_leaf_bubble", "accept": "False",
+                            'body': 'internal bubble cannot be handled by split_leaf_bubble'})})
+            return
+        except:
+            message.reply_channel.send({"text":
+                    json.dumps({"header": "split_leaf_bubble", "accept": 'False', 'body': 'unknown error'})})
+            return
+                            
+        Group('document_detail-'+document_id, channel_layer=message.channel_layer).send({"text":
+                json.dumps({'header': 'split_leaf_bubble', 'accept': 'True',
+                        'body': {'who': message.user.id, 'bubble_id': body['bubble_id'],
+                        'split_bubble_object_list': list(result.child_bubbles.all().values()),
+                        'split_content_list': body['split_content_list']}})})
+        return
+        # [d['id'] for d in list(result.child_bubbles.all().values()] 
+
+
+
+    ######################
+    ##   Merge Bubble   ##
+    ######################
+
+
+    ########################
+    ##   Flatten Bubble   ##
+    ########################
+
+
 
     ########################################
     ##   Switch Bubble w/ Suggest Bubble  ##
