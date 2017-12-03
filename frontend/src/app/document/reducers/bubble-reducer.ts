@@ -35,7 +35,13 @@ export function BubbleReducer(state: BubbleState = initialState, action: fromBub
       return {...state, loading: true, documentId: action.payload};
     case fromBubble.LOAD_COMPLETE: {
       const root = MockBubbleRoot;
-      return {...state, bubbleList: action.payload, rootBubble: root, loading: false};
+      return {
+          ...state,
+          bubbleList: [
+              ...action.payload
+          ],
+          rootBubble: root,
+          loading: false};
     }
     case fromBubble.LOAD_ERROR:
       return {...state, error: action.payload};
@@ -100,7 +106,7 @@ function BubbleListReducer(state, action) {
 }
 
 function _containsBubble(bubble: Bubble, bubbleList: Array<Bubble>): boolean {
-  for (const b of this.bubbleList) {
+  for (const b of bubbleList) {
     if (b.id === bubble.id) {
       return true;
     }
