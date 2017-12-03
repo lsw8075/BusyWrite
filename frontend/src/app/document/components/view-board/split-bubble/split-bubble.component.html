@@ -1,0 +1,28 @@
+<div class="modal-header">
+  <div class="modal-title pull-left wrap-text" >
+    <div *ngIf="bubble">
+      <p (mousedown)="mouseDown=true;" (mouseup)="showSelectedText()">
+        {{bubble.getContent()}}
+      </p>
+    </div>
+  </div>
+  <button type="button" class="close pull-right" aria-label="Close" (click)="bsModalRef.hide()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div class="list-group wrap-text">
+    <div class="list-group-item">
+      {{beforeText}}
+    </div>
+    <div class="list-group-item">
+      {{highlightedText}}
+    </div>
+    <div class="list-group-item">
+      {{afterText}}
+    </div>
+  </div>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-success" (click)="split(); bsModalRef.hide();">Split</button>
+</div>

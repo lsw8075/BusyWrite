@@ -1,0 +1,30 @@
+<div class="container">
+  <div class="jumbotron">
+    <h1>BusyWrite</h1>
+    <p><strong>Writing is a form of discussion for busy teams</strong></p>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row justify-content-center align-items-center">
+    <form class="form-group" #f="ngForm" (ngSubmit)="onSubmit(f)" novalidate>
+      <h2 class="text-center" style="padding: 20px;">Sign In</h2>
+      <div class="form-group">
+        <div class="input-group">
+          <span class="input-group-addon"><i class="fa fa-envelope-o fa-fw"></i></span>
+          <input type="email" name="username" class="form-control input-lg" placeholder="Email Address" required ngModel />
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="input-group">
+          <span class="input-group-addon">
+            <i class="fa fa-asterisk fa-fw"></i>
+          </span>
+          <input type="password" name="password" class="form-control input-lg" placeholder="Password" required ngModel />
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary btn-lg btn-block btn-shadow">Sign In</button>
+      <button type="button" class="btn btn-info btn-lg btn-block btn-shadow" (click)="signup()">Sign Up</button>
+      </form>
+  </div>
+</div>

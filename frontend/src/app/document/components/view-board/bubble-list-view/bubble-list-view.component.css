@@ -1,0 +1,57 @@
+.bubble-list {
+  height: 600px;
+  overflow-y: scroll;
+}
+
+.internalBubble {
+  border-left-style: solid;
+  border-right-style: solid;
+  border-radius: 10px;
+}
+
+.leafBubble {
+  border-radius: 0px;
+  padding: 0px 2px;
+  margin: 0px 0px;
+}
+
+::selection {
+  background: #fff2a8;
+}
+::-moz-selection {
+  background: #fff2a8;
+}
+
+.placeholder {
+  padding: 5px 0px;
+  margin: none;
+}
+
+.action {
+  display: flex;
+  float: right;
+  position: absolute;
+  z-index: 10;
+  right: -120px;
+}
+
+.placeholder-bottom:hover {
+  border-top-color: blue;
+  border-top-style: solid;
+  border-top-width: 3px;
+}
+
+.placeholder-top:hover {
+  border-bottom-color: blue;
+  border-bottom-style: solid;
+  border-bottom-width: 3px;
+}
+
+.editting {
+  background-color: gray;
+  color: white;
+  height: 50px;
+  resize: vertical;
+  overflow-y: auto;
+}
+
