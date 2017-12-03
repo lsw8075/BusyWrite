@@ -27,48 +27,57 @@ const initialState: BubbleState = {
 };
 
 export function BubbleReducer(state: BubbleState = initialState, action: fromBubble.Actions) {
-  switch (action.type) {
-    case fromBubble.SELECT:
-      const selection = action.payload as {bubble: Bubble, menu: MenuType};
-      return {...state, selectedBubble: selection.bubble, selectedMenu: selection.menu};
-    case fromBubble.LOAD:
-      return {...state, loading: true, documentId: action.payload};
-    case fromBubble.LOAD_COMPLETE: {
-      const root = MockBubbleRoot;
-      return {...state, bubbleList: action.payload, rootBubble: root, loading: false};
-    }
-    case fromBubble.LOAD_ERROR:
-      return {...state, error: action.payload};
-    case fromBubble.POP:
-      return {...state, loading: true};
-    case fromBubble.POP_COMPLETE: {
-      const bubble = action.payload;
-      const parentBubble: InternalBubble = bubble.parentBubble;
-      parentBubble.popChild(bubble);
-      state.bubbleList = state.bubbleList.filter(b => b.id !== bubble.id);
-      return {...state, loading: false};
-    }
-    case fromBubble.DELETE:
-      return {...state, loading: true};
-    case fromBubble.DELETE_COMPLETE: {
-      const bubble = action.payload;
-      deleteBubble(bubble);
-      return {...state, loading: false};
-    }
-    case fromBubble.CREATE:
-      return {...state, selectedBubble: action.payload.bubble, selectedMenu: action.payload.menu, loading: true};
-    case fromBubble.CREATE_COMPLETE: {
-      const bubble = action.payload.bubble;
-      const menu = action.payload.menu;
-      createBubble(bubble, menu);
-      return {...state, selectedBubble: bubble, selectedMenu: menu, loading: false};
-    }
-    case fromBubble.EDIT:
-      return {...state, loading: true};
-    case fromBubble.EDIT_COMPLETE: {
-      const bubble = action.payload;
-      return {...state, loading: false};
-    }
+    switch (action.type) {
+        case fromBubble.SELECT:
+            const selection = action.payload as {bubble: Bubble, menu: MenuType};
+            return {...state, selectedBubble: selection.bubble, selectedMenu: selection.menu};
+        case fromBubble.LOAD:
+            return {...state, loading: true, documentId: action.payload};
+        case fromBubble.LOAD_COMPLETE: {
+            const root = MockBubbleRoot;
+            return {...state, bubbleList: [...action.payload], rootBubble: root, loading: false};
+        }
+        case fromBubble.LOAD_ERROR:
+            return {...state, error: action.payload};
+        case fromBubble.POP:
+            return {...state, loading: true};
+        case fromBubble.POP_COMPLETE: {
+            const bubble = action.payload;
+            popBubble(state.bubbleList, bubble.id);
+            return {...state, loading: false};
+        }
+        case fromBubble.DELETE:
+            return {...state, loading: true};
+        case fromBubble.DELETE_COMPLETE: {
+            const bubble = action.payload;
+            deleteBubble(state.bubbleList, bubble.id);
+            return {...state, loading: false};
+        }
+        case fromBubble.CREATE:
+            return {...state, selectedBubble: action.payload.bubble, loading: true};
+        case fromBubble.CREATE_COMPLETE: {
+            const bubble = action.payload.bubble;
+            const isAbove = action.payload.isAbove;
+            const newBubble = action.payload.newBubble;
+            createBubble(state.bubbleList, bubble.id, isAbove, newBubble);
+            return {...state, selectedBubble: bubble, loading: false};
+        }
+        case fromBubble.EDIT:
+            return {...state, loading: true};
+        case fromBubble.EDIT_COMPLETE: {
+            const bubble = action.payload.bubble;
+            const newContent = action.payload.newContent;
+            editBubble(state.bubbleList, bubble.id, newContent);
+            return {...state, loading: false};
+        }
+        case fromBubble.FLATTEN:
+            return {...state, loading: true};
+        case fromBubble.FLATTEN_COMPLETE: {
+            const bubble = action.payload.bubble;
+            const newBubble = action.payload.newBubble;
+            flattenBubble(state.bubbleList, bubble.id, newBubble);
+            return {...state, loading: false};
+        }
     case fromBubble.WRAP:
       return {...state, loading: true};
     case fromBubble.WRAP_COMPLETE: {
@@ -92,8 +101,12 @@ export function BubbleReducer(state: BubbleState = initialState, action: fromBub
   }
 }
 
+function BubbleListReducer(state, action) {
+    // nested reducer
+}
+
 function _containsBubble(bubble: Bubble, bubbleList: Array<Bubble>): boolean {
-  for (const b of this.bubbleList) {
+  for (const b of bubbleList) {
     if (b.id === bubble.id) {
       return true;
     }
@@ -103,54 +116,173 @@ function _containsBubble(bubble: Bubble, bubbleList: Array<Bubble>): boolean {
 
 function getBubbleById(bubbleList: Array<Bubble>, id: number): Bubble {
   const bList = bubbleList.filter((bubble) => (bubble.id === id));
-    console.log(bubbleList, id);
   if (bList.length === 0) {
     throw new Error('Does not exist with this id');
   }
   return bList[0];
 }
 
-function deleteBubble(bubble: Bubble) {
-  if (bubble.parentBubble === null) {
-    throw new Error('Cannot delete root bubble');
+function removeBubbleById(bubbleList: Array<Bubble>, id: number): void {
+  const index = bubbleList.findIndex((bubble) => (bubble.id === id));
+  if (index === -1) {
+    throw new Error('Does not exist with this id');
   }
+  bubbleList.splice(index, 1);
+}
 
-  const parentBubble: InternalBubble = bubble.parentBubble;
-  parentBubble.deleteChild(bubble);
-
-  if (parentBubble.childBubbles.length === 1) {
-    const grandParentBubble: InternalBubble = parentBubble.parentBubble;
-    grandParentBubble.popChild(parentBubble);
+function getParentBubble(bubbleList: Array<Bubble>, bubble: Bubble): InternalBubble {
+  try {
+    const parentBubble = getBubbleById(bubbleList, bubble.parentBubbleId);
+    return parentBubble as InternalBubble;
+  } catch(err) {
+    throw new Error('Does not exist parent bubble');
   }
 }
 
-function createBubble(bubble: Bubble, menu: MenuType) {
-  let location = bubble.location;
-  if (menu === MenuType.borderBottomMenu) {
-    location++;
-  } else if (menu !== MenuType.borderTopMenu) {
-    throw new Error('create bubble invoked with not border');
+function deleteChildBubbles(bubbleList: Array<Bubble>, id: number) {
+  try {
+    const bubble = getBubbleById(bubbleList, id);
+    if (bubble.type === BubbleType.internalBubble) {
+      const internalBubble = bubble as InternalBubble;
+      for (const childBubbleId of internalBubble.childBubbleIds) {
+        deleteChildBubbles(bubbleList, childBubbleId);
+      }
+    }
+    removeBubbleById(bubbleList, bubble.id);
+  } catch(err) {
+    throw err;
   }
-
 }
 
-function editBubble(bubble: Bubble, newContent: string) {
-  if (bubble.type === BubbleType.leafBubble) {
-//    (bubble as LeafBubble).getEditLock(tempUserId);
-    (bubble as LeafBubble).content = newContent;
-  } else {
-    throw new Error('Cannot edit internal bubble');
+function deleteBubble(bubbleList: Array<Bubble>, id: number) {
+  try {
+    const bubble = getBubbleById(bubbleList, id);
+    const parentBubble = getParentBubble(bubbleList, bubble);
+
+    deleteChildBubbles(bubbleList, id);
+
+    parentBubble.childBubbleIds.splice(bubble.location, 1);
+
+    for (let i = bubble.location; i < parentBubble.childBubbleIds.length; i++) {
+      const childBubble = getBubbleById(bubbleList, parentBubble.childBubbleIds[i]);
+      childBubble.location = i;
+    }
+  } catch(err) {
+    console.log(err);
+  //  throw err;
   }
+}
+
+function popBubble(bubbleList: Array<Bubble>, id: number) {
+    try {
+        const bubble = getBubbleById(bubbleList, id);
+        if (bubble.type !== BubbleType.internalBubble) {
+            throw new Error('Cannot pop leafBubble');
+        }
+        const internalBubble = bubble as InternalBubble;
+        const parentBubble = getParentBubble(bubbleList, bubble);
+
+        let childBubbleIds = internalBubble.childBubbleIds;
+        parentBubble.childBubbleIds.splice(bubble.location, 1, ...childBubbleIds);
+
+        for (let i = bubble.location; i < parentBubble.childBubbleIds.length; i++) {
+            const childBubble = getBubbleById(bubbleList, parentBubble.childBubbleIds[i]);
+            childBubble.location = i;
+            childBubble.parentBubbleId = parentBubble.id;
+        }
+        removeBubbleById(bubbleList, bubble.id);
+
+    } catch(err) {
+        console.log(err);
+        //  throw err;
+    }
+}
+
+function getContent(bubbleList: Array<Bubble>, id: number): string {
+    try {
+        const bubble = getBubbleById(bubbleList, id);
+
+        if (bubble.type === BubbleType.leafBubble) {
+            const leafBubble = bubble as LeafBubble;
+            return leafBubble.content;
+
+        } else if (bubble.type === BubbleType.internalBubble) {
+            const internalBubble = bubble as InternalBubble;
+            let content = '';
+            for (let childBubbleId of internalBubble.childBubbleIds) {
+                content += getContent(bubbleList, childBubbleId) + ' ';
+            }
+            return content;
+        }
+    } catch(err) {
+        console.log(err);
+        //  throw err;
+    }
+}
+
+function flattenBubble(bubbleList: Array<Bubble>, id: number, newBubble: Bubble) {
+    try {
+        const bubble = getBubbleById(bubbleList, id);
+        if (bubble.type !== BubbleType.internalBubble) {
+            throw new Error('Cannot flatten leafBubble');
+        }
+        const internalBubble = bubble as InternalBubble;
+        const parentBubble = getParentBubble(bubbleList, bubble);
+        (newBubble as LeafBubble).content = getContent(bubbleList, id);
+        console.log(newBubble);
+        newBubble.parentBubbleId = parentBubble.id;
+        newBubble.location = internalBubble.location;
+        parentBubble.childBubbleIds[internalBubble.location] = newBubble.id;
+        bubbleList.push(newBubble);
+        deleteChildBubbles(bubbleList, id);
+
+    } catch(err) {
+        console.log(err);
+        //  throw err;
+    }
+}
+
+function createBubble(bubbleList: Array<Bubble>, id: number, isAbove: boolean, newBubble: Bubble) {
+    try {
+        const bubble = getBubbleById(bubbleList, id);
+        const parentBubble = getParentBubble(bubbleList, bubble);
+        if (isAbove) {
+            parentBubble.childBubbleIds.splice(bubble.location, 0, newBubble.id);
+        } else {
+            parentBubble.childBubbleIds.splice(bubble.location + 1, 0, newBubble.id);
+        }
+
+        bubbleList.push(newBubble);
+        newBubble.parentBubbleId = parentBubble.id;
+
+        for (let i = bubble.location; i < parentBubble.childBubbleIds.length; i++) {
+          const childBubble = getBubbleById(bubbleList, parentBubble.childBubbleIds[i]);
+          childBubble.location = i;
+          childBubble.parentBubbleId = parentBubble.id;
+        }
+    } catch (err) {
+        console.log(err);
+    //    throw err;
+    }
+}
+
+function editBubble(bubbleList: Array<Bubble>, id: number, newContent: string) {
+    try {
+        const bubble = getBubbleById(bubbleList, id);
+        if (bubble.type !== BubbleType.leafBubble) {
+            throw new Error('Edit bubble should be a leaf bubble')
+        }
+        const leafBubble = bubble as LeafBubble;
+        leafBubble.content = newContent;
+
+    } catch (err) {
+        console.log(err);
+    //    throw err;
+    }
 }
 
 function wrapBubble(wrapBubbleList: Array<Bubble>): Promise<void> {
-  if (wrapBubbleList.length > 1) {
-    const parentBubble: InternalBubble = wrapBubbleList[0].parentBubble;
-    const wrapperBubble = new InternalBubble(this._getId(), null);
-    parentBubble.wrapChildren(wrapperBubble, wrapBubbleList);
-    this.bubbleList = this.bubbleList.filter(b => !this._containsBubble(b, wrapBubbleList));
-    this.bubbleList.push(wrapperBubble);
-  }
+
   return Promise.resolve(null);
 }
 

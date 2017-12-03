@@ -1,5 +1,5 @@
 import { Board, EditItem } from './board';
-import { Bubble, LeafBubble } from './bubble';
+import { Bubble, LeafBubble } from './bubble-temp';
 
 describe('board model', () => {
 

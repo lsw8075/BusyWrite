@@ -1,6 +1,6 @@
 import { Component, OnInit, Output, ChangeDetectionStrategy } from '@angular/core';
 import { BubbleMenuComponent } from './bubble-menu/bubble-menu.component';
-import { MenuType, ActionType, Board, Bubble } from './service';
+import { MenuType, ActionType, Board, BubbleTemp } from './service';
 import { BubbleService } from './service';
 
 import { PreviewComponent } from './preview/preview.component';
@@ -14,32 +14,86 @@ import * as fromDocument from '../../reducers/reducer';
 import * as BubbleAction from '../../actions/bubble-action';
 import * as RouterAction from '../../../shared/route/route-action';
 
+import { Bubble, BubbleType, InternalBubble, LeafBubble } from '../../models/bubble';
+
+import { BubbleJsonHelper } from '../../models/bubble-json-helper';
 
 @Component({
-  selector: 'app-view-board',
-  templateUrl: './view-board.component.html',
-  styleUrls: ['./view-board.component.css'],
-
+    selector: 'app-view-board',
+    templateUrl: './view-board.component.html',
+    styleUrls: ['./view-board.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class ViewBoardComponent implements OnInit {
 
-  rootBubble$: Observable<Bubble>;
+    rootBubble$: Observable<Bubble>;
+    bubbleList$: Observable<Array<Bubble>>;
+    bubbleList: Array<Bubble>;
+    rootBubble: Bubble;
 
   constructor(
-      private _store: Store<fromDocument.State>,
-      private _boardService: BoardService,
-      private _bubbleService: BubbleService,
-      private _eventBubbleService: EventBubbleService) {
+    private _store: Store<fromDocument.State>,
+    private _boardService: BoardService,
+    private _bubbleService: BubbleService,
+    private _eventBubbleService: EventBubbleService) {
+        let cnt = 0;
         this.rootBubble$ = _store.select(fromDocument.getBubbleState).map(bubbleState => bubbleState.rootBubble);
-        this._store.select(fromDocument.getBubbleState).subscribe((bubble) => {
-         console.log(bubble);
+        this._store.select(fromDocument.getBubbleState).subscribe((res) => {
+            console.log(cnt++);
+            for (const bubble of res.bubbleList) {
+                if (bubble.type === BubbleType.internalBubble) {
+                const internalBubble = bubble as InternalBubble;
+                const msg = {
+                    id: internalBubble.id,
+                    parentBubbleId: internalBubble.parentBubbleId,
+                    childBubbleIds: internalBubble.childBubbleIds,
+                    location: internalBubble.location};
+                console.log(msg);
+            } else if (bubble.type === BubbleType.leafBubble) {
+                    const leafBubble = bubble as LeafBubble;
+                    const msg = {
+                        id: leafBubble.id,
+                        content: leafBubble.content.substr(0, 10),
+                        parentBubbleId: leafBubble.parentBubbleId,
+                        location: leafBubble.location};
+                    console.log(msg);
+                }
+            }
+            console.log(res.bubbleList);
+            this.bubbleList = res.bubbleList;
+            this.rootBubble = res.rootBubble;
         });
-  }
+        this.bubbleList$ = this._store.select(fromDocument.getBubbleList);
+    }
 
-  ngOnInit() {
-    this._store.dispatch(new BubbleAction.Open(1));
-  }
+    ngOnInit() {
+        this._store.dispatch(new BubbleAction.Open(1));
+    }
+
+    clickDelete(bubble: Bubble) {
+        this._store.dispatch(new BubbleAction.Delete(bubble));
+    }
+
+    clickPop(bubble: Bubble) {
+        this._store.dispatch(new BubbleAction.Pop(bubble));
+    }
+
+    clickCreateAbove(bubble: Bubble) {
+        this._store.dispatch(new BubbleAction.Create({bubble: bubble, isAbove: true}));
+    }
+
+    clickCreateBelow(bubble: Bubble) {
+        this._store.dispatch(new BubbleAction.Create({bubble: bubble, isAbove: false}));
+    }
+
+    clickEdit(bubble: Bubble) {
+        this._store.dispatch(new BubbleAction.Edit(bubble));
+    }
+
+    clickFlatten(bubble: Bubble) {
+        this._store.dispatch(new BubbleAction.Flatten(bubble));
+    }
 
   previewClick(event) {
       if (event.index === 1) {

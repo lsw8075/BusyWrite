@@ -6,10 +6,9 @@ describe('bubble json helper', () => {
     bubbleJsonHelper = new BubbleJsonHelper;
   });
 
-  it('should create a new bubble with json string', () => {
-    jsonString = '{"id": 1, "thumbUps": 10}';
-    let bubble = bubbleJsonHelper.getBubbleObject(json);
-    console.log(bubble);
-    expect(bubble.thumbUps).toBe(10);
+  it('should create new bubble list with json string', () => {
+    const jsonString = '[{"id":2, "content":"hello", "thumbUps":28},{"id":1, "thumbUps":10}]';
+    const bubbleList = bubbleJsonHelper.getBubbleArrayObject(jsonString);
+    expect(bubbleList[0].thumbUps).toBe(28);
   });
 });

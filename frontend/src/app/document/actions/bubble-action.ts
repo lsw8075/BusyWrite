@@ -49,13 +49,14 @@ export class Create implements Action {
   readonly type = CREATE;
   constructor(public payload: {
     bubble: Bubble,
-    menu: MenuType}) {}
+    isAbove: boolean}) {}
 }
 export class CreateComplete implements Action {
   readonly type = CREATE_COMPLETE;
   constructor(public payload: {
     bubble: Bubble,
-    menu: MenuType}) {}
+    isAbove: boolean
+    newBubble: Bubble}) {}
 }
 export class CreateError implements Action {
   readonly type = CREATE_ERROR;
@@ -67,12 +68,18 @@ export const EDIT_UPDATE = '[Bubble] edit update';
 export const EDIT_COMPLETE = '[Bubble] edit Complete';
 export const EDIT_ERROR = '[Bubble] edit Error';
 export class Edit implements Action {
-  readonly type = EDIT;
-  constructor(public payload: Bubble) {}
+    readonly type = EDIT;
+    constructor(public payload: Bubble) {}
+}
+export class EditUpdate implements Action {
+    readonly type = EDIT_UPDATE;
+    constructor(public payload: Bubble) {}
 }
 export class EditComplete implements Action {
-  readonly type = EDIT_COMPLETE;
-  constructor(public payload: Bubble) {}
+    readonly type = EDIT_COMPLETE;
+    constructor(public payload: {
+        bubble: Bubble
+        newContent: string}) {}
 }
 export class EditError implements Action {
   readonly type = EDIT_ERROR;
@@ -159,6 +166,65 @@ export class DeleteError implements Action {
   constructor(public payload: string) {}
 }
 
+export const FLATTEN = '[Bubble] flatten';
+export const FLATTEN_COMPLETE = '[Bubble] flatten Complete';
+export const FLATTEN_ERROR = '[Bubble] flatten Error';
+export class Flatten implements Action {
+  readonly type = FLATTEN;
+  constructor(public payload: Bubble) {}
+}
+export class FlattenComplete implements Action {
+  readonly type = FLATTEN_COMPLETE;
+  constructor(public payload: {
+      bubble: Bubble,
+      newBubble: Bubble}) {}
+}
+export class FlattenError implements Action {
+  readonly type = FLATTEN_ERROR;
+  constructor(public payload: string) {}
+}
+
+export const OTHERS_CREATE = '[Bubble] others create';
+export const OTHERS_EDIT = '[Bubble] others edit';
+export const OTHERS_WRAP = '[Bubble] others wrap';
+export const OTHERS_POP = '[Bubble] others pop';
+export const OTHERS_MERGE = '[Bubble] others merge';
+export const OTHERS_SPLIT = '[Bubble] others split';
+export const OTHERS_DELETE = '[Bubble] others delete';
+export class OthersCreate implements Action {
+  readonly type = OTHERS_CREATE;
+  constructor(public payload: Bubble) {}
+}
+export class OthersEdit implements Action {
+  readonly type = OTHERS_EDIT;
+  constructor(public payload: Bubble) {}
+}
+export class OthersWrap implements Action {
+  readonly type = OTHERS_WRAP;
+  constructor(public payload: Bubble) {}
+}
+export class OthersPop implements Action {
+  readonly type = OTHERS_POP;
+  constructor(public payload: Bubble) {}
+}
+export class OthersMerge implements Action {
+  readonly type = OTHERS_MERGE;
+  constructor(public payload: Bubble) {}
+}
+export class OthersSplit implements Action {
+  readonly type = OTHERS_SPLIT;
+  constructor(public payload: Bubble) {}
+}
+export class OthersDelete implements Action {
+  readonly type = OTHERS_DELETE;
+  constructor(public payload: Bubble) {}
+}
+export const REFRESH = '[Bubble] refresh';
+export class Refresh implements Action {
+  readonly type = REFRESH;
+  constructor(public payload: void) {}
+}
+
 export type Actions =
   | Open
   | OpenComplete
@@ -187,4 +253,14 @@ export type Actions =
   | SplitError
   | Delete
   | DeleteComplete
-  | DeleteError;
+  | DeleteError
+  | Flatten
+  | FlattenComplete
+  | FlattenError
+  | OthersCreate
+  | OthersEdit
+  | OthersWrap
+  | OthersPop
+  | OthersMerge
+  | OthersDelete
+  | Refresh;

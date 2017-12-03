@@ -69,22 +69,22 @@ export class BubbleEffects {
   @Effect()
   create$: Observable<Action> = this.action$.ofType<fromBubble.Create>(fromBubble.CREATE)
     .map(action => action.payload).mergeMap(query => {
-      return Observable.fromPromise(this.bubbleService.deleteBubble(query.bubble))
-        .map(() => new fromBubble.CreateComplete(query))
+      return Observable.fromPromise(this.bubbleService.createBubble(query.bubble, query.isAbove))
+        .map((newBubble) => new fromBubble.CreateComplete({bubble: query.bubble, isAbove: query.isAbove, newBubble: newBubble}))
         .catch(err => of(new fromBubble.CreateError(err)));
     });
 
   @Effect()
   createComplete$: Observable<Action> = this.action$.ofType<fromBubble.CreateComplete>(fromBubble.CREATE_COMPLETE)
     .map(action => action.payload).mergeMap(query => {
-      return Observable.of(new fromBubble.EditComplete(query.bubble));
+      return Observable.of(new fromBubble.EditComplete({bubble: query.bubble, newContent: "newly created"}));
     });
 
   @Effect()
   edit$: Observable<Action> = this.action$.ofType<fromBubble.Edit>(fromBubble.EDIT)
     .map(action => action.payload).mergeMap(query => {
       return Observable.fromPromise(this.bubbleService.editBubble(query))
-        .map(() => new fromBubble.EditComplete(query))
+        .map(() => new fromBubble.EditComplete({bubble: query, newContent: "newly editted"}))
         .catch(err => of(new fromBubble.EditError(err)));
     });
 
@@ -110,6 +110,14 @@ export class BubbleEffects {
       return Observable.fromPromise(this.bubbleService.splitBubble(query))
         .map(() => new fromBubble.SplitComplete(query))
         .catch(err => of(new fromBubble.SplitError(err)));
+    });
+
+  @Effect()
+  flatten$: Observable<Action> = this.action$.ofType<fromBubble.Flatten>(fromBubble.FLATTEN)
+    .map(action => action.payload).mergeMap(query => {
+      return Observable.fromPromise(this.bubbleService.flattenBubble(query))
+        .map((newBubble) => new fromBubble.FlattenComplete({bubble: query, newBubble: newBubble}))
+        .catch(err => of(new fromBubble.FlattenError(err)));
     });
 
 

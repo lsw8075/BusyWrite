@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
-import { Bubble } from '../service';
+import { BubbleTemp } from '../service';
 import { EditItem } from '../service';
 
 @Component({

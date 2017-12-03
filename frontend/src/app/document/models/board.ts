@@ -1,4 +1,4 @@
-import { Bubble } from './bubble';
+import { BubbleTemp } from './bubble-temp';
 
 const tempUserID = 1;
 
@@ -7,10 +7,10 @@ export class Board {
 
 export class EditItem {
   id: number;
-  bubble: Bubble;
+  bubble: BubbleTemp;
   content: string;
 
-  constructor(id: number, bubble: Bubble) {
+  constructor(id: number, bubble: BubbleTemp) {
     this.id = id;
     this.bubble = bubble;
     this.content = '';

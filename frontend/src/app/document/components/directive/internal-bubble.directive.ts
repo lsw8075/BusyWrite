@@ -1,13 +1,13 @@
 import { Directive, ElementRef, Renderer2, HostListener, HostBinding, Input, OnInit } from '@angular/core';
 import { EventBubbleService } from '../service';
-import { Bubble } from '../service';
+import { BubbleTemp } from '../service';
 
 @Directive({
   selector: '[appInternalBubble]'
 })
 export class InternalBubbleDirective implements OnInit {
 
-  @Input() appInternalBubble: Bubble;
+  @Input() appInternalBubble: BubbleTemp;
 
   private lineWidth = 3;
   private space = 10;

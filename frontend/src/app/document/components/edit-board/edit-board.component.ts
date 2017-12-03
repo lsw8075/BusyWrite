@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { DragulaService } from 'ng2-dragula/ng2-dragula';
 
-import { Note, NoteService, Bubble, BoardService, EditItem } from './service';
+import { Note, NoteService, BubbleTemp, BoardService, EditItem } from './service';
 import { EventBubbleService } from './service';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 

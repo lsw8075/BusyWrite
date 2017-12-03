@@ -1,8 +1,68 @@
+<!---
 <div class="view-board">
   <p-tabView (onChange)="previewClick($event)">
 
     <p-tabPanel header="View">
       <app-bubble-list-view [rootBubble]="rootBubble$ | async"></app-bubble-list-view>
+    </p-tabPanel>
+
+    <p-tabPanel header="Preview">
+      <app-preview>
+        Loading...
+      </app-preview>
+    </p-tabPanel>
+
+  </p-tabView>
+</div>
+-->
+<!---
+<table class="table table-striped" *ngIf=bubbleList>
+  <tr>
+    <th>id</th>
+    <th>type</th>
+    <th>content</th>
+    <th>parentBubbleId</th>
+    <th>childBubbleIds</th>
+    <th>location</th>
+  </tr>
+  <tr>
+    <td>{{rootBubble.id}}</td>
+    <td>{{rootBubble.type}}</td>
+    <td>{{rootBubble.content}}</td>
+    <td>{{rootBubble.parentBubbleId}}</td>
+    <td>{{rootBubble.childBubbleIds}}</td>
+    <td>{{rootBubble.location}}</td>
+  </tr>
+  <tr *ngFor="let bubble of bubbleList">
+    <td>{{bubble.id}}</td>
+    <td>{{bubble.type}}</td>
+    <td>
+      <div *ngIf=bubble.content>
+        {{bubble.content.substr(0,10)}}
+      </div>
+    </td>
+    <td>{{bubble.parentBubbleId}}</td>
+    <td>{{bubble.childBubbleIds}}</td>
+    <td>{{bubble.location}}</td>
+    <td>
+      <div class="">
+        <button class="btn" (click)="clickDelete(bubble)">delete</button>
+        <button class="btn" (click)="clickPop(bubble)">pop</button>
+        <button class="btn" (click)="clickCreateAbove(bubble)">create above</button>
+        <button class="btn" (click)="clickCreateBelow(bubble)">create below</button>
+        <button class="btn" (click)="clickEdit(bubble)">edit</button>
+        <button class="btn" (click)="clickFlatten(bubble)">flatten</button>
+      </div>
+    </td>
+  </tr>
+</table>
+-->
+
+<div class="view-board">
+  <p-tabView (onChange)="previewClick($event)">
+
+    <p-tabPanel header="View">
+      <app-bubble-list-view [rootBubble]="rootBubble$ | async" [bubbleList]="bubbleList$ | async"></app-bubble-list-view>
     </p-tabPanel>
 
     <p-tabPanel header="Preview">

@@ -1,10 +1,18 @@
-import { Bubble } from './bubble';
+import { BubbleTemp, LeafBubbleTemp } from './bubble-temp';
 
 export class BubbleJsonHelper {
   constructor() {
   }
-  getBubbleObject(jsonString: string): Bubble {
-    let jsonObject: Bubble = JSON.parse(jsonString);
-    return jsonObject;
+
+  getBubbleArrayObject(jsonString: string): Array<BubbleTemp> {
+    const jsonObjectArray = JSON.parse(jsonString);
+    let bubbleList: Array<BubbleTemp> = [];
+
+    for (const jsonObject of jsonObjectArray) {
+      let bubble = new LeafBubbleTemp(jsonObject.id, jsonObject.content);
+      bubble.thumbUps = jsonObject.thumbUps;
+      bubbleList.push(bubble);
+    }
+    return bubbleList;
   }
 }

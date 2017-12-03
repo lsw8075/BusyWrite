@@ -5,12 +5,14 @@ export interface UserState {
     signedIn: boolean;
     loading: boolean;
     error: string;
+    userId: number;
 }
 
 export const initialState: UserState = {
     signedIn: false,
     loading: false,
     error: '',
+    userId: -1,
 };
 
 export function UserReducer(state = initialState, action: any): UserState {
@@ -20,7 +22,7 @@ export function UserReducer(state = initialState, action: any): UserState {
     case fromUser.SIGNIN:
         return {...state, loading: true};
     case fromUser.SIGNIN_SUCCESS:
-        return {...state, loading: false, signedIn: true};
+        return {...state, loading: false, userId: action.payload, signedIn: true};
     case fromUser.SIGNIN_FAIL:
         return {...state, loading: false, error: action.payload};
     case fromUser.SIGNOUT:
