@@ -44,6 +44,16 @@ export class BubbleService {
 
         if (USE_MOCK) {
             this._getBubbleList().then(bubbleList => {
+                for (let bubble of bubbleList) {
+                    if (bubble.type === BubbleType.internalBubble) {
+                        const internalBubble = bubble as InternalBubble;
+                        for (let i = 0; i < internalBubble.childBubbleIds.length; i++) {
+                            const childBubbleId = internalBubble.childBubbleIds[i];
+                            bubbleList[childBubbleId].parentBubbleId = internalBubble.id;
+                            bubbleList[childBubbleId].location = i;
+                        }
+                    }
+                }
                 this.bubbleList = bubbleList;
             });
         }
@@ -137,6 +147,7 @@ export class BubbleService {
     }
 
   public getBubbleList(): Promise<Array<Bubble>> {
+
     return Promise.resolve(this.bubbleList);
   }
 

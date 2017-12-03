@@ -14,6 +14,7 @@ import * as fromDocument from '../../reducers/reducer';
 import * as BubbleAction from '../../actions/bubble-action';
 import * as RouterAction from '../../../shared/route/route-action';
 
+import { Bubble, BubbleType, InternalBubble, LeafBubble } from '../../models/bubble';
 
 import { BubbleJsonHelper } from '../../models/bubble-json-helper';
 
@@ -26,21 +27,49 @@ import { BubbleJsonHelper } from '../../models/bubble-json-helper';
 
 export class ViewBoardComponent implements OnInit {
 
-  rootBubble$: Observable<BubbleTemp>;
+  rootBubble$: Observable<Bubble>;
+
+  bubbleList: Array<Bubble>;
+  rootBubble: Bubble;
 
   constructor(
-      private _store: Store<fromDocument.State>,
-      private _boardService: BoardService,
-      private _bubbleService: BubbleService,
-      private _eventBubbleService: EventBubbleService) {
-        // this.rootBubble$ = _store.select(fromDocument.getBubbleState).map(bubbleState => bubbleState.rootBubble);
-        // this._store.select(fromDocument.getBubbleState).subscribe((bubble) => {
-        //  console.log(bubble);
-        // });
+    private _store: Store<fromDocument.State>,
+    private _boardService: BoardService,
+    private _bubbleService: BubbleService,
+    private _eventBubbleService: EventBubbleService) {
+      let cnt = 0;
+      this.rootBubble$ = _store.select(fromDocument.getBubbleState).map(bubbleState => bubbleState.rootBubble);
+      this._store.select(fromDocument.getBubbleState).subscribe((res) => {
+        console.log(cnt++);
+        for (let bubble of res.bubbleList) {
+          if (bubble.type === BubbleType.internalBubble) {
+           const internalBubble = bubble as InternalBubble;
+           let msg = {id: internalBubble.id, parentBubbleId: internalBubble.parentBubbleId, childBubbleIds: internalBubble.childBubbleIds, location: internalBubble.location};
+           console.log(msg);
+          }
+          else if (bubble.type === BubbleType.leafBubble) {
+            const leafBubble = bubble as LeafBubble;
+            let msg = {id: leafBubble.id, content: leafBubble.content.substr(0,10), parentBubbleId: leafBubble.parentBubbleId, location: leafBubble.location};
+            console.log(msg);
+          }
+        }
+
+        this.bubbleList = res.bubbleList;
+        this.rootBubble = res.rootBubble;
+      });
   }
 
   ngOnInit() {
     this._store.dispatch(new BubbleAction.Open(1));
+  }
+
+  clickDelete(bubble: Bubble) {
+    this._store.dispatch(new BubbleAction.Delete(bubble));
+  }
+
+  clickRefresh() {
+    console.log('refreshState');
+    this._store.dispatch(new BubbleAction.Refresh(null));
   }
 
   previewClick(event) {

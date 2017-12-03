@@ -49,7 +49,7 @@ export function BubbleReducer(state: BubbleState = initialState, action: fromBub
       return {...state, loading: true};
     case fromBubble.DELETE_COMPLETE: {
       const bubble = action.payload;
-      deleteBubble(bubble);
+      deleteBubble(state.bubbleList, bubble.id);
       return {...state, loading: false};
     }
     case fromBubble.CREATE:
@@ -106,8 +106,54 @@ function getBubbleById(bubbleList: Array<Bubble>, id: number): Bubble {
   return bList[0];
 }
 
-function deleteBubble(bubble: Bubble) {
+function removeBubbleById(bubbleList: Array<Bubble>, id: number): void {
+  const index = bubbleList.findIndex((bubble) => (bubble.id === id));
+  if (index === -1) {
+    throw new Error('Does not exist with this id');
+  }
+  bubbleList.splice(index, 1);
+}
 
+function getParentBubble(bubbleList: Array<Bubble>, bubble: Bubble): InternalBubble {
+  try {
+    const parentBubble = getBubbleById(bubbleList, bubble.parentBubbleId);
+    return parentBubble as InternalBubble;
+  } catch(err) {
+    throw new Error('Does not exist parent bubble');
+  }
+}
+
+function deleteChildBubbles(bubbleList: Array<Bubble>, id: number) {
+  try {
+    const bubble = getBubbleById(bubbleList, id);
+    if (bubble.type === BubbleType.internalBubble) {
+      const internalBubble = bubble as InternalBubble;
+      for (const childBubbleId of internalBubble.childBubbleIds) {
+        deleteChildBubbles(bubbleList, childBubbleId);
+      }
+    }
+    removeBubbleById(bubbleList, bubble.id);
+  } catch(err) {
+  //  throw err;
+  }
+}
+
+function deleteBubble(bubbleList: Array<Bubble>, id: number) {
+  try {
+    const bubble = getBubbleById(bubbleList, id);
+    const parentBubble = getParentBubble(bubbleList, bubble);
+
+    deleteChildBubbles(bubbleList, id);
+    console.log(parentBubble.childBubbleIds);
+    parentBubble.childBubbleIds.splice(bubble.location, 1);
+    console.log(parentBubble.childBubbleIds);
+    for (let i = bubble.location; i < parentBubble.childBubbleIds.length; i++) {
+      const childBubble = getBubbleById(bubbleList, parentBubble.childBubbleIds[i]);
+      childBubble.location = i;
+    }
+  } catch(err) {
+  //  throw err;
+  }
 }
 
 function createBubble(bubble: Bubble, menu: MenuType) {

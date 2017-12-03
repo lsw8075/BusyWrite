@@ -194,6 +194,11 @@ export class OthersDelete implements Action {
   readonly type = OTHERS_DELETE;
   constructor(public payload: Bubble) {}
 }
+export const REFRESH = '[Bubble] refresh';
+export class Refresh implements Action {
+  readonly type = REFRESH;
+  constructor(public payload: void) {}
+}
 
 export type Actions =
   | Open
@@ -229,4 +234,5 @@ export type Actions =
   | OthersWrap
   | OthersPop
   | OthersMerge
-  | OthersDelete;
+  | OthersDelete
+  | Refresh;

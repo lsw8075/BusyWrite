@@ -63,7 +63,7 @@ are impractical and unproductive. </p>', -1, [2, 4, 1, 3], [7, 8]);
     const b2: LeafBubble = new LeafBubble(2, '<h1 class="ql-align-center">Title</h1>', 1);
   const b1: InternalBubble = new InternalBubble(1, [2, 3]);
 const rootBubble: InternalBubble = new InternalBubble(0, [1, 4, 8, 15]);
-const bubbleList: Array<Bubble> = [b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15, b16, b17];
+const bubbleList: Array<Bubble> = [rootBubble, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15, b16, b17];
 
 export { rootBubble as MockBubbleRoot };
 export { bubbleList as MockBubbleList };
