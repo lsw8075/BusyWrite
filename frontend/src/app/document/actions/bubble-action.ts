@@ -49,13 +49,14 @@ export class Create implements Action {
   readonly type = CREATE;
   constructor(public payload: {
     bubble: Bubble,
-    menu: MenuType}) {}
+    isAbove: boolean}) {}
 }
 export class CreateComplete implements Action {
   readonly type = CREATE_COMPLETE;
   constructor(public payload: {
     bubble: Bubble,
-    menu: MenuType}) {}
+    isAbove: boolean
+    newBubble: Bubble}) {}
 }
 export class CreateError implements Action {
   readonly type = CREATE_ERROR;
@@ -67,12 +68,18 @@ export const EDIT_UPDATE = '[Bubble] edit update';
 export const EDIT_COMPLETE = '[Bubble] edit Complete';
 export const EDIT_ERROR = '[Bubble] edit Error';
 export class Edit implements Action {
-  readonly type = EDIT;
-  constructor(public payload: Bubble) {}
+    readonly type = EDIT;
+    constructor(public payload: Bubble) {}
+}
+export class EditUpdate implements Action {
+    readonly type = EDIT_UPDATE;
+    constructor(public payload: Bubble) {}
 }
 export class EditComplete implements Action {
-  readonly type = EDIT_COMPLETE;
-  constructor(public payload: Bubble) {}
+    readonly type = EDIT_COMPLETE;
+    constructor(public payload: {
+        bubble: Bubble
+        newContent: string}) {}
 }
 export class EditError implements Action {
   readonly type = EDIT_ERROR;
@@ -159,6 +166,24 @@ export class DeleteError implements Action {
   constructor(public payload: string) {}
 }
 
+export const FLATTEN = '[Bubble] flatten';
+export const FLATTEN_COMPLETE = '[Bubble] flatten Complete';
+export const FLATTEN_ERROR = '[Bubble] flatten Error';
+export class Flatten implements Action {
+  readonly type = FLATTEN;
+  constructor(public payload: Bubble) {}
+}
+export class FlattenComplete implements Action {
+  readonly type = FLATTEN_COMPLETE;
+  constructor(public payload: {
+      bubble: Bubble,
+      newBubble: Bubble}) {}
+}
+export class FlattenError implements Action {
+  readonly type = FLATTEN_ERROR;
+  constructor(public payload: string) {}
+}
+
 export const OTHERS_CREATE = '[Bubble] others create';
 export const OTHERS_EDIT = '[Bubble] others edit';
 export const OTHERS_WRAP = '[Bubble] others wrap';
@@ -229,6 +254,9 @@ export type Actions =
   | Delete
   | DeleteComplete
   | DeleteError
+  | Flatten
+  | FlattenComplete
+  | FlattenError
   | OthersCreate
   | OthersEdit
   | OthersWrap

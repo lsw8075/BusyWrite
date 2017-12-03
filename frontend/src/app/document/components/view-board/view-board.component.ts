@@ -59,18 +59,33 @@ export class ViewBoardComponent implements OnInit {
       });
   }
 
-  ngOnInit() {
-    this._store.dispatch(new BubbleAction.Open(1));
-  }
+    ngOnInit() {
+        this._store.dispatch(new BubbleAction.Open(1));
+    }
 
-  clickDelete(bubble: Bubble) {
-    this._store.dispatch(new BubbleAction.Delete(bubble));
-  }
+    clickDelete(bubble: Bubble) {
+        this._store.dispatch(new BubbleAction.Delete(bubble));
+    }
 
-  clickRefresh() {
-    console.log('refreshState');
-    this._store.dispatch(new BubbleAction.Refresh(null));
-  }
+    clickPop(bubble: Bubble) {
+        this._store.dispatch(new BubbleAction.Pop(bubble));
+    }
+
+    clickCreateAbove(bubble: Bubble) {
+        this._store.dispatch(new BubbleAction.Create({bubble: bubble, isAbove: true}));
+    }
+
+    clickCreateBelow(bubble: Bubble) {
+        this._store.dispatch(new BubbleAction.Create({bubble: bubble, isAbove: false}));
+    }
+
+    clickEdit(bubble: Bubble) {
+        this._store.dispatch(new BubbleAction.Edit(bubble));
+    }
+
+    clickFlatten(bubble: Bubble) {
+        this._store.dispatch(new BubbleAction.Flatten(bubble));
+    }
 
   previewClick(event) {
       if (event.index === 1) {

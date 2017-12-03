@@ -15,7 +15,7 @@
   </p-tabView>
 </div>
 -->
-<button class="btn" (click)="clickRefresh()">Refresh</button>
+
 <table class="table table-striped" *ngIf=bubbleList>
   <tr>
     <th>id</th>
@@ -47,6 +47,11 @@
     <td>
       <div class="">
         <button class="btn" (click)="clickDelete(bubble)">delete</button>
+        <button class="btn" (click)="clickPop(bubble)">pop</button>
+        <button class="btn" (click)="clickCreateAbove(bubble)">create above</button>
+        <button class="btn" (click)="clickCreateBelow(bubble)">create below</button>
+        <button class="btn" (click)="clickEdit(bubble)">edit</button>
+        <button class="btn" (click)="clickFlatten(bubble)">flatten</button>
       </div>
     </td>
   </tr>

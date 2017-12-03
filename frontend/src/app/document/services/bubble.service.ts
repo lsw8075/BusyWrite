@@ -162,22 +162,6 @@ export class BubbleService {
         throw new Error('bubble with index ' + id + ' does not exist');
     }
 
-  public async editBubble(bubble: Bubble): Promise<void> {
-    if (bubble.type !== BubbleType.leafBubble) {
-      throw new Error('Cannot edit internal bubble');
-    }
-    console.log('[edit]');
-    await this.delay(1000);
-    return Promise.resolve(null);
-  }
-
-  public async deleteBubble(bubble: Bubble): Promise<void> {
-    // if (bubble.parentBubble === null) {
-    //   throw new Error('Cannot delete root bubble');
-    // }
-    await this.delay(1000);
-    return Promise.resolve(null);
-  }
 
   public async wrapBubble(wrapBubbleList: Array<Bubble>): Promise<void> {
     if (wrapBubbleList.length <= 1) {
@@ -197,23 +181,43 @@ export class BubbleService {
     return Promise.resolve(null);
   }
 
-  public async popBubble(bubble: Bubble): Promise<void> {
-    // check the assumptions
-    // if (bubble.parentBubble === null) {
-    //   throw new Error('Cannot pop root bubble');
-    // }
-    await this.delay(1000);
-    return Promise.resolve(null);
-  }
+    public async flattenBubble(bubble: Bubble): Promise<Bubble> {
+        await this.delay(1000);
+        return Promise.resolve(new LeafBubble(this._getTempBubbleId()));
+    }
 
+    public async editBubble(bubble: Bubble): Promise<void> {
+        await this.delay(1000);
+        return Promise.resolve(null);
+    }
 
-  private _getBubbleList(): Promise<Array<Bubble>> {
-    this.bubbleRoot = MockBubbleRoot;
-    return Promise.resolve(MockBubbleList);
-  }
+    public async deleteBubble(bubble: Bubble): Promise<void> {
+        await this.delay(1000);
+        return Promise.resolve(null);
+    }
 
-  private delay(ms: number) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
+    public async popBubble(bubble: Bubble): Promise<void> {
+        await this.delay(1000);
+        return Promise.resolve(null);
+    }
+
+    public async createBubble(bubble: Bubble, isAbove: boolean): Promise<Bubble> {
+        await this.delay(1000);
+        return Promise.resolve(new LeafBubble(this._getTempBubbleId(), 'new string'));
+    }
+
+    private _tempBubbleId = 60;
+    private _getTempBubbleId(): number {
+        return this._tempBubbleId++;
+    }
+
+    private _getBubbleList(): Promise<Array<Bubble>> {
+        this.bubbleRoot = MockBubbleRoot;
+        return Promise.resolve(MockBubbleList);
+    }
+
+    private delay(ms: number) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
 
 }
