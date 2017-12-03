@@ -15,7 +15,7 @@
   </p-tabView>
 </div>
 -->
-
+<!---
 <table class="table table-striped" *ngIf=bubbleList>
   <tr>
     <th>id</th>
@@ -56,3 +56,20 @@
     </td>
   </tr>
 </table>
+-->
+
+<div class="view-board">
+  <p-tabView (onChange)="previewClick($event)">
+
+    <p-tabPanel header="View">
+      <app-bubble-list-view [rootBubble]="rootBubble$ | async" [bubbleList]="bubbleList$ | async"></app-bubble-list-view>
+    </p-tabPanel>
+
+    <p-tabPanel header="Preview">
+      <app-preview>
+        Loading...
+      </app-preview>
+    </p-tabPanel>
+
+  </p-tabView>
+</div>

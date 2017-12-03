@@ -1,7 +1,7 @@
-import { Component, EventEmitter, Input, OnInit, OnDestroy, Output, HostListener } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, OnDestroy, Output, HostListener, ChangeDetectorRef } from '@angular/core';
 import { BubbleService } from '../service';
-import { BubbleType, BubbleTemp, ActionType, MenuType } from '../service';
-import { InternalBubbleTemp, LeafBubbleTemp } from '../../../models/bubble-temp';
+import { BubbleTemp, ActionType, MenuType } from '../service';
+import { Bubble, InternalBubble, LeafBubble, BubbleType } from '../../../models/bubble';
 import { EventBubbleService, BoardService } from '../service';
 
 import { Store } from '@ngrx/store';
@@ -10,7 +10,6 @@ import { Observable } from 'rxjs/Observable';
 import * as fromDocument from '../../../reducers/reducer';
 import * as BubbleAction from '../../../actions/bubble-action';
 import * as RouterAction from '../../../../shared/route/route-action';
-
 
 @Component({
   selector: 'app-bubble-list-view',
@@ -22,12 +21,14 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
   menuType = MenuType;
   actionType = ActionType;
 
-  @Input() rootBubble: BubbleTemp; // bubbles that have root as parents
-  selectedBubble: BubbleTemp;
+  @Input() rootBubble: Bubble | Bubble; // bubbles that have root as parents
+  @Input() bubbleList: Array<Bubble> | Bubble[];
+  selectedBubble: Bubble;
   selectedMenu: MenuType;
 
   constructor(
     private _store: Store<fromDocument.State>,
+    private _ref: ChangeDetectorRef,
     private _bubbleService: BubbleService,
     private _eventBubbleService: EventBubbleService,
     private _boardService: BoardService) {
@@ -58,6 +59,15 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
   // onKeyUp(ev: KeyboardEvent) {
   //   console.log(`The user just pressed ${ev.key}!`);
   // }
+
+  clickDelete(bubble: Bubble) {
+    this._store.dispatch(new BubbleAction.Delete(bubble));
+  }
+
+  clickRefresh() {
+    console.log('refreshState');
+    this._store.dispatch(new BubbleAction.Refresh(null));
+  }
 
   public clearState(event): void {
     this._eventBubbleService.clearState();
@@ -91,12 +101,6 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
     } else if (menu !== MenuType.borderTopMenu) {
       throw new Error('create bubble invoked with not border');
     }
-  //   this._bubbleService.createBubble(bubble.parentBubble, location, 'empty bubble')
-  //     .then(response => {
-  // //      this._boardService.editBubble(response);
-  //       this._eventBubbleService.clearState();
-  //       this._refreshBubbleList();
-  //     });
   }
   private finishEdit(bubble: BubbleTemp) {
     bubble.releaseLock();

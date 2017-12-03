@@ -101,8 +101,12 @@ export function BubbleReducer(state: BubbleState = initialState, action: fromBub
   }
 }
 
+function BubbleListReducer(state, action) {
+    // nested reducer
+}
+
 function _containsBubble(bubble: Bubble, bubbleList: Array<Bubble>): boolean {
-  for (const b of this.bubbleList) {
+  for (const b of bubbleList) {
     if (b.id === bubble.id) {
       return true;
     }
