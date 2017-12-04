@@ -60,14 +60,30 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
   //   console.log(`The user just pressed ${ev.key}!`);
   // }
 
-  clickDelete(bubble: Bubble) {
-    this._store.dispatch(new BubbleAction.Delete(bubble));
-  }
 
-  clickRefresh() {
-    console.log('refreshState');
-    this._store.dispatch(new BubbleAction.Refresh(null));
-  }
+    clickDelete(bubble: Bubble) {
+        this._store.dispatch(new BubbleAction.Delete(bubble.id));
+    }
+
+    clickPop(bubble: Bubble) {
+        this._store.dispatch(new BubbleAction.Pop(bubble.id));
+    }
+
+    clickCreateAbove(bubble: Bubble) {
+        this._store.dispatch(new BubbleAction.Create({bubbleId: bubble.id, isAbove: true}));
+    }
+
+    clickCreateBelow(bubble: Bubble) {
+        this._store.dispatch(new BubbleAction.Create({bubbleId: bubble.id, isAbove: false}));
+    }
+
+    clickEdit(bubble: Bubble) {
+        this._store.dispatch(new BubbleAction.Edit(bubble.id));
+    }
+
+    clickFlatten(bubble: Bubble) {
+        this._store.dispatch(new BubbleAction.Flatten(bubble.id));
+    }
 
   public clearState(event): void {
     this._eventBubbleService.clearState();
@@ -78,68 +94,68 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
     this._eventBubbleService.clearState();
   }
 
-  public popBubble(bubble: BubbleTemp) {
-    // this._bubbleService.popBubble(bubble)
-    //   .then(() => {
-    //     this._refreshBubbleList();
-    //     this._eventBubbleService.clearState();
-    //   });
-  }
+//   public popBubble(bubble: BubbleTemp) {
+//     // this._bubbleService.popBubble(bubble)
+//     //   .then(() => {
+//     //     this._refreshBubbleList();
+//     //     this._eventBubbleService.clearState();
+//     //   });
+//   }
 
-  public wrapBubble() {
-    // this._bubbleService.wrapBubble(this._eventBubbleService.wrapBubbles)
-    //   .then(response => {
-    //     this._refreshBubbleList();
-    //     this._eventBubbleService.clearState();
-    //   });
-  }
+//   public wrapBubble() {
+//     // this._bubbleService.wrapBubble(this._eventBubbleService.wrapBubbles)
+//     //   .then(response => {
+//     //     this._refreshBubbleList();
+//     //     this._eventBubbleService.clearState();
+//     //   });
+//   }
 
-  public createBubble(bubble: BubbleTemp, menu: MenuType) {
-    let location = bubble.location;
-    if (menu === MenuType.borderBottomMenu) {
-      location++;
-    } else if (menu !== MenuType.borderTopMenu) {
-      throw new Error('create bubble invoked with not border');
-    }
-  }
-  private finishEdit(bubble: BubbleTemp) {
-    bubble.releaseLock();
-    this._eventBubbleService.edittedBubble = null;
-    this._refreshBubbleList();
-  }
-  public editBubble(bubble: BubbleTemp) {
-    if (bubble.type === BubbleType.leafBubble &&
-        this.isBubbleContentShown(bubble)) {
-    //  this._boardService.editBubble(bubble);
-      this._eventBubbleService.clearState();
-      this._refreshBubbleList();
-    }
-  }
-  public deleteBubble(bubble: BubbleTemp) {
-    if (bubble.id !== 0) {
-      this._eventBubbleService.setState(ActionType.delete);
-      // this._bubbleService.deleteBubble(bubble).then(() => {
-      //     this._eventBubbleService.clearState();
-      //     this._refreshBubbleList();
-      //   });
-    } else {
-      throw new Error('Cannot delete root bubble');
-    }
-  }
+//   public createBubble(bubble: BubbleTemp, menu: MenuType) {
+//     let location = bubble.location;
+//     if (menu === MenuType.borderBottomMenu) {
+//       location++;
+//     } else if (menu !== MenuType.borderTopMenu) {
+//       throw new Error('create bubble invoked with not border');
+//     }
+//   }
+//   private finishEdit(bubble: BubbleTemp) {
+//     bubble.releaseLock();
+//     this._eventBubbleService.edittedBubble = null;
+//     this._refreshBubbleList();
+//   }
+//   public editBubble(bubble: BubbleTemp) {
+//     if (bubble.type === BubbleType.leafBubble &&
+//         this.isBubbleContentShown(bubble)) {
+//     //  this._boardService.editBubble(bubble);
+//       this._eventBubbleService.clearState();
+//       this._refreshBubbleList();
+//     }
+//   }
+//   public deleteBubble(bubble: BubbleTemp) {
+//     if (bubble.id !== 0) {
+//       this._eventBubbleService.setState(ActionType.delete);
+//       // this._bubbleService.deleteBubble(bubble).then(() => {
+//       //     this._eventBubbleService.clearState();
+//       //     this._refreshBubbleList();
+//       //   });
+//     } else {
+//       throw new Error('Cannot delete root bubble');
+//     }
+//   }
 
-  public flattenBubble(bubble: BubbleTemp) {
-    // this._bubbleService.flattenBubble(bubble).then(() => {
-    //     this._eventBubbleService.clearState();
-    //     this._refreshBubbleList();
-    //   });
-  }
+//   public flattenBubble(bubble: BubbleTemp) {
+//     // this._bubbleService.flattenBubble(bubble).then(() => {
+//     //     this._eventBubbleService.clearState();
+//     //     this._refreshBubbleList();
+//     //   });
+//   }
 
-  public moveBubble(bubble: BubbleTemp, destBubble: BubbleTemp, menu: MenuType) {
-    // this._bubbleService.moveBubble(bubble, destBubble, menu).then(() => {
-    //   this._eventBubbleService.clearState();
-    //   this._refreshBubbleList();
-    // });
-  }
+//   public moveBubble(bubble: BubbleTemp, destBubble: BubbleTemp, menu: MenuType) {
+//     // this._bubbleService.moveBubble(bubble, destBubble, menu).then(() => {
+//     //   this._eventBubbleService.clearState();
+//     //   this._refreshBubbleList();
+//     // });
+//   }
 
   public onClickEvent(bubble: BubbleTemp, menu: MenuType, mouseEvent: MouseEvent): void {
   //  this._store.dispatch(new BubbleAction.Select({bubble, menu}));

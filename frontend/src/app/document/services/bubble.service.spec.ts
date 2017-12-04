@@ -21,10 +21,4 @@ describe('BubbleService', () => {
   }));
 
 
-
-  it('should not get bubble by inaccessible id',
-  async(inject([BubbleService], (service: BubbleService) => {
-    expect(function() {service.getBubbleById(0); }).toThrowError();
-  })));
-
 });

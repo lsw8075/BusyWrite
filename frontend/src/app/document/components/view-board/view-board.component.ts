@@ -10,6 +10,8 @@ import { EventBubbleService } from '../../services/event/event-bubble.service';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
 
+import * as fromUser from '../../../user/reducers/reducer';
+
 import * as fromDocument from '../../reducers/reducer';
 import * as BubbleAction from '../../actions/bubble-action';
 import * as RouterAction from '../../../shared/route/route-action';
@@ -37,35 +39,15 @@ export class ViewBoardComponent implements OnInit {
     private _eventBubbleService: EventBubbleService) {
         let cnt = 0;
         this.rootBubble$ = _store.select(fromDocument.getBubbleState).map(bubbleState => bubbleState.rootBubble);
+        this.bubbleList$ = _store.select(fromDocument.getBubbleList);
+
         this._store.select(fromDocument.getBubbleState).subscribe((res) => {
-            console.log(cnt++);
-            // for (const bubble of res.bubbleList) {
-            //     if (bubble.type === BubbleType.internalBubble) {
-            //     const internalBubble = bubble as InternalBubble;
-            //     const msg = {
-            //         id: internalBubble.id,
-            //         parentBubbleId: internalBubble.parentBubbleId,
-            //         childBubbleIds: internalBubble.childBubbleIds,
-            //         location: internalBubble.location};
-            //     console.log(msg);
-            // } else if (bubble.type === BubbleType.leafBubble) {
-            //         const leafBubble = bubble as LeafBubble;
-            //         const msg = {
-            //             id: leafBubble.id,
-            //             content: leafBubble.content.substr(0, 10),
-            //             parentBubbleId: leafBubble.parentBubbleId,
-            //             location: leafBubble.location};
-            //         console.log(msg);
-            //     }
-            // }
-            console.log(res.bubbleList);
         });
-        this.bubbleList$ = this._store.select(fromDocument.getBubbleList);
     }
 
-  ngOnInit() {
-    this._store.dispatch(new BubbleAction.Open(1));
-  }
+    ngOnInit() {
+        this._store.dispatch(new BubbleAction.Open(1));
+    }
 
   previewClick(event) {
       if (event.index === 1) {

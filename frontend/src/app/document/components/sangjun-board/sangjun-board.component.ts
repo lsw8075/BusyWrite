@@ -34,32 +34,32 @@ export class SangjunBoardComponent implements OnInit {
       _eventBubbleService.clearState();
     });
 
-    _eventSangjunBoardService._backButtonClickEvent$.subscribe(() => {
-      this.selectedSB = null;
-    });
+    // _eventSangjunBoardService._backButtonClickEvent$.subscribe(() => {
+    //   this.selectedSB = null;
+    // });
 
-    _eventSangjunBoardService._switchClickEvent$.subscribe((suggestBubble) => {
-      console.log('switch');
-    //  this.bubble = _bubbleSerivice.switchBubble(this.bubble, suggestBubble);
-      this.suggestBubbles = this.bubble.suggestBubbles;
-      this.suggestBubbles = this.suggestBubbles.sort((sb1, sb2) => sb2.thumbUps - sb1.thumbUps);
-      this.selectedSB = null;
-    });
+    // _eventSangjunBoardService._switchClickEvent$.subscribe((suggestBubble) => {
+    //   console.log('switch');
+    // //  this.bubble = _bubbleSerivice.switchBubble(this.bubble, suggestBubble);
+    //   this.suggestBubbles = this.bubble.suggestBubbles;
+    //   this.suggestBubbles = this.suggestBubbles.sort((sb1, sb2) => sb2.thumbUps - sb1.thumbUps);
+    //   this.selectedSB = null;
+    // });
 
-    _eventSangjunBoardService._editClickEvent$.subscribe((suggestBubble) => {
-      console.log('edit');
-    });
+    // _eventSangjunBoardService._editClickEvent$.subscribe((suggestBubble) => {
+    //   console.log('edit');
+    // });
 
-    _eventSangjunBoardService._deleteClickEvent$.subscribe((suggestBubble) => {
-      this.bubble.deleteSuggestBubble(suggestBubble);
-      this.selectedSB = null;
-      console.log('delete');
-    });
+    // _eventSangjunBoardService._deleteClickEvent$.subscribe((suggestBubble) => {
+    //   this.bubble.deleteSuggestBubble(suggestBubble);
+    //   this.selectedSB = null;
+    //   console.log('delete');
+    // });
 
-    _eventSangjunBoardService._thumbsUpClickEvent$.subscribe((suggestBubble) => {
-      suggestBubble.thumbUps++;
-      this.suggestBubbles = this.suggestBubbles.sort((sb1, sb2) => sb2.thumbUps - sb1.thumbUps);
-    });
+    // _eventSangjunBoardService._thumbsUpClickEvent$.subscribe((suggestBubble) => {
+    //   suggestBubble.thumbUps++;
+    //   this.suggestBubbles = this.suggestBubbles.sort((sb1, sb2) => sb2.thumbUps - sb1.thumbUps);
+    // });
   }
 
   clickSuggestBubble(suggestBubble: SuggestBubbleTemp) {
