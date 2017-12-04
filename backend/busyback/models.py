@@ -254,7 +254,7 @@ class Comment(models.Model):
     	related_name='comments',
     	null=False
     )
-    order = models.IntegerField()
+    order = models.IntegerField(default=-1)
 
 class CommentUnderNormal(Comment):
     bubble = models.ForeignKey(
