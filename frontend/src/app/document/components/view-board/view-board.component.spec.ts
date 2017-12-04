@@ -6,7 +6,8 @@ import { Component } from '@angular/core';
 import { TabViewModule } from 'primeng/primeng';
 import { BubbleMenuComponent } from './bubble-menu/bubble-menu.component';
 import { BoardService } from './service';
-import { DocumentService } from '../../service/document.service';
+import { DocumentService } from '../../services/document.service';
+import 'rxjs/Rx';
 
 @Component({
   selector: 'app-bubble-list-view',
@@ -84,17 +85,4 @@ describe('ViewBoardComponent', () => {
   it('should call expected calls on onInit', () => {
     comp.ngOnInit();
   });
-
-  it('should call updatePreview event on click tab', () => {
-    spyOn(boardService, 'updatePreview');
-    comp.previewClick({index: 1});
-    expect(boardService.updatePreview).toHaveBeenCalled();
-  });
-
-  it('should not call updatePreview event on click tab', () => {
-    spyOn(boardService, 'updatePreview');
-    comp.previewClick({index: 0});
-    expect(boardService.updatePreview).not.toHaveBeenCalled();
-  });
-
 });

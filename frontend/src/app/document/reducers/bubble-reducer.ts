@@ -29,8 +29,8 @@ const initialState: BubbleState = {
 export function BubbleReducer(state: BubbleState = initialState, action: fromBubble.Actions) {
     switch (action.type) {
         case fromBubble.SELECT:
-            const selection = action.payload as {bubble: Bubble, menu: MenuType};
-            return {...state, selectedBubble: selection.bubble, selectedMenu: selection.menu};
+            const selection = action.payload as {bubbleId: number, menu: MenuType};
+            return {...state, selectedBubble: selection.bubbleId, selectedMenu: selection.menu};
         case fromBubble.LOAD:
             return {...state, loading: true, documentId: action.payload};
         case fromBubble.LOAD_COMPLETE: {
@@ -42,58 +42,58 @@ export function BubbleReducer(state: BubbleState = initialState, action: fromBub
         case fromBubble.POP:
             return {...state, loading: true};
         case fromBubble.POP_COMPLETE: {
-            const bubble = action.payload;
-            popBubble(state.bubbleList, bubble.id);
+            const bubbleId = action.payload;
+            popBubble(state.bubbleList, bubbleId);
             return {...state, loading: false};
         }
         case fromBubble.DELETE:
             return {...state, loading: true};
         case fromBubble.DELETE_COMPLETE: {
-            const bubble = action.payload;
-            deleteBubble(state.bubbleList, bubble.id);
+            const bubbleId = action.payload;
+            deleteBubble(state.bubbleList, bubbleId);
             return {...state, loading: false};
         }
         case fromBubble.CREATE:
-            return {...state, selectedBubble: action.payload.bubble, loading: true};
+            return {...state, selectedBubble: action.payload.bubbleId, loading: true};
         case fromBubble.CREATE_COMPLETE: {
-            const bubble = action.payload.bubble;
+            const bubbleId = action.payload.bubbleId;
             const isAbove = action.payload.isAbove;
             const newBubble = action.payload.newBubble;
-            createBubble(state.bubbleList, bubble.id, isAbove, newBubble);
-            return {...state, selectedBubble: bubble, loading: false};
+            createBubble(state.bubbleList, bubbleId, isAbove, newBubble);
+            return {...state, loading: false};
         }
         case fromBubble.EDIT:
             return {...state, loading: true};
         case fromBubble.EDIT_COMPLETE: {
-            const bubble = action.payload.bubble;
+            const bubbleId = action.payload.bubbleId;
             const newContent = action.payload.newContent;
-            editBubble(state.bubbleList, bubble.id, newContent);
+            editBubble(state.bubbleList, bubbleId, newContent);
             return {...state, loading: false};
         }
         case fromBubble.FLATTEN:
             return {...state, loading: true};
         case fromBubble.FLATTEN_COMPLETE: {
-            const bubble = action.payload.bubble;
+            const bubbleId = action.payload.bubbleId;
             const newBubble = action.payload.newBubble;
-            flattenBubble(state.bubbleList, bubble.id, newBubble);
+            flattenBubble(state.bubbleList, bubbleId, newBubble);
             return {...state, loading: false};
         }
     case fromBubble.WRAP:
       return {...state, loading: true};
     case fromBubble.WRAP_COMPLETE: {
-      const bubble = action.payload;
+      const bubbleId = action.payload;
       return {...state, loading: false};
     }
     case fromBubble.MERGE:
       return {...state, loading: true};
     case fromBubble.MERGE_COMPLETE: {
-      const bubble = action.payload;
+      const bubbleId = action.payload;
       return {...state, loading: false};
     }
     case fromBubble.SPLIT:
       return {...state, loading: true};
     case fromBubble.SPLIT_COMPLETE: {
-      const bubble = action.payload;
+      const bubbleId = action.payload;
       return {...state, loading: false};
     }
     default:
@@ -103,15 +103,6 @@ export function BubbleReducer(state: BubbleState = initialState, action: fromBub
 
 function BubbleListReducer(state, action) {
     // nested reducer
-}
-
-function _containsBubble(bubble: Bubble, bubbleList: Array<Bubble>): boolean {
-  for (const b of bubbleList) {
-    if (b.id === bubble.id) {
-      return true;
-    }
-  }
-  return false;
 }
 
 function getBubbleById(bubbleList: Array<Bubble>, id: number): Bubble {

@@ -35,7 +35,9 @@ describe('DocumentService', () => {
 
   it('can not set title when its length is over 60',
   inject([DocumentService], (service: DocumentService) => {
-    service.setTitle('BusyWrite is the perfect solution for team writing. The concept of writing as a team has been around for a long time, by services like Google Docs, but the approaches are impractical and unproductive.').then((res) => expect(res).toBeFalsy());
+    service.setTitle('BusyWrite is the perfect solution for team writing. \
+    The concept of writing as a team has been around for a long time, by services \
+    like Google Docs, but the approaches are impractical and unproductive.').then((res) => expect(res).toBeFalsy());
   }));
 
 });

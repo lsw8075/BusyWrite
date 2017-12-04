@@ -1,5 +1,5 @@
 import { Board, EditItem } from './board';
-import { Bubble, LeafBubble } from './bubble-temp';
+import { Bubble, LeafBubble } from './bubble';
 
 describe('board model', () => {
 
@@ -13,9 +13,5 @@ describe('Edit Item Model', () => {
   beforeEach(() => {
     id = 1;
     bubble = new LeafBubble(0);
-  });
-
-  it('can create edit item', () => {
-    editItem = new EditItem(id, bubble);
   });
 });

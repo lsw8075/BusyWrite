@@ -27,7 +27,7 @@ export class BubbleService {
     private currentDocumentId: Number;
     private bubbleList: Array<Bubble> = [];
     private bubbleRoot: InternalBubble;
-    //private user$: Observable<>; 
+    //private user$: Observable<>;
 
     constructor(
             private _store: Store<Reducer.State>,
@@ -96,7 +96,7 @@ export class BubbleService {
             if (accept === 'True') {
                 console.log('received get_bubble_list success');
                 console.log(body.content);
-                const bubbleArray = new BubbleJsonHelper.getBubbleArrayObject(String(body));
+                const bubbleArray = new BubbleJsonHelper().getBubbleArrayObject(String(body));
                 this._store.dispatch(new BubbleAction.LoadComplete(bubbleArray));
             } else {
                 console.log('received get_bubble_list fail');
@@ -104,8 +104,8 @@ export class BubbleService {
             }
         } else if (command === 'create_bubble') {
             if (accept === 'True') {
-                //if (body.who === ) {
-                const bubble = new BubbleJsonHelper.getBubbleObject(String(body));
+                // if (body.who === ) {
+                const bubble = new BubbleJsonHelper().getBubbleObject(String(body));
                 // get parent bubble from body.parent_bubble
                 //this._store.dispatch(new BubbleAction.CreateComplete(bubble));
                 //} else {
@@ -127,7 +127,7 @@ export class BubbleService {
                 console.log('received edit_bubble success');
             } else {
                 console.log('received edit_bubble fail');
-            } 
+            }
         } else if (command === 'finish_editting_bubble') {
             if (accept === 'True') {
             } else {
@@ -219,7 +219,7 @@ export class BubbleService {
             'body': {'bubble_id': bubble_id}};
         return Promise.resolve(null);
     }
-    
+
     public deleteSuggestBubble(){
     }
 
@@ -256,7 +256,7 @@ export class BubbleService {
         return Promise.resolve(null);
     }
 
-    public async createBubble(bubble: Bubble, isAbove: boolean): Promise<Bubble> {
+    public async createBubble(bubbleId: number, isAbove: boolean): Promise<Bubble> {
         await this.delay(1000);
         return Promise.resolve(new LeafBubble(this._getTempBubbleId(), 'new string'));
     }

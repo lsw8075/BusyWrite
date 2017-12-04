@@ -11,7 +11,7 @@ import { ButtonModule } from 'primeng/primeng';
 import { FormsModule } from '@angular/forms';
 import { Component } from '@angular/core';
 
-import { DocumentService } from '../service/document.service';
+import { DocumentService } from '../services/document.service';
 
 class MockDocumentService {
   getTitle() {

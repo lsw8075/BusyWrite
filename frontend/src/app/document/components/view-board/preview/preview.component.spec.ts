@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed, async, fakeAsync, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { BubbleService, BoardService, EditItem } from '../../service';
-import { Bubble, BubbleType, LeafBubble, InternalBubble } from '../../../model/bubble';
+import { Bubble, BubbleType, LeafBubble, InternalBubble } from '../../../models/bubble';
 import { Component } from '@angular/core';
 import { PreviewComponent } from './preview.component';
 
@@ -83,12 +83,5 @@ describe('PreviewComponent', () => {
     expect(comp).not.toBeNull();
   });
 
-  it('refresh list on ngOnInit', fakeAsync(() => {
-    spyOn(bubbleService, 'getRootBubble').and.returnValue(Promise.resolve(new InternalBubble(0, [])));
-    comp.ngOnInit();
-    fixture.detectChanges();
-    tick();
-    expect(bubbleService.getRootBubble).toHaveBeenCalled();
-  }));
 
 });

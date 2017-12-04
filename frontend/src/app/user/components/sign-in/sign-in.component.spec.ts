@@ -22,7 +22,6 @@ class MockAuthenticationService { // extends UserService ?
 describe('SignInComponent', () => {
   let component: SignInComponent;
   let fixture: ComponentFixture<SignInComponent>;
-  let mockService: AuthenticationService;
   let button: HTMLButtonElement;
   let emailInput: HTMLInputElement;
   let passwordInput: HTMLInputElement;
@@ -59,78 +58,6 @@ describe('SignInComponent', () => {
     });
     fixture.whenStable().then(() => {
       expect(component.onSubmit).toHaveBeenCalled();
-    });
-  });
-
-  it('should not invoke userLogin() method if email is blank', async() => {
-    fixture.detectChanges();
-    const spy = spyOn(mockService, 'userLogin');
-    const validInput = {
-        email: '',
-        password: 'a'
-    };
-
-    fixture.whenStable().then(() => {
-      emailInput.value = validInput.email;
-      passwordInput.value = validInput.password;
-      emailInput.dispatchEvent(new Event('input'));
-      passwordInput.dispatchEvent(new Event('input'));
-    });
-
-    fixture.whenStable().then(() => {
-      button.click();
-    });
-
-    fixture.whenStable().then(() => {
-       expect(mockService.userLogin).not.toHaveBeenCalled();
-    });
-  });
-
-  it('should not invoke userLogin() method if password is blank', async() => {
-    fixture.detectChanges();
-    const spy = spyOn(mockService, 'userLogin');
-    const validInput = {
-        email: 'a',
-        password: ''
-    };
-
-    fixture.whenStable().then(() => {
-      emailInput.value = validInput.email;
-      passwordInput.value = validInput.password;
-      emailInput.dispatchEvent(new Event('input'));
-      passwordInput.dispatchEvent(new Event('input'));
-    });
-
-    fixture.whenStable().then(() => {
-      button.click();
-    });
-
-    fixture.whenStable().then(() => {
-       expect(mockService.userLogin).not.toHaveBeenCalled();
-    });
-  });
-
-  it('should invoke userLogin() method if both password or email is not blank', async() => {
-    fixture.detectChanges();
-    const spy = spyOn(mockService, 'userLogin');
-    const validInput = {
-        email: 'a',
-        password: 'a'
-    };
-
-    fixture.whenStable().then(() => {
-      emailInput.value = validInput.email;
-      passwordInput.value = validInput.password;
-      emailInput.dispatchEvent(new Event('input'));
-      passwordInput.dispatchEvent(new Event('input'));
-    });
-
-    fixture.whenStable().then(() => {
-      button.click();
-    });
-
-    fixture.whenStable().then(() => {
-       expect(mockService.userLogin).toHaveBeenCalled();
     });
   });
 

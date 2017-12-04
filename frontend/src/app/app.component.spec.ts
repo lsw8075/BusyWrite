@@ -20,7 +20,7 @@ describe('AppComponent', () => {
     });
 
     it('title defaults to: app', () => {
-        expect(comp.title).toEqual('app');
+        expect(comp.title).toEqual('busyWrite');
     });
 
 });

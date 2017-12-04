@@ -1,25 +1,41 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { BubbleService } from '../service';
+import { EventBubbleService } from '../service';
+import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { SplitBubbleComponent } from './split-bubble.component';
 
 describe('SplitBubbleComponent', () => {
-  let component: SplitBubbleComponent;
-  let fixture: ComponentFixture<SplitBubbleComponent>;
+    let comp: SplitBubbleComponent;
+    let fixture: ComponentFixture<SplitBubbleComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ SplitBubbleComponent ]
-    })
-    .compileComponents();
-  }));
+    beforeEach(() => {
+        const bubbleServiceStub = {};
+        const eventBubbleServiceStub = {};
+        const bsModalRefStub = {};
+        TestBed.configureTestingModule({
+            declarations: [ SplitBubbleComponent ],
+            schemas: [ NO_ERRORS_SCHEMA ],
+            providers: [
+                { provide: BubbleService, useValue: bubbleServiceStub },
+                { provide: EventBubbleService, useValue: eventBubbleServiceStub },
+                { provide: BsModalRef, useValue: bsModalRefStub }
+            ]
+        });
+        fixture = TestBed.createComponent(SplitBubbleComponent);
+        comp = fixture.componentInstance;
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(SplitBubbleComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    it('can load instance', () => {
+        expect(comp).toBeTruthy();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('mouseDown defaults to: false', () => {
+        expect(comp.mouseDown).toEqual(false);
+    });
+
+    it('highlightOffset defaults to: 0', () => {
+        expect(comp.highlightOffset).toEqual(0);
+    });
+
 });
