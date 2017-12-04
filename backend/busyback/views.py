@@ -31,7 +31,7 @@ def signin(request):
             return HttpResponse(status=401) # unauthorized
         else:
             login(request, user)
-            return HttpResponse(status=200)
+            return JsonResponse({'user_id': user.id})
     else:
         return HttpResponseNotAllowed(['POST'])
 

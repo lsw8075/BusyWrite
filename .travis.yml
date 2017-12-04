@@ -12,6 +12,7 @@ matrix:
         - pip install -U asgi_redis
         - pip install -U django-redis
         - pip install django_extensions
+        - pip install psycopg2
       before_script:
         - cd backend
         - python3 manage.py migrate

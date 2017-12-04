@@ -7,7 +7,7 @@ import { BoardService } from './service';
 import { EditItem } from '../service';
 import { EventBubbleService } from './service';
 import { EditBoardComponent } from './edit-board.component';
-import { LeafBubble } from '../../model/bubble';
+import { LeafBubble } from '../../models/bubble';
 import { DragulaModule } from 'ng2-dragula/components/dragular.module';
 import { Component, Input } from '@angular/core';
 import { AccordionModule } from 'ngx-bootstrap/accordion/accordion.module';
@@ -95,20 +95,11 @@ describe('EditBoardComponent', () => {
     noteService = fixture.debugElement.injector.get(NoteService);
     eventBubbleService = fixture.debugElement.injector.get(EventBubbleService);
     boardService = fixture.debugElement.injector.get(BoardService);
-    comp.editItems = [new EditItem(0, new LeafBubble(0)), new EditItem(0, new LeafBubble(0))];
     comp.notes = [new Note(0, 0, 0)];
   });
 
   it('can load instance', () => {
     expect(comp).toBeTruthy();
-  });
-
-  describe('finishEdit', () => {
-    it('makes expected calls', () => {
-      spyOn(boardService, 'finishEdit');
-      comp.finishEdit(new EditItem(0, new LeafBubble(0)));
-      expect(boardService.finishEdit).toHaveBeenCalled();
-    });
   });
 
   describe('deleteNote', () => {

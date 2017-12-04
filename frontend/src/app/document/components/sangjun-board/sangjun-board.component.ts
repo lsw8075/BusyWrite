@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { EventBubbleService } from '../../services/event/event-bubble.service';
 import { EventSangjunBoardService } from '../../services/event/event-sangjun-board.service';
 import { BubbleService } from '../../services/bubble.service';
-import { Bubble, SuggestBubble } from '../../models/bubble';
+import { BubbleTemp, SuggestBubbleTemp } from '../../models/bubble-temp';
 
 @Component({
   selector: 'app-sangjun-board',
@@ -14,9 +14,9 @@ export class SangjunBoardComponent implements OnInit {
   isSBChecked = true;
   isCommentChecked = true;
   isWatching = false;
-  bubble: Bubble;
-  selectedSB: SuggestBubble;
-  suggestBubbles: Array<SuggestBubble>;
+  bubble: BubbleTemp;
+  selectedSB: SuggestBubbleTemp;
+  suggestBubbles: Array<SuggestBubbleTemp>;
 
   constructor(
     private _bubbleSerivice: BubbleService,
@@ -34,39 +34,39 @@ export class SangjunBoardComponent implements OnInit {
       _eventBubbleService.clearState();
     });
 
-    _eventSangjunBoardService._backButtonClickEvent$.subscribe(() => {
-      this.selectedSB = null;
-    });
+    // _eventSangjunBoardService._backButtonClickEvent$.subscribe(() => {
+    //   this.selectedSB = null;
+    // });
 
-    _eventSangjunBoardService._switchClickEvent$.subscribe((suggestBubble) => {
-      console.log('switch');
-      this.bubble = _bubbleSerivice.switchBubble(this.bubble, suggestBubble);
-      this.suggestBubbles = this.bubble.suggestBubbles;
-      this.suggestBubbles = this.suggestBubbles.sort((sb1, sb2) => sb2.thumbUps - sb1.thumbUps);
-      this.selectedSB = null;
-    });
+    // _eventSangjunBoardService._switchClickEvent$.subscribe((suggestBubble) => {
+    //   console.log('switch');
+    // //  this.bubble = _bubbleSerivice.switchBubble(this.bubble, suggestBubble);
+    //   this.suggestBubbles = this.bubble.suggestBubbles;
+    //   this.suggestBubbles = this.suggestBubbles.sort((sb1, sb2) => sb2.thumbUps - sb1.thumbUps);
+    //   this.selectedSB = null;
+    // });
 
-    _eventSangjunBoardService._editClickEvent$.subscribe((suggestBubble) => {
-      console.log('edit');
-    });
+    // _eventSangjunBoardService._editClickEvent$.subscribe((suggestBubble) => {
+    //   console.log('edit');
+    // });
 
-    _eventSangjunBoardService._deleteClickEvent$.subscribe((suggestBubble) => {
-      this.bubble.deleteSuggestBubble(suggestBubble);
-      this.selectedSB = null;
-      console.log('delete');
-    });
+    // _eventSangjunBoardService._deleteClickEvent$.subscribe((suggestBubble) => {
+    //   this.bubble.deleteSuggestBubble(suggestBubble);
+    //   this.selectedSB = null;
+    //   console.log('delete');
+    // });
 
-    _eventSangjunBoardService._thumbsUpClickEvent$.subscribe((suggestBubble) => {
-      suggestBubble.thumbUps++;
-      this.suggestBubbles = this.suggestBubbles.sort((sb1, sb2) => sb2.thumbUps - sb1.thumbUps);
-    });
+    // _eventSangjunBoardService._thumbsUpClickEvent$.subscribe((suggestBubble) => {
+    //   suggestBubble.thumbUps++;
+    //   this.suggestBubbles = this.suggestBubbles.sort((sb1, sb2) => sb2.thumbUps - sb1.thumbUps);
+    // });
   }
 
-  clickSuggestBubble(suggestBubble: SuggestBubble) {
+  clickSuggestBubble(suggestBubble: SuggestBubbleTemp) {
     this.selectedSB = suggestBubble;
   }
 
-  clickSBThumbsUp(suggestBubble: SuggestBubble) {
+  clickSBThumbsUp(suggestBubble: SuggestBubbleTemp) {
     this._eventSangjunBoardService.clickThumbsUp(suggestBubble);
   }
 

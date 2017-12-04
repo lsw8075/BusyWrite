@@ -21,28 +21,4 @@ describe('BoardService', () => {
     expect(service instanceof BoardService).toBe(true);
   }));
 
-  it('can generate preview update event',
-  inject([BoardService, BubbleService], (service: BoardService) => {
-    service.updatePreview();
-  }));
-
-  it('can generate create bubble event',
-  fakeAsync(() => {
-    const bubbleService = new BubbleService();
-    tick();
-    const boardService = new BoardService(bubbleService);
-    let bubble = bubbleService.getBubbleById(15);
-    boardService.createBubble(bubble);
-  }));
-
-  it('can generate finish edit event',
-  fakeAsync(() => {
-    const bubbleService = new BubbleService();
-    tick();
-    const boardService = new BoardService(bubbleService);
-    let bubble = bubbleService.getBubbleById(15);
-    boardService.finishEdit(bubble, "swpp");
-  }));
-
-
 });

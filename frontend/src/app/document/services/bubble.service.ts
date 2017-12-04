@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { Bubble, BubbleType, LeafBubble, InternalBubble, SuggestBubble } from '../models/bubble';
 import { MockBubbleRoot, MockBubbleList } from '../models/bubble.mock';
+import { Bubble, LeafBubble, InternalBubble, SuggestBubble, BubbleType } from '../models/bubble';
 import { Subscription } from 'rxjs/Subscription';
 import { ServerSocket } from './websocket.service';
+import { Observable } from 'rxjs/Observable';
 
 import { Store } from '@ngrx/store';
 import { Headers, Http } from '@angular/http';
@@ -12,10 +13,12 @@ import { MenuType } from './event/event-bubble.service';
 
 import * as Reducer from '../reducers/reducer';
 import * as BubbleAction from '../actions/bubble-action';
+import * as fromUser from '../../user/actions/user-action';
+import { BubbleJsonHelper } from '../models/bubble-json-helper';
 
 let USE_MOCK = true;
-let tempId = 30; // to be deleted after backend implemented
-const tempUserId = 1;
+let Id = 30; // to be deleted after backend implemented
+const UserId = 1;
 
 @Injectable()
 export class BubbleService {
@@ -24,10 +27,11 @@ export class BubbleService {
     private currentDocumentId: Number;
     private bubbleList: Array<Bubble> = [];
     private bubbleRoot: InternalBubble;
+    //private user$: Observable<>;
 
     constructor(
             private _store: Store<Reducer.State>,
-            private _socket: ServerSocket, 
+            private _socket: ServerSocket,
             private _http: Http)  {
         const stream = this._socket.connect();
         console.log(stream);
@@ -36,14 +40,21 @@ export class BubbleService {
                 this.channelMessageHandler(message);
         });
 
-        /* Test purpose */
-        this.openDocument(1);
-        this.getBubbleListMine();
-        this._createBubble(1, 0, 'this is new bubble');
-        this.closeDocument(1);
+        //this.user$ = _store.select(fromUser.getUserState).
+        //    map(userState => userState.userId);
 
         if (USE_MOCK) {
             this._getBubbleList().then(bubbleList => {
+                for (let bubble of bubbleList) {
+                    if (bubble.type === BubbleType.internalBubble) {
+                        const internalBubble = bubble as InternalBubble;
+                        for (let i = 0; i < internalBubble.childBubbleIds.length; i++) {
+                            const childBubbleId = internalBubble.childBubbleIds[i];
+                            bubbleList[childBubbleId].parentBubbleId = internalBubble.id;
+                            bubbleList[childBubbleId].location = i;
+                        }
+                    }
+                }
                 this.bubbleList = bubbleList;
             });
         }
@@ -67,275 +78,208 @@ export class BubbleService {
             if (accept === 'True') {
                 console.log('received open_document success');
                 this.currentDocumentId = Number(body.document_id);
-                // call whatever action that starts up document_detail page setting
+                this._store.dispatch(new BubbleAction.OpenComplete(Number(body.document_id)));
             } else {
                 console.log('received open_document fail');
-                // call whatever funtion that waits to start up document_detail page
-                // and let it know it has failed
+                this._store.dispatch(new BubbleAction.OpenError(body));
             }
         } else if (command === 'close_document') {
             if (accept === 'True') {
                 console.log('received close_document success');
                 this.currentDocumentId = 0;
+                // TODO:
             } else {
-
                 console.log('received close_document fail');
                 // TODO: decide whether to send it again or not
             }
         } else if (command === 'get_bubble_list') {
             if (accept === 'True') {
-                // TODO: convert content into bubble list
-                //this._store.dispatch(new BubbleAction.LoadComplete(bubble))
-                //this.bubbleList = body.content;
                 console.log('received get_bubble_list success');
-                console.log(body.content);
-
+                console.log(body);
+                console.log(String(body));
+                console.log(JSON.stringify(body));
+                const bubbleArray = new BubbleJsonHelper().getBubbleArrayObject(JSON.stringify(body));
+                this._store.dispatch(new BubbleAction.LoadComplete(bubbleArray));
             } else {
-                // TODO: decide what to do
                 console.log('received get_bubble_list fail');
+                this._store.dispatch(new BubbleAction.LoadError(body));
             }
         } else if (command === 'create_bubble') {
             if (accept === 'True') {
+                // if (body.who === ) {
+                const bubble = new BubbleJsonHelper().getBubbleObject(String(body));
+                // get parent bubble from body.parent_bubble
+                //this._store.dispatch(new BubbleAction.CreateComplete(bubble));
+                //} else {
+                //}
                 // change bubbleslist and push it into appropriate Subject<Bubble>
                 console.log('received create_bubble success');
             } else {
-
+                this._store.dispatch(new BubbleAction.CreateError(body));
                 console.log('received create_bubble fail');
-                // TODO: if it is THIS user that has sent the request,
-                // (need to distinguish!!! maybe we need to add user_id field)
-                // tell user it has failed by calling whatever function
+            }
+        } else if (command === 'create_suggest_bubble') {
+            if (accept === 'True') {
+                console.log('received create_suggest_bubble success');
+            } else {
+                console.log('received create_suggest_bubble fail');
+            }
+        } else if (command === 'edit_bubble') {
+            if (accept === 'True') {
+                console.log('received edit_bubble success');
+            } else {
+                console.log('received edit_bubble fail');
+            }
+        } else if (command === 'finish_editting_bubble') {
+            if (accept === 'True') {
+            } else {
+
+            }
+        } else if (command == 'pop_bubble') {
+            if (accept == 'True') {
+                console.log('received pop_bubble success');
+                this._store.dispatch(new BubbleAction.PopComplete(body.bubble_id));
+            } else {
+                console.log('received pop_bubble fail');
+                console.log(body)
+                this._store.dispatch(new BubbleAction.PopError(body));
             }
         }
     }
 
-    public openDocument(documentId) {
+    public openDocument(documentId): Promise<void> {
         const m = {'header': 'open_document',
-                'body': {'document_id': documentId.toString()}};
+                'body': {'document_id': documentId}};
         console.log('send open_document');
         this._socket.send(m);
+        return Promise.resolve(null);
     }
 
     public closeDocument(documentId) {
         const m = {'header': 'close_document',
-                'body': {'document_id': documentId.toString()}};
+                'body': {'document_id': documentId}};
         this._socket.send(m);
     }
 
-    public getBubbleListMine() {
+    public getBubbleList() {
         const m = {'header': 'get_bubble_list',
                 'body': {'empty': 'empty'}};
         this._socket.send(m);
     }
 
-    public _createBubble(parentId: number, loc: number, content: string) {
+    public getSuggestBubbleList(){
+    }
+
+    public getCommentListForBubble(){
+    }
+
+    public getCommentListForSuggestBubble(){
+    }
+
+    public createBubbleMine(parentId: number, loc: number, content: string) {
+        // parent: parent bubble id (int)
+        // location: nth child (0 ~ #currentchildbubble) (int)
+        // content: (string)
         const m = {'header': 'create_bubble',
-                'body': {'parent': parentId.toString(),
-                'location': loc.toString(),
+            'body': {'parent': parentId,
+                'location': loc,
                 'content': content}};
         this._socket.send(m);
     }
 
-  public getBubbleList(): Promise<Array<Bubble>> {
-    return Promise.resolve(this.bubbleList);
-  }
+    public createSuggestBubble(bindedBubbleId: number, content: string){
+        const m = {'header': 'create_suggest_bubble',
+            'body': {'binded_bubble': bindedBubbleId,
+                'content': content}};
+        this._socket.send(m);
+    }
 
-    public getBubbleById(id: number): Bubble {
-        if (0 < id) {
-            for (const bubble of this.bubbleList) {
-                if (bubble.id === id) {
-                    return bubble;
-                }
-            }
+    public createCommentOnNormalBubble(){
+    }
+
+    public createCommentOnSuggestBubble(){
+    }
+
+    public async startEdittingBubble(bubble_id: number): Promise<void> {
+        const m = {'header': 'edit_bubble',
+            'body': {'bubble_id': bubble_id}};
+        this._socket.send(m);
+        return Promise.resolve(null);
+    }
+
+    public edittingBubble(){
+        // TODO: back is working....
+    }
+
+    public finishEdittingBubble(bubble_id: number){
+        const m = {'header': 'finish_editting_bubble',
+            'body': {'bubble_id': bubble_id}};
+        this._socket.send(m);
+    }
+
+    public async splitBubble(bubble_id: number): Promise<void> {
+        return Promise.resolve(null);
+    }
+
+    public async deleteBubble(bubble_id: number): Promise<void> {
+        const m = {'header': 'delete_bubble',
+            'body': {'bubble_id': bubble_id}};
+        return Promise.resolve(null);
+    }
+
+    public deleteSuggestBubble(){
+    }
+
+    public async wrapBubble(wrapBubbleList: Array<Bubble>): Promise<void> {
+        if (wrapBubbleList.length <= 1) {
+            throw new Error('Cannot wrap one bubble');
         }
-        throw new Error('bubble with index ' + id + ' does not exist');
+        await this.delay(1000);
+        return Promise.resolve(null);
     }
 
-  public createBubble(parentBubble: InternalBubble, location: number, content: string): Promise<Bubble> {
-    const newBubble = new LeafBubble(this._getId(), content, tempUserId);
-    parentBubble.insertChildren(location, newBubble);
-    return Promise.resolve(newBubble);
-  }
-
-
-  public async editBubble(bubble: Bubble): Promise<void> {
-    if (bubble.type !== BubbleType.leafBubble) {
-      throw new Error('Cannot edit internal bubble');
-    }
-    console.log('[edit]');
-    await this.delay(1000);
-    return Promise.resolve(null);
-  }
-
-  public async deleteBubble(bubble: Bubble): Promise<void> {
-    if (bubble.parentBubble === null) {
-      throw new Error('Cannot delete root bubble');
-    }
-    await this.delay(1000);
-    return Promise.resolve(null);
-  }
-
-  public async wrapBubble(wrapBubbleList: Array<Bubble>): Promise<void> {
-    if (wrapBubbleList.length <= 1) {
-      throw new Error('Cannot wrap one bubble');
-    }
-    await this.delay(1000);
-    return Promise.resolve(null);
-  }
-
-  public async mergeBubble(bubble: Bubble): Promise<void> {
-    await this.delay(1000);
-    return Promise.resolve(null);
-  }
-
-  public async splitBubble(bubble: Bubble): Promise<void> {
-    await this.delay(1000);
-    return Promise.resolve(null);
-  }
-
-  public async popBubble(bubble: Bubble): Promise<void> {
-    // check the assumptions
-    if (bubble.parentBubble === null) {
-      throw new Error('Cannot pop root bubble');
-    }
-    await this.delay(1000);
-    return Promise.resolve(null);
-  }
-
-  // split Leaf bubble
-  public splitLeafBubble(bubble: Bubble, selectContent: string, startIndex: number): Promise<void> {
-    const originalContent = bubble.getContent();
-
-    if (originalContent.indexOf(selectContent) === -1) {
-      throw new Error(`selected content not found in bubble (id: ${bubble.id})`);
-    }
-    const endIndex: number = startIndex + selectContent.length;
-
-    const splittedChildren: Array<Bubble> = [];
-
-    if (startIndex !== 0) {
-      const prevBubble: LeafBubble = new LeafBubble(this._getId(), originalContent.substring(0, startIndex));
-      splittedChildren.push(prevBubble);
+    public async mergeBubble(bubble_id: number): Promise<void> {
+        await this.delay(1000);
+        return Promise.resolve(null);
     }
 
-    if (selectContent) {
-      const currBubble: LeafBubble = new LeafBubble(this._getId(), selectContent);
-      splittedChildren.push(currBubble);
+    public async splitLeafBubble(bubble_id: number, content_list: Array<String>): Promise<void> {
+        const m = {'header': 'split_leaf_bubble',
+            'body': {'bubble_id': bubble_id,
+                'content_list': [...content_list]}};
+        this._socket.send(m);
+        return Promise.resolve(null);
     }
 
-    if (endIndex !== originalContent.length - 1) {
-      const nextBubble: LeafBubble = new LeafBubble(this._getId(), originalContent.substring(endIndex, originalContent.length));
-      splittedChildren.push(nextBubble);
+    public async flattenBubble(bubble_id: number): Promise<Bubble> {
+        await this.delay(1000);
+        return Promise.resolve(new LeafBubble(this._getTempBubbleId()));
     }
 
-    const wrapBubble = new InternalBubble(this._getId(), splittedChildren);
-
-    const parentBubble: InternalBubble = bubble.parentBubble;
-    const location = bubble.location;
-    parentBubble.deleteChild(bubble);
-    this.bubbleList = this.bubbleList.filter(b => b.id !== bubble.id);
-    parentBubble.insertChildren(location, wrapBubble);
-    this.bubbleList.push(...splittedChildren);
-
-    return Promise.resolve(null);
-  }
-
-  public flattenBubble(bubble: Bubble): Promise<void> {
-    if (bubble.parentBubble === null) {
-      throw new Error('Cannot flatten root bubble');
+    public async popBubble(bubble_id: number): Promise<void> {
+        const m = {'header': 'pop_bubble',
+            'body': {'bubble_id': bubble_id}};
+        this._socket.send(m);
+        return Promise.resolve(null);
     }
-    const parentBubble: InternalBubble = bubble.parentBubble;
-    const flattenedBubble = parentBubble.flattenChild(bubble);
-    this.bubbleList.push(flattenedBubble);
 
-    const wrapBubbleList = [];
-    this._getChildrenList(bubble, wrapBubbleList);
-    this.bubbleList = this.bubbleList.filter(b => !this._containsBubble(b, wrapBubbleList));
-
-    return Promise.resolve(null);
-  }
-
-  public moveBubble(bubble: Bubble, destBubble: Bubble, menu: MenuType): Promise<void> {
-    if (bubble.parentBubble === null) {
-      throw new Error('Cannot move root bubble');
-    } else if (bubble.id !== destBubble.id) {
-      const parentBubble: InternalBubble = bubble.parentBubble;
-      parentBubble.deleteChild(bubble);
-
-      let location = destBubble.location;
-      if (menu === MenuType.borderBottomMenu) {
-        location ++;
-      }
-      destBubble.parentBubble.insertChildren(location, bubble);
-
+    public async createBubble(bubbleId: number, isAbove: boolean): Promise<Bubble> {
+        await this.delay(1000);
+        return Promise.resolve(new LeafBubble(this._getTempBubbleId(), 'new string'));
     }
-    return Promise.resolve(null);
-  }
 
-  public switchBubble(bubble: Bubble, suggestBubble: SuggestBubble): Bubble {
-    const newSB = new SuggestBubble(this._getId(), bubble.getContent(), bubble.comments, bubble.thumbUps);
-    if (bubble.type === BubbleType.leafBubble) {
-      let leafBubble = bubble as LeafBubble;
-
-      leafBubble.thumbUps = suggestBubble.thumbUps;
-      leafBubble.comments = suggestBubble.comments;
-      leafBubble.content = suggestBubble.content;
-
-      leafBubble.deleteSuggestBubble(suggestBubble);
-      leafBubble.addSuggestBubble(newSB);
-
-      return leafBubble;
+    private _tempBubbleId = 60;
+    private _getTempBubbleId(): number {
+        return this._tempBubbleId++;
     }
-    else if(bubble.type === BubbleType.internalBubble) {
-      let internalBubble = bubble as InternalBubble;
-      let parentBubble = internalBubble.parentBubble;
-      let leafBubble = new LeafBubble(this._getId());
 
-      leafBubble.thumbUps = suggestBubble.thumbUps;
-      leafBubble.comments = suggestBubble.comments;
-      leafBubble.content = suggestBubble.content;
-      leafBubble.suggestBubbles = internalBubble.suggestBubbles;
-
-      leafBubble.deleteSuggestBubble(suggestBubble);
-      leafBubble.addSuggestBubble(newSB);
-
-      parentBubble.childBubbles[internalBubble.location] = leafBubble;
-
-      return leafBubble;
+    private _getBubbleList(): Promise<Array<Bubble>> {
+        this.bubbleRoot = MockBubbleRoot;
+        return Promise.resolve(MockBubbleList);
     }
-  }
 
-  private _getBubbleList(): Promise< Array<Bubble> > {
-    this.bubbleRoot = MockBubbleRoot;
-    return Promise.resolve(MockBubbleList);
-  }
-
-  private _containsBubble(bubble: Bubble, bubbleList: Array<Bubble>): boolean {
-    for (const b of this.bubbleList) {
-      if (b.id === bubble.id) {
-        return true;
-      }
+    private delay(ms: number) {
+        return new Promise(resolve => setTimeout(resolve, ms));
     }
-    return false;
-  }
-
-  private _getChildrenList(bubble: Bubble, childrenList: Array<Bubble>): void {
-    bubble.id = -1; // this is check later if a bubble is not properly erased
-    childrenList.push(bubble);
-    if (bubble.type !== BubbleType.leafBubble) {
-      const children = (bubble as InternalBubble).childBubbles;
-      for (const child of children) {
-        this._getChildrenList(child, childrenList);
-      }
-    }
-  }
-
-  private _getId(): number {
-    tempId++;
-    return tempId;
-  }
-
-  private delay(ms: number) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
 
 }

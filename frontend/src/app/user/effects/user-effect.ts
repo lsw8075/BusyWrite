@@ -37,13 +37,14 @@ export class UserEffects {
             return this._http
             .get(this.tokenUrl).toPromise()
             .then(() => headers.append('X-CSRFToken', this.getCookie('csrftoken')))
-            .then(() =>  this._http.post(this.signInUrl, JSON.stringify(query), {headers: headers}).toPromise()
-            .then(res => res.status))
-            .then(status => {
+            .then(() =>  this._http.post(this.signInUrl, JSON.stringify(query), {headers: headers}).toPromise())
+            .then(res => {
+                const status = res.status;
                 if (status === 403) {
                     return (new fromUser.SignInFail('username or password is wrong'));
                 } else if (status === 200) {
-                    return (new fromUser.SignInSuccess(null));
+                    const userId = JSON.parse(res.text()).user_id;
+                    return (new fromUser.SignInSuccess(userId));
                 }
             }).catch((error) => {
                 console.log(query);
@@ -72,13 +73,18 @@ export class UserEffects {
             .toPromise().then(res => res.status).then(status => {
                 if (status === 403) {
                     return (new fromUser.SignUpFail('cannot sign up'));
-                } else if (status === 200) {
+                } else if (status === 201) {
                     return (new fromUser.SignUpSuccess(null));
                 } else {
                     return (new fromUser.SignUpFail('cannot sign up'));
                 }
             }));
-        }
+        });
+
+    @Effect()
+    signupSuccess$: Observable<Action> = this.action$.ofType<fromUser.SignUpSuccess>(fromUser.SIGNUP_SUCCESS)
+        .map(action => action.payload).mergeMap(query =>
+            Observable.of(new fromRouter.GoByUrl('users/signin'))
         );
 
     @Effect()

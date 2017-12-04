@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { BubbleService } from '../service';
-import { BubbleType, Bubble } from '../service';
+import { BubbleType, BubbleTemp } from '../service';
 
 import { BoardService } from '../../../services/board.service';
 
@@ -11,7 +11,7 @@ import { BoardService } from '../../../services/board.service';
 })
 export class PreviewComponent implements OnInit {
 
-  rootBubble: Bubble;
+  rootBubble: BubbleTemp;
 
   constructor(
     private _boardService: BoardService,

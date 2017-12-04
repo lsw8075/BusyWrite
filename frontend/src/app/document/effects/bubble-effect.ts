@@ -26,6 +26,29 @@ import { BubbleService } from '../services/bubble.service';
 
 @Injectable()
 export class BubbleEffects {
+
+
+  @Effect()
+  open$: Observable<Action> = this.action$.ofType<fromBubble.Open>(fromBubble.OPEN)
+    .map(action => action.payload).mergeMap(query => {
+      return Observable.fromPromise(this.bubbleService.openDocument(query))
+        .map(() => new fromBubble.OpenComplete(query))
+        .catch(err => of(new fromBubble.OpenError(err)));
+    });
+
+  @Effect()
+  openComplete$: Observable<Action> = this.action$.ofType<fromBubble.OpenComplete>(fromBubble.OPEN_COMPLETE)
+    .map(action => action.payload).mergeMap(query => {
+      return Observable.of(new fromBubble.Load(query));
+    });
+
+  @Effect()
+  load$: Observable<Action> = this.action$.ofType<fromBubble.Load>(fromBubble.LOAD)
+    .map(action => action.payload).mergeMap(query => {
+      return Observable.of(this.bubbleService.getBubbleList())
+        .map(() => new fromBubble.LoadPending(null));
+    });
+
   @Effect()
   pop$: Observable<Action> = this.action$.ofType<fromBubble.Pop>(fromBubble.POP)
     .map(action => action.payload).mergeMap(query => {
@@ -45,22 +68,22 @@ export class BubbleEffects {
   @Effect()
   create$: Observable<Action> = this.action$.ofType<fromBubble.Create>(fromBubble.CREATE)
     .map(action => action.payload).mergeMap(query => {
-      return Observable.fromPromise(this.bubbleService.deleteBubble(query.bubble))
-        .map(() => new fromBubble.CreateComplete(query))
+      return Observable.fromPromise(this.bubbleService.createBubble(query.bubbleId, query.isAbove))
+        .map((newBubble) => new fromBubble.CreateComplete({bubbleId: query.bubbleId, isAbove: query.isAbove, newBubble: newBubble}))
         .catch(err => of(new fromBubble.CreateError(err)));
     });
 
   @Effect()
   createComplete$: Observable<Action> = this.action$.ofType<fromBubble.CreateComplete>(fromBubble.CREATE_COMPLETE)
     .map(action => action.payload).mergeMap(query => {
-      return Observable.of(new fromBubble.EditComplete(query.bubble));
+      return Observable.of(new fromBubble.EditComplete({bubbleId: query.bubbleId, newContent: "newly created"}));
     });
 
   @Effect()
   edit$: Observable<Action> = this.action$.ofType<fromBubble.Edit>(fromBubble.EDIT)
     .map(action => action.payload).mergeMap(query => {
-      return Observable.fromPromise(this.bubbleService.editBubble(query))
-        .map(() => new fromBubble.EditComplete(query))
+      return Observable.fromPromise(this.bubbleService.startEdittingBubble(query))
+        .map(() => new fromBubble.EditComplete({bubbleId: query, newContent: "newly editted"}))
         .catch(err => of(new fromBubble.EditError(err)));
     });
 
@@ -86,6 +109,14 @@ export class BubbleEffects {
       return Observable.fromPromise(this.bubbleService.splitBubble(query))
         .map(() => new fromBubble.SplitComplete(query))
         .catch(err => of(new fromBubble.SplitError(err)));
+    });
+
+  @Effect()
+  flatten$: Observable<Action> = this.action$.ofType<fromBubble.Flatten>(fromBubble.FLATTEN)
+    .map(action => action.payload).mergeMap(query => {
+      return Observable.fromPromise(this.bubbleService.flattenBubble(query))
+        .map((newBubble) => new fromBubble.FlattenComplete({bubbleId: query, newBubble: newBubble}))
+        .catch(err => of(new fromBubble.FlattenError(err)));
     });
 
 

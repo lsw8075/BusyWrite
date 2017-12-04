@@ -1,6 +1,7 @@
 import json
 import logging
 from django.http import HttpResponse
+from django.forms.models import model_to_dict
 from channels import Channel, Group
 from channels.handler import AsgiHandler
 from channels.sessions import channel_session, enforce_ordering
@@ -35,24 +36,20 @@ def ws_receive(message):
         command = text['header']
         body = text['body']
     except KeyError:
-        log.debug("ws message doesn't have header")
         message.reply_channel.send({"text": 
                 json.dumps({"header": "response", "accept": 'False', "body": "header and body needed"})})
         return
     except ValueError:
-        log.debug("ws message doesn't have proper body")
         message.reply_channel.send({"text":
                 json.dumps({"header": "response", "accept": 'False', "body": "header and body needed"})})
         return
     
     if not command:
-        log.debug("ws message have invalid command")
         message.reply_channel.send({"text":
                 json.dumps({"header": "response", "accept": 'False', "body": "empty command"})})
         return
 
     if not body:
-        log.debug("ws message have invalid body")
         message.reply_channel.send({"text":
                 json.dumps({"header": command, "accept": 'False', "body": "empty body"})})
         return
@@ -63,22 +60,19 @@ def ws_receive(message):
 
     if command == 'open_document':
         try:
-            document_id = body['document_id']
+            document_id = str(body['document_id'])
             document = Document.objects.get(id=int(document_id))
         except KeyError:
-            log.debug("open_document doesn't have document_id filed in body")
             message.reply_channel.send({"text":
                     json.dumps({"header": "open_document", "accept": 'False', "body": "document_id needed"})})
             return
         except Document.DoesNotExist:
-            log.debug('document does not exist for id=%s', document_id)
             message.reply_channel.send({"text":
                     json.dumps({"header": "open_document", "accept": 'False', "body": "document does not exist"})})
             return
  
         # Check if user is contributor of the document
         if not document.is_contributed_by(message.user.id):
-            log.debug('document has no contributor with id=%d', message.user.id)
             message.reply_channel.send({"text":
                     json.dumps({"header": "open_document", "accept": 'False', "body": "user does not contribute to the document"})})
             return
@@ -98,16 +92,13 @@ def ws_receive(message):
     try:
         document_id = str(message.channel_session['document_id'])
         document = Document.objects.get(id=int(document_id))
-        log.debug('received message, document exist id=%s', document.id)
     except KeyError:
-        log.debug('no document in channel_session')
         message.reply_channel.send({"text":
                 json.dumps({"header": command, "accept": 'False', "body": "request command without opening valid document"})})
         return
     except Document.DoesNotExist:
-        log.debug('received message, but document does not exist for id=%s', document_id)
         message.reply_channel.send({"text":
-                json.dumps({"header": command, "accept": 'False', "body": "request command without opening valid document"})})
+                json.dumps({"header": command, "accept": 'False', "body": "document does not exist"})})
         return
 
     # Double check if user is contributor of the document
@@ -122,10 +113,14 @@ def ws_receive(message):
     ########################
   
     if command == 'close_document':
-        if not int(document_id) == int(body['document_id']):
-            message.reply_channel.send({"text":
-                    json.dumps({"header": command, "accept": 'False', "body": "attempt to close unopened document"})})
-            return
+        try:
+            if not int(document_id) == int(body['document_id']):
+                message.reply_channel.send({"text":
+                        json.dumps({"header": command, "accept": 'False', "body": "attempt to close unopened document"})})
+                return
+        except KeyError:
+            message.reply_channle.send({"text":
+                    json.dumps({"header": command, "accept": "False", "body": "body does not follow format"})})
 
         Group('document_id-'+str(document_id), channel_layer=message.channel_layer).discard(message.reply_channel)
         message.reply_channel.send({"text":
@@ -146,13 +141,12 @@ def ws_receive(message):
             return
 
         if not result:
-            log.debug("there is not any bubble for document=%s", document_id)
             message.reply_channel.send({"text":
                     json.dumps({"header": "get_bubble_list", "accept": 'False', "body": "bubble does not exist for this document"})})
             return
 
         message.reply_channel.send({"text":
-                json.dumps({"header": "get_bubble_list", "accept": 'True', "body": {"content": result}})})
+                json.dumps({"header": "get_bubble_list", "accept": 'True', "body": result})})
         return
 
 
@@ -161,18 +155,89 @@ def ws_receive(message):
     ##########################
     
     elif command == 'get_bubble_by_id':
-    
+
+        if set(body.keys()) != set(('bubble_id', )):
+            message.reply_channel.send({"text":
+                    json.dumps({"header": 'get_bubble_by_id', 'accept': 'False', 'body': 'body does not follow format'})})
+            return
         try:
-            result = do_fetch_bubble(message.user.id, int(document_id), int(body['bubble_id']))
+            result = do_fetch_normal_bubble(message.user.id, int(document_id), int(body['bubble_id']))
         except BubbleDoesNotExistError:
             message.reply_channel.send({"text":
                     json.dumps({"header": "get_bubble_by_id", "accept": 'False', "body": "bubble does not exist for the id"})})
             return
+        except:
+            message.reply_channel.send({"text":
+                    json.dumps({"header": "get_bubble_by_id", "accept": 'False', "body": "unknown error"})})
+            return
             
         message.reply_channel.send({"text":
-                json.dumps({"header": "get_bubble_by_id", "accept": 'True', "body": {"content": result}})})
+                json.dumps({"header": "get_bubble_by_id", "accept": 'True', "body": model_to_dict(result)})})
         return
 
+
+    ##############################################
+    ##   Get Suggest Bubble List for a Bubble   ##
+    ##############################################
+
+    elif command == 'get_suggest_bubble_list':
+
+        if set(body.keys()) != set(('bubble_id', )):
+            message.reply_channel.send({"text":
+                    json.dumps({"header": 'get_suggest_bubble_list', 'accept': 'False', 'body': 'body does not follow format'})})
+            return
+        try:
+            # This function returns whole suggest bubble list, including those that are hided!
+            result = do_fetch_suggest_bubbles(message.user.id, int(document_id), int(body['bubble_id']))
+        except BubbleDoesNotExistError:
+            message.reply_channel.send({"text":
+                    json.dumps({"header": "get_suggest_bubble_list", "accept": 'False', "body": "bubble does not exist for the id"})})
+            return
+        except:
+            message.reply_channel.send({"text":
+                    json.dumps({"header": "get_suggest_bubble_list", "accept": 'False', "body": "unknown error"})})
+            return
+            
+        message.reply_channel.send({"text":
+                json.dumps({"header": "get_suggest_bubble_list", "accept": 'True', "body": result})})
+        return
+
+ 
+    ##################################
+    ##   Get Suggest Bubble w/ ID   ##
+    ##################################
+
+    elif command == 'get_suggest_bubble_by_id':
+
+        if set(body.keys()) != set(('suggest_bubble_id', )):
+            message.reply_channel.send({"text":
+                    json.dumps({"header": 'get_suggest_bubble_by_id', 'accept': 'False', 'body': 'body does not follow format'})})
+            return
+        try:
+            result = do_fetch_suggest_bubble(message.user.id, int(document_id), int(body['suggest_bubble_id']))
+        except BubbleDoesNotExistError:
+            message.reply_channel.send({"text":
+                    json.dumps({"header": "get_suggest_bubble_by_id", "accept": 'False', "body": "bubble does not exist for the id"})})
+            return
+        except:
+            message.reply_channel.send({"text":
+                    json.dumps({"header": "get_suggest_bubble_by_id", "accept": 'False', "body": "unknown error"})})
+            return
+            
+        message.reply_channel.send({"text":
+                json.dumps({"header": "get_suggest_bubble_by_id", "accept": 'True', "body": model_to_dict(result)})})
+        return
+
+
+
+    ################################
+    ##   Get Comment for Bubble   ##
+    ################################
+ 
+    ########################################
+    ##   Get Comment for Suggest Bubble   ##
+    ########################################
+ 
 
     #######################
     ##   Create Bubble   ##
@@ -181,7 +246,6 @@ def ws_receive(message):
     elif command == 'create_bubble':
       
         if set(body.keys()) != set(('parent', 'location', 'content')):
-            log.debug("ws message unexpected format command=%s", command)
             message.reply_channel.send({"text":
                     json.dumps({'header': 'create_bubble', 'accept': 'False', 'body': 'body does not follow format'})})
             return
@@ -189,7 +253,7 @@ def ws_receive(message):
         # do_create_bubble creates bubble and give edit lock to user
         try:
             result = do_create_normal_bubble(message.user.id, int(document_id), 
-                    int(body['parent']), int(body['location']), True, body['content'])
+                    int(body['parent']), int(body['location']), False, body['content'])
         except InvalidLocationError:
             message.reply_channel.send({"text":
                     json.dumps({'header': 'create_bubble', 'accept': 'False', 'body': 'invalid location'})})
@@ -198,18 +262,25 @@ def ws_receive(message):
             message.reply_channel.send({"text":
                     json.dumps({'header': 'create_bubble', 'accept': 'False', 'body': 'parent or ancestor is under edit'})})
             return
+        except:
+            message.reply_channel.send({"text":
+                    json.dumps({'header': 'create_bubble', 'accept': 'False', 'body': 'unknown error'})})
+            return
+        
 
         if not result:
-            log.debug("error occurred when creating new bubble at location=%d", body['location'])
             message.reply_channel.send({"text":
                     json.dumps({"header": "create_bubble", "accept": 'False', "body": body})})
             return
 
+        diction = model_to_dict(result)
+        diction.update({'who': message.user.id})
+
         Group('document_detail-'+document_id, channel_layer=message.channel_layer).send({"text":
                 json.dumps({'header': 'create_bubble', 'accept': 'True', 
-                'body': {'parent': body['parent'], 'location': body['location'], 'content': body['content']}})})
+                'body': diction})})
         return
-    
+
 
     ###############################
     ##   Create Suggest Bubble   ##
@@ -218,66 +289,149 @@ def ws_receive(message):
     elif command == 'create_suggest_bubble':
 
         if set(body.keys()) != set(('binded_bubble', 'content')):
-            log.debug("ws message unexpected format comand=%s", command)
             message.reply_channel.send({"text":
                     json.dumps({'header': 'create_suggest_bubble', 'accept': 'False', 'body': 'body does not follow format'})})
             return
 
         try:
-            # TODO: pass over also document_id
             result = do_create_suggest_bubble(message.user.id, int(document_id),
                     int(body['binded_bubble']), body['content'])
+        except BubbleDoesNotExistError:
+            message.reply_channel.send({"text":
+                    json.dumps({'header': 'create_suggest_bubble', 'accept': 'False', 'body': 'bubble does not exist for the id'})})
+            return
+        except BubbleIsRootError:
+            message.reply_channel.send({"text":
+                    json.dumps({'header': 'create_suggest_bubble', 'accept': 'False',
+                            'body': 'root bubble cannot have suggest bubble'})})
+            return
         except:
-            log.debug("do_create_suggest_bubble failed")
             message.reply_channel.send({"text":
                     json.dumps({'header': 'create_suggest_bubble', 'accept': 'False', 'body': 'create suggest bubble failed'})})
             return
 
         if not result:
-            log.debug("error occurred when creating new suggest bubble at bubble=%d", body['binded_bubble'])
             message.reply_channel.send({"text":
                     json.dumps({'header': 'create_suggest_bubble', 'accept': 'False', 'body': body})})
             return
 
+        diction = model_to_dict(result)
+        diction.update({'who': message.user.id})
+
         Group('document_detail-'+document_id, channel_layer=message.channel_layer).send({"text":
                 json.dumps({'header': 'create_suggest_bubble', 'accept': 'True', 
-                'body': {'binded_bubble': body['binded_bubble'], 'content': body['content']}})})
+                'body': diction})})
         return
-    
+ 
+
+    #########################################
+    ##   Create Comment on Normal Bubble   ##
+    #########################################
+
+
+    ##########################################
+    ##   Create Comment on Suggest Bubble   ##
+    ##########################################
+   
 
     #####################
     ##   Edit Bubble   ##
     #####################
 
     elif command == 'edit_bubble':
-        if set(body.keys()) != set(('bubble_id', 'content')):
-            log.debug('ws message unexpeced format command=%s', command)
+        if set(body.keys()) != set(('bubble_id', )):
             message.reply_channel.send({"text":
-                json.dumps({'header': 'edit_bubble', 'accept': 'False', 'body': 'body does not follow format'})})
+                json.dumps({'header': 'edit_bubble', 'accept': 'False',
+                        'body': 'body does not follow format'})})
             return
 
         try:
+            # TODO: remove content field of the function
             result = do_edit_normal_bubble(message.user.id, int(document_id),
-                    int(body['bubble_id']), body['content'])
-        except:
-            log.debug("do_edit_normal_bubble failed")
+                    int(body['bubble_id']), '')
+        except BubbleIsInternalError:
             message.reply_channel.send({"text":
-                json.dumps({'header': 'edit_bubble', 'accept': 'False', 'body': 'edit bubble failed'})})
+                json.dumps({'header': 'edit_bubble', 'accept': 'False',
+                        'body': 'cannot edit internal bubble'})})
+            return
+        except BubbleLockedError:
+            message.reply_channel.send({"text":
+                json.dumps({'header': 'edit_bubble', 'accept': 'False',
+                        'body': 'it is being editted by another contributor'})})
+            return
+        except BubbleOwnedError:
+            message.reply_channel.send({"text":
+                json.dumps({'header': 'edit_bubble', 'accept': 'False',
+                        'body': 'cannot edit bubble that is being claimed ownership of'})})
+            return
+        except:
+            message.reply_channel.send({"text":
+                json.dumps({'header': 'edit_bubble', 'accept': 'False', 'body': 'unknown error'})})
             return
 
         Group('document_detail-'+document_id, channel_layer=message.channel_layer).send({"text":
             json.dumps({'header': 'edit_bubble', 'accept': 'True', 
-            'body': {'bubble_id': body['bubble_id'], 'content': body['content']}})})
+            'body': {'who': message.user.id, 'bubble_id': body['bubble_id']}})})
         return
-    
+
+
+    ##########################################
+    ##   Currently Editting Normal Bubble   ##
+    ##########################################
+
+   
+
+    #######################################
+    ##   Finish Editting Normal Bubble   ##
+    #######################################
+
+    elif command == 'finish_editting_bubble':
+
+        if set(body.keys()) != set(('bubble_id',)):
+            message.reply_channel.send({"text":
+                    json.dumps({"header": 'finish_editting_bubble', 'accept': 'False', 'body': 'body does not follow format'})})
+            return
+        
+        try:
+            # TODO: call appropriate function & change the name into do_unlock_normal_bubble
+            do_unlock_bubble(message.user.id, int(document_id), int(body['bubble_id']))
+
+        except BubbleDoesNotExistError:
+            message.reply_channel.send({"text":
+                    json.dumps({'header': 'finish_editting_bubble', 'accept': 'False', 'body': 'bubble does not exist for the id'})})
+            return
+        except BubbleLockedError:
+            message.reply_channel.send({"text":
+                    json.dumps({'header': 'finish_editting_bubble', 'accept': 'False', 'body': 'bubble is being editted by another contributor'})})
+            return
+        except:
+            message.reply_channel.send({"text":
+                    json.dumps({'header': 'finish_editting_bubble', 'accept': 'False', 'body': 'unknown error'})})
+            return
+
+        Group('document_detail-'+document_id, channel_layer=message.channel_layer).send({"text":
+                json.dumps({'header': 'finish_editting_bubble', 'accept': 'True', 
+                'body': {'who': message.user.id, 'bubble_id': body['bubble_id']}})})
+        return
+
+
+    ########################################
+    ##   Discard Editting Normal Bubble   ##
+    ########################################
+
+
+    #####################################
+    ##   Release Ownership of Bubble   ##
+    #####################################
+
+
 
     #######################
     ##   Delete Bubble   ##
     #######################
 
     elif command == 'delete_bubble':
-        if set(body.keys()) != set(('bubble_id')):
-            log.debug("ws message unexpected format command=%s", command)
+        if set(body.keys()) != set(('bubble_id',)):
             message.reply_channel.send({"text":
                     json.dumps({'header': 'delete_bubble', 'accept': 'False', 'body': 'body does not follow format'})})
             return
@@ -286,7 +440,7 @@ def ws_receive(message):
             result = do_delete_normal_bubble(message.user.id, int(document_id), int(body['bubble_id']))
         except BubbleIsRootError:
             message.reply_channel.send({"text":
-                    json.dumps({"header": "delete_bubble", "accept": 'False', 'body': 'bubble is root'})})
+                    json.dumps({"header": "delete_bubble", "accept": 'False', 'body': 'root bubble cannot be deleted'})})
             return
         except BubbleLockedError:
             message.reply_channel.send({"text":
@@ -295,16 +449,273 @@ def ws_receive(message):
         except BubbleOwnedError:
             message.reply_channel.send({"text":
                     json.dumps({"header": "delete_bubble", "accept": 'False', 'body': 'bubble is being claimed ownership'})})
-            return 
+            return
+        except:
+            message.reply_channel.send({"text":
+                    json.dumps({"header": "delete_bubble", "accept": 'False', 'body': 'unknown error'})})
+            return
         
         Group('document_detail-'+document_id, channel_layer=message.channel_layer).send({"text":
-                json.dumps({'header': 'delete_bubble', 'accept': 'True', 'body': {'bubble_id': body['bubble_id']}})})
+                json.dumps({'header': 'delete_bubble', 'accept': 'True',
+                        'body': {'who': message.user.id, 'bubble_id': body['bubble_id']}})})
         return
+
+
+    #############################
+    ##   Hide Suggest Bubble   ##
+    #############################
+
+    elif command == 'hide_suggest_bubble':
+        if set(body.keys()) != set(('suggest_bubble_id',)):
+            message.reply_channel.send({"text":
+                    json.dumps({'header': 'hide_suggest_bubble', 'accept': 'False', 'body': 'body does not follow format'})})
+            return
+
+        try:
+            do_hide_suggest_bubble(message.user.id, int(document_id), int(body['suggest_bubble_id']))
+        except BubbleDoesNotExistError:
+            message.reply_channel.send({"text":
+                    json.dumps({"header": "hide_suggest_bubble", "accept": 'False',
+                            'body': 'suggest bubble does not exist for the id'})})
+            return
+        except:
+            message.reply_channel.send({"text":
+                    json.dumps({"header": "hide_suggest_bubble", "accept": 'False', 'body': 'unknown error'})})
+            return
+        
+        Group('document_detail-'+document_id, channel_layer=message.channel_layer).send({"text":
+                json.dumps({'header': 'hide_suggest_bubble', 'accept': 'True',
+                        'body': {'who': message.user.id, 'suggest_bubble_id': body['suggest_bubble_id']}})})
+        return
+ 
+
+    #############################
+    ##   Show Suggest Bubble   ##
+    #############################
+
+    elif command == 'show_suggest_bubble':
+        if set(body.keys()) != set(('suggest_bubble_id',)):
+            message.reply_channel.send({"text":
+                    json.dumps({'header': 'show_suggest_bubble', 'accept': 'False', 'body': 'body does not follow format'})})
+            return
+
+        try:
+            do_show_suggest_bubble(message.user.id, int(document_id), int(body['suggest_bubble_id']))
+        except BubbleDoesNotExistError:
+            message.reply_channel.send({"text":
+                    json.dumps({"header": "show_suggest_bubble", "accept": 'False',
+                            'body': 'suggest bubble does not exist for the id'})})
+            return
+        except:
+            message.reply_channel.send({"text":
+                    json.dumps({"header": "show_suggest_bubble", "accept": 'False', 'body': 'unknown error'})})
+            return
+        
+        Group('document_detail-'+document_id, channel_layer=message.channel_layer).send({"text":
+                json.dumps({'header': 'show_suggest_bubble', 'accept': 'True',
+                        'body': {'who': message.user.id, 'suggest_bubble_id': body['suggest_bubble_id']}})})
+        return
+ 
+
+    #########################################
+    ##   Delete Comment on Normal Bubble   ##
+    #########################################
+
+
+    ##########################################
+    ##   Delete Comment on Suggest Bubble   ##
+    ##########################################
+
+        
+    #####################
+    ##   Move Bubble   ##
+    #####################
+
+    elif command == 'move_bubble':
+        if set(body.keys()) != set(('bubble_id', 'new_parent_id', 'new_location')):
+            message.reply_channel.send({"text":
+                    json.dumps({'header': 'move_bubble', 'accept': 'False', 'body': 'body does not follow format'})})
+            return
+        try:
+            do_move_normal_bubble(message.user.id, int(document_id), int(body['bubble_id']),
+                    int(body['new_parent_id']), int(body['new_location']))
+        except BubbleDoesNotExistError:
+            message.reply_channel.send({"text":
+                    json.dumps({"header": "move_bubble", "accept": 'False',
+                            'body': 'bubble does not exist for the id'})})
+            return
+        except BubbleIsLeafError:
+            message.reply_channel.send({"text":
+                    json.dumps({"header": "move_bubble", "accept": 'False',
+                            'body': 'new parent bubble is leaf bubble'})})
+            return
+        except:
+            message.reply_channel.send({"text":
+                    json.dumps({"header": "move_bubble", "accept": 'False', 'body': 'unknown error'})})
+            return
+                            
+        Group('document_detail-'+document_id, channel_layer=message.channel_layer).send({"text":
+                json.dumps({'header': 'move_bubble', 'accept': 'True',
+                        'body': {'who': message.user.id, 'bubble_id': body['bubble_id'],
+                        'new_parent_id': body['new_parent_id'], 'new_location': body['new_location']}})})
+        return
+ 
+
+    #######################################
+    ##   Move Comment on Normal Bubble   ##
+    #######################################
+
+
+    ########################################
+    ##   Move Comment on Suggest Bubble   ##
+    ########################################
 
 
     #####################
     ##   Wrap Bubble   ##
     #####################
+
+    elif command == 'wrap_bubble':
+        if set(body.keys()) != set(('bubble_id_list',)):
+            message.reply_channel.send({"text":
+                    json.dumps({'header': 'wrap_bubble', 'accept': 'False', 'body': 'body does not follow format'})})
+            return
+        try:
+            do_wrap_normal_bubble(message.user.id, int(document_id), body['bubble_id_list'])
+        except BubbleDoesNotExistError:
+            message.reply_channel.send({"text":
+                    json.dumps({"header": "move_bubble", "accept": 'False',
+                            'body': 'bubble does not exist for the id'})})
+            return
+        except InvalidWrapError:
+            message.reply_channel.send({"text":
+                    json.dumps({"header": "move_bubble", "accept": 'False',
+                            'body': 'this kind of wrap cannot happen'})})
+            return
+        except BubbleLockedError:
+            message.reply_channel.send({"text":
+                    json.dumps({"header": "move_bubble", "accept": 'False',
+                            'body': "one of bubbles' relatives is being editted"})})
+            return
+        except BubbleOwnedError:
+            message.reply_channel.send({"text":
+                    json.dumps({"header": "wrap_bubble", "accept": "False",
+                            'body': 'one of bubbles is being claimed ownership of'})})
+            return
+        except:
+            message.reply_channel.send({"text":
+                    json.dumps({"header": "wrap_bubble", "accept": 'False', 'body': 'unknown error'})})
+            return
+                            
+        Group('document_detail-'+document_id, channel_layer=message.channel_layer).send({"text":
+                json.dumps({'header': 'wrap_bubble', 'accept': 'True',
+                        'body': {'who': message.user.id, 'bubble_id_list': body['bubble_id_list']}})})
+        return
+
+
+    ####################
+    ##   Pop Bubble   ##
+    ####################
+
+    elif command == 'pop_bubble':
+        if set(body.keys()) != set(('bubble_id', )):
+            message.reply_channel.send({"text":
+                    json.dumps({'header': 'pop_bubble', 'accept': 'False', 'body': 'body does not follow format'})})
+            return
+        try:
+            do_wrap_normal_bubble(message.user.id, int(document_id), int(body['bubble_id']))
+        except BubbleDoesNotExistError:
+            message.reply_channel.send({"text":
+                    json.dumps({"header": "pop_bubble", "accept": 'False',
+                            'body': 'bubble does not exist for the id'})})
+            return
+        except BubbleLockedError:
+            message.reply_channel.send({"text":
+                    json.dumps({"header": "pop_bubble", "accept": 'False',
+                            'body': "one of new parent bubble's relatives is being editted"})})
+            return
+        except BubbleOwnedError:
+            message.reply_channel.send({"text":
+                    json.dumps({"header": "pop_bubble", "accept": "False",
+                            'body': 'bubble is being claimed ownership of'})})
+
+            return
+        except BubbleIsLeafError:
+            message.reply_channel.send({"text":
+                    json.dumps({"header": "pop_bubble", "accept": "False",
+                            'body': 'leaf bubble cannot be popped'})})
+
+            return
+        except BubbleIsRootError:
+            message.reply_channel.send({"text":
+                    json.dumps({"header": "pop_bubble", "accept": 'False',
+                            'body': 'root bubble cannot be popped'})})
+            return
+        except:
+            message.reply_channel.send({"text":
+                    json.dumps({"header": "pop_bubble", "accept": 'False', 'body': 'unknown error'})})
+            return
+                            
+        Group('document_detail-'+document_id, channel_layer=message.channel_layer).send({"text":
+                json.dumps({'header': 'pop_bubble', 'accept': 'True',
+                        'body': {'who': message.user.id, 'bubble_id': body['bubble_id']}})})
+        return
+ 
+
+    ###############################
+    ##   Split Internal Bubble   ##
+    ###############################
+
+        
+    ###########################
+    ##   Split Leaf Bubble   ##
+    ###########################
+
+    elif command == 'split_leaf_bubble':
+        if set(body.keys()) != set(('bubble_id', 'split_content_list')):
+            message.reply_channel.send({"text":
+                    json.dumps({'header': 'split_leaf_bubble', 'accept': 'False', 'body': 'body does not follow format'})})
+            return
+        try:
+            result = do_split_leaf_bubble(message.user.id, int(document_id), int(body['bubble_id']), body['split_content_list'])
+        except BubbleDoesNotExistError:
+            message.reply_channel.send({"text":
+                    json.dumps({"header": "split_leaf_bubble", "accept": 'False',
+                            'body': 'bubble does not exist for the id'})})
+            return
+        except InvalidSplitError:
+            message.reply_channel.send({"text":
+                    json.dumps({"header": "split_leaf_bubble", "accept": 'False',
+                            'body': 'this kind of wrap cannot happen'})})
+            return
+        except BubbleLockedError:
+            message.reply_channel.send({"text":
+                    json.dumps({"header": "split_leaf_bubble", "accept": 'False',
+                            'body': "one of new parent bubble's relatives is being editted"})})
+            return
+        except BubbleOwnedError:
+            message.reply_channel.send({"text":
+                    json.dumps({"header": "split_leaf_bubble", "accept": "False",
+                            'body': 'bubble is being claimed ownership of'})})
+            return
+        except BubbleIsInternalError:
+            message.reply_channel.send({"text":
+                    json.dumps({"header": "split_leaf_bubble", "accept": "False",
+                            'body': 'internal bubble cannot be handled by split_leaf_bubble'})})
+            return
+        except:
+            message.reply_channel.send({"text":
+                    json.dumps({"header": "split_leaf_bubble", "accept": 'False', 'body': 'unknown error'})})
+            return
+                            
+        Group('document_detail-'+document_id, channel_layer=message.channel_layer).send({"text":
+                json.dumps({'header': 'split_leaf_bubble', 'accept': 'True',
+                        'body': {'who': message.user.id, 'bubble_id': body['bubble_id'],
+                        'split_bubble_object_list': list(result.child_bubbles.all().values()),
+                        'split_content_list': body['split_content_list']}})})
+        return
+        # [d['id'] for d in list(result.child_bubbles.all().values()] 
+
 
 
     ######################
@@ -312,27 +723,88 @@ def ws_receive(message):
     ######################
 
 
+    ########################
+    ##   Flatten Bubble   ##
+    ########################
+
+
+
+    ########################################
+    ##   Switch Bubble w/ Suggest Bubble  ##
+    ########################################
+
+    elif command == 'switch_bubble':
+        if set(body.keys()) != set(('suggest_bubble_id', )):
+            message.reply_channel.send({"text":
+                    json.dumps({'header': 'switch_bubble', 'accept': 'False', 'body': 'body does not follow format'})})
+            return
+        try:
+            do_wrap_normal_bubble(message.user.id, int(document_id), int(body['suggest_bubble_id']))
+        except BubbleDoesNotExistError:
+            message.reply_channel.send({"text":
+                    json.dumps({"header": "switch_bubble", "accept": 'False',
+                            'body': 'bubble does not exist for the id'})})
+            return
+        except BubbleLockedError:
+            message.reply_channel.send({"text":
+                    json.dumps({"header": "switch_bubble", "accept": 'False',
+                            'body': "one of new parent bubble's relatives is being editted"})})
+            return
+        except BubbleOwnedError:
+            message.reply_channel.send({"text":
+                    json.dumps({"header": "switch_bubble", "accept": "False",
+                            'body': 'bubble is being claimed ownership of'})})
+            return
+        except:
+            message.reply_channel.send({"text":
+                    json.dumps({"header": "switch_bubble", "accept": 'False', 'body': 'unknown error'})})
+            return
+                            
+        Group('document_detail-'+document_id, channel_layer=message.channel_layer).send({"text":
+                json.dumps({'header': 'switch_bubble', 'accept': 'True',
+                        'body': {'who': message.user.id, 'suggest_bubble_id': body['suggest_bubble_id']}})})
+        return
+    
+
+    ################################
+    ##   Vote on Suggest Bubble   ##
+    ################################
+
+    elif command == 'vote_on_suggest_bubble':
+        if set(body.keys()) != set(('suggest_bubble_id', )):
+            message.reply_channel.send({"text":
+                    json.dumps({'header': 'vote_on_suggest_bubble', 'accept': 'False', 'body': 'body does not follow format'})})
+            return
+        try:
+            # TODO: change the name into do_vote_suggest_bubble
+            do_vote_bubble(message.user.id, int(document_id), int(body['suggest_bubble_id']))
+        except BubbleDoesNotExistError:
+            message.reply_channel.send({"text":
+                    json.dumps({"header": "vote_on_suggest_bubble", "accept": 'False',
+                            'body': 'bubble does not exist for the id'})})
+            return
+        except:
+            message.reply_channel.send({"text":
+                    json.dumps({"header": "vote_on_suggest_bubble", "accept": 'False', 'body': 'unknown error'})})
+            return
+                            
+        Group('document_detail-'+document_id, channel_layer=message.channel_layer).send({"text":
+                json.dumps({'header': 'pop_bubble', 'accept': 'True',
+                        'body': {'who': message.user.id, 'suggest_bubble_id': body['suggest_bubble_id']}})})
+        return
+ 
+
+    #########################################
+    ##   If you came here, it's wrong...   ##
+    #########################################
+
 
     else:
-        log.debug("ws message have invalid command=%s", command)
         message.reply_channel.send({"text":
                 json.dumps({"header": command, "accept": 'False', "body": "invalid command"})})
         return
 
-#    try:
-#        body = message.content['body']
-#    except ValueError:
-#        log.debug("ws message isn't json body=%s", body)
-#        return
-    
-#    if set(body.keys()) != set(('handle', 'message')):
-#        log.debug("ws message unexpected format command=%s", command)
-#        return
-    
-#    if command:
-#log.debug('message document_id=%s handle=%s message=%s',
-#                document.id, body['handle'], body['message'])
-#        Group('document_detail-'+id, channel_layer=message.channel_layer).send({'body': body})
+
 
 @channel_session_user
 def ws_disconnect(message):

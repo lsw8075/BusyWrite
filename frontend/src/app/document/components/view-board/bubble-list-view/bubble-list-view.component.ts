@@ -1,7 +1,7 @@
-import { Component, EventEmitter, Input, OnInit, OnDestroy, Output, HostListener } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, OnDestroy, Output, HostListener, ChangeDetectorRef } from '@angular/core';
 import { BubbleService } from '../service';
-import { BubbleType, Bubble, ActionType, MenuType } from '../service';
-import { InternalBubble, LeafBubble } from '../../../models/bubble';
+import { BubbleTemp, ActionType, MenuType } from '../service';
+import { Bubble, InternalBubble, LeafBubble, BubbleType } from '../../../models/bubble';
 import { EventBubbleService, BoardService } from '../service';
 
 import { Store } from '@ngrx/store';
@@ -10,7 +10,6 @@ import { Observable } from 'rxjs/Observable';
 import * as fromDocument from '../../../reducers/reducer';
 import * as BubbleAction from '../../../actions/bubble-action';
 import * as RouterAction from '../../../../shared/route/route-action';
-
 
 @Component({
   selector: 'app-bubble-list-view',
@@ -22,19 +21,22 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
   menuType = MenuType;
   actionType = ActionType;
 
-  @Input() rootBubble: Bubble; // bubbles that have root as parents
+  @Input() rootBubble: Bubble | Bubble; // bubbles that have root as parents
+  @Input() bubbleList: Array<Bubble> | Bubble[];
   selectedBubble: Bubble;
   selectedMenu: MenuType;
 
   constructor(
     private _store: Store<fromDocument.State>,
+    private _ref: ChangeDetectorRef,
     private _bubbleService: BubbleService,
     private _eventBubbleService: EventBubbleService,
     private _boardService: BoardService) {
-      this._store.select(fromDocument.getBubbleState).subscribe(bubble => {
-        this.selectedBubble = bubble.selectedBubble;
-        this.selectedMenu = bubble.selectedMenu;
-      });
+      // this._store.select(fromDocument.getBubbleState).subscribe(bubble => {
+      //   this.selectedBubble = bubble.selectedBubble;
+      //   this.selectedMenu = bubble.selectedMenu;
+      //   this.rootBubble = bubble.rootBubble;
+      // });
     }
 
   ngOnInit() {
@@ -58,6 +60,31 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
   //   console.log(`The user just pressed ${ev.key}!`);
   // }
 
+
+    clickDelete(bubble: Bubble) {
+        this._store.dispatch(new BubbleAction.Delete(bubble.id));
+    }
+
+    clickPop(bubble: Bubble) {
+        this._store.dispatch(new BubbleAction.Pop(bubble.id));
+    }
+
+    clickCreateAbove(bubble: Bubble) {
+        this._store.dispatch(new BubbleAction.Create({bubbleId: bubble.id, isAbove: true}));
+    }
+
+    clickCreateBelow(bubble: Bubble) {
+        this._store.dispatch(new BubbleAction.Create({bubbleId: bubble.id, isAbove: false}));
+    }
+
+    clickEdit(bubble: Bubble) {
+        this._store.dispatch(new BubbleAction.Edit(bubble.id));
+    }
+
+    clickFlatten(bubble: Bubble) {
+        this._store.dispatch(new BubbleAction.Flatten(bubble.id));
+    }
+
   public clearState(event): void {
     this._eventBubbleService.clearState();
   }
@@ -67,77 +94,71 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
     this._eventBubbleService.clearState();
   }
 
-  public popBubble(bubble: Bubble) {
-    // this._bubbleService.popBubble(bubble)
-    //   .then(() => {
-    //     this._refreshBubbleList();
-    //     this._eventBubbleService.clearState();
-    //   });
-  }
+//   public popBubble(bubble: BubbleTemp) {
+//     // this._bubbleService.popBubble(bubble)
+//     //   .then(() => {
+//     //     this._refreshBubbleList();
+//     //     this._eventBubbleService.clearState();
+//     //   });
+//   }
 
-  public wrapBubble() {
-    this._bubbleService.wrapBubble(this._eventBubbleService.wrapBubbles)
-      .then(response => {
-        this._refreshBubbleList();
-        this._eventBubbleService.clearState();
-      });
-  }
+//   public wrapBubble() {
+//     // this._bubbleService.wrapBubble(this._eventBubbleService.wrapBubbles)
+//     //   .then(response => {
+//     //     this._refreshBubbleList();
+//     //     this._eventBubbleService.clearState();
+//     //   });
+//   }
 
-  public createBubble(bubble: Bubble, menu: MenuType) {
-    let location = bubble.location;
-    if (menu === MenuType.borderBottomMenu) {
-      location++;
-    } else if (menu !== MenuType.borderTopMenu) {
-      throw new Error('create bubble invoked with not border');
-    }
-    this._bubbleService.createBubble(bubble.parentBubble, location, 'empty bubble')
-      .then(response => {
-  //      this._boardService.editBubble(response);
-        this._eventBubbleService.clearState();
-        this._refreshBubbleList();
-      });
-  }
-  private finishEdit(bubble: Bubble) {
-    bubble.releaseLock();
-    this._eventBubbleService.edittedBubble = null;
-    this._refreshBubbleList();
-  }
-  public editBubble(bubble: Bubble) {
-    if (bubble.type === BubbleType.leafBubble &&
-        this.isBubbleContentShown(bubble)) {
-    //  this._boardService.editBubble(bubble);
-      this._eventBubbleService.clearState();
-      this._refreshBubbleList();
-    }
-  }
-  public deleteBubble(bubble: Bubble) {
-    if (bubble.id !== 0) {
-      this._eventBubbleService.setState(ActionType.delete);
-      this._bubbleService.deleteBubble(bubble).then(() => {
-          this._eventBubbleService.clearState();
-          this._refreshBubbleList();
-        });
-    } else {
-      throw new Error('Cannot delete root bubble');
-    }
-  }
+//   public createBubble(bubble: BubbleTemp, menu: MenuType) {
+//     let location = bubble.location;
+//     if (menu === MenuType.borderBottomMenu) {
+//       location++;
+//     } else if (menu !== MenuType.borderTopMenu) {
+//       throw new Error('create bubble invoked with not border');
+//     }
+//   }
+//   private finishEdit(bubble: BubbleTemp) {
+//     bubble.releaseLock();
+//     this._eventBubbleService.edittedBubble = null;
+//     this._refreshBubbleList();
+//   }
+//   public editBubble(bubble: BubbleTemp) {
+//     if (bubble.type === BubbleType.leafBubble &&
+//         this.isBubbleContentShown(bubble)) {
+//     //  this._boardService.editBubble(bubble);
+//       this._eventBubbleService.clearState();
+//       this._refreshBubbleList();
+//     }
+//   }
+//   public deleteBubble(bubble: BubbleTemp) {
+//     if (bubble.id !== 0) {
+//       this._eventBubbleService.setState(ActionType.delete);
+//       // this._bubbleService.deleteBubble(bubble).then(() => {
+//       //     this._eventBubbleService.clearState();
+//       //     this._refreshBubbleList();
+//       //   });
+//     } else {
+//       throw new Error('Cannot delete root bubble');
+//     }
+//   }
 
-  public flattenBubble(bubble: Bubble) {
-    this._bubbleService.flattenBubble(bubble).then(() => {
-        this._eventBubbleService.clearState();
-        this._refreshBubbleList();
-      });
-  }
+//   public flattenBubble(bubble: BubbleTemp) {
+//     // this._bubbleService.flattenBubble(bubble).then(() => {
+//     //     this._eventBubbleService.clearState();
+//     //     this._refreshBubbleList();
+//     //   });
+//   }
 
-  public moveBubble(bubble: Bubble, destBubble: Bubble, menu: MenuType) {
-    this._bubbleService.moveBubble(bubble, destBubble, menu).then(() => {
-      this._eventBubbleService.clearState();
-      this._refreshBubbleList();
-    });
-  }
+//   public moveBubble(bubble: BubbleTemp, destBubble: BubbleTemp, menu: MenuType) {
+//     // this._bubbleService.moveBubble(bubble, destBubble, menu).then(() => {
+//     //   this._eventBubbleService.clearState();
+//     //   this._refreshBubbleList();
+//     // });
+//   }
 
-  public onClickEvent(bubble: Bubble, menu: MenuType, mouseEvent: MouseEvent): void {
-    this._store.dispatch(new BubbleAction.Select({bubble, menu}));
+  public onClickEvent(bubble: BubbleTemp, menu: MenuType, mouseEvent: MouseEvent): void {
+  //  this._store.dispatch(new BubbleAction.Select({bubble, menu}));
   }
 
   public isMenuOpen(bubble, menu): boolean {
@@ -152,7 +173,7 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
            (bubble.whoIsEditting() === 1);
   }
 
-  public isInternal(bubble: Bubble): Boolean {
+  public isInternal(bubble: BubbleTemp): Boolean {
     return bubble.type === BubbleType.internalBubble;
   }
 

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import { DocumentService } from './service';
 import { BubbleService } from '../services/bubble.service';
 import { ServerSocket } from '../services/websocket.service';
@@ -8,6 +8,7 @@ import { ServerSocket } from '../services/websocket.service';
   templateUrl: './document-detail-page.component.html',
   styleUrls: ['./document-detail-page.component.css'],
   providers: [ ServerSocket, BubbleService ],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class DocumentDetailPageComponent implements OnInit {

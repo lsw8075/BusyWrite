@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed, async, fakeAsync, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { Bubble } from '../service';
+import { Bubble } from '../../../models/bubble';
 import { Component, Input } from '@angular/core';
 
 import { BubbleMenuComponent } from './bubble-menu.component';
@@ -74,14 +74,6 @@ describe('BubbleMenuComponent', () => {
       });
   });
 
-  describe('popBubble', () => {
-      it('makes expected calls', () => {
-          spyOn(eventBubbleService, 'popBubble');
-          comp.popBubble();
-          expect(eventBubbleService.popBubble).toHaveBeenCalled();
-      });
-  });
-
   describe('wrapBubble', () => {
       it('makes expected calls', () => {
           spyOn(eventBubbleService, 'wrapBubble');
@@ -95,14 +87,6 @@ describe('BubbleMenuComponent', () => {
           spyOn(eventBubbleService, 'createBubble');
           comp.createBubble();
           expect(eventBubbleService.createBubble).toHaveBeenCalled();
-      });
-  });
-
-  describe('editBubble', () => {
-      it('makes expected calls', () => {
-          spyOn(eventBubbleService, 'editBubble');
-          comp.editBubble();
-          expect(eventBubbleService.editBubble).toHaveBeenCalled();
       });
   });
 

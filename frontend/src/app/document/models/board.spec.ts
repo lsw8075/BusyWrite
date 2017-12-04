@@ -14,8 +14,4 @@ describe('Edit Item Model', () => {
     id = 1;
     bubble = new LeafBubble(0);
   });
-
-  it('can create edit item', () => {
-    editItem = new EditItem(id, bubble);
-  });
 });
