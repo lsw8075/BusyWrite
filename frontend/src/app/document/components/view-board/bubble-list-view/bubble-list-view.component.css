@@ -15,13 +15,6 @@
   margin: 0px 0px;
 }
 
-::selection {
-  background: #fff2a8;
-}
-::-moz-selection {
-  background: #fff2a8;
-}
-
 .placeholder {
   padding: 5px 0px;
   margin: none;

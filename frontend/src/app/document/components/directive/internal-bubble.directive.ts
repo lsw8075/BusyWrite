@@ -32,13 +32,14 @@ export class InternalBubbleDirective implements OnInit {
 
 //   @HostBinding('style.border-left-color')
 //   public get borderLeftColor(): string {
-//     // if (this.appInternalBubble.isBeingEditted()) {
-//     //   return `green`;
-//     // } else if (this.appInternalBubble.parentBubble.id === 0) {
-//     //   return this.selectedColor;
-//     // } else {
+//     if (this.appInternalBubble.isBeingEditted()) {
+//       return `green`;
+//     } else if (this.appInternalBubble.parentBubbleId === 0) {
+//       return this.selectedColor;
+//     } else {
+//         return 'transparent';
 //     //   return (this.appInternalBubble.isMouseOver) ? this.selectedColor : 'transparent';
-//     // }
+//     }
 //   }
 
 //   @HostBinding('style.border-right-color')
