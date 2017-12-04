@@ -122,7 +122,6 @@ def ws_receive(message):
     ########################
   
     if command == 'close_document':
-       
         if not int(document_id) == int(body['document_id']):
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False', "body": "attempt to close unopened document"})})

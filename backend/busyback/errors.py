@@ -97,3 +97,10 @@ class ContentEmptyError(Error):
 
 class DocumentMismatchError(Error):
     pass
+
+class InvalidNoteOrderError(Error):
+    pass
+
+class InvalidUpdateError(Error):
+    def __init__(self, bubble):
+        self.bubble = bubble

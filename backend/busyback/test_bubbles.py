@@ -70,6 +70,25 @@ class BubblesTestCase(TestCase):
 
         self.assertEqual(self.bubble2.fetch_child(2).id, new_bubble.id)
 
+    def test_updating_normal_bubble(self):
+        new_bubble = do_create_normal_bubble(self.user1.id, self.doc1.id, self.bubble2.id, 2, True, 'test content')
+
+        do_updating_normal_bubble(self.user1.id, self.doc1.id, new_bubble.id, 'hello world')
+
+        do_update_finish_normal_bubble(self.user1.id, self.doc1.id, new_bubble.id)
+
+        new_bubble = NormalBubble.objects.get(id=new_bubble.id)
+
+        self.assertEqual(new_bubble.content, 'hello world')
+
+        do_edit_normal_bubble(self.user1.id, self.doc1.id, new_bubble.id, 'bye world')
+
+        do_updating_normal_bubble(self.user1.id, self.doc1.id, new_bubble.id, 'hello world')
+        do_update_discard_normal_bubble(self.user1.id, self.doc1.id, new_bubble.id)
+
+        new_bubble = NormalBubble.objects.get(id=new_bubble.id)
+
+        self.assertEqual(new_bubble.content, 'bye world')
 
     def test_do_create_suggest_bubble(self):
         new_suggest = do_create_suggest_bubble(self.user1.id, self.doc1.id, self.bubble4.id, 'new suggest')

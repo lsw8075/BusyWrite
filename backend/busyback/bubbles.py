@@ -3,6 +3,7 @@ from .errors import *
 from .documents import fetch_document_with_lock
 from .users import fetch_user
 from .debug import print_bubble_tree
+from .bubble_cache import *
 from django.utils import timezone
 from django.db import transaction
 from functools import wraps
@@ -185,29 +186,63 @@ def do_create_normal_bubble(
 
     new_bubble.edit_lock_holder = user
     new_bubble.owner_with_lock = None
-    if is_owned:
-       new_bubble.owner_with_lock = user
 
     parent_bubble.insert_children(location, [new_bubble])
+    
+    load_bubble_to_cache(new_bubble, True)
 
     return new_bubble
 
-@normal_operation
-def do_create_suggest_bubble(
+
+def do_updating_normal_bubble(
     user_id: int,
     document_id: int,
-    binded_id: int,
-    content: str,
+    bubble_id: int,
+    content
+    ):
+
+    result = update_bubble_on_cache(user_id, bubble_id, content)
+    if not result:
+        raise InvalidUpdateError(bubble_id)
+
+@normal_operation
+def do_update_finish_normal_bubble(
+    user_id: int,
+    document_id: int,
+    bubble_id: int,
     **kw
     ):
-    '''Create a suggest bubble'''
+    result = unload_bubble_from_cache(user_id, bubble_id)
+    if result is None:
+        raise InvalidUpdateError(bubble_id)
+    (del_flag, content) = result
+    
+    bubble = kw['bubble']
+    bubble.unlock(fetch_user(user_id))
+    bubble.change_content(content)
+    bubble.save()
 
-    binded_bubble = kw['bubble']
+@normal_operation
+def do_update_discard_normal_bubble(
+    user_id: int,
+    document_id: int,
+    bubble_id: int,
+    **kw
+    ):
+    result = unload_bubble_from_cache(user_id, bubble_id)
+    if result is None:
+        raise InvalidUpdateError(bubble_id)
+    (del_flag, content) = result
+    
 
-    new_suggest = create_suggest(binded_bubble, content)
-    new_suggest.save()
-    return new_suggest
-
+    bubble = kw['bubble']
+    if del_flag == 'True':
+        parent = bubble.parent_bubble
+        parent.delete_children(bubble.location, 1)
+        bubble.delete()
+    else:
+        bubble.unlock(fetch_user(user_id))
+    
 @normal_operation
 def do_edit_normal_bubble(
     user_id: int,
@@ -230,6 +265,8 @@ def do_edit_normal_bubble(
     if content != '':
         bubble.change_content(content)
     bubble.lock(user)
+
+    load_bubble_to_cache(bubble, False)
 
     return bubble
 
@@ -311,8 +348,25 @@ def do_delete_normal_bubble(
     cascaded_delete_children(user, bubble)
     parent = bubble.parent_bubble
     parent.delete_children(bubble.location, 1)
+    bubble.delete()
 
     return None
+
+@normal_operation
+def do_create_suggest_bubble(
+    user_id: int,
+    document_id: int,
+    binded_id: int,
+    content: str,
+    **kw
+    ):
+    '''Create a suggest bubble'''
+
+    binded_bubble = kw['bubble']
+
+    new_suggest = create_suggest(binded_bubble, content)
+    new_suggest.save()
+    return new_suggest
 
 @suggest_operation
 def do_hide_suggest_bubble(
