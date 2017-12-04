@@ -96,12 +96,11 @@ def process_normal(bubble):
     ''' convert model to dict with proper child info '''
     result = model_to_dict(bubble)
     child_count = bubble.child_count()
-    if bubble.child_count == 0:
-        result['type'] = 'leaf'
-        result['child_bubbles'] = []
-        return result
 
-    result['type'] = 'internal'
+    if child_count != 0:
+        result['type'] = 'internal'
+    else:
+        result['type'] = 'leaf'
 
     child_list = []
     for i in range(0, child_count):

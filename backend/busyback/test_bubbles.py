@@ -10,6 +10,12 @@ class BubblesTestCase(TestCase):
     def setUp(self):
         mockDBSetup(self)
 
+    def test_process_bubble(self):
+        #print(process_normal(self.bubble2))
+        #print(process_normal(self.bubble4))
+        #print(process_suggest(self.suggest1))
+        pass
+
     def test_do_fetch_bubble(self):
 
         with self.assertRaises(BubbleDoesNotExistError):
