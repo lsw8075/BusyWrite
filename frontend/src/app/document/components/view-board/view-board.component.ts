@@ -42,7 +42,33 @@ export class ViewBoardComponent implements OnInit {
         this.bubbleList$ = _store.select(fromDocument.getBubbleList);
 
         this._store.select(fromDocument.getBubbleState).subscribe((res) => {
+            console.log(cnt++);
+            for (const bubble of res.bubbleList) {
+                if (bubble.type === BubbleType.internalBubble) {
+                    const internalBubble = bubble as InternalBubble;
+                    const msg = {
+                        id: internalBubble.id,
+                        parentBubbleId: internalBubble.parentBubbleId,
+                        childBubbleIds: internalBubble.childBubbleIds,
+                        location: internalBubble.location};
+                    console.log(msg);
+                } else if (bubble.type === BubbleType.leafBubble) {
+                    const leafBubble = bubble as LeafBubble;
+                    const msg = {
+                        id: leafBubble.id,
+                        content: leafBubble.content.substr(0, 10),
+                        parentBubbleId: leafBubble.parentBubbleId,
+                        location: leafBubble.location};
+                    console.log(msg);
+                }
+            }
+            console.log(res.bubbleList);
+
         });
+
+        // this._store.select(fromUser.getUserId).subscribe((res) => {
+        //     console.log('[user id]', res);
+        // });
     }
 
     ngOnInit() {
