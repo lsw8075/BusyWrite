@@ -1,10 +1,11 @@
 from .models import *
 from .errors import UserDoesNotExistError
 from django.db import transaction
+from django.forms.models import model_to_dict
 
 @transaction.atomic
 def do_fetch_user(user_id: int):
-    return fetch_user(user_id)
+    return model_to_dict(fetch_user(user_id))
 
 def fetch_user(user_id):
     try:

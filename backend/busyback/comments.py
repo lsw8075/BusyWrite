@@ -5,6 +5,7 @@ from .errors import *
 from .bubbles import normal_operation, suggest_operation
 from django.db import transaction
 from functools import wraps
+from django.forms.models import model_to_dict
 
 def commentN_operation(func):
     ''' Decorator for comment under normal functions '''
@@ -53,6 +54,9 @@ def commentS_operation(func):
         return result
     return wrapper
 
+def process_comment(comment):
+    return model_to_dict(comment)
+
 @commentN_operation
 def do_fetch_comment_under_normal(
     user_id: int,
@@ -60,7 +64,7 @@ def do_fetch_comment_under_normal(
     comment_id: int,
     **kw
     ):
-    return kw['comment']
+    return process_comment(kw['comment'])
 
   
 @commentS_operation
@@ -70,7 +74,7 @@ def do_fetch_comment_under_suggest(
     comment_id: int,
     **kw
     ):
-    return kw['comment']
+    return process_comment(kw['comment'])
 
 
 @normal_operation
@@ -82,10 +86,10 @@ def do_fetch_comments_under_normal(
     ):
     bubble = kw['bubble']
     
-    comments = bubble.comments.values()
+    comments = bubble.comments.all()
     if len(comments) == 0:
         return []
-    return list(comments)
+    return [process_comment(c) for c in comments]
 
 @suggest_operation
 def do_fetch_comments_under_suggest(
@@ -96,10 +100,10 @@ def do_fetch_comments_under_suggest(
     ):
     bubble = kw['bubble']
     
-    comments = bubble.comments.values()
+    comments = bubble.comments.all()
     if len(comments) == 0:
         return []
-    return list(comments)
+    return [process_comment(c) for c in comments]
 
 @normal_operation
 def do_create_comment_under_normal(
@@ -122,7 +126,7 @@ def do_create_comment_under_normal(
     bubble.next_comment_order += 1
     bubble.save()
 
-    return comment
+    return process_comment(comment)
 
 @suggest_operation
 def do_create_comment_under_suggest(
@@ -145,7 +149,7 @@ def do_create_comment_under_suggest(
     bubble.next_comment_order += 1
     bubble.save()
 
-    return comment
+    return process_comment(comment)
 
 @commentN_operation
 def do_edit_comment_under_normal(
@@ -167,7 +171,7 @@ def do_edit_comment_under_normal(
     comment.content = content
     comment.save()
 
-    return comment
+    return process_comment(comment)
 
 @commentS_operation
 def do_edit_comment_under_suggest(
@@ -189,7 +193,7 @@ def do_edit_comment_under_suggest(
     comment.content = content
     comment.save()
 
-    return comment
+    return process_comment(comment)
 
 @commentN_operation
 def do_delete_comment_under_normal(

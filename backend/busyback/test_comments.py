@@ -20,7 +20,7 @@ class CommentsTestCase(TestCase):
             do_fetch_comment_under_normal(self.user2.id, self.doc2.id, self.comment1.id)
 
         comment = do_fetch_comment_under_normal(self.user1.id, self.doc1.id, self.comment1.id)
-        self.assertEqual(comment.content, 'Com1')
+        self.assertEqual(comment['content'], 'Com1')
 
         # under suggest
         with self.assertRaises(UserIsNotContributorError):
@@ -32,7 +32,7 @@ class CommentsTestCase(TestCase):
             do_fetch_comment_under_suggest(self.user2.id, self.doc2.id, self.comment3.id)
 
         comment = do_fetch_comment_under_suggest(self.user1.id, self.doc1.id, self.comment3.id)
-        self.assertEqual(comment.content, 'Com3')
+        self.assertEqual(comment['content'], 'Com3')
 
     def test_do_fetch_comments(self):
         # under normal
@@ -71,7 +71,7 @@ class CommentsTestCase(TestCase):
         do_create_comment_under_normal(self.user1.id, self.doc1.id, self.bubble1.id, 'TestCom')
         comment = do_create_comment_under_normal(self.user1.id, self.doc1.id, self.bubble1.id, 'TestCom')
         reload_bubbles(self, [1])
-        self.assertEqual(comment.content, 'TestCom')
+        self.assertEqual(comment['content'], 'TestCom')
         self.assertEqual(self.bubble1.next_comment_order, 5)
         # under suggest
         with self.assertRaises(UserIsNotContributorError):
@@ -87,7 +87,7 @@ class CommentsTestCase(TestCase):
         do_create_comment_under_suggest(self.user1.id, self.doc1.id, self.suggest1.id, 'TestCom')
         comment = do_create_comment_under_suggest(self.user1.id, self.doc1.id, self.suggest1.id, 'TestCom')
         reload_suggests(self, [1])
-        self.assertEqual(comment.content, 'TestCom')
+        self.assertEqual(comment['content'], 'TestCom')
         self.assertEqual(self.suggest1.next_comment_order, 4)
 
     def test_do_edit_comment_under_normal(self):
@@ -100,7 +100,7 @@ class CommentsTestCase(TestCase):
 
         comment = do_edit_comment_under_normal(self.user1.id, self.doc1.id, self.comment1.id, 'Test Edit')
 
-        self.assertEqual(comment.content, 'Test Edit')
+        self.assertEqual(comment['content'], 'Test Edit')
         # under suggest
         with self.assertRaises(UserIsNotCommentOwnerError):
             do_edit_comment_under_suggest(self.user2.id, self.doc1.id, self.comment3.id, '')
@@ -110,7 +110,7 @@ class CommentsTestCase(TestCase):
 
         comment = do_edit_comment_under_suggest(self.user1.id, self.doc1.id, self.comment3.id, 'Test Edit')
 
-        self.assertEqual(comment.content, 'Test Edit')
+        self.assertEqual(comment['content'], 'Test Edit')
 
     def test_do_delete_comment_under_normal(self):
         # under normal
