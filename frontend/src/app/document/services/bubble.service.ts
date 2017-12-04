@@ -15,19 +15,20 @@ import * as Reducer from '../reducers/reducer';
 import * as BubbleAction from '../actions/bubble-action';
 import * as fromUser from '../../user/actions/user-action';
 import { BubbleJsonHelper } from '../models/bubble-json-helper';
+import { OnDestroy } from '@angular/core';
 
 let USE_MOCK = true;
 let Id = 30; // to be deleted after backend implemented
 const UserId = 1;
 
 @Injectable()
-export class BubbleService {
+export class BubbleService implements OnDestroy {
 
     private socketSubscription: Subscription;
     private currentDocumentId: Number;
     private bubbleList: Array<Bubble> = [];
     private bubbleRoot: InternalBubble;
-    //private user$: Observable<>;
+    // private user$: Observable<>;
 
     constructor(
             private _store: Store<Reducer.State>,
@@ -40,7 +41,7 @@ export class BubbleService {
                 this.channelMessageHandler(message);
         });
 
-        //this.user$ = _store.select(fromUser.getUserState).
+        // this.user$ = _store.select(fromUser.getUserState).
         //    map(userState => userState.userId);
 
         if (USE_MOCK) {

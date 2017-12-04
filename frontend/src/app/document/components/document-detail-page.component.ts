@@ -24,7 +24,7 @@ import * as RouterAction from '../../shared/route/route-action';
 
 export class DocumentDetailPageComponent implements OnInit {
 
-    rootBubble$: Observable<Bubble>;
+    rootBubble$: Observable<InternalBubble>;
     bubbleList$: Observable<Array<Bubble>>;
 
     constructor(

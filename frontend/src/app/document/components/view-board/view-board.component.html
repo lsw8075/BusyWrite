@@ -1,15 +1,20 @@
 <div class="view-board">
-  <p-tabView>
-
-    <p-tabPanel header="View">
-      <!--<app-bubble-list-view [rootBubble]="rootBubble$ | async" [bubbleList]="bubbleList$ | async"></app-bubble-list-view>-->
-    </p-tabPanel>
-
-    <p-tabPanel header="Preview">
-      <app-preview>
-        Loading...
-      </app-preview>
-    </p-tabPanel>
-
-  </p-tabView>
+    <tabset [justified]="true">
+        <tab>
+            <ng-template tabHeading>
+                View
+            </ng-template>
+            <app-bubble-list-view [rootBubble]="rootBubble" [bubbleList]="bubbleList">
+                Your bubbles are Loading ...!
+            </app-bubble-list-view>
+        </tab>
+        <tab>
+            <ng-template tabHeading>
+                Preview
+            </ng-template>
+            <app-preview [rootBubble]="rootBubble" [bubbleList]="bubbleList">
+                Your preview is Loading ...!
+            </app-preview>
+        </tab>
+    </tabset>
 </div>

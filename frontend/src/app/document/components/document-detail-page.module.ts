@@ -33,14 +33,16 @@ import { StopHoverPropagationDirective } from './directive/stop-hover-propagatio
 import { DragulaModule } from 'ng2-dragula/ng2-dragula';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { QuillEditorModule } from 'ngx-quill-editor';
+
 import { AccordionModule } from 'ngx-bootstrap/accordion';
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
 
 import { AlertModule } from 'ngx-bootstrap/alert';
 import { ModalModule } from 'ngx-bootstrap/modal';
+import { TabsModule } from 'ngx-bootstrap/tabs';
 
-import { TabViewModule } from 'primeng/primeng';
 import { ButtonModule } from 'primeng/primeng';
+import { TabViewModule } from 'primeng/primeng';
 import { EditorModule } from 'primeng/primeng';
 import { DialogModule } from 'primeng/primeng';
 
@@ -75,6 +77,7 @@ const routes: Routes = [
     FormsModule,
     CommonModule,
     RouterModule.forChild(routes),
+    TabsModule.forRoot(),
     TabViewModule,
     BsDropdownModule.forRoot(),
     ButtonModule,

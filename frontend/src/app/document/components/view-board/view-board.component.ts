@@ -23,7 +23,7 @@ import { BubbleJsonHelper } from '../../models/bubble-json-helper';
 
 export class ViewBoardComponent implements OnInit {
 
-    @Input() rootBubble: Bubble;
+    @Input() rootBubble: InternalBubble;
     @Input() bubbleList: Array<Bubble>;
 
   constructor(

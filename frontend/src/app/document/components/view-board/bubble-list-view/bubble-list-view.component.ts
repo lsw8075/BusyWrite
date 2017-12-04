@@ -21,8 +21,8 @@ export class BubbleListViewComponent implements OnInit {
   menuType = MenuType;
   actionType = ActionType;
 
-  @Input() rootBubble: Bubble | Bubble; // bubbles that have root as parents
-  @Input() bubbleList: Array<Bubble> | Bubble[];
+  @Input() rootBubble: Bubble; // bubbles that have root as parents
+  @Input() bubbleList: Array<Bubble>;
   selectedBubble: Bubble;
   selectedMenu: MenuType;
 

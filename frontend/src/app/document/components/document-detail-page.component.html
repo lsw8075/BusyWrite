@@ -1,6 +1,18 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-7">
+            <app-view-board [rootBubble]="rootBubble$ | async"
+                            [bubbleList]="bubbleList$ | async">
+                Your document view board is loading ...
+            </app-view-board>
+        </div>
+        <div class="col-sm-5">
+
+        </div>
+    </div>
+</div>
 
 
-  <app-view-board></app-view-board>
 <!---
 <p-dialog header="Change Title" [(visible)]="displayTitleEditDialog" modal="modal" width="500" [responsive]="true">
   <p>
@@ -21,18 +33,6 @@
 </p-dialog>
 
 Document Title : <button pButton id="document_title" type="button" class="ui-button-secondary" (click)="displayTitleEditDialog=true" [label]="documentTitle"> </button>
-
-<div class="ui-g">
-  <div class="ui-g-7 ui-sm-12">
-    <app-view-board></app-view-board>
-  </div>
-  <div class="ui-g-5 ui-sm-12">
-    <app-edit-board></app-edit-board>
-  </div>
-  <div class="ui-g-12 ui-sm-12">
-    <app-sangjun-board></app-sangjun-board>
-  </div>
-</div>
 
 <app-board-manager></app-board-manager>
 -->
