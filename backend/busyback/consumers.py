@@ -113,7 +113,6 @@ def ws_receive(message):
     ########################
   
     if command == 'close_document':
-        
         try:
             if not int(document_id) == int(body['document_id']):
                 message.reply_channel.send({"text":

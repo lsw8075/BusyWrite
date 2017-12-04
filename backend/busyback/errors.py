@@ -70,17 +70,37 @@ class InternalError(Error):
     def __init__(self, msg):
         self.msg = msg
 
+class CommentDoesNotExistError(Error):
+    def __init__(self, comment):
+        self.comment = comment
+
+class DocumentDoesNotExistError(Error):
+    def __init__(self, document):
+        self.document = document
+
 class NoteDoesNotExistError(Error):
     def __init__(self, note):
         self.note = note
 
-class DirectoryDoesNotExistError(Error):
-    def __init__(self, directory):
-        self.directory = directory
-
-class UserIsNotDirectoryOwnerError(Error):
-    def __init__(self, user_id, directory_id):
+class UserIsNotCommentOwnerError(Error):
+    def __init__(self, user, comment):
         self.user = user
-        self.directory = directory
+        self.comment = comment
 
+class UserIsNotNoteOwnerError(Error):
+    def __init__(self, user, note):
+        self.user = user
+        self.note = note
 
+class ContentEmptyError(Error):
+    pass
+
+class DocumentMismatchError(Error):
+    pass
+
+class InvalidNoteOrderError(Error):
+    pass
+
+class InvalidUpdateError(Error):
+    def __init__(self, bubble):
+        self.bubble = bubble

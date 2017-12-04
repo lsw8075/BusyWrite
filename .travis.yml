@@ -10,6 +10,7 @@ matrix:
         - pip install django coverage coveralls
         - pip install -U channels
         - pip install -U asgi_redis
+        - pip install -U django-redis
         - pip install django_extensions
         - pip install psycopg2
       before_script:

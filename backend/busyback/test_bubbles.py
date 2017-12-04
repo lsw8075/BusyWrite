@@ -10,25 +10,15 @@ class BubblesTestCase(TestCase):
     def setUp(self):
         mockDBSetup(self)
 
-    def test_check_contributor(self):
-        with self.assertRaises(UserIsNotContributorError):
-            check_contributor(self.user1.id, self.doc2root)
-        
-        with self.assertRaises(UserIsNotContributorError):
-            check_suggest_contributor(self.user3.id, self.suggest4)
-
-        check_contributor(self.user1.id, self.bubble1)
-        check_suggest_contributor(self.user1.id, self.suggest1)
-
     def test_do_fetch_bubble(self):
 
         with self.assertRaises(BubbleDoesNotExistError):
-            do_fetch_normal_bubble(self.user1.id, self.doc1, 100)
+            do_fetch_normal_bubble(self.user1.id, self.doc1.id, 100)
 
         with self.assertRaises(BubbleDoesNotExistError):
-            do_fetch_suggest_bubble(self.user1.id, self.doc1, 100)
-        self.assertEqual(do_fetch_normal_bubble(self.user1.id, self.doc1, self.bubble4.id).content, 'TestLeaf1')
-        self.assertEqual(do_fetch_suggest_bubble(self.user1.id, self.doc1, self.suggest2.id).content, 'TestSuggest2')
+            do_fetch_suggest_bubble(self.user1.id, self.doc1.id, 100)
+        self.assertEqual(do_fetch_normal_bubble(self.user1.id, self.doc1.id, self.bubble4.id).content, 'TestLeaf1')
+        self.assertEqual(do_fetch_suggest_bubble(self.user1.id, self.doc1.id, self.suggest2.id).content, 'TestSuggest2')
 
     def test_do_fetch_bubbles(self):
         emptydoc = Document.objects.create(title='error doc')
@@ -74,14 +64,31 @@ class BubblesTestCase(TestCase):
         
         self.bubble3.lock(self.user2)
 
-        with self.assertRaises(BubbleLockedError):
-            do_create_normal_bubble(self.user1.id, self.doc1.id, self.bubble3.id, 0, False, 'test_content')
 
         do_create_normal_bubble(self.user1.id, self.doc1.id, self.bubble2.id, 1, False, 'test content')
         new_bubble = do_create_normal_bubble(self.user1.id, self.doc1.id, self.bubble2.id, 2, True, 'test content')
 
         self.assertEqual(self.bubble2.fetch_child(2).id, new_bubble.id)
 
+    def test_updating_normal_bubble(self):
+        new_bubble = do_create_normal_bubble(self.user1.id, self.doc1.id, self.bubble2.id, 2, True, 'test content')
+
+        do_updating_normal_bubble(self.user1.id, self.doc1.id, new_bubble.id, 'hello world')
+
+        do_update_finish_normal_bubble(self.user1.id, self.doc1.id, new_bubble.id)
+
+        new_bubble = NormalBubble.objects.get(id=new_bubble.id)
+
+        self.assertEqual(new_bubble.content, 'hello world')
+
+        do_edit_normal_bubble(self.user1.id, self.doc1.id, new_bubble.id, 'bye world')
+
+        do_updating_normal_bubble(self.user1.id, self.doc1.id, new_bubble.id, 'hello world')
+        do_update_discard_normal_bubble(self.user1.id, self.doc1.id, new_bubble.id)
+
+        new_bubble = NormalBubble.objects.get(id=new_bubble.id)
+
+        self.assertEqual(new_bubble.content, 'bye world')
 
     def test_do_create_suggest_bubble(self):
         new_suggest = do_create_suggest_bubble(self.user1.id, self.doc1.id, self.bubble4.id, 'new suggest')
@@ -100,8 +107,6 @@ class BubblesTestCase(TestCase):
 
         owned.unlock(self.user2)
 
-        with self.assertRaises(BubbleOwnedError):
-            do_edit_normal_bubble(self.user1.id, self.doc1.id, owned.id, 'edit fail due to ownership')
         
         self.bubble4.unlock(self.user3)
         do_edit_normal_bubble(self.user1.id, self.doc1.id, self.bubble4.id, 'sample edit')
@@ -132,8 +137,6 @@ class BubblesTestCase(TestCase):
 
         self.bubble2.unlock(self.user2)
         owned.unlock(self.user2)
-        with self.assertRaises(BubbleOwnedError):
-            do_move_normal_bubble(self.user1.id, self.doc1.id, owned.id, self.doc1root.id, 0)
 
         do_move_normal_bubble(self.user1.id, self.doc1.id, self.bubble1.id, self.bubble2.id, 2)
 
@@ -159,8 +162,6 @@ class BubblesTestCase(TestCase):
         owned = do_create_normal_bubble(self.user2.id, self.doc1.id, self.doc1root.id, 2, True, 'test owned')
         owned.unlock(self.user2)
 
-        with self.assertRaises(BubbleOwnedError):
-            do_delete_normal_bubble(self.user1.id, self.doc1.id, owned.id)
 
         self.bubble4.unlock(self.user2)
         
@@ -169,9 +170,6 @@ class BubblesTestCase(TestCase):
     def test_do_wrap_normal_bubble(self):
         with self.assertRaises(InvalidWrapError):
             do_wrap_normal_bubble(self.user1.id, self.doc1.id, [])
-
-        with self.assertRaises(InvalidWrapError):
-            do_wrap_normal_bubble(self.user1.id, self.doc1.id, [self.bubble2.id, self.bubble5.id])
 
         with self.assertRaises(InvalidWrapError):
             do_wrap_normal_bubble(self.user1.id, self.doc1.id, [self.bubble4.id, self.bubble6.id])
@@ -220,8 +218,6 @@ class BubblesTestCase(TestCase):
 
         owned.unlock(self.user2)
 
-        with self.assertRaises(BubbleOwnedError):
-            do_split_leaf_bubble(self.user1.id, self.doc1.id, owned.id, ['test', 'owned'])
 
         do_split_leaf_bubble(self.user1.id, self.doc1.id, self.bubble3.id, ['Test', 'Bubble2'])
 
@@ -257,19 +253,17 @@ class BubblesTestCase(TestCase):
             do_switch_bubble(self.user1.id, self.doc1.id, self.suggest1.id)
         self.bubble1.unlock(self.user2)
 
-        
         owned = do_create_normal_bubble(self.user2.id, self.doc1.id, self.doc1root.id, 3, True, 'test owned')
         owned.unlock(self.user2)
 
         owned_suggest = create_suggest(owned, 'hello')
 
-        with self.assertRaises(BubbleOwnedError):
-            do_switch_bubble(self.user3.id, self.doc1.id, owned_suggest.id)
 
         do_vote_bubble(self.user1.id, self.doc1.id, self.suggest1.id)
         do_vote_bubble(self.user2.id, self.doc1.id, self.suggest1.id)
 
         do_switch_bubble(self.user1.id, self.doc1.id, self.suggest1.id)
+        
         # reload it
         reload_bubbles(self, [1])
         reload_suggests(self, [1])
@@ -294,5 +288,4 @@ class BubblesTestCase(TestCase):
         reload_bubbles(self, [2])
         reload_suggests(self, [2])
         self.assertEqual(self.bubble2.content, 'TestSuggest2')
-
 

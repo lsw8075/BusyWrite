@@ -1,7 +1,6 @@
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.utils import timezone
 from .errors import *
 
 class Document(models.Model):
@@ -13,10 +12,6 @@ class Document(models.Model):
 
     def is_contributed_by(self, user_id):
         return self.contributors.filter(id__exact=user_id).exists()
-
-    def add_contributor(self, user):
-        self.contributor.add(user)
-        self.save()
 
 class Note(models.Model):
     content = models.TextField()
@@ -40,6 +35,7 @@ class Bubble(models.Model):
     	User,
     	related_name='voted_bubbles'
     )
+    next_comment_order = models.IntegerField(default=0)
 
     def touch(self):
         self.save()
@@ -258,9 +254,18 @@ class Comment(models.Model):
     	related_name='comments',
     	null=False
     )
-    timestamp = models.DateTimeField()
+    order = models.IntegerField()
+
+class CommentUnderNormal(Comment):
     bubble = models.ForeignKey(
-    	'Bubble',
+    	'NormalBubble',
+    	related_name='comments',
+    	null=False
+    )
+
+class CommentUnderSuggest(Comment):
+    bubble = models.ForeignKey(
+    	'SuggestBubble',
     	related_name='comments',
     	null=False
     )
