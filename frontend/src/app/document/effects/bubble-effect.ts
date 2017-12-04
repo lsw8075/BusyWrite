@@ -45,9 +45,8 @@ export class BubbleEffects {
   @Effect()
   load$: Observable<Action> = this.action$.ofType<fromBubble.Load>(fromBubble.LOAD)
     .map(action => action.payload).mergeMap(query => {
-      return Observable.fromPromise(this.bubbleService.getBubbleList())
-        .map((bubbleList: Array<Bubble>) => new fromBubble.LoadComplete(bubbleList))
-        .catch(err => of(new fromBubble.LoadError(err)));
+      return Observable.of(this.bubbleService.getBubbleList())
+        .map(() => new fromBubble.LoadPending(null));
     });
 
   @Effect()
@@ -83,7 +82,7 @@ export class BubbleEffects {
   @Effect()
   edit$: Observable<Action> = this.action$.ofType<fromBubble.Edit>(fromBubble.EDIT)
     .map(action => action.payload).mergeMap(query => {
-      return Observable.fromPromise(this.bubbleService.editBubble(query))
+      return Observable.fromPromise(this.bubbleService.startEdittingBubble(query))
         .map(() => new fromBubble.EditComplete({bubbleId: query, newContent: "newly editted"}))
         .catch(err => of(new fromBubble.EditError(err)));
     });

@@ -19,11 +19,16 @@ export class OpenError implements Action {
 }
 
 export const LOAD = '[Bubble] Load';
+export const LOAD_PENDING = '[Bubbl] Loading';
 export const LOAD_COMPLETE = '[Bubble] load Complete';
 export const LOAD_ERROR = '[Bubble] load Error';
 export class Load implements Action {
   readonly type = LOAD;
   constructor(public payload: number) {}
+}
+export class LoadPending implements Action {
+    readonly type = LOAD_PENDING;
+    constructor(public payload: void) {}
 }
 export class LoadComplete implements Action {
   readonly type = LOAD_COMPLETE;
@@ -230,6 +235,7 @@ export type Actions =
   | OpenComplete
   | OpenError
   | Load
+  | LoadPending
   | LoadComplete
   | LoadError
   | Select

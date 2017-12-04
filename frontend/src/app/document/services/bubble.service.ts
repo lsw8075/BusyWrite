@@ -95,8 +95,10 @@ export class BubbleService {
         } else if (command === 'get_bubble_list') {
             if (accept === 'True') {
                 console.log('received get_bubble_list success');
-                console.log(body.content);
-                const bubbleArray = new BubbleJsonHelper().getBubbleArrayObject(String(body));
+                console.log(body);
+                console.log(String(body));
+                console.log(JSON.stringify(body));
+                const bubbleArray = new BubbleJsonHelper().getBubbleArrayObject(JSON.stringify(body));
                 this._store.dispatch(new BubbleAction.LoadComplete(bubbleArray));
             } else {
                 console.log('received get_bubble_list fail');
@@ -139,6 +141,7 @@ export class BubbleService {
                 this._store.dispatch(new BubbleAction.PopComplete(body.bubble_id));
             } else {
                 console.log('received pop_bubble fail');
+                console.log(body)
                 this._store.dispatch(new BubbleAction.PopError(body));
             }
         }
@@ -197,9 +200,9 @@ export class BubbleService {
     public createCommentOnSuggestBubble(){
     }
 
-    public async startEditBubble(bubble: Bubble): Promise<void> {
+    public async startEdittingBubble(bubble_id: number): Promise<void> {
         const m = {'header': 'edit_bubble',
-            'body': {'bubble_id': bubble.id}};
+            'body': {'bubble_id': bubble_id}};
         this._socket.send(m);
         return Promise.resolve(null);
     }
@@ -212,6 +215,10 @@ export class BubbleService {
         const m = {'header': 'finish_editting_bubble',
             'body': {'bubble_id': bubble_id}};
         this._socket.send(m);
+    }
+
+    public async splitBubble(bubble_id: number): Promise<void> {
+        return Promise.resolve(null);
     }
 
     public async deleteBubble(bubble_id: number): Promise<void> {
@@ -231,7 +238,7 @@ export class BubbleService {
         return Promise.resolve(null);
     }
 
-    public async mergeBubble(bubble: Bubble): Promise<void> {
+    public async mergeBubble(bubble_id: number): Promise<void> {
         await this.delay(1000);
         return Promise.resolve(null);
     }
@@ -244,14 +251,14 @@ export class BubbleService {
         return Promise.resolve(null);
     }
 
-    public async flattenBubble(bubble: Bubble): Promise<Bubble> {
+    public async flattenBubble(bubble_id: number): Promise<Bubble> {
         await this.delay(1000);
         return Promise.resolve(new LeafBubble(this._getTempBubbleId()));
     }
 
-    public async popBubble(bubble: Bubble): Promise<void> {
+    public async popBubble(bubble_id: number): Promise<void> {
         const m = {'header': 'pop_bubble',
-            'body': {'bubble_id': bubble.id}};
+            'body': {'bubble_id': bubble_id}};
         this._socket.send(m);
         return Promise.resolve(null);
     }
