@@ -27,73 +27,73 @@ const initialState: BubbleState = {
 };
 
 export function BubbleReducer(state: BubbleState = initialState, action: fromBubble.Actions) {
-  switch (action.type) {
-    case fromBubble.SELECT:
-      const selection = action.payload as {bubble: Bubble, menu: MenuType};
-      return {...state, selectedBubble: selection.bubble, selectedMenu: selection.menu};
-    case fromBubble.LOAD:
-      return {...state, loading: true, documentId: action.payload};
-    case fromBubble.LOAD_COMPLETE: {
-      const root = MockBubbleRoot;
-      return {
-          ...state,
-          bubbleList: [
-              ...action.payload
-          ],
-          rootBubble: root,
-          loading: false};
-    }
-    case fromBubble.LOAD_ERROR:
-      return {...state, error: action.payload};
-    case fromBubble.POP:
-      return {...state, loading: true};
-    case fromBubble.POP_COMPLETE: {
-      const bubble = action.payload;
-      return {...state, loading: false};
-    }
-    case fromBubble.DELETE:
-      return {...state, loading: true};
-    case fromBubble.DELETE_COMPLETE: {
-      const bubble = action.payload;
-      deleteBubble(state.bubbleList, bubble.id);
-      return {
-          ...state,
-          loading: false,
-          bubbleList: [
-              ...state.bubbleList
-          ]
-          };
-    }
-    case fromBubble.CREATE:
-      return {...state, selectedBubble: action.payload.bubble, selectedMenu: action.payload.menu, loading: true};
-    case fromBubble.CREATE_COMPLETE: {
-      const bubble = action.payload.bubble;
-      const menu = action.payload.menu;
-      createBubble(bubble, menu);
-      return {...state, selectedBubble: bubble, selectedMenu: menu, loading: false};
-    }
-    case fromBubble.EDIT:
-      return {...state, loading: true};
-    case fromBubble.EDIT_COMPLETE: {
-      const bubble = action.payload;
-      return {...state, loading: false};
-    }
+    switch (action.type) {
+        case fromBubble.SELECT:
+            const selection = action.payload as {bubbleId: number, menu: MenuType};
+            return {...state, selectedBubble: selection.bubbleId, selectedMenu: selection.menu};
+        case fromBubble.LOAD:
+            return {...state, loading: true, documentId: action.payload};
+        case fromBubble.LOAD_COMPLETE: {
+            const root = MockBubbleRoot;
+            return {...state, bubbleList: [...action.payload], rootBubble: root, loading: false};
+        }
+        case fromBubble.LOAD_ERROR:
+            return {...state, error: action.payload};
+        case fromBubble.POP:
+            return {...state, loading: true};
+        case fromBubble.POP_COMPLETE: {
+            const bubbleId = action.payload;
+            popBubble(state.bubbleList, bubbleId);
+            return {...state, loading: false};
+        }
+        case fromBubble.DELETE:
+            return {...state, loading: true};
+        case fromBubble.DELETE_COMPLETE: {
+            const bubbleId = action.payload;
+            deleteBubble(state.bubbleList, bubbleId);
+            return {...state, loading: false};
+        }
+        case fromBubble.CREATE:
+            return {...state, selectedBubble: action.payload.bubbleId, loading: true};
+        case fromBubble.CREATE_COMPLETE: {
+            const bubbleId = action.payload.bubbleId;
+            const isAbove = action.payload.isAbove;
+            const newBubble = action.payload.newBubble;
+            createBubble(state.bubbleList, bubbleId, isAbove, newBubble);
+            return {...state, loading: false};
+        }
+        case fromBubble.EDIT:
+            return {...state, loading: true};
+        case fromBubble.EDIT_COMPLETE: {
+            const bubbleId = action.payload.bubbleId;
+            const newContent = action.payload.newContent;
+            editBubble(state.bubbleList, bubbleId, newContent);
+            return {...state, loading: false};
+        }
+        case fromBubble.FLATTEN:
+            return {...state, loading: true};
+        case fromBubble.FLATTEN_COMPLETE: {
+            const bubbleId = action.payload.bubbleId;
+            const newBubble = action.payload.newBubble;
+            flattenBubble(state.bubbleList, bubbleId, newBubble);
+            return {...state, loading: false};
+        }
     case fromBubble.WRAP:
       return {...state, loading: true};
     case fromBubble.WRAP_COMPLETE: {
-      const bubble = action.payload;
+      const bubbleId = action.payload;
       return {...state, loading: false};
     }
     case fromBubble.MERGE:
       return {...state, loading: true};
     case fromBubble.MERGE_COMPLETE: {
-      const bubble = action.payload;
+      const bubbleId = action.payload;
       return {...state, loading: false};
     }
     case fromBubble.SPLIT:
       return {...state, loading: true};
     case fromBubble.SPLIT_COMPLETE: {
-      const bubble = action.payload;
+      const bubbleId = action.payload;
       return {...state, loading: false};
     }
     default:
@@ -103,15 +103,6 @@ export function BubbleReducer(state: BubbleState = initialState, action: fromBub
 
 function BubbleListReducer(state, action) {
     // nested reducer
-}
-
-function _containsBubble(bubble: Bubble, bubbleList: Array<Bubble>): boolean {
-  for (const b of bubbleList) {
-    if (b.id === bubble.id) {
-      return true;
-    }
-  }
-  return false;
 }
 
 function getBubbleById(bubbleList: Array<Bubble>, id: number): Bubble {
@@ -149,8 +140,8 @@ function deleteChildBubbles(bubbleList: Array<Bubble>, id: number) {
       }
     }
     removeBubbleById(bubbleList, bubble.id);
-  } catch (err) {
-  //  throw err;
+  } catch(err) {
+    throw err;
   }
 }
 
@@ -160,24 +151,125 @@ function deleteBubble(bubbleList: Array<Bubble>, id: number) {
     const parentBubble = getParentBubble(bubbleList, bubble);
 
     deleteChildBubbles(bubbleList, id);
-    console.log(parentBubble.childBubbleIds);
+
     parentBubble.childBubbleIds.splice(bubble.location, 1);
-    console.log(parentBubble.childBubbleIds);
+
     for (let i = bubble.location; i < parentBubble.childBubbleIds.length; i++) {
       const childBubble = getBubbleById(bubbleList, parentBubble.childBubbleIds[i]);
       childBubble.location = i;
     }
-  } catch (err) {
+  } catch(err) {
+    console.log(err);
   //  throw err;
   }
 }
 
-function createBubble(bubble: Bubble, menu: MenuType) {
+function popBubble(bubbleList: Array<Bubble>, id: number) {
+    try {
+        const bubble = getBubbleById(bubbleList, id);
+        if (bubble.type !== BubbleType.internalBubble) {
+            throw new Error('Cannot pop leafBubble');
+        }
+        const internalBubble = bubble as InternalBubble;
+        const parentBubble = getParentBubble(bubbleList, bubble);
 
+        let childBubbleIds = internalBubble.childBubbleIds;
+        parentBubble.childBubbleIds.splice(bubble.location, 1, ...childBubbleIds);
+
+        for (let i = bubble.location; i < parentBubble.childBubbleIds.length; i++) {
+            const childBubble = getBubbleById(bubbleList, parentBubble.childBubbleIds[i]);
+            childBubble.location = i;
+            childBubble.parentBubbleId = parentBubble.id;
+        }
+        removeBubbleById(bubbleList, bubble.id);
+
+    } catch(err) {
+        console.log(err);
+        //  throw err;
+    }
 }
 
-function editBubble(bubble: Bubble, newContent: string) {
+function getContent(bubbleList: Array<Bubble>, id: number): string {
+    try {
+        const bubble = getBubbleById(bubbleList, id);
 
+        if (bubble.type === BubbleType.leafBubble) {
+            const leafBubble = bubble as LeafBubble;
+            return leafBubble.content;
+
+        } else if (bubble.type === BubbleType.internalBubble) {
+            const internalBubble = bubble as InternalBubble;
+            let content = '';
+            for (let childBubbleId of internalBubble.childBubbleIds) {
+                content += getContent(bubbleList, childBubbleId) + ' ';
+            }
+            return content;
+        }
+    } catch(err) {
+        console.log(err);
+        //  throw err;
+    }
+}
+
+function flattenBubble(bubbleList: Array<Bubble>, id: number, newBubble: Bubble) {
+    try {
+        const bubble = getBubbleById(bubbleList, id);
+        if (bubble.type !== BubbleType.internalBubble) {
+            throw new Error('Cannot flatten leafBubble');
+        }
+        const internalBubble = bubble as InternalBubble;
+        const parentBubble = getParentBubble(bubbleList, bubble);
+        (newBubble as LeafBubble).content = getContent(bubbleList, id);
+        console.log(newBubble);
+        newBubble.parentBubbleId = parentBubble.id;
+        newBubble.location = internalBubble.location;
+        parentBubble.childBubbleIds[internalBubble.location] = newBubble.id;
+        bubbleList.push(newBubble);
+        deleteChildBubbles(bubbleList, id);
+
+    } catch(err) {
+        console.log(err);
+        //  throw err;
+    }
+}
+
+function createBubble(bubbleList: Array<Bubble>, id: number, isAbove: boolean, newBubble: Bubble) {
+    try {
+        const bubble = getBubbleById(bubbleList, id);
+        const parentBubble = getParentBubble(bubbleList, bubble);
+        if (isAbove) {
+            parentBubble.childBubbleIds.splice(bubble.location, 0, newBubble.id);
+        } else {
+            parentBubble.childBubbleIds.splice(bubble.location + 1, 0, newBubble.id);
+        }
+
+        bubbleList.push(newBubble);
+        newBubble.parentBubbleId = parentBubble.id;
+
+        for (let i = bubble.location; i < parentBubble.childBubbleIds.length; i++) {
+          const childBubble = getBubbleById(bubbleList, parentBubble.childBubbleIds[i]);
+          childBubble.location = i;
+          childBubble.parentBubbleId = parentBubble.id;
+        }
+    } catch (err) {
+        console.log(err);
+    //    throw err;
+    }
+}
+
+function editBubble(bubbleList: Array<Bubble>, id: number, newContent: string) {
+    try {
+        const bubble = getBubbleById(bubbleList, id);
+        if (bubble.type !== BubbleType.leafBubble) {
+            throw new Error('Edit bubble should be a leaf bubble')
+        }
+        const leafBubble = bubble as LeafBubble;
+        leafBubble.content = newContent;
+
+    } catch (err) {
+        console.log(err);
+    //    throw err;
+    }
 }
 
 function wrapBubble(wrapBubbleList: Array<Bubble>): Promise<void> {

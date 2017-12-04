@@ -2,14 +2,15 @@ from .models import *
 from .errors import *
 from .users import do_fetch_user
 from .documents import do_fetch_document
+from .debug import print_bubble_tree
 from django.utils import timezone
 from django.db import transaction
 
 def create_normal(doc, content='', parent=None, location=0):
-    return NormalBubble.objects.create(content=content, timestamp=timezone.now(), document=doc, location=location, parent_bubble=parent)
+    return NormalBubble.objects.create(content=content, document=doc, location=location, parent_bubble=parent)
 
 def create_suggest(bind, content):
-    return SuggestBubble.objects.create(content=content, timestamp=timezone.now(), normal_bubble=bind, hidden=False)
+    return SuggestBubble.objects.create(content=content, normal_bubble=bind, hidden=False)
 
 def check_contributor(user_id, bubble):
     '''Check user is contributor of document which bubble is located'''
@@ -23,17 +24,6 @@ def check_suggest_contributor(user_id, suggest):
 
     if not document.is_contributed_by(user_id):
         raise UserIsNotContributorError(user_id, document.id)
-
-def do_fetch_bubble(
-    user_id: int,
-    document_id: int,
-    bubble_id: int
-    ):
-    try:
-        bubble = Bubble.objects.get(id=bubble_id)
-    except Bubble.DoesNotExist:
-        raise BubbleDoesNotExistError(bubble_id)
-    return bubble
 
 def do_fetch_normal_bubble(
     user_id: int,
@@ -73,23 +63,16 @@ def do_fetch_normal_bubbles(
     bubbles = list(bubbles)
     return bubbles
 
-def do_fetch_bubbles(
-    user_id: int,
-    document_id: int
-    ):
-    return do_fetch_normal_bubbles(user_id, document_id)
-
 def do_fetch_suggest_bubbles(
     user_id: int,
-    document_id: int
+    document_id: int,
+    bubble_id: int
     ):
-    document = do_fetch_document(user_id, document_id)
-    if not document.is_contributed_by(user_id):
-        raise UserIsNotContributorError(user_id, doc_id)
-    bubbles = NormalBubble.objects.filter(document=document)
-    if len(bubbles) == 0:
-        raise InternalError('Document %d has no bubble' % document_id)
-    suggests = SuggestBubble.objects.filter(normal_bubble=bubbles).values()
+    try:
+        bubble = NormalBubble.objects.get(id=bubble_id)
+    except:
+        raise BubbleDoesNotExistError(bubble_id)
+    suggests = SuggestBubble.objects.filter(normal_bubble=bubble).values()
     if len(suggests) == 0:
         return []
     suggests = list(suggests)
@@ -101,7 +84,8 @@ def get_root_bubble(
     ):
     '''Get root bubble of a document'''
     try:
-        root_bubble = NormalBubble.objects.filter(parent_bubble=None).get(id=document_id)
+        document = do_fetch_document(user_id, document_id)
+        root_bubble = NormalBubble.objects.filter(parent_bubble=None).get(document=document)
     except NormalBubble.MultipleObjectsReturned:
         raise InternalError('Document %d has multiple root bubble' % document_id)
     except NormalBubble.DoesNotExist:
@@ -241,17 +225,21 @@ def do_move_normal_bubble(
     if new_parent.has_locked_ancestors() or new_parent.is_locked():
         raise BubbleLockedError(new_parent.id)
 
+    parent = bubble.parent_bubble
     with transaction.atomic():
-        bubble.parent_bubble.splice_children(bubble.location, 1, new_parent, new_location)
-
+        parent.splice_children(bubble.location, 1, new_parent, new_location)
+    
     return new_parent
 
 def cascaded_delete_children(user, bubble):
     for child in bubble.child_bubbles.all():
+        if child.is_locked():
+            raise BubbleLockedError(bubble.id)
         if child.owned_by_other(user):
             raise BubbleOwnedError(bubble.id)
         cascaded_delete_children(user, child)
         bubble.delete_children(child.location, 1)
+        NormalBubble.delete(child)
 
 def do_delete_normal_bubble(
     user_id: int,
@@ -329,9 +317,6 @@ def do_wrap_normal_bubble(
 
     parent = bubbles[0].parent_bubble
 
-    if parent.has_locked_ancestors() or parent.is_locked():
-        raise BubbleIsLockedError(parent.id)
-
     check_contributor(user_id, bubbles[0])
 
     # check all bubbles sharing one parent
@@ -377,8 +362,6 @@ def do_pop_normal_bubble(
     if bubble.has_locked_directs():
         raise BubbleLockedError(bubble.id)
 
-    if bubble.owned_by_other(user):
-        raise BubbleOwnedError(bubble.id)
 
     with transaction.atomic():
         bubble.parent_bubble.pop_child(bubble.location)
@@ -388,12 +371,16 @@ def do_pop_normal_bubble(
 flatten_content = ''
 
 def cascaded_flatten_children(user, bubble):
+    s = bubble.content
     for child in bubble.child_bubbles.all():
+        if child.is_locked():
+            raise BubbleLockedError(bubble.id)
         if child.owned_by_other(user):
             raise BubbleOwnedError()
-        cascaded_flatten_children(user, child)
+        s = s + cascaded_flatten_children(user, child)
         bubble.delete_children(child.location, 1)
-    flattened_content = flatten_content + bubble.content
+        NormalBubble.delete(child)
+    return s
 
 def do_flatten_normal_bubble(
     user_id: int,
@@ -418,8 +405,8 @@ def do_flatten_normal_bubble(
     flatten_content = ''
 
     with transaction.atomic():
-        cascaded_flatten_children(user, bubble)
-        bubble.change_content(flatten_content)
+        content = cascaded_flatten_children(user, bubble)
+        bubble.change_content(content)
 
     return bubble
 
@@ -555,14 +542,27 @@ def do_switch_bubble(
     do_flatten_normal_bubble(user_id, document_id, binded_bubble.id)
 
     with transaction.atomic():
+        # switch content
         switch_content = suggest.content
         suggest.change_content(binded_bubble.content)
         binded_bubble.change_content(switch_content)
+
+        # switch voters
+        suggest_voters = []
+        binded_voters = []
+        for voter in suggest.voters.all():
+            suggest_voters.append(voter)
+            suggest.voters.remove(voter)
+        for voter in binded_bubble.voters.all():
+            binded_voters.append(voter)
+            binded_bubble.voters.remove(voter)
+        for voter in suggest_voters:
+            binded_bubble.voters.add(voter)
+        for voter in binded_voters:
+            suggest.voters.add(voter)
+
+        # TODO : switch comments
         suggest.save()
         binded_bubble.save()
-
-    # TODO : switch voters info
-
-
     return binded_bubble
 

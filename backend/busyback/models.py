@@ -4,28 +4,6 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from .errors import *
 
-class Directory(models.Model):
-    name = models.TextField()
-    owner = models.ForeignKey(
-    	User,
-    	related_name='directories',
-    	null=False
-    )
-    parent_directory = models.ForeignKey(
-    	'Directory',
-    	related_name='child_directories',
-    	null=True # root directory has no parent
-    )
-    # need to check if this info matches Document.contributors info
-    # when user is added as contributor, or document is deleted from directory
-    child_documents = models.ManyToManyField(
-    	'Document',
-    	related_name='parent_directory'
-    )
-
-    def is_owner(self, user):
-        return self.owner.id == user
-
 class Document(models.Model):
     title = models.TextField()
     contributors = models.ManyToManyField(
@@ -58,14 +36,12 @@ class Note(models.Model):
 
 class Bubble(models.Model):
     content = models.TextField()
-    timestamp = models.DateTimeField()
     voters = models.ManyToManyField(
     	User,
     	related_name='voted_bubbles'
     )
 
     def touch(self):
-        timestamp = timezone.now()
         self.save()
 
     def change_content(self, content):
@@ -212,20 +188,20 @@ class NormalBubble(Bubble):
         for child in self.child_bubbles.all():
             if (location <= child.location and
                 child.location < splice_end):
-                child.location = -child.location
+                child.location = -child.location - 1
                 child.save()
 
         # adjust location (order is matter)
-        self.adjust_children_location(location + splice_count, len(splice_list) - splice_count)
+        self.adjust_children_location(splice_end, len(splice_list) - splice_count)
 
         if new_parent is not None:
-            self.adjust_children_location(new_location, splice_count)
+            new_parent.adjust_children_location(new_location, splice_count)
         
         # process target childrens
         for child in self.child_bubbles.all():
             if child.location < 0:
                 if new_parent is not None:
-                    child.location = -child.location - location + new_location
+                    child.location = -1 - child.location - location + new_location
                     child.parent_bubble = new_parent
                     child.save()
                 else:
@@ -248,7 +224,7 @@ class NormalBubble(Bubble):
         return self
 
     def wrap_children(self, location, wrap_count):
-        wrapper = NormalBubble.objects.create(document=self.document, content='', timestamp=timezone.now(), location=0)
+        wrapper = NormalBubble.objects.create(document=self.document, content='', location=0)
         self.splice_children(location, wrap_count, wrapper, 0, [wrapper])
         return wrapper
 

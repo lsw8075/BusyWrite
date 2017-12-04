@@ -1,10 +1,5 @@
 {{bubbleList.length}}
-<ng-container *ngFor="let bubble of bubbleList">
-    <div>{{bubble | json}}</div>
-    <button class="btn" (click)="clickDelete(bubble)">delete</button>
-</ng-container>
 
-<button class="btn" (click)="clickRefresh()">Refresh</button>
 <table class="table table-striped" *ngIf="bubbleList">
 <tr>
     <th>id</th>
@@ -13,16 +8,6 @@
     <th>parentBubbleId</th>
     <th>childBubbleIds</th>
     <th>location</th>
-</tr>
-<tr>
-    <ng-container *ngIf="rootBubble">
-        <td>{{rootBubble.id}}</td>
-        <td>{{rootBubble.type}}</td>
-        <td>{{rootBubble.content}}</td>
-        <td>{{rootBubble.parentBubbleId}}</td>
-        <td>{{rootBubble.childBubbleIds}}</td>
-        <td>{{rootBubble.location}}</td>
-    </ng-container>
 </tr>
 <tr *ngFor="let bubble of bubbleList">
     <td>{{bubble.id}}</td>
@@ -37,7 +22,12 @@
     <td>{{bubble.location}}</td>
     <td>
     <div class="">
-        <button class="btn" (click)="clickDelete(bubble)">delete</button>
+      <button class="btn" (click)="clickDelete(bubble)">delete</button>
+      <button class="btn" (click)="clickPop(bubble)">pop</button>
+      <button class="btn" (click)="clickCreateAbove(bubble)">create above</button>
+      <button class="btn" (click)="clickCreateBelow(bubble)">create below</button>
+      <button class="btn" (click)="clickEdit(bubble)">edit</button>
+      <button class="btn" (click)="clickFlatten(bubble)">flatten</button>
     </div>
     </td>
 </tr>
