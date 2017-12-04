@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, OnDestroy, Output, HostListener, ChangeDetectorRef } from '@angular/core';
 import { BubbleService } from '../service';
-import { BubbleTemp, ActionType, MenuType } from '../service';
+import { ActionType, MenuType } from '../service';
 import { Bubble, InternalBubble, LeafBubble, BubbleType } from '../../../models/bubble';
 import { EventBubbleService, BoardService } from '../service';
 
@@ -17,7 +17,7 @@ import * as RouterAction from '../../../../shared/route/route-action';
   styleUrls: [
     './bubble-list-view.component.css'],
 })
-export class BubbleListViewComponent implements OnInit, OnDestroy {
+export class BubbleListViewComponent implements OnInit {
   menuType = MenuType;
   actionType = ActionType;
 
@@ -90,7 +90,7 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
   }
 
   public refreshState() {
-    this._refreshBubbleList();
+    // this._refreshBubbleList();
     this._eventBubbleService.clearState();
   }
 
@@ -157,9 +157,9 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
 //     // });
 //   }
 
-  public onClickEvent(bubble: BubbleTemp, menu: MenuType, mouseEvent: MouseEvent): void {
-  //  this._store.dispatch(new BubbleAction.Select({bubble, menu}));
-  }
+//   public onClickEvent(bubble: BubbleTemp, menu: MenuType, mouseEvent: MouseEvent): void {
+//   //  this._store.dispatch(new BubbleAction.Select({bubble, menu}));
+//   }
 
   public isMenuOpen(bubble, menu): boolean {
     if (this.selectedBubble) {
@@ -173,16 +173,16 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
            (bubble.whoIsEditting() === 1);
   }
 
-  public isInternal(bubble: BubbleTemp): Boolean {
-    return bubble.type === BubbleType.internalBubble;
-  }
+//   public isInternal(bubble: BubbleTemp): Boolean {
+//     return bubble.type === BubbleType.internalBubble;
+//   }
 
-  private _refreshBubbleList() {
-  }
+//   private _refreshBubbleList() {
+//   }
 
-  ngOnDestroy() {
-    alert('there might be unsaved changes');
-    this._eventBubbleService.unsubscribeAll();
-  }
+//   ngOnDestroy() {
+//     alert('there might be unsaved changes');
+//     this._eventBubbleService.unsubscribeAll();
+//   }
 
 } /* istanbul ignore next */

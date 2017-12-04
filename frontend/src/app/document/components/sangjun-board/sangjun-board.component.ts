@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { EventBubbleService } from '../../services/event/event-bubble.service';
 import { EventSangjunBoardService } from '../../services/event/event-sangjun-board.service';
 import { BubbleService } from '../../services/bubble.service';
-import { BubbleTemp, SuggestBubbleTemp } from '../../models/bubble-temp';
+import { Bubble, SuggestBubble } from '../../models/bubble';
 
 @Component({
   selector: 'app-sangjun-board',
@@ -14,25 +14,25 @@ export class SangjunBoardComponent implements OnInit {
   isSBChecked = true;
   isCommentChecked = true;
   isWatching = false;
-  bubble: BubbleTemp;
-  selectedSB: SuggestBubbleTemp;
-  suggestBubbles: Array<SuggestBubbleTemp>;
+  bubble: Bubble;
+  selectedSB: SuggestBubble;
+  suggestBubbles: Array<SuggestBubble>;
 
   constructor(
     private _bubbleSerivice: BubbleService,
     private _eventBubbleService: EventBubbleService,
     private _eventSangjunBoardService: EventSangjunBoardService
   ) {
-    _eventBubbleService.sangjunBoardOpenEvent$.subscribe((bubble) => {
-      this.bubble = bubble;
-      this.suggestBubbles = bubble.suggestBubbles;
-      this.isOBChecked = true;
-      this.isSBChecked = true;
-      this.isCommentChecked = true;
-      this.isWatching = false;
-      this.selectedSB = null;
-      _eventBubbleService.clearState();
-    });
+    // _eventBubbleService.sangjunBoardOpenEvent$.subscribe((bubble) => {
+    //   this.bubble = bubble;
+    //   this.suggestBubbles = bubble.suggestBubbles;
+    //   this.isOBChecked = true;
+    //   this.isSBChecked = true;
+    //   this.isCommentChecked = true;
+    //   this.isWatching = false;
+    //   this.selectedSB = null;
+    //   _eventBubbleService.clearState();
+    // });
 
     // _eventSangjunBoardService._backButtonClickEvent$.subscribe(() => {
     //   this.selectedSB = null;
@@ -62,11 +62,11 @@ export class SangjunBoardComponent implements OnInit {
     // });
   }
 
-  clickSuggestBubble(suggestBubble: SuggestBubbleTemp) {
+  clickSuggestBubble(suggestBubble: SuggestBubble) {
     this.selectedSB = suggestBubble;
   }
 
-  clickSBThumbsUp(suggestBubble: SuggestBubbleTemp) {
+  clickSBThumbsUp(suggestBubble: SuggestBubble) {
     this._eventSangjunBoardService.clickThumbsUp(suggestBubble);
   }
 

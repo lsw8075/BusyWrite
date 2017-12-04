@@ -8,7 +8,7 @@ export enum BubbleType {
   suggestBubble
 } /* istanbul ignore next */
 
-export interface Bubble {
+export class Bubble {
   id: number;
   type: BubbleType;
   parentBubbleId: number;

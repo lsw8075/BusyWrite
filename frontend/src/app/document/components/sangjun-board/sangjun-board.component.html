@@ -2,7 +2,7 @@
 <div *ngIf="bubble">
 
   <div *ngIf="selectedSB">
-    <app-suggest-bubble [suggestBubble]="selectedSB"></app-suggest-bubble>
+    <app-suggest-bubble></app-suggest-bubble>
   </div>
 
   <div *ngIf="!selectedSB">
@@ -26,7 +26,7 @@
 
     <div *ngIf="isOBChecked">
       <h4>Original Bubble</h4>
-      <p class="ob-content">{{bubble.getContent()}}</p>
+      <p class="ob-content">{{bubble | json}}</p>
       <div>
         <button *ngIf="!isWatching" type="button" class="btn btn-primary btn-sm" (click)="clickWatch()">
           <i class="fa fa-eye fa-fw"></i>
@@ -62,7 +62,7 @@
 
     <div *ngIf="isCommentChecked">
       <h4>Comments</h4>
-      <app-comment [bubble]="bubble"></app-comment>
+      <!--<app-comment></app-comment>-->
     </div>
   </div>
 </div>

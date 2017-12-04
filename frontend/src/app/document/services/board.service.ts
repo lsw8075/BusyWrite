@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs/Subject';
 import { Board, EditItem } from '../models/board';
-import { BubbleTemp, BubbleType, LeafBubbleTemp } from '../models/bubble-temp';
+import { Bubble, BubbleType, LeafBubble } from '../models/bubble';
 import { BubbleService } from './bubble.service';
 
 const tempUserId = 1;
@@ -13,7 +13,7 @@ export class BoardService {
 
   private previewUpdateEventSource = new Subject<void>();
   private createBubbleEventSource = new Subject<EditItem>();
-  private finishBubbleEditEventSource = new Subject<BubbleTemp>();
+  private finishBubbleEditEventSource = new Subject<Bubble>();
 
   previewUpdateEvent$ = this.previewUpdateEventSource.asObservable();
   createBubbleEvent$ = this.createBubbleEventSource.asObservable();
@@ -26,12 +26,12 @@ export class BoardService {
     this.previewUpdateEventSource.next();
   }
 
-  editBubble(bubble: BubbleTemp) {
+  editBubble(bubble: Bubble) {
     const newEditItem: EditItem = new EditItem(this.getId(), bubble);
     this.createBubbleEventSource.next(newEditItem);
   }
 
-  public finishEdit(bubble: BubbleTemp, content: string) {
+  public finishEdit(bubble: Bubble, content: string) {
     this._bubbleService.editBubble(bubble, content).then(() => {
       this.finishBubbleEditEventSource.next(bubble);
       console.log(content);
@@ -40,13 +40,13 @@ export class BoardService {
 
   public getEditBubbles(): void {
     this._bubbleService.getBubbleList().then(bubbles =>
-      bubbles.filter(b => (b.type !== BubbleType.internalBubble) && ((b as LeafBubbleTemp).ownerId === tempUserId))
+      bubbles.filter(b => (b.type !== BubbleType.internalBubble) && ((b as LeafBubble).ownerId === tempUserId))
              .forEach((b) => {
               this.editBubble(b);
             }));
   }
 
-  public updateEdit(bubble: BubbleTemp, content: string) {
+  public updateEdit(bubble: Bubble, content: string) {
     this._bubbleService.editBubble(bubble, content);
   }
 

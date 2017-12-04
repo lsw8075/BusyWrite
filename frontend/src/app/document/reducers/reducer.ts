@@ -11,5 +11,6 @@ export { BubbleReducer };
 
 export const getBubbleState = createFeatureSelector<BubbleState>('bubble');
 
+export const getRootBubble = createSelector(getBubbleState, (state: BubbleState) => state.rootBubble);
 export const getBubbleList = createSelector(getBubbleState, (state: BubbleState) => state.bubbleList);
 export const getSelectedBubble = createSelector(getBubbleState, (state: BubbleState) => state.selectedBubble);

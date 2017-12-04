@@ -1,5 +1,5 @@
 import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
-import { BubbleType, BubbleTemp, MenuType, ActionType } from '../service';
+import { BubbleType, Bubble, MenuType, ActionType } from '../service';
 import { BubbleService } from '../service';
 import { EventBubbleService } from '../../../services/event/event-bubble.service';
 
@@ -25,7 +25,7 @@ export class BubbleMenuComponent implements OnInit {
 
   menuType = MenuType;
   @Input() menu: MenuType;
-  @Input() bubble: BubbleTemp;
+  @Input() bubble: Bubble;
 
   bsModalRef: BsModalRef;
 
@@ -48,7 +48,7 @@ export class BubbleMenuComponent implements OnInit {
   }
 
   public openSangjunBoard() {
-    this._eventBubbleService.openSangjunBoard(this.bubble);
+    // this._eventBubbleService.openSangjunBoard(this.bubble);
   }
 
   public splitBubble() {
@@ -66,7 +66,7 @@ export class BubbleMenuComponent implements OnInit {
   }
 
   public wrap() {
-    this._eventBubbleService.wrap();
+    // this._eventBubbleService.wrap();
   }
 
   public createBubble() {
@@ -88,11 +88,11 @@ export class BubbleMenuComponent implements OnInit {
   }
 
   public flattenBubble() {
-    this._eventBubbleService.flattenBubble(this.bubble);
+    // this._eventBubbleService.flattenBubble(this.bubble);
   }
 
   public moveBubble() {
-    this._eventBubbleService.moveBubble(this.bubble, this.menu);
+    // this._eventBubbleService.moveBubble(this.bubble, this.menu);
   }
 
   public getAction(): string {

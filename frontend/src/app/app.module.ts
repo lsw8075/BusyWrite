@@ -18,7 +18,7 @@ import { reducers, CustomSerializer } from './shared/reducer';
 import { RouterEffects } from './shared/route/route-effect';
 
 const routes: Routes = [
-    { path: '', redirectTo: 'users/signin', pathMatch: 'full' }, // for easy testing, temporary
+    { path: '', redirectTo: 'documents', pathMatch: 'full' }, // for easy testing, temporary
     { path: 'landing', pathMatch: 'full', component: LandingComponent },
     { path: 'users', loadChildren: './user/user-state.module.ts#UserStateModule'},
     { path: 'documents', loadChildren: './document/document-state.module.ts#DocumentStateModule' },

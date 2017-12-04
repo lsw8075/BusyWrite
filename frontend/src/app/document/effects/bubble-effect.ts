@@ -29,7 +29,7 @@ export class BubbleEffects {
 
 
   @Effect({dispatch: false})
-  open$: Observable<Action> = this.action$.ofType<fromBubble.Open>(fromBubble.OPEN)
+  open$ = this.action$.ofType<fromBubble.Open>(fromBubble.OPEN)
     .map(action => action.payload).mergeMap(query => {
         this.bubbleService.openDocument(query);
         return Observable.of({});
@@ -75,14 +75,14 @@ export class BubbleEffects {
   @Effect()
   createComplete$: Observable<Action> = this.action$.ofType<fromBubble.CreateComplete>(fromBubble.CREATE_COMPLETE)
     .map(action => action.payload).mergeMap(query => {
-      return Observable.of(new fromBubble.EditComplete({bubbleId: query.bubbleId, newContent: "newly created"}));
+      return Observable.of(new fromBubble.EditComplete({bubbleId: query.bubbleId, newContent: 'newly created'}));
     });
 
   @Effect()
   edit$: Observable<Action> = this.action$.ofType<fromBubble.Edit>(fromBubble.EDIT)
     .map(action => action.payload).mergeMap(query => {
       return Observable.fromPromise(this.bubbleService.startEdittingBubble(query))
-        .map(() => new fromBubble.EditComplete({bubbleId: query, newContent: "newly editted"}))
+        .map(() => new fromBubble.EditComplete({bubbleId: query, newContent: 'newly editted'}))
         .catch(err => of(new fromBubble.EditError(err)));
     });
 

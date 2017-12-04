@@ -1,8 +1,8 @@
 <div class="view-board">
-  <p-tabView (onChange)="previewClick($event)">
+  <p-tabView>
 
     <p-tabPanel header="View">
-      <app-bubble-list-view [rootBubble]="rootBubble$ | async" [bubbleList]="bubbleList$ | async"></app-bubble-list-view>
+      <!--<app-bubble-list-view [rootBubble]="rootBubble$ | async" [bubbleList]="bubbleList$ | async"></app-bubble-list-view>-->
     </p-tabPanel>
 
     <p-tabPanel header="Preview">

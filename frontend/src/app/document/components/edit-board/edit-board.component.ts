@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { DragulaService } from 'ng2-dragula/ng2-dragula';
 
-import { Note, NoteService, BubbleTemp, BoardService, EditItem } from './service';
+import { Note, NoteService, Bubble, BoardService, EditItem } from './service';
 import { EventBubbleService } from './service';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 
@@ -47,7 +47,7 @@ export class EditBoardComponent implements OnInit, OnDestroy {
   }
 
   public focusEditItem(editItem: EditItem, focused: boolean) {
-    this._eventBubbleService.edittedBubble = (focused) ? editItem.bubble : null;
+    // this._eventBubbleService.edittedBubble = (focused) ? editItem.bubble : null;
   }
 
   public updateEditItem(editItem: EditItem) {
