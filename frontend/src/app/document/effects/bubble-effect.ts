@@ -28,12 +28,11 @@ import { BubbleService } from '../services/bubble.service';
 export class BubbleEffects {
 
 
-  @Effect()
+  @Effect({dispatch: false})
   open$: Observable<Action> = this.action$.ofType<fromBubble.Open>(fromBubble.OPEN)
     .map(action => action.payload).mergeMap(query => {
-      return Observable.fromPromise(this.bubbleService.openDocument(query))
-        .map(() => new fromBubble.OpenComplete(query))
-        .catch(err => of(new fromBubble.OpenError(err)));
+        this.bubbleService.openDocument(query);
+        return Observable.of({});
     });
 
   @Effect()
