@@ -2,6 +2,7 @@ import { Bubble } from './bubble';
 import { BubbleJsonHelper } from './bubble-json-helper';
 
 describe('bubble json helper', () => {
+    let bubbleJsonHelper: BubbleJsonHelper;
   beforeEach(() => {
     bubbleJsonHelper = new BubbleJsonHelper;
   });

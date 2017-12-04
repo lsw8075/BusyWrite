@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { EventBubbleService } from '../../service/event/event-bubble.service';
-import { BubbleService } from '../../service/bubble.service';
+import { EventBubbleService } from '../../services/event/event-bubble.service';
+import { BubbleService } from '../../services/bubble.service';
 import { SangjunBoardComponent } from './sangjun-board.component';
 
 describe('SangjunBoardComponent', () => {
