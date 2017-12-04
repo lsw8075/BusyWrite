@@ -55,7 +55,7 @@ class CommentsTestCase(TestCase):
         comments = do_fetch_comments_under_suggest(self.user1.id, self.doc1.id, self.suggest1.id)
 
         self.assertEqual(comments[0]['id'], self.comment3.id)
-
+    '''
     def test_do_create_comment(self):
         # under normal
         with self.assertRaises(UserIsNotContributorError):
@@ -89,7 +89,7 @@ class CommentsTestCase(TestCase):
         reload_suggests(self, [1])
         self.assertEqual(comment.content, 'TestCom')
         self.assertEqual(self.suggest1.next_comment_order, 4)
-
+    '''
     def test_do_edit_comment_under_normal(self):
         # under normal
         with self.assertRaises(UserIsNotCommentOwnerError):

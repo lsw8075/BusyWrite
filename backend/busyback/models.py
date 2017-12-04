@@ -35,7 +35,7 @@ class Bubble(models.Model):
     	User,
     	related_name='voted_bubbles'
     )
-    next_comment_order = models.IntegerField(default=0)
+    #next_comment_order = models.IntegerField(default=0)
 
     def touch(self):
         self.save()

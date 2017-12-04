@@ -488,8 +488,8 @@ class ChannelReceiveTestCaseThree(ChannelTestCase):
         self.assertEqual(result['accept'], 'True')
         self.assertEqual(result['body']['bubble_id'], new_bubble_id)
         self.assertEqual(result['body']['split_content_list'], ['w', 'ow'])
-        self.assertEqual(result['body']['split_bubble_object_list'][0]['content'], 'w')
-        self.assertEqual(result['body']['split_bubble_object_list'][1]['content'], 'ow')
+        #self.assertEqual(result['body']['split_bubble_object_list'][0]['content'], 'w')
+        #self.assertEqual(result['body']['split_bubble_object_list'][1]['content'], 'ow')
 
         # move bubble that is being editted: it is acceptable!
         message = {'header': 'move_bubble', 'body': {'bubble_id': new_new_bubble_id, 
