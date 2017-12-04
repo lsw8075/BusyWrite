@@ -46,7 +46,7 @@ export class BubbleService implements OnDestroy {
 
         if (USE_MOCK) {
             this._getBubbleList().then(bubbleList => {
-                for (let bubble of bubbleList) {
+                for (const bubble of bubbleList) {
                     if (bubble.type === BubbleType.internalBubble) {
                         const internalBubble = bubble as InternalBubble;
                         for (let i = 0; i < internalBubble.childBubbleIds.length; i++) {
@@ -68,12 +68,12 @@ export class BubbleService implements OnDestroy {
     channelMessageHandler(msg) {
 
         console.log(msg);
-        let data = msg;
-        //let data = JSON.parse(msg);
+        const data = msg;
+        // let data = JSON.parse(msg);
         // TODO: check if data has appropriate elements
-        let command = data.header;
-        let accept = data.accept;
-        let body = data.body;
+        const command = data.header;
+        const accept = data.accept;
+        const body = data.body;
 
         if (command === 'open_document') {
             if (accept === 'True') {
@@ -110,9 +110,9 @@ export class BubbleService implements OnDestroy {
                 // if (body.who === ) {
                 const bubble = new BubbleJsonHelper().getBubbleObject(String(body));
                 // get parent bubble from body.parent_bubble
-                //this._store.dispatch(new BubbleAction.CreateComplete(bubble));
-                //} else {
-                //}
+                // this._store.dispatch(new BubbleAction.CreateComplete(bubble));
+                // } else {
+                // }
                 // change bubbleslist and push it into appropriate Subject<Bubble>
                 console.log('received create_bubble success');
             } else {
@@ -136,13 +136,13 @@ export class BubbleService implements OnDestroy {
             } else {
 
             }
-        } else if (command == 'pop_bubble') {
-            if (accept == 'True') {
+        } else if (command === 'pop_bubble') {
+            if (accept === 'True') {
                 console.log('received pop_bubble success');
                 this._store.dispatch(new BubbleAction.PopComplete(body.bubble_id));
             } else {
                 console.log('received pop_bubble fail');
-                console.log(body)
+                console.log(body);
                 this._store.dispatch(new BubbleAction.PopError(body));
             }
         }
@@ -168,13 +168,13 @@ export class BubbleService implements OnDestroy {
         this._socket.send(m);
     }
 
-    public getSuggestBubbleList(){
+    public getSuggestBubbleList() {
     }
 
-    public getCommentListForBubble(){
+    public getCommentListForBubble() {
     }
 
-    public getCommentListForSuggestBubble(){
+    public getCommentListForSuggestBubble() {
     }
 
     public createBubbleMine(parentId: number, loc: number, content: string) {

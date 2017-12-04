@@ -2,7 +2,7 @@ import { Action } from '@ngrx/store';
 
 import { Bubble, BubbleType, InternalBubble, LeafBubble } from '../models/bubble';
 import { MenuType } from '../services/event/event-bubble.service';
-import { MockBubbleRoot } from '../models/bubble.mock';
+import { MockBubbleRoot, MockBubbleList } from '../models/bubble.mock';
 
 import * as fromBubble from '../actions/bubble-action';
 
@@ -35,7 +35,10 @@ export function BubbleReducer(state: BubbleState = initialState, action: fromBub
             return {...state, loading: true, documentId: action.payload};
         case fromBubble.LOAD_COMPLETE: {
             const root = MockBubbleRoot;
-            return {...state, bubbleList: [...action.payload], rootBubble: root, loading: false};
+            const bubbleList = MockBubbleList;
+            // TODO: changed to mock bubble list
+            // return {...state, bubbleList: [...action.payload], rootBubble: root, loading: false};
+            return {...state, bubbleList: [...bubbleList], rootBubble: root, loading: false};
         }
         case fromBubble.LOAD_ERROR:
             return {...state, error: action.payload};
@@ -140,7 +143,7 @@ function deleteChildBubbles(bubbleList: Array<Bubble>, id: number) {
       }
     }
     removeBubbleById(bubbleList, bubble.id);
-  } catch(err) {
+  } catch (err) {
     throw err;
   }
 }
@@ -158,7 +161,7 @@ function deleteBubble(bubbleList: Array<Bubble>, id: number) {
       const childBubble = getBubbleById(bubbleList, parentBubble.childBubbleIds[i]);
       childBubble.location = i;
     }
-  } catch(err) {
+  } catch (err) {
     console.log(err);
   //  throw err;
   }
@@ -173,7 +176,7 @@ function popBubble(bubbleList: Array<Bubble>, id: number) {
         const internalBubble = bubble as InternalBubble;
         const parentBubble = getParentBubble(bubbleList, bubble);
 
-        let childBubbleIds = internalBubble.childBubbleIds;
+        const childBubbleIds = internalBubble.childBubbleIds;
         parentBubble.childBubbleIds.splice(bubble.location, 1, ...childBubbleIds);
 
         for (let i = bubble.location; i < parentBubble.childBubbleIds.length; i++) {
@@ -183,7 +186,7 @@ function popBubble(bubbleList: Array<Bubble>, id: number) {
         }
         removeBubbleById(bubbleList, bubble.id);
 
-    } catch(err) {
+    } catch (err) {
         console.log(err);
         //  throw err;
     }
@@ -200,12 +203,12 @@ function getContent(bubbleList: Array<Bubble>, id: number): string {
         } else if (bubble.type === BubbleType.internalBubble) {
             const internalBubble = bubble as InternalBubble;
             let content = '';
-            for (let childBubbleId of internalBubble.childBubbleIds) {
+            for (const childBubbleId of internalBubble.childBubbleIds) {
                 content += getContent(bubbleList, childBubbleId) + ' ';
             }
             return content;
         }
-    } catch(err) {
+    } catch (err) {
         console.log(err);
         //  throw err;
     }
@@ -227,7 +230,7 @@ function flattenBubble(bubbleList: Array<Bubble>, id: number, newBubble: Bubble)
         bubbleList.push(newBubble);
         deleteChildBubbles(bubbleList, id);
 
-    } catch(err) {
+    } catch (err) {
         console.log(err);
         //  throw err;
     }

@@ -11,15 +11,13 @@
     <!-- internal bubble -->
     <ng-template #internal>
         <ng-container *ngFor="let childId of bubble.childBubbleIds">
-            <ng-container *ngTemplateOutlet="internalBubble; context: { $implicit: getBubbleById(childId)}">
-
-            </ng-container>
+            <ng-container *ngTemplateOutlet="internalBubble; context: { $implicit: getBubbleById(childId)}"></ng-container>
         </ng-container>
     </ng-template>
 
     <!-- leaf bubble -->
     <ng-template #leaf>
-        {{bubble.content}}
+        <div class="bubble-show" [innerHTML]="bubble.content"></div>
     </ng-template>
 </ng-template>
 
