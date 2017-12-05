@@ -74,6 +74,9 @@ export function BubbleReducer(state: BubbleState = initialState, action: fromBub
         case fromBubble.SELECT_CLEAR:
             return {...state, selectedBubbleList: [], selectedMenu: null};
 
+        case fromBubble.SELECT_SANGJUN_BOARD:
+            return {...state, sangjunBoardBubble: action.payload };
+
         case fromBubble.MOUSE_OVER:
             const newHoverBubbleList = [];
             mouseOverBubble(state.bubbleList, newHoverBubbleList, action.payload);

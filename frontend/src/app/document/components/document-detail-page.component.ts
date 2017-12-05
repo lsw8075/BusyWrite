@@ -40,6 +40,8 @@ export class DocumentDetailPageComponent implements OnInit {
     leftBoard$: Observable<Board>;
     rightBoard$: Observable<Board>;
 
+    sangjunBubble$: Observable<Bubble>;
+
     documentTitle = 'empty title';
     changeTitle = false;
 
@@ -55,8 +57,11 @@ export class DocumentDetailPageComponent implements OnInit {
         this.selectedBubbleList$ = this._store.select(fromDocument.getSelectedBubbleList);
         this.hoverBubbleList$ = this._store.select(fromDocument.getHoverBubbleList);
         this.selectedMenu$ = this._store.select(fromDocument.getSelectedMenu);
+
         this.leftBoard$ = this._store.select(fromDocument.getLeftBoard);
         this.rightBoard$ = this._store.select(fromDocument.getRightBoard);
+
+        this.sangjunBubble$ = this._store.select(fromDocument.getSangjunBubble);
 
         this._store.select(fromDocument.getBoardStateError).subscribe(err => {
             if (err) {

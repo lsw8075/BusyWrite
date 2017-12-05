@@ -26,6 +26,7 @@ export const getSelectedMenu = createSelector(getBubbleState, (state: BubbleStat
 export const getSelectedBubbleList = createSelector(getBubbleState, (state: BubbleState) => state.selectedBubbleList);
 export const getHoverBubbleList = createSelector(getBubbleState, (state: BubbleState) => state.hoverBubbleList);
 export const getBubbleStateError = createSelector(getBubbleState, (state: BubbleState) => state.error);
+export const getSangjunBubble = createSelector(getBubbleState, (state: BubbleState) => state.sangjunBoardBubble);
 
 export const getBoardState = createSelector(getDocumentState, (state: State) => state.board);
 export const getBoardList = createSelector(getBoardState, (state: BoardState) => state.boardList);

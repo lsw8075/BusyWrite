@@ -18,8 +18,14 @@ export class OpenError implements Action {
   constructor(public payload: string) {}
 }
 
+export const SELECT_SANGJUN_BOARD = '[SANGJUN BOARD] select bubble';
+export class SelectSangjunBoard implements Action {
+    readonly type = SELECT_SANGJUN_BOARD;
+    constructor(public payload: Bubble) {}
+}
+
 export const LOAD = '[Bubble] Load';
-export const LOAD_PENDING = '[Bubbl] Loading';
+export const LOAD_PENDING = '[Bubble] Loading';
 export const LOAD_COMPLETE = '[Bubble] load Complete';
 export const LOAD_ERROR = '[Bubble] load Error';
 export class Load implements Action {
@@ -255,6 +261,7 @@ export type Actions =
   | Open
   | OpenComplete
   | OpenError
+  | SelectSangjunBoard
   | Load
   | LoadPending
   | LoadComplete

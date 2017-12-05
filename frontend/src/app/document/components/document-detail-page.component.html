@@ -40,7 +40,8 @@
     <div *ngIf="board$ | async as board">
         <div [ngSwitch]="board.type">
             <div *ngSwitchCase="boardType.view">
-                <app-view-board [rootBubble]="rootBubble$ | async"
+                <app-view-board
+                    [rootBubble]="rootBubble$ | async"
                     [bubbleList]="bubbleList$ | async"
                     [userId]="userId$ | async"
                     [selectedBubbleList]="selectedBubbleList$ | async"
@@ -53,7 +54,9 @@
                 <app-edit-board></app-edit-board>
             </div>
             <div *ngSwitchCase="boardType.suggest">
-                <app-sangjun-board></app-sangjun-board>
+                <app-sangjun-board
+                    [bubble]="sangjunBubble$ | async"
+                ></app-sangjun-board>
             </div>
             <div *ngSwitchCase="boardType.filter">
                 <app-filter-board></app-filter-board>
