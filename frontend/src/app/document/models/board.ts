@@ -10,6 +10,8 @@ export enum BoardType {
 }
 
 export class Board {
+    type: BoardType;
+
 }
 
 export class EditItem {

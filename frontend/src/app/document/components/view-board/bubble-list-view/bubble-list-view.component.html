@@ -5,7 +5,7 @@
 <div class="bubble-list">
     <div class="container">
         <div class="row">
-            <div class="col-md-9 offset-md-1 list-group-item">
+            <div class="col-md-10 mx-3 list-group-item">
                 <div (appClickOutside)="clearState($event)" *ngIf="rootBubble">
                     <ng-container *ngTemplateOutlet="internalBubble; context: { $implicit: rootBubble }"></ng-container>
                 </div>
@@ -27,9 +27,10 @@
             <ng-container *ngIf="getBubbleById(childId) as child">
                 <div [appInternalBubble]="child"
                      [bubbleList]="bubbleList"
-                     [isSelected]="isSelected(bubble)"
-                     [isHover]="isHover(bubble)"
-                     appStopClickPropagation class="internalBubble"
+                     [isSelected]="isSelected(child)"
+                     [isHover]="isHover(child)"
+                     appStopClickPropagation
+                     class="internalBubble"
                      (click)="onClickEvent(child, menuType.internalMenu, $event);">
                     <!-- recursive call -->
                     <ng-container *ngTemplateOutlet="internalBubble; context: { $implicit: child}"></ng-container>
@@ -57,9 +58,7 @@
         <app-bubble-menu *ngIf="isMenuOpen(bubble, menuType.leafMenu)" class="action"  [bubble]="bubble" [menu]="menuType.leafMenu" [bubbleList]="bubbleList" ></app-bubble-menu>
 
         <!-- is someone editting it? -->
-        <div>
-            <ng-container *ngIf="isBubbleContentShown(bubble); then show else edit"></ng-container>
-            </div>
+        <ng-container *ngIf="isBubbleContentShown(bubble); then show else edit"></ng-container>
 
         <ng-template #show>
             <div class="bubble-show" [appLeafBubble]="bubble" [isSelected]="isSelected(bubble)" innerHtml="{{bubble.content}}"></div>

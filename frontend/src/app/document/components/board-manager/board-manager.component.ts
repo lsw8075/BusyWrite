@@ -1,4 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
+
+import { Board, BoardType } from '../../models/board';
+
+import { Store } from '@ngrx/store';
+import { Observable } from 'rxjs/Observable';
+
+import * as fromUser from '../../../user/reducers/reducer';
+import * as fromDocument from '../../reducers/reducer';
+
+import * as BoardAction from '../../actions/board-action';
+import * as RouterAction from '../../../shared/route/route-action';
 
 @Component({
   selector: 'app-board-manager',
@@ -7,9 +18,14 @@ import { Component, OnInit } from '@angular/core';
 })
 export class BoardManagerComponent implements OnInit {
 
-  constructor() { }
+    @Input() documentTitle: string;
+    @Input() changeTitle: boolean;
 
-  ngOnInit() {
-  }
+    constructor(private _store: Store<fromDocument.State>) { }
+
+    ngOnInit() {
+        this.changeTitle = true;
+    }
+
 
 }

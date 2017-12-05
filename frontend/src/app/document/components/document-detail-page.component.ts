@@ -33,6 +33,9 @@ export class DocumentDetailPageComponent implements OnInit {
     hoverBubbleList$: Observable<Bubble[]>;
     selectedMenu$: Observable<MenuType>;
 
+    documentTitle = 'empty title';
+    changeTitle = false;
+
     constructor(
         private _documentService: DocumentService,
         private _store: Store<fromDocument.State>
@@ -47,5 +50,13 @@ export class DocumentDetailPageComponent implements OnInit {
 
     ngOnInit() {
         this._store.dispatch(new BubbleAction.Open(1));
+    }
+
+    public titleEditDone() {
+        this.changeTitle = false;
+    }
+
+    public titleEditStart() {
+        this.changeTitle = true;
     }
 } /* istanbul ignore next */

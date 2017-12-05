@@ -1,3 +1,30 @@
-<p>
-  board-manager works!
-</p>
+<div class="row">
+    <div class="col-md-3">
+
+    </div>
+    <div class="col-md-3">
+        <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
+            <div class="btn-group" dropdown>
+                <button dropdownToggle type="button" class="btn btn-info dropdown-toggle">
+                    Add Board <span class="caret"></span>
+                </button>
+                <ul *dropdownMenu class="dropdown-menu" role="menu">
+                    <li role="menuitem"><a class="dropdown-item" href="#">View Board</a></li>
+                    <li role="menuitem"><a class="dropdown-item" href="#">Suggest Board</a></li>
+                    <li role="menuitem"><a class="dropdown-item" href="#">Filter Board</a></li>
+                    <li class="divider dropdown-divider"></li>
+                    <li role="menuitem"><a class="dropdown-item" href="#">Edit Board</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="input-group" appStopClickPropagation>
+            <input type="text" class="form-control" placeholder="Search for bubbles" appStopClickPropagation/>
+            <button type="button" class="btn btn-primary" appStopClickPropagation><i class="fa fa-fw fa-search"></i></button>
+        </div>
+    </div>
+</div>
+
+
