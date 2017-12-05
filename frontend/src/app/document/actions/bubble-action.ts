@@ -40,6 +40,7 @@ export class LoadError implements Action {
 }
 
 export const SELECT = '[Bubble] Select';
+export const SELECT_CLEAR = '[Bubble] Select Clear';
 export const MOUSE_OVER = '[Bubble] Mouse Over';
 export const MOUSE_OUT = '[Bubble] Mouse Out';
 export class Select implements Action {
@@ -48,12 +49,16 @@ export class Select implements Action {
     bubble: Bubble,
     menu: MenuType}) {}
 }
+export class SelectClear implements Action {
+    readonly type = SELECT_CLEAR;
+    constructor(public payload ?: void) {}
+}
 export class MouseOver implements Action {
     readonly type = MOUSE_OVER;
     constructor(public payload: Bubble) {}
 }
 export class MouseOut implements Action {
-    readonly type = MOUSE_OVER;
+    readonly type = MOUSE_OUT;
     constructor(public payload: Bubble) {}
 }
 
@@ -249,6 +254,9 @@ export type Actions =
   | LoadComplete
   | LoadError
   | Select
+  | SelectClear
+  | MouseOver
+  | MouseOut
   | Create
   | CreateComplete
   | CreateError

@@ -201,7 +201,8 @@ export enum MenuType {
   borderBottomMenu,
   leafMenu,
   internalMenu,
-  topMenu
+  topMenu,
+  noMenu,
 }
 
 export enum ActionType {

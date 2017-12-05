@@ -71,7 +71,7 @@ const routes: Routes = [
     InternalBubbleDirective,
     LeafBubbleDirective,
     StopClickPropagationDirective,
-    StopHoverPropagationDirective
+    StopHoverPropagationDirective,
   ],
   imports: [
     FormsModule,

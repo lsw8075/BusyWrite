@@ -1,5 +1,6 @@
 .bubble-list {
   height: 600px;
+  overflow-x: visible;
   overflow-y: scroll;
 }
 

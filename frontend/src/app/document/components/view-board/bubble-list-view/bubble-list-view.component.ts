@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, OnDestroy, Output, HostListener, ChangeDetectorRef } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, OnDestroy, Output, HostListener } from '@angular/core';
 import { BubbleService } from '../service';
 import { ActionType, MenuType, getBubbleById } from '../service';
 import { Bubble, InternalBubble, LeafBubble, BubbleType } from '../../../models/bubble';
@@ -25,17 +25,20 @@ export class BubbleListViewComponent implements OnInit {
   @Input() bubbleList: Array<Bubble>;
 
   userId = 1; // to be @inputed from parent
-  selectedMenu: MenuType;
+  selectedMenu: MenuType = MenuType.noMenu;
 
-  constructor(
-      private _store: Store<fromDocument.State>,
-    private _bubbleService: BubbleService,
-    private _eventBubbleService: EventBubbleService,
-    private _boardService: BoardService) {
+    constructor(
+        private _store: Store<fromDocument.State>,
+        private _bubbleService: BubbleService,
+        private _eventBubbleService: EventBubbleService,
+        private _boardService: BoardService) {
+            this._store.select(fromDocument.getSelectedMenu).subscribe(menu => {
+                this.selectedMenu = menu;
+            });
     }
 
-  ngOnInit() {
-  }
+    ngOnInit() {
+    }
 
     public isInternal(bubble: Bubble): boolean {
         return (bubble.type === BubbleType.internalBubble);
@@ -47,6 +50,10 @@ export class BubbleListViewComponent implements OnInit {
 
     public onClickEvent(bubble: Bubble, menu: MenuType, mouseEvent: MouseEvent): void {
         this._store.dispatch(new BubbleAction.Select({bubble, menu}));
+    }
+
+    public isMenuOpen(bubble: Bubble, menu: MenuType): boolean {
+        return (bubble.isSelected) && this.selectedMenu === menu;
     }
 
   // when user closes
@@ -92,30 +99,9 @@ export class BubbleListViewComponent implements OnInit {
     //     this._store.dispatch(new BubbleAction.Flatten(bubble.id));
     // }
 
-  public clearState(event): void {
-    this._eventBubbleService.clearState();
-  }
-
-  public refreshState() {
-    // this._refreshBubbleList();
-    this._eventBubbleService.clearState();
-  }
-
-//   public popBubble(bubble: BubbleTemp) {
-//     // this._bubbleService.popBubble(bubble)
-//     //   .then(() => {
-//     //     this._refreshBubbleList();
-//     //     this._eventBubbleService.clearState();
-//     //   });
-//   }
-
-//   public wrapBubble() {
-//     // this._bubbleService.wrapBubble(this._eventBubbleService.wrapBubbles)
-//     //   .then(response => {
-//     //     this._refreshBubbleList();
-//     //     this._eventBubbleService.clearState();
-//     //   });
-//   }
+    public clearState(event): void {
+        this._store.dispatch(new BubbleAction.SelectClear());
+    }
 
 //   public createBubble(bubble: BubbleTemp, menu: MenuType) {
 //     let location = bubble.location;
@@ -149,37 +135,10 @@ export class BubbleListViewComponent implements OnInit {
 //       throw new Error('Cannot delete root bubble');
 //     }
 //   }
-
-//   public flattenBubble(bubble: BubbleTemp) {
-//     // this._bubbleService.flattenBubble(bubble).then(() => {
-//     //     this._eventBubbleService.clearState();
-//     //     this._refreshBubbleList();
-//     //   });
-//   }
-
-//   public moveBubble(bubble: BubbleTemp, destBubble: BubbleTemp, menu: MenuType) {
-//     // this._bubbleService.moveBubble(bubble, destBubble, menu).then(() => {
-//     //   this._eventBubbleService.clearState();
-//     //   this._refreshBubbleList();
-//     // });
-//   }
-
-  public isMenuOpen(bubble: Bubble, menu: MenuType): boolean {
-    return (bubble.isSelected) && (menu === this.selectedMenu);
-  }
-
   public isBubbleContentShown(bubble: LeafBubble): boolean {
     return (bubble.ownerId === -1) ||
            (bubble.ownerId === 1);
   }
-
-//   public isInternal(bubble: BubbleTemp): Boolean {
-//     return bubble.type === BubbleType.internalBubble;
-//   }
-
-//   private _refreshBubbleList() {
-//   }
-
 //   ngOnDestroy() {
 //     alert('there might be unsaved changes');
 //     this._eventBubbleService.unsubscribeAll();

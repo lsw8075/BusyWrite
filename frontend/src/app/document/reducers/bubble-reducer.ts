@@ -32,6 +32,12 @@ export function BubbleReducer(state: BubbleState = initialState, action: fromBub
         case fromBubble.SELECT:
             const selection = action.payload as {bubble: Bubble, menu: MenuType};
             return {...state, bubbleList: BubbleListReducer(state.bubbleList, action), selectedMenu: selection.menu};
+        case fromBubble.SELECT_CLEAR:
+            return {...state, bubbleList: BubbleListReducer(state.bubbleList, action), selectedMenu: null};
+        case fromBubble.MOUSE_OVER:
+        case fromBubble.MOUSE_OUT:
+            return {...state, bubbleList: BubbleListReducer(state.bubbleList, action)};
+
         case fromBubble.LOAD:
             return {...state, loading: true, documentId: action.payload};
         case fromBubble.LOAD_COMPLETE: {
@@ -110,20 +116,31 @@ export function BubbleReducer(state: BubbleState = initialState, action: fromBub
 }
 
 function BubbleListReducer(state: Array<Bubble>, action: fromBubble.Actions) {
+    const newBubbleList = [...state];
     switch (action.type) {
         case fromBubble.SELECT:
-            const newBubbleList = [...state];
             const selectBubble = action.payload.bubble;
-            for (const bubble of newBubbleList) {
-                if (bubble.id === selectBubble.id) {
-                    bubble.isSelected = true;
-                }
-            }
+            newBubbleList.forEach(bubble => { bubble.isSelected = (bubble.id === selectBubble.id); });
             return newBubbleList;
+
+        case fromBubble.SELECT_CLEAR:
+            newBubbleList.forEach(bubble => { bubble.isSelected = false; });
+            return newBubbleList;
+
+        case fromBubble.MOUSE_OVER:
+            mouseOverBubble(newBubbleList, action.payload);
+            return newBubbleList;
+
+        case fromBubble.MOUSE_OUT:
+            newBubbleList.forEach(bubble => { bubble.isMouseOver = false; });
+            return newBubbleList;
+
         default:
             return state;
     }
 }
+
+
 
 export function getBubbleById(bubbleList: Array<Bubble>, id: number): Bubble {
     const bList = bubbleList.filter((bubble) => (bubble.id === id));
@@ -147,6 +164,16 @@ function getParentBubble(bubbleList: Array<Bubble>, bubble: Bubble): InternalBub
         return parentBubble as InternalBubble;
     } catch (err) {
         throw new Error('Does not exist parent bubble');
+    }
+}
+
+function mouseOverBubble(bubbleList: Array<Bubble>, bubble: Bubble): void {
+    bubble.isMouseOver = true;
+    if (bubble.id !== 0 && bubble.type === BubbleType.internalBubble) {
+        (bubble as InternalBubble).childBubbleIds.forEach(id => {
+            const child = getBubbleById(bubbleList, id);
+            mouseOverBubble(bubbleList, child);
+        });
     }
 }
 
