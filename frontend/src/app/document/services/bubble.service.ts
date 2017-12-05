@@ -99,7 +99,7 @@ export class BubbleService implements OnDestroy {
                 console.log(body);
                 console.log(String(body));
                 console.log(JSON.stringify(body));
-                const bubbleArray = new BubbleJsonHelper().getBubbleArrayObject(JSON.stringify(body));
+                const bubbleArray = BubbleJsonHelper.getBubbleArrayObject(JSON.stringify(body));
                 this._store.dispatch(new BubbleAction.LoadComplete(bubbleArray));
             } else {
                 console.log('received get_bubble_list fail');
@@ -108,7 +108,7 @@ export class BubbleService implements OnDestroy {
         } else if (command === 'create_bubble') {
             if (accept === 'True') {
                 // if (body.who === ) {
-                const bubble = new BubbleJsonHelper().getBubbleObject(String(body));
+                const bubble = BubbleJsonHelper.getBubbleObject(String(body));
                 // get parent bubble from body.parent_bubble
                 // this._store.dispatch(new BubbleAction.CreateComplete(bubble));
                 // } else {
@@ -188,17 +188,17 @@ export class BubbleService implements OnDestroy {
         this._socket.send(m);
     }
 
-    public createSuggestBubble(bindedBubbleId: number, content: string){
+    public createSuggestBubble(bindedBubbleId: number, content: string) {
         const m = {'header': 'create_suggest_bubble',
             'body': {'binded_bubble': bindedBubbleId,
                 'content': content}};
         this._socket.send(m);
     }
 
-    public createCommentOnNormalBubble(){
+    public createCommentOnNormalBubble() {
     }
 
-    public createCommentOnSuggestBubble(){
+    public createCommentOnSuggestBubble() {
     }
 
     public async startEdittingBubble(bubble_id: number): Promise<void> {
@@ -208,11 +208,11 @@ export class BubbleService implements OnDestroy {
         return Promise.resolve(null);
     }
 
-    public edittingBubble(){
+    public edittingBubble() {
         // TODO: back is working....
     }
 
-    public finishEdittingBubble(bubble_id: number){
+    public finishEdittingBubble(bubble_id: number) {
         const m = {'header': 'finish_editting_bubble',
             'body': {'bubble_id': bubble_id}};
         this._socket.send(m);

@@ -7,6 +7,7 @@ import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
 
 import { Bubble, BubbleType, InternalBubble, LeafBubble } from '../models/bubble';
+import { User } from '../../user/models/user';
 
 import * as fromUser from '../../user/reducers/reducer';
 import * as fromDocument from '../reducers/reducer';
@@ -26,6 +27,7 @@ export class DocumentDetailPageComponent implements OnInit {
 
     rootBubble$: Observable<InternalBubble>;
     bubbleList$: Observable<Array<Bubble>>;
+    userId$: Observable<Number>;
 
     constructor(
         private _documentService: DocumentService,
@@ -33,6 +35,7 @@ export class DocumentDetailPageComponent implements OnInit {
     ) {
         this.rootBubble$ = _store.select(fromDocument.getRootBubble);
         this.bubbleList$ = _store.select(fromDocument.getBubbleList);
+        this.userId$ = this._store.select(fromUser.getUserId);
     }
 
   ngOnInit() {

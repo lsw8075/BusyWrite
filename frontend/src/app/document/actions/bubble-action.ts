@@ -40,11 +40,21 @@ export class LoadError implements Action {
 }
 
 export const SELECT = '[Bubble] Select';
+export const MOUSE_OVER = '[Bubble] Mouse Over';
+export const MOUSE_OUT = '[Bubble] Mouse Out';
 export class Select implements Action {
   readonly type = SELECT;
   constructor(public payload: {
-    bubbleId: number,
+    bubble: Bubble,
     menu: MenuType}) {}
+}
+export class MouseOver implements Action {
+    readonly type = MOUSE_OVER;
+    constructor(public payload: Bubble) {}
+}
+export class MouseOut implements Action {
+    readonly type = MOUSE_OVER;
+    constructor(public payload: Bubble) {}
 }
 
 export const CREATE = '[Bubble] create';

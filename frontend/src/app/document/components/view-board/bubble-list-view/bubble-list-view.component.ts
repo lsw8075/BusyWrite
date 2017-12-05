@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, OnDestroy, Output, HostListener, ChangeDetectorRef } from '@angular/core';
 import { BubbleService } from '../service';
-import { ActionType, MenuType, getBubbleFromListById } from '../service';
+import { ActionType, MenuType, getBubbleById } from '../service';
 import { Bubble, InternalBubble, LeafBubble, BubbleType } from '../../../models/bubble';
 import { EventBubbleService, BoardService } from '../service';
 
@@ -23,7 +23,8 @@ export class BubbleListViewComponent implements OnInit {
 
   @Input() rootBubble: Bubble; // bubbles that have root as parents
   @Input() bubbleList: Array<Bubble>;
-  selectedBubble: Bubble;
+
+  userId = 1; // to be @inputed from parent
   selectedMenu: MenuType;
 
   constructor(
@@ -31,9 +32,6 @@ export class BubbleListViewComponent implements OnInit {
     private _bubbleService: BubbleService,
     private _eventBubbleService: EventBubbleService,
     private _boardService: BoardService) {
-        this._store.select(fromDocument.getSelectedBubble).subscribe(bubble => {
-            this.selectedBubble = bubble;
-        });
     }
 
   ngOnInit() {
@@ -44,15 +42,11 @@ export class BubbleListViewComponent implements OnInit {
     }
 
     public getBubbleById(id: number): Bubble {
-        return getBubbleFromListById(this.bubbleList, id);
+        return getBubbleById(this.bubbleList, id);
     }
 
     public onClickEvent(bubble: Bubble, menu: MenuType, mouseEvent: MouseEvent): void {
-        const payload = {
-            bubbleId: bubble.id,
-            menu: menu,
-        };
-        this._store.dispatch(new BubbleAction.Select(payload));
+        this._store.dispatch(new BubbleAction.Select({bubble, menu}));
     }
 
   // when user closes
@@ -171,10 +165,7 @@ export class BubbleListViewComponent implements OnInit {
 //   }
 
   public isMenuOpen(bubble: Bubble, menu: MenuType): boolean {
-    if (this.selectedBubble) {
-      return (bubble.id === this.selectedBubble.id) && (menu === this.selectedMenu);
-    }
-    return false;
+    return (bubble.isSelected) && (menu === this.selectedMenu);
   }
 
   public isBubbleContentShown(bubble: LeafBubble): boolean {

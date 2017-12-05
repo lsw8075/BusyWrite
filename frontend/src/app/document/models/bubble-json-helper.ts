@@ -1,9 +1,7 @@
 import { Bubble, LeafBubble, InternalBubble } from './bubble';
 
-export class BubbleJsonHelper {
-    constructor() {
-    }
-    getBubbleObject(jsonString: string): Bubble {
+export namespace BubbleJsonHelper {
+    export function  getBubbleObject(jsonString: string): Bubble {
         const jsonObject = JSON.parse(jsonString);
         if (jsonObject.child_bubble) {
             const childBubbleIds = jsonObject.child_bubble;
@@ -18,7 +16,7 @@ export class BubbleJsonHelper {
             return leafBubble;
         }
     }
-    getBubbleArrayObject(jsonString: string): Array<Bubble> {
+    export function getBubbleArrayObject(jsonString: string): Array<Bubble> {
         const jsonObjectArray = JSON.parse(jsonString);
         const bubbleList: Array<Bubble> = [];
 

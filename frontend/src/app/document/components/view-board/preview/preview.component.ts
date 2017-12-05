@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { getBubbleFromListById } from '../service';
+import { getBubbleById } from '../service';
 
 import { BoardService } from '../../../services/board.service';
 import { BubbleService } from '../../../services/bubble.service';
@@ -24,7 +24,7 @@ export class PreviewComponent implements OnInit {
     ngOnInit() {}
 
     public getBubbleById(id: number): Bubble {
-        return getBubbleFromListById(this.bubbleList, id);
+        return getBubbleById(this.bubbleList, id);
     }
 
     public isInternal(bubble: Bubble): boolean {

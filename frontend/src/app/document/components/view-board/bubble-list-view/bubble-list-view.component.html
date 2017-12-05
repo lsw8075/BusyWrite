@@ -21,11 +21,13 @@
         <div *ngIf="isMenuOpen(bubble, menuType.internalMenu)" class="action" >
             <app-bubble-menu [bubble]="bubble" [menu]="menuType.internalMenu"></app-bubble-menu>
         </div>
-        <ng-container *ngFor="let childId of bubble.childBubbleIds">
-            <div [appInternalBubble]="getBubbleById(childId)" appStopClickPropagation class="internalBubble" (click)="onClickEvent(getBubbleById(childId), menuType.internalMenu, $event);">
-                <!-- recursive call -->
-                <ng-container *ngTemplateOutlet="internalBubble; context: { $implicit: getBubbleById(childId)}"></ng-container>
-            </div>
+        <ng-container *ngFor="let childId of bubble.childBubbleIds; ">
+            <ng-container *ngIf="getBubbleById(childId) as child">
+                <div [appInternalBubble]="child" [bubbleList]="bubbleList" appStopClickPropagation class="internalBubble" (click)="onClickEvent(child, menuType.internalMenu, $event);">
+                    <!-- recursive call -->
+                    <ng-container *ngTemplateOutlet="internalBubble; context: { $implicit: child}"></ng-container>
+                </div>
+            </ng-container>
         </ng-container>
     </ng-template>
 
@@ -52,8 +54,8 @@
 
         <ng-template #show>
             <div class="bubble-show" [appLeafBubble]="bubble" innerHtml="{{bubble.content}}"></div>
-            </ng-template>
-            <ng-template #edit>
+        </ng-template>
+        <ng-template #edit>
             <div class="text-center">
                 <span [style.color]="'green'">
                 <i class="fa fa-fw fa-pencil"></i>

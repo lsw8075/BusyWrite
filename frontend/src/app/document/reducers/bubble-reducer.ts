@@ -10,7 +10,6 @@ export interface BubbleState {
   documentId: number;
   rootBubble: InternalBubble;
   bubbleList: Bubble[];
-  selectedBubble: Bubble;
   selectedMenu: MenuType;
   loading: boolean;
   error: string;
@@ -20,17 +19,19 @@ const initialState: BubbleState = {
   documentId: -1,
   rootBubble: null,
   bubbleList: [],
-  selectedBubble: null,
   selectedMenu: null,
   loading: false,
   error: ''
 };
 
+// TODO: Select action & select menu action
+// TODO: mouse over action
+
 export function BubbleReducer(state: BubbleState = initialState, action: fromBubble.Actions) {
     switch (action.type) {
         case fromBubble.SELECT:
-            const selection = action.payload as {bubbleId: number, menu: MenuType};
-            return {...state, selectedBubble: selection.bubbleId, selectedMenu: selection.menu};
+            const selection = action.payload as {bubble: Bubble, menu: MenuType};
+            return {...state, bubbleList: BubbleListReducer(state.bubbleList, action), selectedMenu: selection.menu};
         case fromBubble.LOAD:
             return {...state, loading: true, documentId: action.payload};
         case fromBubble.LOAD_COMPLETE: {
@@ -81,90 +82,106 @@ export function BubbleReducer(state: BubbleState = initialState, action: fromBub
             flattenBubble(state.bubbleList, bubbleId, newBubble);
             return {...state, loading: false};
         }
-    case fromBubble.WRAP:
-      return {...state, loading: true};
-    case fromBubble.WRAP_COMPLETE: {
-      const bubbleId = action.payload;
-      return {...state, loading: false};
+        case fromBubble.WRAP:
+        return {...state, loading: true};
+        case fromBubble.WRAP_COMPLETE: {
+        const bubbleId = action.payload;
+        return {...state, loading: false};
+        }
+        case fromBubble.MERGE:
+        return {...state, loading: true};
+
+        case fromBubble.MERGE_COMPLETE: {
+        const bubbleId = action.payload;
+        return {...state, loading: false};
+        }
+
+        case fromBubble.SPLIT:
+        return {...state, loading: true};
+
+        case fromBubble.SPLIT_COMPLETE: {
+        const bubbleId = action.payload;
+        return {...state, loading: false};
+        }
+
+        default:
+        return state;
     }
-    case fromBubble.MERGE:
-      return {...state, loading: true};
-    case fromBubble.MERGE_COMPLETE: {
-      const bubbleId = action.payload;
-      return {...state, loading: false};
-    }
-    case fromBubble.SPLIT:
-      return {...state, loading: true};
-    case fromBubble.SPLIT_COMPLETE: {
-      const bubbleId = action.payload;
-      return {...state, loading: false};
-    }
-    default:
-      return state;
-  }
 }
 
-function BubbleListReducer(state, action) {
-    // nested reducer
+function BubbleListReducer(state: Array<Bubble>, action: fromBubble.Actions) {
+    switch (action.type) {
+        case fromBubble.SELECT:
+            const newBubbleList = [...state];
+            const selectBubble = action.payload.bubble;
+            for (const bubble of newBubbleList) {
+                if (bubble.id === selectBubble.id) {
+                    bubble.isSelected = true;
+                }
+            }
+            return newBubbleList;
+        default:
+            return state;
+    }
 }
 
-function getBubbleById(bubbleList: Array<Bubble>, id: number): Bubble {
-  const bList = bubbleList.filter((bubble) => (bubble.id === id));
-  if (bList.length === 0) {
-    throw new Error('Does not exist with this id');
-  }
-  return bList[0];
+export function getBubbleById(bubbleList: Array<Bubble>, id: number): Bubble {
+    const bList = bubbleList.filter((bubble) => (bubble.id === id));
+    if (bList.length === 0) {
+        throw new Error('Does not exist with this id');
+    }
+    return bList[0];
 }
 
 function removeBubbleById(bubbleList: Array<Bubble>, id: number): void {
-  const index = bubbleList.findIndex((bubble) => (bubble.id === id));
-  if (index === -1) {
-    throw new Error('Does not exist with this id');
-  }
-  bubbleList.splice(index, 1);
+    const index = bubbleList.findIndex((bubble) => (bubble.id === id));
+    if (index === -1) {
+        throw new Error('Does not exist with this id');
+    }
+    bubbleList.splice(index, 1);
 }
 
 function getParentBubble(bubbleList: Array<Bubble>, bubble: Bubble): InternalBubble {
-  try {
-    const parentBubble = getBubbleById(bubbleList, bubble.parentBubbleId);
-    return parentBubble as InternalBubble;
-  } catch(err) {
-    throw new Error('Does not exist parent bubble');
-  }
+    try {
+        const parentBubble = getBubbleById(bubbleList, bubble.parentBubbleId);
+        return parentBubble as InternalBubble;
+    } catch (err) {
+        throw new Error('Does not exist parent bubble');
+    }
 }
 
 function deleteChildBubbles(bubbleList: Array<Bubble>, id: number) {
-  try {
-    const bubble = getBubbleById(bubbleList, id);
-    if (bubble.type === BubbleType.internalBubble) {
-      const internalBubble = bubble as InternalBubble;
-      for (const childBubbleId of internalBubble.childBubbleIds) {
-        deleteChildBubbles(bubbleList, childBubbleId);
-      }
+    try {
+        const bubble = getBubbleById(bubbleList, id);
+        if (bubble.type === BubbleType.internalBubble) {
+        const internalBubble = bubble as InternalBubble;
+        for (const childBubbleId of internalBubble.childBubbleIds) {
+            deleteChildBubbles(bubbleList, childBubbleId);
+        }
+        }
+        removeBubbleById(bubbleList, bubble.id);
+    } catch (err) {
+        throw err;
     }
-    removeBubbleById(bubbleList, bubble.id);
-  } catch (err) {
-    throw err;
-  }
 }
 
 function deleteBubble(bubbleList: Array<Bubble>, id: number) {
-  try {
-    const bubble = getBubbleById(bubbleList, id);
-    const parentBubble = getParentBubble(bubbleList, bubble);
+    try {
+        const bubble = getBubbleById(bubbleList, id);
+        const parentBubble = getParentBubble(bubbleList, bubble);
 
-    deleteChildBubbles(bubbleList, id);
+        deleteChildBubbles(bubbleList, id);
 
-    parentBubble.childBubbleIds.splice(bubble.location, 1);
+        parentBubble.childBubbleIds.splice(bubble.location, 1);
 
-    for (let i = bubble.location; i < parentBubble.childBubbleIds.length; i++) {
-      const childBubble = getBubbleById(bubbleList, parentBubble.childBubbleIds[i]);
-      childBubble.location = i;
+        for (let i = bubble.location; i < parentBubble.childBubbleIds.length; i++) {
+        const childBubble = getBubbleById(bubbleList, parentBubble.childBubbleIds[i]);
+        childBubble.location = i;
+        }
+    } catch (err) {
+        console.log(err);
+    //  throw err;
     }
-  } catch (err) {
-    console.log(err);
-  //  throw err;
-  }
 }
 
 function popBubble(bubbleList: Array<Bubble>, id: number) {
