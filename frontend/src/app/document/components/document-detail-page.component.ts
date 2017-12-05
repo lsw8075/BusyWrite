@@ -45,7 +45,7 @@ export class DocumentDetailPageComponent implements OnInit {
         this.selectedMenu$ = this._store.select(fromDocument.getSelectedMenu);
     }
 
-  ngOnInit() {
-    this._store.dispatch(new BubbleAction.Open(1));
-  }
+    ngOnInit() {
+        this._store.dispatch(new BubbleAction.Open(1));
+    }
 } /* istanbul ignore next */
