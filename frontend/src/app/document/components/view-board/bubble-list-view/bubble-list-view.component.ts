@@ -18,24 +18,21 @@ import * as RouterAction from '../../../../shared/route/route-action';
     './bubble-list-view.component.css'],
 })
 export class BubbleListViewComponent implements OnInit, OnDestroy {
-  menuType = MenuType;
-  actionType = ActionType;
+    menuType = MenuType;
+    actionType = ActionType;
 
-  @Input() rootBubble: Bubble; // bubbles that have root as parents
-  @Input() bubbleList: Array<Bubble>;
-
-  userId = 1; // to be @inputed from parent
-  selectedMenu: MenuType = MenuType.noMenu;
+    @Input() rootBubble: Bubble; // bubbles that have root as parents
+    @Input() bubbleList: Array<Bubble>;
+    @Input() userId: number;
+    @Input() selectedBubbleList: Array<Bubble>;
+    @Input() hoverBubbleList: Array<Bubble>;
+    @Input() selectedMenu: MenuType;
 
     constructor(
         private _store: Store<fromDocument.State>,
         private _bubbleService: BubbleService,
         private _eventBubbleService: EventBubbleService,
-        private _boardService: BoardService) {
-            this._store.select(fromDocument.getSelectedMenu).subscribe(menu => {
-                this.selectedMenu = menu;
-            });
-    }
+        private _boardService: BoardService) {}
 
     ngOnInit() {
     }
@@ -53,7 +50,27 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
     }
 
     public isMenuOpen(bubble: Bubble, menu: MenuType): boolean {
-        return (bubble.isSelected) && this.selectedMenu === menu;
+        if (this.selectedBubbleList.length === 1) {
+            return (bubble.id === this.selectedBubbleList[0].id) && this.selectedMenu === menu;
+        }
+    }
+
+    public isSelected(bubble: Bubble) {
+        for (const b of this.selectedBubbleList) {
+            if (b.id === bubble.id) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public isHover(bubble: Bubble) {
+        for (const b of this.hoverBubbleList) {
+            if (b.id === bubble.id) {
+                return true;
+            }
+        }
+        return false;
     }
 
   // when user closes

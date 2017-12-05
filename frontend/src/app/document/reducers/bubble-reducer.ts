@@ -8,36 +8,72 @@ import * as fromBubble from '../actions/bubble-action';
 import * as _ from 'lodash';
 
 export interface BubbleState {
-  documentId: number;
-  rootBubble: InternalBubble;
-  bubbleList: Bubble[];
-  selectedMenu: MenuType;
-  loading: boolean;
-  error: string;
+    documentId: number;
+    rootBubble: InternalBubble;
+    bubbleList: Bubble[];
+
+    selectedBubbleList: Bubble[];
+    hoverBubbleList: Bubble[];
+    selectedMenu: MenuType;
+    isMoveAction: boolean;
+    isWrapAction: boolean;
+
+    loading: boolean;
+    error: string;
 }
 
 const initialState: BubbleState = {
-  documentId: -1,
-  rootBubble: null,
-  bubbleList: [],
-  selectedMenu: null,
-  loading: false,
-  error: ''
-};
+    documentId: -1,
+    rootBubble: null,
+    bubbleList: [],
 
-// TODO: Select action & select menu action
-// TODO: mouse over action
+    selectedBubbleList: [],
+    hoverBubbleList: [],
+    selectedMenu: null,
+    isMoveAction: false,
+    isWrapAction: false,
+
+    loading: false,
+    error: ''
+};
 
 export function BubbleReducer(state: BubbleState = initialState, action: fromBubble.Actions) {
     switch (action.type) {
         case fromBubble.SELECT:
-            const selection = action.payload as {bubble: Bubble, menu: MenuType};
-            return {...state, bubbleList: BubbleListReducer(state.bubbleList, action), selectedMenu: selection.menu};
+            const selectedBubble = action.payload.bubble;
+            const selectedMenu = action.payload.menu;
+
+            if (!state.isMoveAction && !state.isWrapAction) {
+                const newSelectedBubbleList = [selectedBubble];
+                return {...state, selectedBubbleList: newSelectedBubbleList, selectedMenu: selectedMenu };
+            } else if (state.isWrapAction &&
+                (selectedMenu === MenuType.internalMenu || selectedMenu === MenuType.leafMenu) &&
+                (state.selectedBubbleList[0].parentBubbleId === selectedBubble.id)) {
+
+                let newSelectedBubbleList = [...state.selectedBubbleList];
+                if (isBubbleInList(newSelectedBubbleList, selectedBubble.id)) {
+                    newSelectedBubbleList = newSelectedBubbleList.filter(b => b.id !== selectedBubble.id);
+                    if (newSelectedBubbleList.length === 0) {
+                        return {...state, selectedBubbleList: [], isWrapAction: false, selectedMenu: null };
+                    }
+                } else {
+                    newSelectedBubbleList.push(selectedBubble);
+                }
+                return {...state, selectedBubbleList: newSelectedBubbleList };
+            } else {
+                return {...state};
+            }
+
         case fromBubble.SELECT_CLEAR:
-            return {...state, bubbleList: BubbleListReducer(state.bubbleList, action), selectedMenu: null};
+            return {...state, selectedBubbleList: [], selectedMenu: null};
+
         case fromBubble.MOUSE_OVER:
+            const newHoverBubbleList = [];
+            mouseOverBubble(state.bubbleList, newHoverBubbleList, action.payload);
+            return {...state, hoverBubbleList: newHoverBubbleList };
+
         case fromBubble.MOUSE_OUT:
-            return {...state, bubbleList: BubbleListReducer(state.bubbleList, action)};
+            return {...state, hoverBubbleList: []};
 
         case fromBubble.LOAD:
             return {...state, loading: true, documentId: action.payload};
@@ -65,7 +101,7 @@ export function BubbleReducer(state: BubbleState = initialState, action: fromBub
             return {...state, loading: false};
         }
         case fromBubble.CREATE:
-            return {...state, selectedBubble: action.payload.bubbleId, loading: true};
+            return {...state, selectedBubbleList: [action.payload.bubbleId], loading: true};
         case fromBubble.CREATE_COMPLETE: {
             const bubbleId = action.payload.bubbleId;
             const isAbove = action.payload.isAbove;
@@ -116,28 +152,11 @@ export function BubbleReducer(state: BubbleState = initialState, action: fromBub
     }
 }
 
-function BubbleListReducer(state: Array<Bubble>, action: fromBubble.Actions) {
+function UIReducer(state: BubbleState, action: fromBubble.Actions) {
     const newBubbleList = _.cloneDeep(state);
     switch (action.type) {
-        case fromBubble.SELECT:
-            const selectBubble = action.payload.bubble;
-            newBubbleList.forEach(bubble => { bubble.isSelected = (bubble.id === selectBubble.id); });
-            return newBubbleList;
-
-        case fromBubble.SELECT_CLEAR:
-            newBubbleList.forEach(bubble => { bubble.isSelected = false; });
-            return newBubbleList;
-
-        case fromBubble.MOUSE_OVER:
-            mouseOverBubble(state, action.payload);
-            return state;
-
-        case fromBubble.MOUSE_OUT:
-            state.forEach(bubble => { bubble.isMouseOver = false; });
-            return state;
-
         default:
-            return state;
+            return newBubbleList;
     }
 }
 
@@ -147,6 +166,15 @@ export function getBubbleById(bubbleList: Array<Bubble>, id: number): Bubble {
         throw new Error('Does not exist with this id');
     }
     return bList[0];
+}
+
+export function isBubbleInList(bubbleList: Array<Bubble>, id: number): boolean {
+    for (const b of bubbleList) {
+        if (b.id === id) {
+            return true;
+        }
+    }
+    return false;
 }
 
 function removeBubbleById(bubbleList: Array<Bubble>, id: number): void {
@@ -166,12 +194,12 @@ function getParentBubble(bubbleList: Array<Bubble>, bubble: Bubble): InternalBub
     }
 }
 
-function mouseOverBubble(bubbleList: Array<Bubble>, bubble: Bubble): void {
-    bubble.isMouseOver = true;
+function mouseOverBubble(bubbleList: Array<Bubble>, hoverBubbleList: Array<Bubble>, bubble: Bubble): void {
+    hoverBubbleList.push(bubble);
     if (bubble.id !== 0 && bubble.type === BubbleType.internalBubble) {
         (bubble as InternalBubble).childBubbleIds.forEach(id => {
             const child = getBubbleById(bubbleList, id);
-            mouseOverBubble(bubbleList, child);
+            mouseOverBubble(bubbleList, hoverBubbleList, child);
         });
     }
 }
@@ -307,7 +335,7 @@ function editBubble(bubbleList: Array<Bubble>, id: number, newContent: string) {
     try {
         const bubble = getBubbleById(bubbleList, id);
         if (bubble.type !== BubbleType.leafBubble) {
-            throw new Error('Edit bubble should be a leaf bubble')
+            throw new Error('Edit bubble should be a leaf bubble');
         }
         const leafBubble = bubble as LeafBubble;
         leafBubble.content = newContent;

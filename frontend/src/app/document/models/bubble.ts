@@ -18,12 +18,6 @@ export class Bubble {
   commentIds: Array<number>;
   suggestBubbleIds: Array<number>;
   watchUserIds: Array<number>;
-
-
-  // related to UI
-  isMouseOver: boolean;
-  isSelected: boolean;
-
 } /* istanbul ignore next */
 
 export class LeafBubble implements Bubble {
@@ -41,10 +35,6 @@ export class LeafBubble implements Bubble {
 
   ownerId: number;
   content: string;
-
-  // related to UI
-  isMouseOver: boolean;
-  isSelected: boolean;
 
   constructor(
     id: number,
@@ -80,10 +70,6 @@ export class InternalBubble implements Bubble {
   watchUserIds: Array<number> = [];
 
   childBubbleIds: Array<number> = [];
-
-  // related to UI
-  isMouseOver: boolean;
-  isSelected: boolean;
 
   constructor(
     id: number,

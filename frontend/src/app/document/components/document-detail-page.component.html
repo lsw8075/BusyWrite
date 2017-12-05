@@ -1,8 +1,12 @@
 <div class="container-fluid">
     <div class="row">
-        <div class="col-sm-7">
+        <div class="col-sm-6">
             <app-view-board [rootBubble]="rootBubble$ | async"
-                            [bubbleList]="bubbleList$ | async">
+                            [bubbleList]="bubbleList$ | async"
+                            [userId]="userId$ | async"
+                            [selectedBubbleList]="selectedBubbleList$ | async"
+                            [hoverBubbleList]="hoverBubbleList$ | async"
+                            [selectedMenu]="selectedMenu$ | async">
                 Your document view board is loading ...
             </app-view-board>
         </div>

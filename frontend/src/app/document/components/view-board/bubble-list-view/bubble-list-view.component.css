@@ -42,8 +42,6 @@
 }
 
 .editting {
-  background-color: gray;
-  color: white;
   height: 50px;
   resize: vertical;
   overflow-y: auto;

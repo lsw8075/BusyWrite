@@ -16,6 +16,8 @@ export class InternalBubbleDirective implements OnInit {
 
     @Input() appInternalBubble: InternalBubble;
     @Input() bubbleList: Array<Bubble>;
+    @Input() isSelected: boolean;
+    @Input() isHover: boolean;
 
     private lineWidth = 3;
     private space = 10;
@@ -34,7 +36,7 @@ export class InternalBubbleDirective implements OnInit {
 
     @HostBinding('style.background-color')
     public get backgroundColor(): string {
-        if (this.appInternalBubble.isSelected) {
+        if (this.isSelected) {
             return this.selectedColor;
         }
     }
@@ -46,7 +48,7 @@ export class InternalBubbleDirective implements OnInit {
         } else if (this.appInternalBubble.parentBubbleId === 0) {
             return this.selectedColor;
         } else {
-            return (this.appInternalBubble.isMouseOver) ? this.selectedColor : 'transparent';
+            return (this.isHover) ? this.selectedColor : 'transparent';
         }
     }
 
@@ -57,7 +59,7 @@ export class InternalBubbleDirective implements OnInit {
         } else if (this.appInternalBubble.parentBubbleId === 0) {
             return this.selectedColor;
         } else {
-            return (this.appInternalBubble.isMouseOver) ? this.selectedColor : 'transparent';
+            return (this.isHover) ? this.selectedColor : 'transparent';
         }
     }
 
@@ -80,7 +82,7 @@ export class InternalBubbleDirective implements OnInit {
 
     @HostListener('mouseover', ['$event'])
     onMouseEnter($event) {
-        if (!this.appInternalBubble.isMouseOver) {
+        if (!this.isHover) {
             this._store.dispatch(new BubbleAction.MouseOver(this.appInternalBubble));
         }
     }

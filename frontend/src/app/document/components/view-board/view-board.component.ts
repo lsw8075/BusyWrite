@@ -25,6 +25,10 @@ export class ViewBoardComponent implements OnInit {
 
     @Input() rootBubble: InternalBubble;
     @Input() bubbleList: Array<Bubble>;
+    @Input() userId: number;
+    @Input() selectedBubbleList: Array<Bubble>;
+    @Input() hoverBubbleList: Array<Bubble>;
+    @Input() selectedMenu: MenuType;
 
   constructor(
     private _boardService: BoardService,

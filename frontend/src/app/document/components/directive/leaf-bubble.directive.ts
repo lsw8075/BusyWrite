@@ -8,9 +8,10 @@ import { Bubble, LeafBubble } from '../../models/bubble';
 export class LeafBubbleDirective implements OnInit {
 
     @Input() appLeafBubble: LeafBubble;
+    @Input() isSelected: boolean;
 
     private selectedColor = `rgb(157, 172, 255)`;
-    private editColor = `rgb(100, 100, 100)`;
+    private editColor = `rgb(200, 230, 200)`;
 
     constructor(
         private el: ElementRef,
@@ -21,18 +22,11 @@ export class LeafBubbleDirective implements OnInit {
 
     @HostBinding('style.background-color')
     public get backgroundColor(): string {
-        if (this.appLeafBubble.isSelected) {
+        if (this.isSelected) {
         return this.selectedColor;
         }
         if (this._isBeingEditted()) {
             return this.editColor;
-        }
-    }
-
-    @HostBinding('style.color')
-    public get color(): string {
-        if (this._isBeingEditted()) {
-            return 'white';
         }
     }
 
@@ -43,12 +37,12 @@ export class LeafBubbleDirective implements OnInit {
 
   @HostListener('mouseleave')
     onMouseLeave() {
-        if (this.appLeafBubble.isSelected) {
-        this.renderer.setStyle(this.el.nativeElement, 'background-color', this.selectedColor);
+        if (this.isSelected) {
+            this.renderer.setStyle(this.el.nativeElement, 'background-color', this.selectedColor);
         } else if (this._isBeingEditted()) {
-        this.renderer.setStyle(this.el.nativeElement, 'background-color', this.editColor);
+            this.renderer.setStyle(this.el.nativeElement, 'background-color', this.editColor);
         } else {
-        this.renderer.setStyle(this.el.nativeElement, 'background-color', `transparent`);
+            this.renderer.setStyle(this.el.nativeElement, 'background-color', `transparent`);
         }
     }
 

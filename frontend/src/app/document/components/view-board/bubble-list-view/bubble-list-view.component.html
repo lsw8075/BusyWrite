@@ -25,7 +25,12 @@
         </div>
         <ng-container *ngFor="let childId of bubble.childBubbleIds; ">
             <ng-container *ngIf="getBubbleById(childId) as child">
-                <div [appInternalBubble]="child" [bubbleList]="bubbleList" appStopClickPropagation class="internalBubble" (click)="onClickEvent(child, menuType.internalMenu, $event);">
+                <div [appInternalBubble]="child"
+                     [bubbleList]="bubbleList"
+                     [isSelected]="isSelected(bubble)"
+                     [isHover]="isHover(bubble)"
+                     appStopClickPropagation class="internalBubble"
+                     (click)="onClickEvent(child, menuType.internalMenu, $event);">
                     <!-- recursive call -->
                     <ng-container *ngTemplateOutlet="internalBubble; context: { $implicit: child}"></ng-container>
                 </div>
@@ -52,10 +57,12 @@
         <app-bubble-menu *ngIf="isMenuOpen(bubble, menuType.leafMenu)" class="action"  [bubble]="bubble" [menu]="menuType.leafMenu" [bubbleList]="bubbleList" ></app-bubble-menu>
 
         <!-- is someone editting it? -->
-        <ng-container *ngIf="isBubbleContentShown(bubble); then show else edit"></ng-container>
+        <div>
+            <ng-container *ngIf="isBubbleContentShown(bubble); then show else edit"></ng-container>
+            </div>
 
         <ng-template #show>
-            <div class="bubble-show" [appLeafBubble]="bubble" innerHtml="{{bubble.content}}"></div>
+            <div class="bubble-show" [appLeafBubble]="bubble" [isSelected]="isSelected(bubble)" innerHtml="{{bubble.content}}"></div>
         </ng-template>
         <ng-template #edit>
             <div class="text-center">
@@ -64,7 +71,7 @@
                 This bubble is being editted by {{bubble.ownerId}}
                 </span>
             </div>
-            <div class="bubble-show editting" innerHtml="{{bubble.content}}"></div>
+            <div class="bubble-show editting" [appLeafBubble]="bubble" [isSelected]="isSelected(bubble)"  innerHtml="{{bubble.content}}"></div>
         </ng-template>
     </div>
 

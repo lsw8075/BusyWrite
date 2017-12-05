@@ -2,6 +2,13 @@ import { Bubble } from './bubble';
 
 const tempUserID = 1;
 
+export enum BoardType {
+    view = 1,
+    edit,
+    suggest,
+    filter,
+}
+
 export class Board {
 }
 

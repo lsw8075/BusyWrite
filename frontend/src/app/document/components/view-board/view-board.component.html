@@ -4,7 +4,12 @@
             <ng-template tabHeading>
                 View
             </ng-template>
-            <app-bubble-list-view [rootBubble]="rootBubble" [bubbleList]="bubbleList">
+            <app-bubble-list-view [rootBubble]="rootBubble"
+                                  [bubbleList]="bubbleList"
+                                  [selectedBubbleList]="selectedBubbleList"
+                                  [hoverBubbleList]="hoverBubbleList"
+                                  [userId]="userId"
+                                  [selectedMenu]="selectedMenu">
                 Your bubbles are Loading ...!
             </app-bubble-list-view>
         </tab>
