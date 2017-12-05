@@ -40,6 +40,9 @@ const initialState: BubbleState = {
 export function BubbleReducer(state: BubbleState = initialState, action: fromBubble.Actions) {
     switch (action.type) {
         case fromBubble.SELECT:
+            if (state.loading) {
+                return {...state, error: 'please wait'};
+            }
             const selectedBubble = action.payload.bubble;
             const selectedMenu = action.payload.menu;
 
@@ -94,23 +97,23 @@ export function BubbleReducer(state: BubbleState = initialState, action: fromBub
             return {...state, loading: false};
         }
         case fromBubble.DELETE:
-            return {...state, loading: true};
+            return {...state, loading: true, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
         case fromBubble.DELETE_COMPLETE: {
             const bubbleId = action.payload;
             deleteBubble(state.bubbleList, bubbleId);
             return {...state, loading: false};
         }
         case fromBubble.CREATE:
-            return {...state, selectedBubbleList: [action.payload.bubbleId], loading: true};
+            return {...state, selectedBubbleList: [action.payload.bubbleId], loading: true, selectedMenu: null, hoverBubbleList: []};
         case fromBubble.CREATE_COMPLETE: {
             const bubbleId = action.payload.bubbleId;
             const isAbove = action.payload.isAbove;
             const newBubble = action.payload.newBubble;
             createBubble(state.bubbleList, bubbleId, isAbove, newBubble);
-            return {...state, loading: false};
+            return {...state, loading: false };
         }
         case fromBubble.EDIT:
-            return {...state, loading: true};
+            return {...state, loading: true, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
         case fromBubble.EDIT_COMPLETE: {
             const bubbleId = action.payload.bubbleId;
             const newContent = action.payload.newContent;
@@ -118,7 +121,7 @@ export function BubbleReducer(state: BubbleState = initialState, action: fromBub
             return {...state, loading: false};
         }
         case fromBubble.FLATTEN:
-            return {...state, loading: true};
+            return {...state, loading: true, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
         case fromBubble.FLATTEN_COMPLETE: {
             const bubbleId = action.payload.bubbleId;
             const newBubble = action.payload.newBubble;
@@ -126,13 +129,13 @@ export function BubbleReducer(state: BubbleState = initialState, action: fromBub
             return {...state, loading: false};
         }
         case fromBubble.WRAP:
-        return {...state, loading: true};
+        return {...state, loading: true, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
         case fromBubble.WRAP_COMPLETE: {
         const bubbleId = action.payload;
         return {...state, loading: false};
         }
         case fromBubble.MERGE:
-        return {...state, loading: true};
+        return {...state, loading: true, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
 
         case fromBubble.MERGE_COMPLETE: {
         const bubbleId = action.payload;
@@ -140,7 +143,7 @@ export function BubbleReducer(state: BubbleState = initialState, action: fromBub
         }
 
         case fromBubble.SPLIT:
-        return {...state, loading: true};
+        return {...state, loading: true, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
 
         case fromBubble.SPLIT_COMPLETE: {
         const bubbleId = action.payload;

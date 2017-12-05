@@ -9,9 +9,19 @@ export enum BoardType {
     filter,
 }
 
-export class Board {
-    type: BoardType;
+export enum BoardLocation {
+    left = 1,
+    right,
+    hidden,
+    closed,
+    hover
+}
 
+export class Board {
+    constructor(
+        public type: BoardType,
+        public location: BoardLocation,
+        public id: number) {}
 }
 
 export class EditItem {

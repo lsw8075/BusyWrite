@@ -1,39 +1,63 @@
 <div class="container-fluid">
     <div class="row">
-        <div class="col-sm-3">
+        <div class="col-sm-3 alert alert-primary">
             <div class="mx-auto">
                 <ng-container *ngIf="changeTitle; then editTitle else showTitle"></ng-container>
             </div>
 
             <ng-template #editTitle>
                 <input (keyup.enter)="titleEditDone()" type="text" [(ngModel)]="documentTitle">
-                <button class="btn btn-sm btn-default"><i (click)="titleEditDone()" class="fa fa-check fa-fw"></i></button>
+                <i (click)="titleEditDone()" class="fa fa-check fa-fw"></i>
             </ng-template>
 
             <ng-template #showTitle>
                 <span>{{documentTitle}}</span>
-                <button class="btn btn-sm btn-default"><i (click)="titleEditStart()" class="fa fa-pencil fa-fw"></i></button>
+                <i (click)="titleEditStart()" class="fa fa-pencil fa-fw"></i>
             </ng-template>
         </div>
-        <div class="col-sm-6">
+        <div class="col-sm-5 alert alert-info">
             <app-board-manager>
                 your board manager is Loading!
             </app-board-manager>
         </div>
+        <div class="col-sm-4">
+            <div *ngFor="let alert of alerts">
+                <alert [type]="alert.type" [dismissOnTimeout]="alert.timeout">{{ alert.msg }}</alert>
+            </div>
+        </div>
     </div>
     <div class="row">
         <div class="col-sm-6">
-            <app-view-board [rootBubble]="rootBubble$ | async"
-                            [bubbleList]="bubbleList$ | async"
-                            [userId]="userId$ | async"
-                            [selectedBubbleList]="selectedBubbleList$ | async"
-                            [hoverBubbleList]="hoverBubbleList$ | async"
-                            [selectedMenu]="selectedMenu$ | async">
-                Your document view board is loading ...
-            </app-view-board>
+            <ng-container *ngTemplateOutlet="board; context: { $implicit: leftBoard$ }"></ng-container>
         </div>
-        <div class="col-sm-5">
-
+        <div class="col-sm-6">
+                <ng-container *ngTemplateOutlet="board; context: { $implicit: rightBoard$ }"></ng-container>
         </div>
     </div>
 </div>
+
+<ng-template #board let-board$>
+    <div *ngIf="board$ | async as board">
+        <div [ngSwitch]="board.type">
+            <div *ngSwitchCase="boardType.view">
+                <app-view-board [rootBubble]="rootBubble$ | async"
+                    [bubbleList]="bubbleList$ | async"
+                    [userId]="userId$ | async"
+                    [selectedBubbleList]="selectedBubbleList$ | async"
+                    [hoverBubbleList]="hoverBubbleList$ | async"
+                    [selectedMenu]="selectedMenu$ | async">
+                    Your document view board is loading ...
+                </app-view-board>
+            </div>
+            <div *ngSwitchCase="boardType.edit">
+                <app-edit-board></app-edit-board>
+            </div>
+            <div *ngSwitchCase="boardType.suggest">
+                <app-sangjun-board></app-sangjun-board>
+            </div>
+            <div *ngSwitchCase="boardType.filter">
+                <app-filter-board></app-filter-board>
+            </div>
+        </div>
+    </div>
+</ng-template>

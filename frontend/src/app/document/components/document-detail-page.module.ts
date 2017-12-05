@@ -40,6 +40,8 @@ import { TooltipModule } from 'ngx-bootstrap/tooltip';
 import { AlertModule } from 'ngx-bootstrap/alert';
 import { ModalModule } from 'ngx-bootstrap/modal';
 import { TabsModule } from 'ngx-bootstrap/tabs';
+import { CollapseModule } from 'ngx-bootstrap/collapse';
+import { CarouselModule } from 'ngx-bootstrap/carousel';
 
 import { ButtonModule } from 'primeng/primeng';
 import { TabViewModule } from 'primeng/primeng';
@@ -80,6 +82,8 @@ const routes: Routes = [
     TabsModule.forRoot(),
     TabViewModule,
     BsDropdownModule.forRoot(),
+    CollapseModule.forRoot(),
+    CarouselModule.forRoot(),
     ButtonModule,
     DragulaModule,
     DialogModule,
@@ -89,7 +93,7 @@ const routes: Routes = [
     AccordionModule.forRoot(),
     TooltipModule.forRoot(),
     AlertModule.forRoot(),
-    ModalModule.forRoot()
+    ModalModule.forRoot(),
   ],
   exports: [
     DocumentDetailPageComponent

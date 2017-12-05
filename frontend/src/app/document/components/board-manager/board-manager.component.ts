@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 
-import { Board, BoardType } from '../../models/board';
+import { Board, BoardType, BoardLocation } from '../../models/board';
 
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
@@ -18,14 +18,60 @@ import * as RouterAction from '../../../shared/route/route-action';
 })
 export class BoardManagerComponent implements OnInit {
 
-    @Input() documentTitle: string;
-    @Input() changeTitle: boolean;
+    boardType = BoardType;
+    boardLocation = BoardLocation;
 
-    constructor(private _store: Store<fromDocument.State>) { }
+    isCollapsed = true;
 
-    ngOnInit() {
-        this.changeTitle = true;
+    boardList$: Observable<Board[]>;
+
+    constructor(private _store: Store<fromDocument.State>) {
+        this.boardList$ = _store.select(fromDocument.getBoardList);
+     }
+
+    ngOnInit() {}
+
+    public addBoard(boardType: BoardType): void {
+        this._store.dispatch(new BoardAction.Add(boardType));
     }
 
+    public deleteBoard(board: Board): void {
+        this._store.dispatch(new BoardAction.Delete(board));
+    }
+
+    public hideBoard(board: Board): void {
+        this._store.dispatch(new BoardAction.Hide(board));
+    }
+
+    public showOnLeft(board: Board): void {
+        this._store.dispatch(new BoardAction.ShowLeft(board));
+    }
+
+    public showOnRight(board: Board): void {
+        this._store.dispatch(new BoardAction.ShowRight(board));
+    }
+
+    icon(board: Board): string {
+        if (board.location === BoardLocation.left) {
+            return 'L';
+        } else if (board.location === BoardLocation.right) {
+            return 'R';
+        }
+        switch (board.type) {
+            case BoardType.view:
+                return 'V';
+            case BoardType.edit:
+                return 'E';
+            case BoardType.filter:
+                return 'F';
+            case BoardType.suggest:
+                return 'S';
+        }
+    }
+
+    isImportantBoard(board: Board): boolean {
+        return (board.location === BoardLocation.left ||
+            board.location === BoardLocation.right);
+    }
 
 }

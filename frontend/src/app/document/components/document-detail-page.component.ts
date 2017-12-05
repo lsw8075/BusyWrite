@@ -7,12 +7,14 @@ import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
 
 import { Bubble, BubbleType, InternalBubble, LeafBubble } from '../models/bubble';
+import { Board, BoardType, BoardLocation } from '../models/board';
 import { User } from '../../user/models/user';
 import { MenuType } from './service';
 
 import * as fromUser from '../../user/reducers/reducer';
 import * as fromDocument from '../reducers/reducer';
 
+import * as BoardAction from '../actions/board-action';
 import * as BubbleAction from '../actions/bubble-action';
 import * as RouterAction from '../../shared/route/route-action';
 
@@ -26,6 +28,8 @@ import * as RouterAction from '../../shared/route/route-action';
 
 export class DocumentDetailPageComponent implements OnInit {
 
+    boardType = BoardType;
+
     rootBubble$: Observable<InternalBubble>;
     bubbleList$: Observable<Array<Bubble>>;
     userId$: Observable<Number>;
@@ -33,8 +37,13 @@ export class DocumentDetailPageComponent implements OnInit {
     hoverBubbleList$: Observable<Bubble[]>;
     selectedMenu$: Observable<MenuType>;
 
+    leftBoard$: Observable<Board>;
+    rightBoard$: Observable<Board>;
+
     documentTitle = 'empty title';
     changeTitle = false;
+
+    alerts: any = [];
 
     constructor(
         private _documentService: DocumentService,
@@ -46,6 +55,15 @@ export class DocumentDetailPageComponent implements OnInit {
         this.selectedBubbleList$ = this._store.select(fromDocument.getSelectedBubbleList);
         this.hoverBubbleList$ = this._store.select(fromDocument.getHoverBubbleList);
         this.selectedMenu$ = this._store.select(fromDocument.getSelectedMenu);
+        this.leftBoard$ = this._store.select(fromDocument.getLeftBoard);
+        this.rightBoard$ = this._store.select(fromDocument.getRightBoard);
+
+        this._store.select(fromDocument.getBoardStateError).subscribe(err => {
+            if (err) {
+                this.addError(err);
+                this._store.dispatch(new BoardAction.ClearError());
+            }
+        });
     }
 
     ngOnInit() {
@@ -59,4 +77,13 @@ export class DocumentDetailPageComponent implements OnInit {
     public titleEditStart() {
         this.changeTitle = true;
     }
+
+    addError(err: string): void {
+        this.alerts.push({
+            type: 'warning',
+            msg: err,
+            timeout: 2500
+        });
+    }
+
 } /* istanbul ignore next */
