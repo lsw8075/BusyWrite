@@ -79,8 +79,10 @@ export class InternalBubbleDirective implements OnInit {
     }
 
     @HostListener('mouseover', ['$event'])
-    onMouseOver($event) {
-        this._store.dispatch(new BubbleAction.MouseOver(this.appInternalBubble));
+    onMouseEnter($event) {
+        if (!this.appInternalBubble.isMouseOver) {
+            this._store.dispatch(new BubbleAction.MouseOver(this.appInternalBubble));
+        }
     }
 
     @HostListener('mouseout', ['$event'])

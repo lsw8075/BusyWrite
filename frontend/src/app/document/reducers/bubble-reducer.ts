@@ -5,6 +5,7 @@ import { MenuType } from '../services/event/event-bubble.service';
 import { MockBubbleRoot, MockBubbleList } from '../models/bubble.mock';
 
 import * as fromBubble from '../actions/bubble-action';
+import * as _ from 'lodash';
 
 export interface BubbleState {
   documentId: number;
@@ -116,7 +117,7 @@ export function BubbleReducer(state: BubbleState = initialState, action: fromBub
 }
 
 function BubbleListReducer(state: Array<Bubble>, action: fromBubble.Actions) {
-    const newBubbleList = [...state];
+    const newBubbleList = _.cloneDeep(state);
     switch (action.type) {
         case fromBubble.SELECT:
             const selectBubble = action.payload.bubble;
@@ -128,19 +129,17 @@ function BubbleListReducer(state: Array<Bubble>, action: fromBubble.Actions) {
             return newBubbleList;
 
         case fromBubble.MOUSE_OVER:
-            mouseOverBubble(newBubbleList, action.payload);
-            return newBubbleList;
+            mouseOverBubble(state, action.payload);
+            return state;
 
         case fromBubble.MOUSE_OUT:
-            newBubbleList.forEach(bubble => { bubble.isMouseOver = false; });
-            return newBubbleList;
+            state.forEach(bubble => { bubble.isMouseOver = false; });
+            return state;
 
         default:
             return state;
     }
 }
-
-
 
 export function getBubbleById(bubbleList: Array<Bubble>, id: number): Bubble {
     const bList = bubbleList.filter((bubble) => (bubble.id === id));
