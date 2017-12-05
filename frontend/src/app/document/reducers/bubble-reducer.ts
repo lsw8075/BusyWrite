@@ -18,6 +18,8 @@ export interface BubbleState {
     isMoveAction: boolean;
     isWrapAction: boolean;
 
+    sangjunBoardBubble: Bubble;
+
     loading: boolean;
     error: string;
 }
@@ -32,6 +34,8 @@ const initialState: BubbleState = {
     selectedMenu: null,
     isMoveAction: false,
     isWrapAction: false,
+
+    sangjunBoardBubble: null,
 
     loading: false,
     error: ''
@@ -143,13 +147,15 @@ export function BubbleReducer(state: BubbleState = initialState, action: fromBub
         }
 
         case fromBubble.SPLIT:
-        return {...state, loading: true, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
+            return {...state, loading: true, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
 
         case fromBubble.SPLIT_COMPLETE: {
-        const bubbleId = action.payload;
-        return {...state, loading: false};
+            const bubbleId = action.payload;
+            return {...state, loading: false};
         }
 
+        case fromBubble.CLEAR_ERROR:
+            return {...state, error: ''};
         default:
         return state;
     }

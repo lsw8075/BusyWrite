@@ -64,6 +64,13 @@ export class DocumentDetailPageComponent implements OnInit {
                 this._store.dispatch(new BoardAction.ClearError());
             }
         });
+
+        this._store.select(fromDocument.getBubbleStateError).subscribe(err => {
+            if (err) {
+                this.addError(err);
+                this._store.dispatch(new BubbleAction.ClearError());
+            }
+        });
     }
 
     ngOnInit() {

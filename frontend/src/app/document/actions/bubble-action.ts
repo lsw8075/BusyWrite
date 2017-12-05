@@ -245,6 +245,12 @@ export class Refresh implements Action {
   constructor(public payload: void) {}
 }
 
+export const CLEAR_ERROR = '[Board] clear error';
+export class ClearError implements Action {
+    readonly type = CLEAR_ERROR;
+    constructor(public payload ?: void) {}
+}
+
 export type Actions =
   | Open
   | OpenComplete
@@ -287,4 +293,5 @@ export type Actions =
   | OthersPop
   | OthersMerge
   | OthersDelete
-  | Refresh;
+  | Refresh
+  | ClearError;
