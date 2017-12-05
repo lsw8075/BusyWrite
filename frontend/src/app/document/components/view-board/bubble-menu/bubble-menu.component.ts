@@ -17,8 +17,6 @@ import * as fromBubble from '../../../reducers/bubble-reducer';
 import * as BubbleAction from '../../../actions/bubble-action';
 import * as RouterAction from '../../../../shared/route/route-action';
 
-
-
 @Component({
   selector: 'app-bubble-menu',
   templateUrl: './bubble-menu.component.html',
@@ -27,8 +25,8 @@ import * as RouterAction from '../../../../shared/route/route-action';
 export class BubbleMenuComponent implements OnInit {
 
     menuType = MenuType;
-    @Input() menu: MenuType;
     @Input() bubble: Bubble;
+    @Input() menu: MenuType;
     @Input() bubbleList: Array<Bubble>;
 
     bsModalRef: BsModalRef;
@@ -41,7 +39,9 @@ export class BubbleMenuComponent implements OnInit {
         private _modalService: BsModalService) {
     }
 
-    ngOnInit() {}
+    ngOnInit() {
+        console.log(this.bubble, this.menu);
+    }
 
     public isWrapSelected(): boolean {
         return this._eventBubbleService.getActionState() === ActionType.wrap;

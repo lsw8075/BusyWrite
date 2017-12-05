@@ -7,7 +7,7 @@
         <div class="row">
             <div class="col-md-10 mx-3 list-group-item">
                 <div (appClickOutside)="clearState($event)" *ngIf="rootBubble">
-                    <ng-container *ngTemplateOutlet="internalBubble; context: { $implicit: rootBubble }"></ng-container>
+                    <ng-container *ngTemplateOutlet="bubbleUnit; context: { $implicit: rootBubble }"></ng-container>
                 </div>
             </div>
         </div>
@@ -15,43 +15,50 @@
 </div>
 
 <!-- internal bubble -->
-<ng-template #internalBubble let-bubble>
+<ng-template #bubbleUnit let-bubble>
     <ng-container *ngIf="isInternal(bubble); then internal else leaf"></ng-container>
 
     <!-- if internal -->
     <ng-template #internal>
-        <div *ngIf="isMenuOpen(bubble, menuType.internalMenu)" class="action" >
-            <app-bubble-menu [bubble]="bubble" [menu]="menuType.internalMenu" [bubbleList]="bubbleList" ></app-bubble-menu>
+        <div *ngIf="isMenuOpen(bubble, menuType.internalMenu)" class="action">
+            <app-bubble-menu [bubble]="bubble" [menu]="menuType.internalMenu" [bubbleList]="bubbleList"></app-bubble-menu>
         </div>
-        <ng-container *ngFor="let childId of bubble.childBubbleIds; ">
-            <ng-container *ngIf="getBubbleById(childId) as child">
-                <div [appInternalBubble]="child"
-                     [bubbleList]="bubbleList"
-                     [isSelected]="isSelected(child)"
-                     [isHover]="isHover(child)"
-                     appStopClickPropagation
-                     class="internalBubble"
-                     (click)="onClickEvent(child, menuType.internalMenu, $event);">
-                    <!-- recursive call -->
-                    <ng-container *ngTemplateOutlet="internalBubble; context: { $implicit: child}"></ng-container>
-                </div>
-            </ng-container>
-        </ng-container>
+        <ng-container *ngTemplateOutlet="internalBubble; context: { $implicit: bubble }"></ng-container>
     </ng-template>
 
     <!-- if leaf -->
     <ng-template #leaf>
+        <!-- top border -->
+        <div class="placeholder placeholder-top" appStopClickPropagation (click)="onClickEvent(bubble, menuType.borderTopMenu, $event);">
+            <app-bubble-menu *ngIf="isMenuOpen(bubble, menuType.borderTopMenu)" class="action" [bubble]="bubble" [menu]="menuType.borderTopMenu" [bubbleList]="bubbleList" ></app-bubble-menu>
+        </div>
         <ng-container *ngTemplateOutlet="leafBubble; context: { $implicit: bubble }"></ng-container>
+        <!-- bottom border -->
+        <div class="placeholder placeholder-bottom" appStopClickPropagation (click)="onClickEvent(bubble, menuType.borderBottomMenu, $event);">
+            <app-bubble-menu *ngIf="isMenuOpen(bubble, menuType.borderBottomMenu)" class="action" [bubble]="bubble" [menu]="menuType.borderBottomMenu" [bubbleList]="bubbleList" ></app-bubble-menu>
+        </div>
     </ng-template>
+</ng-template>
+
+<ng-template #internalBubble let-bubble>
+    <ng-container *ngFor="let childId of bubble.childBubbleIds; ">
+        <ng-container *ngIf="getBubbleById(childId) as child">
+            <div [appInternalBubble]="child"
+                    [bubbleList]="bubbleList"
+                    [isSelected]="isSelected(child)"
+                    [isHover]="isHover(child)"
+                    appStopClickPropagation
+                    class="internalBubble"
+                    (click)="onClickEvent(child, menuType.internalMenu, $event);">
+                <!-- recursive call -->
+                <ng-container *ngTemplateOutlet="bubbleUnit; context: { $implicit: child}"></ng-container>
+            </div>
+        </ng-container>
+    </ng-container>
 </ng-template>
 
 <!-- leaf bubble -->
 <ng-template #leafBubble let-bubble>
-    <!-- top border -->
-    <div class="placeholder placeholder-top" appStopClickPropagation (click)="onClickEvent(bubble, menuType.borderTopMenu, $event);">
-        <app-bubble-menu *ngIf="isMenuOpen(bubble, menuType.borderTopMenu)" class="action" [bubble]="bubble" [menu]="menuType.borderTopMenu" [bubbleList]="bubbleList" ></app-bubble-menu>
-    </div>
-
     <!-- leaf bubble content -->
     <div class="leafBubble" appStopClickPropagation (click)="onClickEvent(bubble, menuType.leafMenu, $event);">
         <!-- leaf bubble menu -->
@@ -72,10 +79,5 @@
             </div>
             <div class="bubble-show editting" [appLeafBubble]="bubble" [isSelected]="isSelected(bubble)"  innerHtml="{{bubble.content}}"></div>
         </ng-template>
-    </div>
-
-    <!-- bottom border -->
-    <div class="placeholder placeholder-bottom" appStopClickPropagation (click)="onClickEvent(bubble, menuType.borderBottomMenu, $event);">
-        <app-bubble-menu *ngIf="isMenuOpen(bubble, menuType.borderBottomMenu)" class="action" [bubble]="bubble" [menu]="menuType.borderBottomMenu" [bubbleList]="bubbleList" ></app-bubble-menu>
     </div>
 </ng-template>
