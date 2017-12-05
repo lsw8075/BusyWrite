@@ -21,7 +21,7 @@
     <!-- if internal -->
     <ng-template #internal>
         <div *ngIf="isMenuOpen(bubble, menuType.internalMenu)" class="action" >
-            <app-bubble-menu [bubble]="bubble" [menu]="menuType.internalMenu"></app-bubble-menu>
+            <app-bubble-menu [bubble]="bubble" [menu]="menuType.internalMenu" [bubbleList]="bubbleList" ></app-bubble-menu>
         </div>
         <ng-container *ngFor="let childId of bubble.childBubbleIds; ">
             <ng-container *ngIf="getBubbleById(childId) as child">
@@ -43,13 +43,13 @@
 <ng-template #leafBubble let-bubble>
     <!-- top border -->
     <div class="placeholder placeholder-top" appStopClickPropagation (click)="onClickEvent(bubble, menuType.borderTopMenu, $event);">
-        <app-bubble-menu *ngIf="isMenuOpen(bubble, menuType.borderTopMenu)" class="action" [bubble]="bubble" [menu]="menuType.borderTopMenu"></app-bubble-menu>
+        <app-bubble-menu *ngIf="isMenuOpen(bubble, menuType.borderTopMenu)" class="action" [bubble]="bubble" [menu]="menuType.borderTopMenu" [bubbleList]="bubbleList" ></app-bubble-menu>
     </div>
 
     <!-- leaf bubble content -->
     <div class="leafBubble" appStopClickPropagation (click)="onClickEvent(bubble, menuType.leafMenu, $event);">
         <!-- leaf bubble menu -->
-        <app-bubble-menu *ngIf="isMenuOpen(bubble, menuType.leafMenu)" class="action"  [bubble]="bubble" [menu]="menuType.leafMenu"></app-bubble-menu>
+        <app-bubble-menu *ngIf="isMenuOpen(bubble, menuType.leafMenu)" class="action"  [bubble]="bubble" [menu]="menuType.leafMenu" [bubbleList]="bubbleList" ></app-bubble-menu>
 
         <!-- is someone editting it? -->
         <ng-container *ngIf="isBubbleContentShown(bubble); then show else edit"></ng-container>
@@ -70,6 +70,6 @@
 
     <!-- bottom border -->
     <div class="placeholder placeholder-bottom" appStopClickPropagation (click)="onClickEvent(bubble, menuType.borderBottomMenu, $event);">
-        <app-bubble-menu *ngIf="isMenuOpen(bubble, menuType.borderBottomMenu)" class="action" [bubble]="bubble" [menu]="menuType.borderBottomMenu"></app-bubble-menu>
+        <app-bubble-menu *ngIf="isMenuOpen(bubble, menuType.borderBottomMenu)" class="action" [bubble]="bubble" [menu]="menuType.borderBottomMenu" [bubbleList]="bubbleList" ></app-bubble-menu>
     </div>
 </ng-template>

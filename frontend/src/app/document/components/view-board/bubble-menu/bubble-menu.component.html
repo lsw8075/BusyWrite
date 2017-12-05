@@ -37,7 +37,7 @@
           <span class="caret"></span>
         </button>
         <ul *dropdownMenu class="dropdown-menu" role="menu">
-          <ng-container *ngIf="!bubble.isBeingEditted()">
+          <ng-container *ngIf="!isBeingEditted(bubble)">
             <li role="menuitem">
               <a class="dropdown-item" (click)="splitBubble(); " appStopClickPropagation>
                 <i class="fa fa-scissors fa-fw"></i>
@@ -52,6 +52,7 @@
             </li>
             <li role="menuitem">
               <a class="dropdown-item" (click)="mergeBubble(); " appStopClickPropagation>
+                <i class="fa fa-compress fa-fw"></i>
                 Merge
               </a>
             </li>
@@ -91,7 +92,7 @@
           <span class="caret"></span>
         </button>
         <ul *dropdownMenu class="dropdown-menu" role="menu">
-          <ng-container *ngIf="!bubble.isBeingEditted()">
+          <ng-container *ngIf="!isBeingEditted(bubble)">
             <li role="menuitem">
               <a class="dropdown-item" (click)="flattenBubble(); " appStopClickPropagation>
                 <i class="fa fa-stack-overflow fa-fw"></i>

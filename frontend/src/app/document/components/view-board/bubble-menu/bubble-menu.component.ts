@@ -1,7 +1,8 @@
 import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
-import { BubbleType, Bubble, MenuType, ActionType } from '../service';
+import { MenuType, ActionType } from '../service';
 import { BubbleService } from '../service';
 import { EventBubbleService } from '../../../services/event/event-bubble.service';
+import { BubbleType, Bubble, LeafBubble, InternalBubble } from '../../../models/bubble';
 
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
@@ -12,8 +13,10 @@ import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
 
 import * as fromDocument from '../../../reducers/reducer';
+import * as fromBubble from '../../../reducers/bubble-reducer';
 import * as BubbleAction from '../../../actions/bubble-action';
 import * as RouterAction from '../../../../shared/route/route-action';
+
 
 
 @Component({
@@ -23,87 +26,94 @@ import * as RouterAction from '../../../../shared/route/route-action';
 })
 export class BubbleMenuComponent implements OnInit {
 
-  menuType = MenuType;
-  @Input() menu: MenuType;
-  @Input() bubble: Bubble;
+    menuType = MenuType;
+    @Input() menu: MenuType;
+    @Input() bubble: Bubble;
+    @Input() bubbleList: Array<Bubble>;
 
-  bsModalRef: BsModalRef;
+    bsModalRef: BsModalRef;
 
 
-  constructor(
-    private _store: Store<fromDocument.State>,
-    private _bubbleSerivce: BubbleService,
-    private _eventBubbleService: EventBubbleService,
-    private _modalService: BsModalService) {
-  }
+    constructor(
+        private _store: Store<fromDocument.State>,
+        private _bubbleSerivce: BubbleService,
+        private _eventBubbleService: EventBubbleService,
+        private _modalService: BsModalService) {
+    }
 
-  ngOnInit() {}
+    ngOnInit() {}
 
-  public isWrapSelected(): boolean {
-    return this._eventBubbleService.getActionState() === ActionType.wrap;
-  }
+    public isWrapSelected(): boolean {
+        return this._eventBubbleService.getActionState() === ActionType.wrap;
+    }
 
-  public isMoveSelected(): boolean {
-    return this._eventBubbleService.getActionState() === ActionType.move;
-  }
+    public isMoveSelected(): boolean {
+        return this._eventBubbleService.getActionState() === ActionType.move;
+    }
 
-  public openSangjunBoard() {
-    // this._eventBubbleService.openSangjunBoard(this.bubble);
-  }
+    public openSangjunBoard() {
+        // this._eventBubbleService.openSangjunBoard(this.bubble);
+    }
 
-  public splitBubble() {
-  //  this._store.dispatch(new BubbleAction.Split(this.bubble));
-    this.bsModalRef = this._modalService.show(SplitBubbleComponent);
-    this.bsModalRef.content.bubble = this.bubble;
-  }
+    public splitBubble() {
+    //  this._store.dispatch(new BubbleAction.Split(this.bubble));
+        this.bsModalRef = this._modalService.show(SplitBubbleComponent);
+        this.bsModalRef.content.bubble = this.bubble;
+    }
 
-  public popBubble() {
-  //  this._store.dispatch(new BubbleAction.Pop(this.bubble));
-  }
+    public popBubble() {
+        this._store.dispatch(new BubbleAction.Pop(this.bubble.id));
+    }
 
-  public wrapBubble() {
-  //  this._eventBubbleService.wrapBubble(this.bubble);
-  }
+    public wrapBubble() {
+    //  this._eventBubbleService.wrapBubble(this.bubble);
+    }
 
-  public wrap() {
-    // this._eventBubbleService.wrap();
-  }
+    public wrap() {
+        // this._eventBubbleService.wrap();
+    }
 
-  public createBubble() {
-    const bubble = this.bubble;
-    const menu = this.menu;
-  //  this._store.dispatch(new BubbleAction.Create({bubble, menu}));
-  }
+    public createBubble() {
+        this._store.dispatch(new BubbleAction.Create({bubbleId: this.bubble.id, isAbove: this.menu === MenuType.borderTopMenu}));
+    }
 
-  public editBubble() {
-  //  this._store.dispatch(new BubbleAction.Edit(this.bubble));
-  }
+    public editBubble() {
+        this._store.dispatch(new BubbleAction.Edit(this.bubble.id));
+    }
 
-  public deleteBubble() {
-  //  this._store.dispatch(new BubbleAction.Delete(this.bubble));
-  }
+    public deleteBubble() {
+        this._store.dispatch(new BubbleAction.Delete(this.bubble.id));
+    }
 
-  public mergeBubble() {
-  //  this._store.dispatch(new BubbleAction.Merge(this.bubble));
-  }
+    public mergeBubble() {
+        this._store.dispatch(new BubbleAction.Merge(this.bubble.id));
+    }
 
-  public flattenBubble() {
-    // this._eventBubbleService.flattenBubble(this.bubble);
-  }
+    public flattenBubble() {
+        this._store.dispatch(new BubbleAction.Flatten(this.bubble.id));
+    }
 
-  public moveBubble() {
-    // this._eventBubbleService.moveBubble(this.bubble, this.menu);
-  }
+    public moveBubble() {
+        // this._eventBubbleService.moveBubble(this.bubble, this.menu);
+    }
 
-  public getAction(): string {
-   switch (this._eventBubbleService.getActionState()) {
-     case ActionType.move:
-      return 'move bubble';
-     case ActionType.split:
-      return 'split bubble';
-     default:
-      return '';
-   }
-  }
+    public getAction(): string {
+    switch (this._eventBubbleService.getActionState()) {
+        case ActionType.move:
+        return 'move bubble';
+        case ActionType.split:
+        return 'split bubble';
+        default:
+        return '';
+    }
+    }
+
+  public isBeingEditted(bubble: Bubble): boolean {
+        if (bubble.type === BubbleType.leafBubble) {
+            return (bubble as LeafBubble).ownerId !== -1;
+        }
+        return (bubble as InternalBubble).childBubbleIds
+            .reduce((prev, curr) => prev || this.isBeingEditted(fromBubble.getBubbleById(this.bubbleList, curr)), false);
+    }
 
 } /* istanbul ignore next */
