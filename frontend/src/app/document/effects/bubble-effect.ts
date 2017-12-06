@@ -128,6 +128,7 @@ export class BubbleEffects {
         });
 
 
+
     constructor(
         private action$: Actions,
         private _store: Store<fromDocument.State>,
