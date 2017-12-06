@@ -112,12 +112,17 @@ export class EditError implements Action {
   constructor(public payload: string) {}
 }
 
+export const WRAP_START = '[Bubble] wrap mode start';
 export const WRAP = '[Bubble] wrap';
 export const WRAP_COMPLETE = '[Bubble] wrap Complete';
 export const WRAP_ERROR = '[Bubble] wrap Error';
+export class WrapStart implements Action {
+    readonly type = WRAP_START;
+    constructor(public payload: Bubble) {}
+}
 export class Wrap implements Action {
   readonly type = WRAP;
-  constructor(public payload: Array<Bubble>) {}
+  constructor(public payload?: void) {}
 }
 export class WrapComplete implements Action {
   readonly type = WRAP_COMPLETE;
@@ -276,6 +281,7 @@ export type Actions =
   | Edit
   | EditComplete
   | EditError
+  | WrapStart
   | Wrap
   | WrapComplete
   | WrapError

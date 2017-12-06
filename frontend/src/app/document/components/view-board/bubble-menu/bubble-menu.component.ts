@@ -66,11 +66,11 @@ export class BubbleMenuComponent implements OnInit {
     }
 
     public wrapBubble() {
-    //  this._eventBubbleService.wrapBubble(this.bubble);
+        this._store.dispatch(new BubbleAction.WrapStart(this.bubble));
     }
 
     public wrap() {
-        // this._eventBubbleService.wrap();
+        this._store.dispatch(new BubbleAction.Wrap());
     }
 
     public createBubble() {

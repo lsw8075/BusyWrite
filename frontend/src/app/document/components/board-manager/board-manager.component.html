@@ -1,63 +1,64 @@
-<ng-container *ngFor="let board of boardList$ | async">
-    <div class="btn-group mx-1" dropdown>
-        <button dropdownToggle type="button" class="btn btn-info dropdown-toggle">
-            <span class="badge badge-pill"
-                  [class.badge-warning]="isImportantBoard(board)"
-                  [class.badge-light]="!isImportantBoard(board)">
-                  {{icon(board)}}
-            </span>
-            <span [ngSwitch]="board.type">
-                <span *ngSwitchCase="boardType.view"><i class="fa fa-fw fa-eye"></i></span>
-                <span *ngSwitchCase="boardType.edit"><i class="fa fa-fw fa-pencil"></i></span>
-                <span *ngSwitchCase="boardType.filter"><i class="fa fa-fw fa-search"></i></span>
-                <span *ngSwitchCase="boardType.suggest"><i class="fa fa-fw fa-comments-o"></i></span>
-            </span>
-            <span class="caret"></span>
-        </button>
-        <ul *dropdownMenu class="dropdown-menu" role="menu">
-            <li role="menuitem" (click)="showOnLeft(board)">
-                <a class="dropdown-item" >Show on Left</a>
-            </li>
-            <li role="menuitem" (click)="showOnRight(board)">
-                <a class="dropdown-item" >Show on right</a></li>
-            <li role="menuitem" (click)="hideBoard(board)">
-                <a class="dropdown-item" >Hide</a></li>
-            <li class="divider dropdown-divider"></li>
-            <li role="menuitem" (click)="deleteBoard(board)">
-                <a class="dropdown-item" >Delete</a>
-            </li>
-        </ul>
-    </div>
-</ng-container>
+<div class="my-0 mx-0 py-0 px-0">
+    <ng-container *ngFor="let board of boardList$ | async">
+        <div class="btn-group my-0" dropdown>
+            <button dropdownToggle type="button" class="btn btn-sm btn-info dropdown-toggle">
+                <span class="badge badge-sm badge-warning badge-pill"
+                    *ngIf="isImportantBoard(board)">
+                    {{icon(board)}}
+                </span>
+                <span [ngSwitch]="board.type">
+                    <span *ngSwitchCase="boardType.view"><i class="fa fa-fw fa-eye"></i></span>
+                    <span *ngSwitchCase="boardType.edit"><i class="fa fa-fw fa-pencil"></i></span>
+                    <span *ngSwitchCase="boardType.filter"><i class="fa fa-fw fa-search"></i></span>
+                    <span *ngSwitchCase="boardType.suggest"><i class="fa fa-fw fa-comments-o"></i></span>
+                </span>
+                <span class="caret-sm"></span>
+            </button>
+            <ul *dropdownMenu class="dropdown-menu" role="menu">
+                <li role="menuitem" (click)="showOnLeft(board)">
+                    <a class="dropdown-item" >Show on Left</a>
+                </li>
+                <li role="menuitem" (click)="showOnRight(board)">
+                    <a class="dropdown-item" >Show on right</a></li>
+                <li role="menuitem" (click)="hideBoard(board)">
+                    <a class="dropdown-item" >Hide</a></li>
+                <li class="divider dropdown-divider"></li>
+                <li role="menuitem" (click)="deleteBoard(board)">
+                    <a class="dropdown-item" >Delete</a>
+                </li>
+            </ul>
+        </div>
+    </ng-container>
 
-<div class="btn-group" role="group">
-    <div class="btn-group" dropdown>
-        <button dropdownToggle type="button" class="btn btn-info dropdown-toggle">
-            <i class="fa fa-fw fa-plus"></i>
-            <span class="caret"></span>
-        </button>
-        <ul *dropdownMenu class="dropdown-menu" role="menu">
-            <li role="menuitem" (click)="addBoard(boardType.view)">
-                <a class="dropdown-item">
-                <i class="fa fa-fw fa-eye"></i>
-                View Board
-            </a></li>
-            <li role="menuitem" (click)="addBoard(boardType.suggest)">
-                <a class="dropdown-item" >
-                <i class="fa fa-fw fa-comments-o"></i>
-                Suggest Board
-            </a></li>
-            <li role="menuitem" (click)="addBoard(boardType.filter)">
-                <a class="dropdown-item" >
-                <i class="fa fa-fw fa-search"></i>
-                Search Board
-            </a></li>
-            <li class="divider dropdown-divider"></li>
-            <li role="menuitem" (click)="addBoard(boardType.edit)">
-                <a class="dropdown-item" >
-                <i class="fa fa-fw fa-pencil"></i>
-                Edit Board
-            </a></li>
-        </ul>
+    <div class="btn-group" role="group">
+        <div class="btn-group" dropdown>
+            <button dropdownToggle type="button" class="btn btn-sm btn-info dropdown-toggle">
+                <i class="fa fa-fw fa-plus"></i>
+                <span class="caret caret-sm"></span>
+            </button>
+            <ul *dropdownMenu class="dropdown-menu" role="menu">
+                <li role="menuitem" (click)="addBoard(boardType.view)">
+                    <a class="dropdown-item">
+                    <i class="fa fa-fw fa-eye"></i>
+                    View Board
+                </a></li>
+                <li role="menuitem" (click)="addBoard(boardType.suggest)">
+                    <a class="dropdown-item" >
+                    <i class="fa fa-fw fa-comments-o"></i>
+                    Suggest Board
+                </a></li>
+                <li role="menuitem" (click)="addBoard(boardType.filter)">
+                    <a class="dropdown-item" >
+                    <i class="fa fa-fw fa-search"></i>
+                    Search Board
+                </a></li>
+                <li class="divider dropdown-divider"></li>
+                <li role="menuitem" (click)="addBoard(boardType.edit)">
+                    <a class="dropdown-item" >
+                    <i class="fa fa-fw fa-pencil"></i>
+                    Edit Board
+                </a></li>
+            </ul>
+        </div>
     </div>
 </div>
