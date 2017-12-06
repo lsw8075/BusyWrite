@@ -1,5 +1,5 @@
 from .models import *
-from .users import do_fetch_user
+from .users import fetch_user
 from .errors import *
 from django.utils import timezone
 from django.db import transaction
@@ -26,7 +26,7 @@ def fetch_document_with_lock(user_id, document_id):
 def do_fetch_documents(
     user_id: int
     ):
-    user = do_fetch_user(user_id)
+    user = fetch_user(user_id)
     documents = Document.objects.filter(contributors=user).values()
     if len(documents) == 0:
         return []
@@ -38,7 +38,7 @@ def do_create_document(
     title: str
     ):
 
-    user = do_fetch_user(user_id)
+    user = fetch_user(user_id)
     
     document = Document.objects.create(title=title)
     

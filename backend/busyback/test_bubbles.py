@@ -10,6 +10,12 @@ class BubblesTestCase(TestCase):
     def setUp(self):
         mockDBSetup(self)
 
+    def test_process_bubble(self):
+        #print(process_normal(self.bubble2))
+        #print(process_normal(self.bubble4))
+        #print(process_suggest(self.suggest1))
+        pass
+
     def test_do_fetch_bubble(self):
 
         with self.assertRaises(BubbleDoesNotExistError):
@@ -17,8 +23,8 @@ class BubblesTestCase(TestCase):
 
         with self.assertRaises(BubbleDoesNotExistError):
             do_fetch_suggest_bubble(self.user1.id, self.doc1.id, 100)
-        self.assertEqual(do_fetch_normal_bubble(self.user1.id, self.doc1.id, self.bubble4.id).content, 'TestLeaf1')
-        self.assertEqual(do_fetch_suggest_bubble(self.user1.id, self.doc1.id, self.suggest2.id).content, 'TestSuggest2')
+        self.assertEqual(do_fetch_normal_bubble(self.user1.id, self.doc1.id, self.bubble4.id)['content'], 'TestLeaf1')
+        self.assertEqual(do_fetch_suggest_bubble(self.user1.id, self.doc1.id, self.suggest2.id)['content'], 'TestSuggest2')
 
     def test_do_fetch_bubbles(self):
         emptydoc = Document.objects.create(title='error doc')
@@ -55,7 +61,7 @@ class BubblesTestCase(TestCase):
         with self.assertRaises(InternalError):
             get_root_bubble(self.user1.id, emptydoc.id)
 
-        self.assertEqual(get_root_bubble(self.user1.id, self.doc1.id).id, self.doc1root.id)
+        self.assertEqual(get_root_bubble(self.user1.id, self.doc1.id)['id'], self.doc1root.id)
 
     def test_do_create_normal_bubble(self):
 
@@ -66,12 +72,12 @@ class BubblesTestCase(TestCase):
 
 
         do_create_normal_bubble(self.user1.id, self.doc1.id, self.bubble2.id, 1, False, 'test content')
-        new_bubble = do_create_normal_bubble(self.user1.id, self.doc1.id, self.bubble2.id, 2, True, 'test content')
+        new_bubble = fetch_normal(do_create_normal_bubble(self.user1.id, self.doc1.id, self.bubble2.id, 2, True, 'test content')['id'])
 
         self.assertEqual(self.bubble2.fetch_child(2).id, new_bubble.id)
 
     def test_updating_normal_bubble(self):
-        new_bubble = do_create_normal_bubble(self.user1.id, self.doc1.id, self.bubble2.id, 2, True, 'test content')
+        new_bubble = fetch_normal(do_create_normal_bubble(self.user1.id, self.doc1.id, self.bubble2.id, 2, True, 'test content')['id'])
 
         do_updating_normal_bubble(self.user1.id, self.doc1.id, new_bubble.id, 'hello world')
 
@@ -103,11 +109,6 @@ class BubblesTestCase(TestCase):
             do_edit_normal_bubble(self.user1.id, self.doc1.id, self.bubble4.id, 'edit fail due to lock')
 
         
-        owned = do_create_normal_bubble(self.user2.id, self.doc1.id, self.bubble2.id, 2, True, 'test owned')
-
-        owned.unlock(self.user2)
-
-        
         self.bubble4.unlock(self.user3)
         do_edit_normal_bubble(self.user1.id, self.doc1.id, self.bubble4.id, 'sample edit')
 
@@ -133,10 +134,6 @@ class BubblesTestCase(TestCase):
             do_move_normal_bubble(self.user1.id, self.doc1.id, self.bubble3.id, self.bubble2.id, 0)
 
         self.bubble2.unlock(self.user2)
-        owned = do_create_normal_bubble(self.user2.id, self.doc1.id, self.bubble2.id, 2, True, 'test owned')
-
-        self.bubble2.unlock(self.user2)
-        owned.unlock(self.user2)
 
         do_move_normal_bubble(self.user1.id, self.doc1.id, self.bubble1.id, self.bubble2.id, 2)
 
@@ -159,9 +156,6 @@ class BubblesTestCase(TestCase):
         self.bubble4.lock(self.user2)
         with self.assertRaises(BubbleLockedError):
             do_delete_normal_bubble(self.user1.id, self.doc1.id, self.bubble4.id)
-        owned = do_create_normal_bubble(self.user2.id, self.doc1.id, self.doc1root.id, 2, True, 'test owned')
-        owned.unlock(self.user2)
-
 
         self.bubble4.unlock(self.user2)
         
@@ -214,10 +208,6 @@ class BubblesTestCase(TestCase):
         with self.assertRaises(BubbleLockedError):
             do_split_leaf_bubble(self.user1.id, self.doc1.id, self.bubble4.id, ['Test', 'Bubble1'])
 
-        owned = do_create_normal_bubble(self.user2.id, self.doc1.id, self.bubble2.id, 2, True, 'test owned')
-
-        owned.unlock(self.user2)
-
 
         do_split_leaf_bubble(self.user1.id, self.doc1.id, self.bubble3.id, ['Test', 'Bubble2'])
 
@@ -252,11 +242,6 @@ class BubblesTestCase(TestCase):
         with self.assertRaises(BubbleLockedError):
             do_switch_bubble(self.user1.id, self.doc1.id, self.suggest1.id)
         self.bubble1.unlock(self.user2)
-
-        owned = do_create_normal_bubble(self.user2.id, self.doc1.id, self.doc1root.id, 3, True, 'test owned')
-        owned.unlock(self.user2)
-
-        owned_suggest = create_suggest(owned, 'hello')
 
 
         do_vote_bubble(self.user1.id, self.doc1.id, self.suggest1.id)
