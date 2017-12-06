@@ -1,3 +1,28 @@
+<!--
+<table class="table table-striped" *ngIf="bubbleList">
+    <tr>
+        <th>id</th>
+        <th>type</th>
+        <th>content</th>
+        <th>parentBubbleId</th>
+        <th>childBubbleIds</th>
+        <th>location</th>
+    </tr>
+    <tr *ngFor="let bubble of bubbleList">
+        <td>{{bubble.id}}</td>
+        <td>{{bubble.type}}</td>
+        <td>
+            <div *ngIf="bubble.content">
+                {{bubble.content.substr(0,50)}}
+            </div>
+        </td>
+        <td>{{bubble.parentBubbleId}}</td>
+        <td>{{bubble.childBubbleIds}}</td>
+        <td>{{bubble.location}}</td>
+    </tr>
+</table>
+-->
+
 <div class="ml-5 my-2">
     <app-bubble-menu [bubble]="rootBubble" [menu]="menuType.topMenu"></app-bubble-menu>
 </div>

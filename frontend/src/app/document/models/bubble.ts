@@ -73,7 +73,7 @@ export class InternalBubble implements Bubble {
 
   constructor(
     id: number,
-    childBubbleIds: Array<number>,
+    childBubbleIds: Array<number> = [],
     suggestBubbleIds: Array<number> = [],
     commentIds: Array<number> = [],
     watchUserIds: Array<number> = [],

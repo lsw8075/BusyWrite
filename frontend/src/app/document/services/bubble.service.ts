@@ -96,8 +96,6 @@ export class BubbleService implements OnDestroy {
         } else if (command === 'get_bubble_list') {
             if (accept === 'True') {
                 console.log('received get_bubble_list success');
-                console.log(body);
-                console.log(String(body));
                 console.log(JSON.stringify(body));
                 const bubbleArray = BubbleJsonHelper.getBubbleArrayObject(JSON.stringify(body));
                 this._store.dispatch(new BubbleAction.LoadComplete(bubbleArray));
@@ -231,17 +229,14 @@ export class BubbleService implements OnDestroy {
     public deleteSuggestBubble(){
     }
 
-    public async wrapBubble(wrapBubbleList: Array<Bubble>): Promise<void> {
-        if (wrapBubbleList.length <= 1) {
-            throw new Error('Cannot wrap one bubble');
-        }
+    public async wrapBubble(wrapBubbleList: Array<number>): Promise<InternalBubble> {
         await this.delay(1000);
-        return Promise.resolve(null);
+        return Promise.resolve(new InternalBubble(this._getTempBubbleId()));
     }
 
-    public async mergeBubble(bubble_id: number): Promise<void> {
+    public async mergeBubble(mergeBubbleIds: Array<number>): Promise<Bubble> {
         await this.delay(1000);
-        return Promise.resolve(null);
+        return Promise.resolve(new LeafBubble(this._getTempBubbleId()));
     }
 
     public async splitLeafBubble(bubble_id: number, content_list: Array<String>): Promise<void> {
@@ -255,6 +250,11 @@ export class BubbleService implements OnDestroy {
     public async flattenBubble(bubble_id: number): Promise<Bubble> {
         await this.delay(1000);
         return Promise.resolve(new LeafBubble(this._getTempBubbleId()));
+    }
+
+    public async moveBubble(bubbleId: number, destBubbleId: number, isAbove: boolean): Promise<void> {
+        await this.delay(1000);
+        return Promise.resolve(null);
     }
 
     public async popBubble(bubble_id: number): Promise<void> {

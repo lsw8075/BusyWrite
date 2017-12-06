@@ -1,5 +1,5 @@
 import { Action } from '@ngrx/store';
-import { Bubble } from '../models/bubble';
+import { Bubble, InternalBubble, LeafBubble } from '../models/bubble';
 import { MenuType } from '../services/event/event-bubble.service';
 
 export const OPEN = '[Document] open';
@@ -122,11 +122,13 @@ export class WrapStart implements Action {
 }
 export class Wrap implements Action {
   readonly type = WRAP;
-  constructor(public payload?: void) {}
+  constructor(public payload: Array<number>) {}
 }
 export class WrapComplete implements Action {
   readonly type = WRAP_COMPLETE;
-  constructor(public payload: Array<Bubble>) {}
+  constructor(public payload: {
+      wrapBubbleIds: Array<number>
+      newInternalBubble: InternalBubble}) {}
 }
 export class WrapError implements Action {
   readonly type = WRAP_ERROR;
@@ -154,11 +156,13 @@ export const MERGE_COMPLETE = '[Bubble] merge Complete';
 export const MERGE_ERROR = '[Bubble] merge Error';
 export class Merge implements Action {
   readonly type = MERGE;
-  constructor(public payload: number) {}
+  constructor(public payload: Array<number>) {}
 }
 export class MergeComplete implements Action {
-  readonly type = MERGE_COMPLETE;
-  constructor(public payload: number) {}
+    readonly type = MERGE_COMPLETE;
+    constructor(public payload: {
+        mergeBubbleIds: Array<number>
+        newBubble: Bubble}) {}
 }
 export class MergeError implements Action {
   readonly type = MERGE_ERROR;
@@ -214,6 +218,29 @@ export class FlattenError implements Action {
   readonly type = FLATTEN_ERROR;
   constructor(public payload: string) {}
 }
+
+export const MOVE = '[Bubble] move';
+export const MOVE_COMPLETE = '[Bubble] move Complete';
+export const MOVE_ERROR = '[Bubble] move Error';
+export class Move implements Action {
+  readonly type = MOVE;
+  constructor(public payload: {
+      bubbleId: number,
+      destBubbleId: number,
+      isAbove: boolean}) {}
+}
+export class MoveComplete implements Action {
+  readonly type = MOVE_COMPLETE;
+  constructor(public payload: {
+      bubbleId: number,
+      destBubbleId: number,
+      isAbove: boolean}) {}
+}
+export class MoveError implements Action {
+  readonly type = MOVE_ERROR;
+  constructor(public payload: string) {}
+}
+
 
 export const OTHERS_CREATE = '[Bubble] others create';
 export const OTHERS_EDIT = '[Bubble] others edit';
@@ -300,6 +327,9 @@ export type Actions =
   | Flatten
   | FlattenComplete
   | FlattenError
+  | Move
+  | MoveComplete
+  | MoveError
   | OthersCreate
   | OthersEdit
   | OthersWrap

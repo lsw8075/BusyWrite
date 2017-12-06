@@ -65,12 +65,8 @@ export class BubbleMenuComponent implements OnInit {
         this._store.dispatch(new BubbleAction.Pop(this.bubble.id));
     }
 
-    public wrapBubble() {
-        this._store.dispatch(new BubbleAction.WrapStart(this.bubble));
-    }
-
     public wrap() {
-        this._store.dispatch(new BubbleAction.Wrap());
+
     }
 
     public createBubble() {
@@ -86,7 +82,11 @@ export class BubbleMenuComponent implements OnInit {
     }
 
     public mergeBubble() {
-        this._store.dispatch(new BubbleAction.Merge(this.bubble.id));
+        this._store.dispatch(new BubbleAction.Merge([6, 7]));
+    }
+
+    public wrapBubble() {
+        this._store.dispatch(new BubbleAction.Wrap([6, 7]));
     }
 
     public flattenBubble() {
@@ -94,7 +94,7 @@ export class BubbleMenuComponent implements OnInit {
     }
 
     public moveBubble() {
-        // this._eventBubbleService.moveBubble(this.bubble, this.menu);
+        this._store.dispatch(new BubbleAction.Move({bubbleId: this.bubble.id, destBubbleId: 1, isAbove: false}));
     }
 
     public getAction(): string {
