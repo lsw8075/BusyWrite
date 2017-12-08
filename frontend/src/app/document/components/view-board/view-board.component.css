@@ -11,3 +11,8 @@
   white-space: inherit !important;
   word-wrap: inherit !important;
 }
+
+.tab-head {
+    height: 15px;
+    font-size: 15px;
+}

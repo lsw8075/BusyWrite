@@ -1,8 +1,10 @@
 <div class="view-board">
-    <tabset [justified]="true">
+    <tabset [justified]="true" type="pills">
         <tab>
             <ng-template tabHeading>
-                View
+                <div class="tab-head">
+                    View
+                </div>
             </ng-template>
             <app-bubble-list-view [rootBubble]="rootBubble"
                                   [bubbleList]="bubbleList"
@@ -15,7 +17,9 @@
         </tab>
         <tab>
             <ng-template tabHeading>
-                Preview
+                <div class="tab-head">
+                    Preview
+                </div>
             </ng-template>
             <app-preview [rootBubble]="rootBubble" [bubbleList]="bubbleList">
                 Your preview is Loading ...!

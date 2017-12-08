@@ -30,7 +30,7 @@
 <div class="bubble-list">
     <div class="container">
         <div class="row">
-            <div class="col-md-10 mx-3 list-group-item">
+            <div class="mx-4 list-group-item">
                 <div (appClickOutside)="clearState($event)" *ngIf="rootBubble">
                     <ng-container *ngTemplateOutlet="bubbleUnit; context: { $implicit: rootBubble }"></ng-container>
                 </div>

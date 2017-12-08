@@ -51,8 +51,12 @@ export function BubbleReducer(state: BubbleState = initialState, action: fromBub
             const selectedMenu = action.payload.menu;
 
             if (!state.isMoveAction && !state.isWrapAction) {
-                const newSelectedBubbleList = [selectedBubble];
-                return {...state, selectedBubbleList: newSelectedBubbleList, selectedMenu: selectedMenu };
+                if (isBubbleInList(state.selectedBubbleList, selectedBubble.id)) {
+                    return {...state, selectedBubbleList: [], selectedMenu: null };
+                } else {
+                    const newSelectedBubbleList = [selectedBubble];
+                    return {...state, selectedBubbleList: newSelectedBubbleList, selectedMenu: selectedMenu };
+                }
             } else if (state.isWrapAction &&
                 (selectedMenu === MenuType.internalMenu || selectedMenu === MenuType.leafMenu) &&
                 (state.selectedBubbleList[0].parentBubbleId === selectedBubble.id)) {
@@ -495,7 +499,7 @@ function moveBubble(bubbleList: Array<Bubble>, id: number, destBubbleId: number,
 
         console.log('[after move]', bubbleList);
 
-    } catch(err) {
+    } catch (err) {
         console.log(err);
     //    throw err;
     }
