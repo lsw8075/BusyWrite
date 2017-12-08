@@ -77,10 +77,14 @@ def ws_receive(message):
                     json.dumps({"header": "open_document", "accept": 'False', "body": "user does not contribute to the document"})})
             return
 
+        ## TODO: do_fet_contributors & do_fetch_current_opening_user -> give it to her
         Group('document_detail-'+str(document_id), channel_layer=message.channel_layer).add(message.reply_channel)
         message.channel_session['document_id'] = str(document_id)
         message.reply_channel.send({"text":
                 json.dumps({"header": "open_document", "accept": 'True', "body": {"document_id": document_id}})})
+
+        ## TODO: let other members know new member has came in
+
         return
 
 
@@ -125,6 +129,9 @@ def ws_receive(message):
         Group('document_id-'+str(document_id), channel_layer=message.channel_layer).discard(message.reply_channel)
         message.reply_channel.send({"text":
                 json.dumps({"header": command, "accept": 'True', "body": {"document_id": body['document_id']}})})
+
+        ## TODO: let other members know this member is out
+
         return 
       
 
@@ -172,7 +179,7 @@ def ws_receive(message):
             return
             
         message.reply_channel.send({"text":
-                json.dumps({"header": "get_bubble_by_id", "accept": 'True', "body": model_to_dict(result)})})
+                json.dumps({"header": "get_bubble_by_id", "accept": 'True', "body": result})})
         return
 
 
@@ -225,7 +232,7 @@ def ws_receive(message):
             return
             
         message.reply_channel.send({"text":
-                json.dumps({"header": "get_suggest_bubble_by_id", "accept": 'True', "body": model_to_dict(result)})})
+                json.dumps({"header": "get_suggest_bubble_by_id", "accept": 'True', "body": result})})
         return
 
 
@@ -273,12 +280,10 @@ def ws_receive(message):
                     json.dumps({"header": "create_bubble", "accept": 'False', "body": body})})
             return
 
-        diction = model_to_dict(result)
-        diction.update({'who': message.user.id})
+        result.update({'who': message.user.id})
 
         Group('document_detail-'+document_id, channel_layer=message.channel_layer).send({"text":
-                json.dumps({'header': 'create_bubble', 'accept': 'True', 
-                'body': diction})})
+                json.dumps({'header': 'create_bubble', 'accept': 'True', 'body': result})})
         return
 
 
@@ -315,12 +320,10 @@ def ws_receive(message):
                     json.dumps({'header': 'create_suggest_bubble', 'accept': 'False', 'body': body})})
             return
 
-        diction = model_to_dict(result)
-        diction.update({'who': message.user.id})
+        result.update({'who': message.user.id})
 
         Group('document_detail-'+document_id, channel_layer=message.channel_layer).send({"text":
-                json.dumps({'header': 'create_suggest_bubble', 'accept': 'True', 
-                'body': diction})})
+                json.dumps({'header': 'create_suggest_bubble', 'accept': 'True', 'body': result})})
         return
  
 
@@ -425,6 +428,12 @@ def ws_receive(message):
     #####################################
 
 
+    #############################
+    ##   Edit Suggest Bubble   ##
+    #############################
+
+
+    
 
     #######################
     ##   Delete Bubble   ##
@@ -560,16 +569,6 @@ def ws_receive(message):
                         'new_parent_id': body['new_parent_id'], 'new_location': body['new_location']}})})
         return
  
-
-    #######################################
-    ##   Move Comment on Normal Bubble   ##
-    #######################################
-
-
-    ########################################
-    ##   Move Comment on Suggest Bubble   ##
-    ########################################
-
 
     #####################
     ##   Wrap Bubble   ##
@@ -707,11 +706,12 @@ def ws_receive(message):
             message.reply_channel.send({"text":
                     json.dumps({"header": "split_leaf_bubble", "accept": 'False', 'body': 'unknown error'})})
             return
-                            
+ 
+        ## TODO: Change do_split_leaf_bubble
         Group('document_detail-'+document_id, channel_layer=message.channel_layer).send({"text":
                 json.dumps({'header': 'split_leaf_bubble', 'accept': 'True',
                         'body': {'who': message.user.id, 'bubble_id': body['bubble_id'],
-                        'split_bubble_object_list': list(result.child_bubbles.all().values()),
+                        'split_bubble_object_list': result,
                         'split_content_list': body['split_content_list']}})})
         return
         # [d['id'] for d in list(result.child_bubbles.all().values()] 
@@ -739,7 +739,7 @@ def ws_receive(message):
                     json.dumps({'header': 'switch_bubble', 'accept': 'False', 'body': 'body does not follow format'})})
             return
         try:
-            do_wrap_normal_bubble(message.user.id, int(document_id), int(body['suggest_bubble_id']))
+            do_switch_bubble(message.user.id, int(document_id), int(body['suggest_bubble_id']))
         except BubbleDoesNotExistError:
             message.reply_channel.send({"text":
                     json.dumps({"header": "switch_bubble", "accept": 'False',
@@ -792,7 +792,73 @@ def ws_receive(message):
                 json.dumps({'header': 'pop_bubble', 'accept': 'True',
                         'body': {'who': message.user.id, 'suggest_bubble_id': body['suggest_bubble_id']}})})
         return
- 
+
+
+
+    ##################
+    ##   Get Note   ##
+    ##################
+
+
+    #####################
+    ##   Create Note   ##
+    #####################
+
+
+    #####################
+    ##   Delete Note   ##
+    #####################
+
+
+    ##############################
+    ##   Change order of Note   ##
+    ##############################
+
+
+    ###########################
+    ##   Update(Edit) Note   ##
+    ###########################
+
+
+    #######################################
+    ##   Export Note as Suggest Bubble   ##
+    #######################################
+
+
+    ####################################
+    ##   Export Note as Leaf Bubble   ##
+    ####################################
+
+
+    #################################################
+    ##   Export Note as Comment on Normal Bubble   ##
+    #################################################
+
+
+    ##################################################
+    ##   Export Note as Comment on Suggest Bubble   ##
+    ##################################################
+
+
+
+
+    ###############################
+    ##   Change Document Title   ##
+    ###############################
+
+
+    #########################
+    ##   Add Contributor   ##
+    #########################
+
+
+
+
+
+
+
+
+
 
     #########################################
     ##   If you came here, it's wrong...   ##
