@@ -187,7 +187,7 @@ function UIReducer(state: BubbleState, action: fromBubble.Actions) {
 export function getBubbleById(bubbleList: Array<Bubble>, id: number): Bubble {
     const bList = bubbleList.filter((bubble) => (bubble.id === id));
     if (bList.length === 0) {
-        throw new Error('Does not exist with this id');
+        throw new Error(`Does not exist with this id: ${id}`);
     }
     return bList[0];
 }
