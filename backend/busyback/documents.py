@@ -54,7 +54,7 @@ def do_fetch_contributors(
     ):
 
     document = do_fetch_document(user_id, document_id)
-    return list(document.contributors.all().values())
+    return [d['id'] for d in list(document.contributors.all().values())]
 
 def key_duser(document_id):
     return 'Duser' + str(document_id)
