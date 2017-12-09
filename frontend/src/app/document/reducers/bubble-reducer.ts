@@ -139,7 +139,7 @@ export function BubbleReducer(state: BubbleState = initialState, action: fromBub
             const newLeafBubble = action.payload.newBubble;
             const bubbleList = flattenBubble(newBubbleList, bubbleId, newLeafBubble);
 
-            return {...state, bubbleList: bubbleList, loading: false};
+            return {...state, bubbleList: bubbleList, rootBubble: bubbleList[0], loading: false};
         }
         case fromBubble.WRAP:
             return {...state, loading: true, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
@@ -323,12 +323,12 @@ function flattenBubble(bubbleList: Array<Bubble>, id: number, newBubble: Bubble)
         const internalBubble = bubble as InternalBubble;
         const parentBubble = getParentBubble(bubbleList, bubble);
         (newBubble as LeafBubble).content = getContent(bubbleList, id);
-        console.log(newBubble);
         newBubble.parentBubbleId = parentBubble.id;
         newBubble.location = internalBubble.location;
         parentBubble.childBubbleIds[internalBubble.location] = newBubble.id;
         bubbleList.push(newBubble);
         deleteChildBubbles(bubbleList, id);
+        console.log(newBubble);
         console.log(bubbleList);
 
         return bubbleList;
