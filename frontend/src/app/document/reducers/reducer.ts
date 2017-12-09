@@ -22,7 +22,7 @@ export const getDocumentState = createFeatureSelector<State>('document');
 export const getBubbleState = createSelector(getDocumentState, (state: State) => state.bubble);
 
 export const getBubbleList = createSelector(getBubbleState, (state: BubbleState) => state.bubbleList);
-export const getRootBubble = createSelector(getBubbleList, (bubbleList: Bubble[]) => (bubbleList[0] as InternalBubble);
+export const getRootBubble = createSelector(getBubbleList, (bubbleList: Bubble[]) => (bubbleList[0] as InternalBubble));
 
 export const getSelectedMenu = createSelector(getBubbleState, (state: BubbleState) => state.selectedMenu);
 export const getSelectedBubbleList = createSelector(getBubbleState, (state: BubbleState) => state.selectedBubbleList);

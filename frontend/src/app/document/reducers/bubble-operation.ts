@@ -206,16 +206,16 @@ export function mergeBubble(bubbleList: Array<Bubble>, mergeBubbleIds: Array<num
 
         const parentBubbleId = mergeBubbleList[0].parentBubbleId;
         const parentBubble = getParentBubble(bubbleList, mergeBubbleList[0]);
-        for (const mergeBubble of mergeBubbleList) {
-            if (mergeBubble.parentBubbleId !== parentBubbleId) {
+        for (const bubble of mergeBubbleList) {
+            if (bubble.parentBubbleId !== parentBubbleId) {
                 throw new Error('merge bubbles should have same parent id');
             }
         }
 
         let newContent = '';
         const newLocation = mergeBubbleList[0].location;
-        for (const mergeBubble of mergeBubbleList) {
-            newContent += getContent(bubbleList, mergeBubble.id);
+        for (const bubble of mergeBubbleList) {
+            newContent += getContent(bubbleList, bubble.id);
         }
         const leafBubble = newBubble as LeafBubble;
         leafBubble.content = newContent;
@@ -224,10 +224,10 @@ export function mergeBubble(bubbleList: Array<Bubble>, mergeBubbleIds: Array<num
 
         bubbleList.push(leafBubble);
 
-        for (const mergeBubble of mergeBubbleList) {
-            const index = parentBubble.childBubbleIds.findIndex((id) => (id === mergeBubble.id));
+        for (const bubble of mergeBubbleList) {
+            const index = parentBubble.childBubbleIds.findIndex((id) => (id === bubble.id));
             parentBubble.childBubbleIds.splice(index, 1);
-            deleteChildBubbles(bubbleList, mergeBubble.id);
+            deleteChildBubbles(bubbleList, bubble.id);
         }
         parentBubble.childBubbleIds.splice(newLocation, 0, leafBubble.id);
 
@@ -252,8 +252,8 @@ export function wrapBubble(bubbleList: Array<Bubble>, wrapBubbleIds: Array<numbe
 
         const parentBubbleId = wrapBubbleList[0].parentBubbleId;
         const parentBubble = getParentBubble(bubbleList, wrapBubbleList[0]);
-        for (const wrapBubble of wrapBubbleList) {
-            if (wrapBubble.parentBubbleId !== parentBubbleId) {
+        for (const bubble of wrapBubbleList) {
+            if (bubble.parentBubbleId !== parentBubbleId) {
                 throw new Error('wrap bubbles should have same parent id');
             }
         }
@@ -265,10 +265,10 @@ export function wrapBubble(bubbleList: Array<Bubble>, wrapBubbleIds: Array<numbe
         bubbleList.push(newInternalBubble);
 
         for (let i = 0; i < wrapBubbleList.length; i++) {
-            const wrapBubble = wrapBubbleList[i];
-            const index = parentBubble.childBubbleIds.findIndex((id) => (id === wrapBubble.id));
+            const bubble = wrapBubbleList[i];
+            const index = parentBubble.childBubbleIds.findIndex((id) => (id === bubble.id));
             parentBubble.childBubbleIds.splice(index, 1);
-            wrapBubble.location = i;
+            bubble.location = i;
         }
         parentBubble.childBubbleIds.splice(newLocation, 0, newInternalBubble.id);
 

@@ -53,36 +53,93 @@ const initialState: BubbleState = {
 export function BubbleReducer(state: BubbleState = initialState, action: fromBubble.Actions) {
     switch (action.type) {
         case fromBubble.SELECT:
-            if (state.loading) {
-                return {...state, error: 'please wait'};
-            }
-            const selectedBubble = action.payload.bubble;
-            const selectedMenu = action.payload.menu;
+        case fromBubble.SELECT_CLEAR:
+        case fromBubble.SELECT_SANGJUN_BOARD:
+        case fromBubble.MOUSE_OVER:
+        case fromBubble.MOUSE_OUT:
+            return UIReducer(state, action);
 
-            if (!state.isMoveAction && !state.isWrapAction) {
-                if (isBubbleInList(state.selectedBubbleList, selectedBubble.id)) {
-                    return {...state, selectedBubbleList: [], selectedMenu: null };
-                } else {
-                    const newSelectedBubbleList = [selectedBubble];
-                    return {...state, selectedBubbleList: newSelectedBubbleList, selectedMenu: selectedMenu };
-                }
-            } else if (state.isWrapAction &&
-                (selectedMenu === MenuType.internalMenu || selectedMenu === MenuType.leafMenu) &&
-                (state.selectedBubbleList[0].parentBubbleId === selectedBubble.id)) {
+        case fromBubble.LOAD:
+            return {...state, loading: true, documentId: action.payload};
+        case fromBubble.LOAD_COMPLETE: {
+            const bubbleList = MockBubbleList;
+            // TODO: changed to mock bubble list
+            // return {...state, bubbleList: [...action.payload], rootBubble: root, loading: false};
+            return {...state, bubbleList: [...bubbleList], loading: false};
+        }
+        case fromBubble.LOAD_ERROR:
+            return {...state, error: action.payload};
 
-                let newSelectedBubbleList = [...state.selectedBubbleList];
-                if (isBubbleInList(newSelectedBubbleList, selectedBubble.id)) {
-                    newSelectedBubbleList = newSelectedBubbleList.filter(b => b.id !== selectedBubble.id);
-                    if (newSelectedBubbleList.length === 0) {
-                        return {...state, selectedBubbleList: [], isWrapAction: false, selectedMenu: null };
-                    }
-                } else {
-                    newSelectedBubbleList.push(selectedBubble);
-                }
-                return {...state, selectedBubbleList: newSelectedBubbleList };
+        case fromBubble.POP:
+        case fromBubble.POP_COMPLETE:
+
+        case fromBubble.DELETE:
+        case fromBubble.DELETE_COMPLETE:
+
+        case fromBubble.CREATE:
+        case fromBubble.CREATE_COMPLETE:
+
+        case fromBubble.EDIT:
+
+        case fromBubble.FLATTEN:
+        case fromBubble.FLATTEN_COMPLETE:
+
+        case fromBubble.WRAP:
+        case fromBubble.WRAP_COMPLETE:
+
+        case fromBubble.MERGE:
+        case fromBubble.MERGE_COMPLETE:
+
+        case fromBubble.SPLIT:
+        case fromBubble.SPLIT_COMPLETE:
+
+        case fromBubble.MOVE:
+        case fromBubble.MOVE_COMPLETE:
+            return BubbleOperationReducer(state, action);
+
+
+        case fromBubble.CLEAR_ERROR:
+            return {...state, error: ''};
+
+        default:
+            return state;
+    }
+}
+
+function UIReducer(state: BubbleState, action: fromBubble.Actions) {
+    const newBubbleList = _.cloneDeep(state);
+    switch (action.type) {
+        case fromBubble.SELECT:
+        if (state.loading) {
+            return {...state, error: 'please wait'};
+        }
+        const selectedBubble = action.payload.bubble;
+        const selectedMenu = action.payload.menu;
+
+        if (!state.isMoveAction && !state.isWrapAction) {
+            if (isBubbleInList(state.selectedBubbleList, selectedBubble.id)) {
+                return {...state, selectedBubbleList: [], selectedMenu: null };
             } else {
-                return {...state};
+                const newSelectedBubbleList = [selectedBubble];
+                return {...state, selectedBubbleList: newSelectedBubbleList, selectedMenu: selectedMenu };
             }
+        } else if (state.isWrapAction &&
+            (selectedMenu === MenuType.internalMenu || selectedMenu === MenuType.leafMenu) &&
+            (state.selectedBubbleList[0].parentBubbleId === selectedBubble.id)) {
+
+            let newSelectedBubbleList = [...state.selectedBubbleList];
+            if (isBubbleInList(newSelectedBubbleList, selectedBubble.id)) {
+                newSelectedBubbleList = newSelectedBubbleList.filter(b => b.id !== selectedBubble.id);
+                if (newSelectedBubbleList.length === 0) {
+                    return {...state, selectedBubbleList: [], isWrapAction: false, selectedMenu: null };
+                }
+            } else {
+                newSelectedBubbleList.push(selectedBubble);
+            }
+            return {...state, selectedBubbleList: newSelectedBubbleList };
+        } else {
+            return {...state};
+        }
 
         case fromBubble.SELECT_CLEAR:
             return {...state, selectedBubbleList: [], selectedMenu: null};
@@ -98,16 +155,15 @@ export function BubbleReducer(state: BubbleState = initialState, action: fromBub
         case fromBubble.MOUSE_OUT:
             return {...state, hoverBubbleList: []};
 
-        case fromBubble.LOAD:
-            return {...state, loading: true, documentId: action.payload};
-        case fromBubble.LOAD_COMPLETE: {
-            const bubbleList = MockBubbleList;
-            // TODO: changed to mock bubble list
-            // return {...state, bubbleList: [...action.payload], rootBubble: root, loading: false};
-            return {...state, bubbleList: [...bubbleList], loading: false};
-        }
-        case fromBubble.LOAD_ERROR:
-            return {...state, error: action.payload};
+        default:
+            console.log('this should not be called', state, action);
+            return newBubbleList;
+    }
+}
+
+function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) {
+    switch (action.type) {
+
         case fromBubble.POP:
             return {...state, loading: true, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
         case fromBubble.POP_COMPLETE: {
@@ -181,18 +237,10 @@ export function BubbleReducer(state: BubbleState = initialState, action: fromBub
             const bubbleList = moveBubble(state.bubbleList, bubbleId, destBubbleId, isAbove);
             return {...state, bubbleList: _.cloneDeep(bubbleList), loading: false};
         }
-        case fromBubble.CLEAR_ERROR:
-            return {...state, error: ''};
-        default:
-        return state;
-    }
-}
 
-function UIReducer(state: BubbleState, action: fromBubble.Actions) {
-    const newBubbleList = _.cloneDeep(state);
-    switch (action.type) {
         default:
-            return newBubbleList;
+            console.log('this should not be called', state, action);
+            return state;
     }
 }
 
