@@ -9,6 +9,8 @@ import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 
 import { SplitBubbleComponent } from '../split-bubble/split-bubble.component';
 
+import { getBubbleById } from '../../../reducers/bubble-operation';
+
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
 
@@ -100,11 +102,11 @@ export class BubbleMenuComponent implements OnInit {
     public getAction(): string {
     switch (this._eventBubbleService.getActionState()) {
         case ActionType.move:
-        return 'move bubble';
+            return 'move bubble';
         case ActionType.split:
-        return 'split bubble';
+            return 'split bubble';
         default:
-        return '';
+            return '';
     }
     }
 
@@ -113,7 +115,7 @@ export class BubbleMenuComponent implements OnInit {
             return (bubble as LeafBubble).ownerId !== -1;
         }
         return (bubble as InternalBubble).childBubbleIds
-            .reduce((prev, curr) => prev || this.isBeingEditted(fromBubble.getBubbleById(this.bubbleList, curr)), false);
+            .reduce((prev, curr) => prev || this.isBeingEditted(getBubbleById(this.bubbleList, curr)), false);
     }
 
 } /* istanbul ignore next */

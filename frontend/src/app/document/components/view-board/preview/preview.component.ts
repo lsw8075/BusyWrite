@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { getBubbleById } from '../service';
+import { getBubbleById } from '../../../reducers/bubble-operation';
 
 import { BoardService } from '../../../services/board.service';
 import { BubbleService } from '../../../services/bubble.service';

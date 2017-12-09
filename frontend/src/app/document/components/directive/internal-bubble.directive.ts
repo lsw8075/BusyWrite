@@ -9,6 +9,8 @@ import * as fromBubble from '../../reducers/bubble-reducer';
 import * as fromDocument from '../../reducers/reducer';
 import * as BubbleAction from '../../actions/bubble-action';
 
+import { getBubbleById } from '../../reducers/bubble-operation';
+
 @Directive({
   selector: '[appInternalBubble]'
 })
@@ -97,7 +99,7 @@ export class InternalBubbleDirective implements OnInit {
             return 1;
         }
         return (bubble as InternalBubble).childBubbleIds
-            .reduce((prev, curr) => Math.max(prev, this._getHeight(fromBubble.getBubbleById(this.bubbleList, curr)) + 1), 1);
+            .reduce((prev, curr) => Math.max(prev, this._getHeight(getBubbleById(this.bubbleList, curr)) + 1), 1);
         }
 
     private _isBeingEditted(bubble: Bubble): boolean {
@@ -105,7 +107,7 @@ export class InternalBubbleDirective implements OnInit {
             return (bubble as LeafBubble).ownerId !== -1;
         }
         return (bubble as InternalBubble).childBubbleIds
-            .reduce((prev, curr) => prev || this._isBeingEditted(fromBubble.getBubbleById(this.bubbleList, curr)), false);
+            .reduce((prev, curr) => prev || this._isBeingEditted(getBubbleById(this.bubbleList, curr)), false);
     }
 
 }

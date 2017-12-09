@@ -1,8 +1,10 @@
 import { Component, EventEmitter, Input, OnInit, OnDestroy, Output, HostListener } from '@angular/core';
 import { BubbleService } from '../service';
-import { ActionType, MenuType, getBubbleById } from '../service';
+import { ActionType, MenuType } from '../service';
 import { Bubble, InternalBubble, LeafBubble, BubbleType } from '../../../models/bubble';
 import { EventBubbleService, BoardService } from '../service';
+
+import { getBubbleById } from '../../../reducers/bubble-operation';
 
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
