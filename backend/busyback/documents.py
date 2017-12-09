@@ -1,6 +1,7 @@
 from .models import *
 from .users import fetch_user
 from .errors import *
+from .versions import *
 from django.utils import timezone
 from django.db import transaction
 from django.core.cache import cache
@@ -72,8 +73,7 @@ def do_user_connect_document(
 
         cache.set(key_doc, connected_users)
 
-    ## TODO : return rid of latest version
-    return 0
+    return get_latest_version_rid(document_id)
 
 def do_user_disconnect_document(
     user_id: int,
