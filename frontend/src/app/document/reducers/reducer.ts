@@ -5,6 +5,7 @@ import { BoardReducer, BoardState } from './board-reducer';
 
 import * as fromRoot from '../../shared/reducer';
 import { Board, BoardType, BoardLocation } from '../models/board';
+import { Bubble, InternalBubble } from '../models/bubble';
 
 
 export interface State extends fromRoot.State {
@@ -20,8 +21,9 @@ export const getDocumentState = createFeatureSelector<State>('document');
 
 export const getBubbleState = createSelector(getDocumentState, (state: State) => state.bubble);
 
-export const getRootBubble = createSelector(getBubbleState, (state: BubbleState) => state.rootBubble);
 export const getBubbleList = createSelector(getBubbleState, (state: BubbleState) => state.bubbleList);
+export const getRootBubble = createSelector(getBubbleList, (bubbleList: Bubble[]) => (bubbleList[0] as InternalBubble);
+
 export const getSelectedMenu = createSelector(getBubbleState, (state: BubbleState) => state.selectedMenu);
 export const getSelectedBubbleList = createSelector(getBubbleState, (state: BubbleState) => state.selectedBubbleList);
 export const getHoverBubbleList = createSelector(getBubbleState, (state: BubbleState) => state.hoverBubbleList);

@@ -9,7 +9,6 @@ import * as _ from 'lodash';
 
 export interface BubbleState {
     documentId: number;
-    rootBubble: InternalBubble;
     bubbleList: Bubble[];
 
     selectedBubbleList: Bubble[];
@@ -26,7 +25,6 @@ export interface BubbleState {
 
 const initialState: BubbleState = {
     documentId: -1,
-    rootBubble: null,
     bubbleList: [],
 
     selectedBubbleList: [],
@@ -92,11 +90,10 @@ export function BubbleReducer(state: BubbleState = initialState, action: fromBub
         case fromBubble.LOAD:
             return {...state, loading: true, documentId: action.payload};
         case fromBubble.LOAD_COMPLETE: {
-            const root = MockBubbleRoot;
             const bubbleList = MockBubbleList;
             // TODO: changed to mock bubble list
             // return {...state, bubbleList: [...action.payload], rootBubble: root, loading: false};
-            return {...state, bubbleList: [...bubbleList], rootBubble: root, loading: false};
+            return {...state, bubbleList: [...bubbleList], loading: false};
         }
         case fromBubble.LOAD_ERROR:
             return {...state, error: action.payload};
@@ -139,7 +136,7 @@ export function BubbleReducer(state: BubbleState = initialState, action: fromBub
             const newLeafBubble = action.payload.newBubble;
             const bubbleList = flattenBubble(newBubbleList, bubbleId, newLeafBubble);
 
-            return {...state, bubbleList: bubbleList, rootBubble: bubbleList[0], loading: false};
+            return {...state, bubbleList: bubbleList, loading: false};
         }
         case fromBubble.WRAP:
             return {...state, loading: true, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
@@ -505,6 +502,3 @@ function moveBubble(bubbleList: Array<Bubble>, id: number, destBubbleId: number,
     }
     return bubbleList;
 }
-
-export const getRootBubble = (state: BubbleState) => state.rootBubble;
-export const getBubbleList = (state: BubbleState) => state.bubbleList;
