@@ -106,8 +106,8 @@ export class BubbleEffects {
     @Effect()
     split$: Observable<Action> = this.action$.ofType<BubbleAction.Split>(BubbleAction.SPLIT)
         .map(action => action.payload).mergeMap(query => {
-        return Observable.fromPromise(this.bubbleService.splitBubble(query))
-            .map(() => new BubbleAction.SplitComplete(query))
+        return Observable.fromPromise(this.bubbleService.splitBubble(query.bubbleId, query.contentList))
+            .map((splitBubbleList) => new BubbleAction.SplitComplete({bubbleId: query.bubbleId, splitBubbleList: splitBubbleList}))
             .catch(err => of(new BubbleAction.SplitError(err)));
         });
 

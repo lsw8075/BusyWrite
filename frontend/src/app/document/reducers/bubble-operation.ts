@@ -50,10 +50,10 @@ export function deleteChildBubbles(bubbleList: Array<Bubble>, id: number) {
     try {
         const bubble = getBubbleById(bubbleList, id);
         if (bubble.type === BubbleType.internalBubble) {
-        const internalBubble = bubble as InternalBubble;
-        for (const childBubbleId of internalBubble.childBubbleIds) {
-            deleteChildBubbles(bubbleList, childBubbleId);
-        }
+            const internalBubble = bubble as InternalBubble;
+            for (const childBubbleId of internalBubble.childBubbleIds) {
+                deleteChildBubbles(bubbleList, childBubbleId);
+            }
         }
         removeBubbleById(bubbleList, bubble.id);
     } catch (err) {
@@ -127,7 +127,7 @@ export function getContent(bubbleList: Array<Bubble>, id: number): string {
     }
 }
 
-export function flattenBubble(bubbleList: Array<Bubble>, id: number, newBubble: Bubble): Array<Bubble>  {
+export function flattenBubble(bubbleList: Array<Bubble>, id: number, newBubble: Bubble)  {
     try {
         const bubble = getBubbleById(bubbleList, id);
         if (bubble.type !== BubbleType.internalBubble) {
@@ -142,10 +142,6 @@ export function flattenBubble(bubbleList: Array<Bubble>, id: number, newBubble: 
         parentBubble.childBubbleIds[internalBubble.location] = newBubble.id;
         bubbleList.push(newBubble);
         deleteChildBubbles(bubbleList, id);
-        console.log(newBubble);
-        console.log(bubbleList);
-
-        return bubbleList;
 
     } catch (err) {
         console.log(err);
@@ -179,6 +175,7 @@ export function createBubble(bubbleList: Array<Bubble>, id: number, isAbove: boo
 
 export function editBubble(bubbleList: Array<Bubble>, id: number, newContent: string) {
     try {
+        console.log(newContent);
         const bubble = getBubbleById(bubbleList, id);
         if (bubble.type !== BubbleType.leafBubble) {
             throw new Error('Edit bubble should be a leaf bubble');
@@ -192,7 +189,7 @@ export function editBubble(bubbleList: Array<Bubble>, id: number, newContent: st
     }
 }
 
-export function mergeBubble(bubbleList: Array<Bubble>, mergeBubbleIds: Array<number>, newBubble: Bubble): Array<Bubble> {
+export function mergeBubble(bubbleList: Array<Bubble>, mergeBubbleIds: Array<number>, newBubble: Bubble) {
     try {
 
         console.log('[before merge]', bubbleList);
@@ -236,10 +233,9 @@ export function mergeBubble(bubbleList: Array<Bubble>, mergeBubbleIds: Array<num
         console.log(err);
     //    throw err;
     }
-    return bubbleList;
 }
 
-export function wrapBubble(bubbleList: Array<Bubble>, wrapBubbleIds: Array<number>, newInternalBubble: InternalBubble): Array<Bubble> {
+export function wrapBubble(bubbleList: Array<Bubble>, wrapBubbleIds: Array<number>, newInternalBubble: InternalBubble) {
     try {
         console.log('[before wrap]', bubbleList);
         // if their locations are all neighbors
@@ -278,10 +274,9 @@ export function wrapBubble(bubbleList: Array<Bubble>, wrapBubbleIds: Array<numbe
         console.log(err);
     //    throw err;
     }
-    return bubbleList;
 }
 
-export function moveBubble(bubbleList: Array<Bubble>, id: number, destBubbleId: number, isAbove: boolean): Array<Bubble> {
+export function moveBubble(bubbleList: Array<Bubble>, id: number, destBubbleId: number, isAbove: boolean) {
     try {
         console.log('[before move]', bubbleList);
         // only leaf?
@@ -319,5 +314,34 @@ export function moveBubble(bubbleList: Array<Bubble>, id: number, destBubbleId: 
         console.log(err);
     //    throw err;
     }
-    return bubbleList;
+}
+
+export function splitBubble(bubbleList: Array<Bubble>, id: number, splitBubbleList: Array<Bubble>) {
+    try {
+        console.log('[before split]', bubbleList);
+
+        const prevBubble = getBubbleById(bubbleList, id);
+        if (prevBubble.type !== BubbleType.leafBubble) {
+            throw new Error('only leaf bubble can be splitted');
+        }
+        removeBubbleById(bubbleList, id);
+
+        // sort split bubble list by id
+        const internalBubble = new InternalBubble(id);
+        bubbleList.push(internalBubble);
+        for (let i = 0; i < splitBubbleList.length; i++) {
+            const bubble = splitBubbleList[i];
+            internalBubble.childBubbleIds.push(bubble.id);
+            bubble.parentBubbleId = id;
+            bubble.location = i;
+            bubbleList.push(bubble);
+        }
+
+        console.log(splitBubbleList);
+        console.log('[after split]', bubbleList);
+
+    } catch (err) {
+        console.log(err);
+    //    throw err;
+    }
 }

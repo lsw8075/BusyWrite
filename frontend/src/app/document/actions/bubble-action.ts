@@ -174,11 +174,17 @@ export const SPLIT_COMPLETE = '[Bubble] split Complete';
 export const SPLIT_ERROR = '[Bubble] split Error';
 export class Split implements Action {
   readonly type = SPLIT;
-  constructor(public payload: number) {}
+  constructor(public payload: {
+      bubbleId: number,
+      contentList: Array<string>,
+  }) {}
 }
 export class SplitComplete implements Action {
   readonly type = SPLIT_COMPLETE;
-  constructor(public payload: number) {}
+  constructor(public payload: {
+      bubbleId: number
+      splitBubbleList: Array<Bubble>
+  }) {}
 }
 export class SplitError implements Action {
   readonly type = SPLIT_ERROR;

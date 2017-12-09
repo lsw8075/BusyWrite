@@ -199,9 +199,9 @@ export class BubbleService implements OnDestroy {
     public createCommentOnSuggestBubble() {
     }
 
-    public async startEdittingBubble(bubble_id: number): Promise<void> {
+    public async startEdittingBubble(bubbleId: number): Promise<void> {
         const m = {'header': 'edit_bubble',
-            'body': {'bubble_id': bubble_id}};
+            'body': {'bubble_id': bubbleId}};
         this._socket.send(m);
         return Promise.resolve(null);
     }
@@ -216,8 +216,12 @@ export class BubbleService implements OnDestroy {
         this._socket.send(m);
     }
 
-    public async splitBubble(bubble_id: number): Promise<void> {
-        return Promise.resolve(null);
+    public async splitBubble(bubbleId: number, contentList: Array<string>): Promise<Array<Bubble>> {
+        const splitBubbleList: Array<Bubble> = [];
+        for (let content of contentList) {
+            splitBubbleList.push(new LeafBubble(this._getTempBubbleId(), content));
+        }
+        return Promise.resolve(splitBubbleList);
     }
 
     public async deleteBubble(bubble_id: number): Promise<void> {
