@@ -7,6 +7,7 @@ from .versions import update_doc
 from django.db import transaction
 from functools import wraps
 from django.forms.models import model_to_dict
+from .operation_no import Operation
 
 def commentN_operation(func):
     ''' Decorator for comment under normal functions '''
@@ -135,7 +136,7 @@ def do_create_comment_under_normal(
     bubble.next_comment_order += 1
     bubble.save()
 
-    return process_comment(comment)
+    return (Operation.CREATE_NCOMMENT, process_comment(comment))
 
 @suggest_operation
 @update_doc
@@ -160,7 +161,7 @@ def do_create_comment_under_suggest(
     bubble.next_comment_order += 1
     bubble.save()
 
-    return process_comment(comment)
+    return (Operation.CREATE_SCOMMENT, process_comment(comment))
 
 @commentN_operation
 @update_doc
@@ -184,7 +185,7 @@ def do_edit_comment_under_normal(
     comment.content = content
     comment.save()
 
-    return process_comment(comment)
+    return (Operation.EDIT_NCOMMENT, process_comment(comment))
 
 @commentS_operation
 @update_doc
@@ -208,7 +209,7 @@ def do_edit_comment_under_suggest(
     comment.content = content
     comment.save()
 
-    return process_comment(comment)
+    return (Operation.EDIT_SCOMMENT, process_comment(comment))
 
 @commentN_operation
 @update_doc
@@ -227,6 +228,8 @@ def do_delete_comment_under_normal(
 
     comment.delete()
 
+    return (Operation.DELETE_NCOMMENT, None)
+
 @commentS_operation
 @update_doc
 def do_delete_comment_under_suggest(
@@ -243,3 +246,5 @@ def do_delete_comment_under_suggest(
         raise UserIsNotCommentOwnerError(user_id, comment_id)
 
     comment.delete()
+
+    return (Operation.DELETE_SCOMMENT, None)

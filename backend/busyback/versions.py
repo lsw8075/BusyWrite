@@ -6,6 +6,9 @@ from django.core.cache import cache
 from functools import wraps
 import json
 
+def key_rlat(did):
+    return 'Rlat' + str(did)
+
 def update_doc(func):
     ''' Decorator for functions updating document content '''
     ''' commits new version for each update '''
@@ -13,19 +16,22 @@ def update_doc(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         rid_version = args[0]
-        did = args[2]
+        document = kwargs['document']
         result = func(*args, **kwargs)
-        new_version_no = commit_version(did, args)
+        operation = result[0]
+        result = result[1]
+        new_version_no = commit_version(document, args)
         return (new_version_no, result)
     return wrapper
 
-
 # version no 
-def get_latest_version_no(did):
+def get_latest_version_rid(did):
     return 0
+    
 
-def commit_version(did, args):
+def commit_version(document, args):
     args = json.dumps(args)
+    VersionDelta.objects.create(document=document, args=args)
     return 0
     
 def check_too_old(did):

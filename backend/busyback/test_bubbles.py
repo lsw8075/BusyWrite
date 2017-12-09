@@ -276,3 +276,10 @@ class BubblesTestCase(TestCase):
 
     def test_do_merge_normal_bubble(self):
         merged = do_merge_normal_bubble(0, self.user1.id, self.doc1.id, [self.bubble4.id, self.bubble5.id])
+
+    def test_do_release_ownership(self):
+        new_bubble_id = do_create_normal_bubble(0, self.user1.id, self.doc1.id, self.bubble2.id, 1, True, 'test content')[1]['id']
+        do_release_ownership(0, self.user1.id, self.doc1.id, new_bubble_id)
+
+    def test_do_edit_suggest_bubble(self):
+        do_edit_suggest_bubble(0, self.user1.id, self.doc1.id, self.suggest1.id, 'Fork')

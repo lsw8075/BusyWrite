@@ -21,12 +21,14 @@ class Note(models.Model):
     owner = models.ForeignKey(
     	User,
     	related_name='notes',
-    	null=False
+    	null=False,
+        on_delete=models.CASCADE
     )
     document = models.ForeignKey(
     	'Document',
     	related_name='notes',
-    	null=False
+    	null=False,
+        on_delete=models.CASCADE
     )
 
 class Bubble(models.Model):
@@ -65,23 +67,28 @@ class NormalBubble(Bubble):
     edit_lock_holder = models.ForeignKey(
     	User,
     	related_name='editing_bubbles',
-    	null=True
+    	null=True,
+        on_delete=models.SET_NULL
     )
     owner_with_lock = models.ForeignKey(
     	User,
     	related_name='owning_bubbles',
-    	null=True
+    	null=True,
+        on_delete=models.SET_NULL
     )
     parent_bubble = models.ForeignKey(
     	'NormalBubble',
     	related_name='child_bubbles',
-    	null=True
+    	null=True,
+        on_delete=models.CASCADE
     )
 
     document = models.ForeignKey(
     	'Document',
     	related_name='bubbles',
+        on_delete=models.CASCADE
     )
+    deleted = models.BooleanField(default=False)
 
     def touch(self):
         super().touch()
@@ -226,7 +233,7 @@ class NormalBubble(Bubble):
     def pop_child(self, location):
         popped = self.fetch_child(location)
         self.splice_children(location, 1, splice_list=popped.child_bubbles.all())
-        popped.delete()
+        popped.deleted = True
         return self
 
         
@@ -235,7 +242,8 @@ class SuggestBubble(Bubble):
     normal_bubble = models.ForeignKey(
     	'NormalBubble',
     	related_name='suggest_bubbles',
-    	null=False
+    	null=False,
+        on_delete=models.CASCADE
     )
 
     def show(self):
@@ -251,7 +259,8 @@ class Comment(models.Model):
     owner = models.ForeignKey(
     	User,
     	related_name='comments',
-    	null=False
+    	null=True,
+        on_delete=models.SET_NULL
     )
     order = models.IntegerField(default=-1)
 
@@ -259,21 +268,24 @@ class CommentUnderNormal(Comment):
     bubble = models.ForeignKey(
     	'NormalBubble',
     	related_name='comments',
-    	null=False
+    	null=False,
+        on_delete=models.CASCADE
     )
 
 class CommentUnderSuggest(Comment):
     bubble = models.ForeignKey(
     	'SuggestBubble',
     	related_name='comments',
-    	null=False
+    	null=False,
+        on_delete=models.CASCADE
     )
 
 class VersionDelta(models.Model):
     document = models.ForeignKey(
         'Document',
         related_name='versions',
-        null=False
+        null=False,
+        on_delete=models.CASCADE
         )
     args = models.TextField()
 
@@ -281,19 +293,22 @@ class News(models.Model):
     receiver = models.ForeignKey(
     	User,
     	related_name='news',
-    	null=False
+    	null=False,
+        on_delete=models.CASCADE
     )
     document = models.ForeignKey(
     	'Document',
     	related_name='news',
-    	null=False
+    	null=False,
+        on_delete=models.CASCADE
     )
 
 class Invitation(News):
     sender = models.ForeignKey(
     	User,
     	related_name='invitations',
-    	null=False
+    	null=False,
+        on_delete=models.CASCADE
     )
 
 # TODO: find out way to generate shareable link and save it
@@ -301,7 +316,8 @@ class SharedLink(News):
     sender = models.ForeignKey(
     	User,
     	related_name='shared_links',
-    	null=False
+    	null=False,
+        on_delete=models.CASCADE
     )
 
 class Notification(News):
