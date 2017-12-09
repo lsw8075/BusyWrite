@@ -72,6 +72,9 @@ def do_user_connect_document(
 
         cache.set(key_doc, connected_users)
 
+    ## TODO : return rid of latest version
+    return 0
+
 def do_user_disconnect_document(
     user_id: int,
     document_id: int
