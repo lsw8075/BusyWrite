@@ -464,6 +464,15 @@ def do_wrap_normal_bubble(
     bubble_id_list: list,
     **kw
     ):
+    return process_normal(wrap_bubble(rversion, user_id, document_id, bubble_id_list, **kw))
+
+def wrap_bubble(
+    rversion: int,
+    user_id: int,
+    document_id: int,
+    bubble_id_list: list,
+    **kw
+    ):
     '''Wrap the normal bubbles'''
 
     if len(bubble_id_list) < 1:
@@ -501,7 +510,7 @@ def do_wrap_normal_bubble(
 
     wrapped = parent.wrap_children(bubble_locs[0], len(bubble_locs))
 
-    return process_normal(wrapped)
+    return wrapped
 
 @normal_operation
 @update_doc
@@ -763,16 +772,22 @@ def do_release_ownership(
     bubble_id: int,
     **kw
     ):
+    
     pass
 
 @bubble_operation
 @update_doc
-def do_merge_bubble(
+def do_merge_normal_bubble(
     rversion: int,
     user_id: int,
     document_id: int,
     bubble_id_list: list,
     **kw
     ):
-    pass
+    bubble = wrap_bubble(rversion, user_id, document_id, bubble_id_list, **kw)
+    
+    content = cascaded_flatten_children(fetch_user(user_id), bubble)
+    bubble.change_content(content)
+    
+    return process_normal(bubble)
 

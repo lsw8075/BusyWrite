@@ -273,3 +273,6 @@ class BubblesTestCase(TestCase):
         reload_bubbles(self, [2])
         reload_suggests(self, [2])
         self.assertEqual(self.bubble2.content, 'TestSuggest2')
+
+    def test_do_merge_normal_bubble(self):
+        merged = do_merge_normal_bubble(0, self.user1.id, self.doc1.id, [self.bubble4.id, self.bubble5.id])
