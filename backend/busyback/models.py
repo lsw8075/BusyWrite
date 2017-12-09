@@ -35,7 +35,7 @@ class Bubble(models.Model):
     	User,
     	related_name='voted_bubbles'
     )
-    #next_comment_order = models.IntegerField(default=0)
+    next_comment_order = models.IntegerField(default=0)
 
     def touch(self):
         self.save()
@@ -60,7 +60,6 @@ class Bubble(models.Model):
 
 class NormalBubble(Bubble):
     location = models.IntegerField(null=True)
-        
     # need to check if editLockHolder and ownerWithLock are
     # contributors of the document
     edit_lock_holder = models.ForeignKey(
@@ -269,6 +268,14 @@ class CommentUnderSuggest(Comment):
     	related_name='comments',
     	null=False
     )
+
+class VersionDelta(models.Model):
+    document = models.ForeignKey(
+        'Document',
+        related_name='versions',
+        null=False
+        )
+    args = models.TextField()
 
 class News(models.Model):
     receiver = models.ForeignKey(
