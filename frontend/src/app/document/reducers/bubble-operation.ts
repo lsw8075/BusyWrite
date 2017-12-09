@@ -285,10 +285,7 @@ export function moveBubble(bubbleList: Array<Bubble>, id: number, destBubbleId: 
         const bubble = getBubbleById(bubbleList, id);
         const parentBubble = getParentBubble(bubbleList, bubble);
 
-        if (bubble.type !== BubbleType.leafBubble) {
-            throw new Error('only leaf bubble is movable');
-        }
-
+        console.log(bubble);
         parentBubble.childBubbleIds.splice(bubble.location, 1);
         for (let i = bubble.location; i < parentBubble.childBubbleIds.length; i++) {
             const childBubble = getBubbleById(bubbleList, parentBubble.childBubbleIds[i]);
@@ -324,10 +321,13 @@ export function splitBubble(bubbleList: Array<Bubble>, id: number, splitBubbleLi
         if (prevBubble.type !== BubbleType.leafBubble) {
             throw new Error('only leaf bubble can be splitted');
         }
-        removeBubbleById(bubbleList, id);
 
         // sort split bubble list by id
         const internalBubble = new InternalBubble(id);
+        internalBubble.parentBubbleId = prevBubble.parentBubbleId;
+        internalBubble.location = prevBubble.location;
+
+        removeBubbleById(bubbleList, id);
         bubbleList.push(internalBubble);
         for (let i = 0; i < splitBubbleList.length; i++) {
             const bubble = splitBubbleList[i];

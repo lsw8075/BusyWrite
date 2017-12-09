@@ -199,11 +199,10 @@ export class BubbleService implements OnDestroy {
     public createCommentOnSuggestBubble() {
     }
 
-    public async startEdittingBubble(bubbleId: number): Promise<void> {
+    public startEdittingBubble(bubbleId: number) {
         const m = {'header': 'edit_bubble',
             'body': {'bubble_id': bubbleId}};
         this._socket.send(m);
-        return Promise.resolve(null);
     }
 
     public edittingBubble() {
@@ -224,10 +223,10 @@ export class BubbleService implements OnDestroy {
         return Promise.resolve(splitBubbleList);
     }
 
-    public async deleteBubble(bubble_id: number): Promise<void> {
+    public deleteBubble(bubble_id: number) {
         const m = {'header': 'delete_bubble',
             'body': {'bubble_id': bubble_id}};
-        return Promise.resolve(null);
+        this._socket.send(m);
     }
 
     public deleteSuggestBubble(){
@@ -243,12 +242,11 @@ export class BubbleService implements OnDestroy {
         return Promise.resolve(new LeafBubble(this._getTempBubbleId()));
     }
 
-    public async splitLeafBubble(bubble_id: number, content_list: Array<String>): Promise<void> {
+    public splitLeafBubble(bubble_id: number, content_list: Array<String>) {
         const m = {'header': 'split_leaf_bubble',
             'body': {'bubble_id': bubble_id,
                 'content_list': [...content_list]}};
         this._socket.send(m);
-        return Promise.resolve(null);
     }
 
     public async flattenBubble(bubble_id: number): Promise<Bubble> {
@@ -256,16 +254,13 @@ export class BubbleService implements OnDestroy {
         return Promise.resolve(new LeafBubble(this._getTempBubbleId()));
     }
 
-    public async moveBubble(bubbleId: number, destBubbleId: number, isAbove: boolean): Promise<void> {
-        await this.delay(1000);
-        return Promise.resolve(null);
+    public moveBubble(bubbleId: number, destBubbleId: number, isAbove: boolean) {
     }
 
-    public async popBubble(bubble_id: number): Promise<void> {
+    public popBubble(bubble_id: number) {
         const m = {'header': 'pop_bubble',
             'body': {'bubble_id': bubble_id}};
         this._socket.send(m);
-        return Promise.resolve(null);
     }
 
     public async createBubble(bubbleId: number, isAbove: boolean): Promise<Bubble> {
