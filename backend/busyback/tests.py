@@ -52,6 +52,7 @@ class ChannelReceiveTestCaseOne(ChannelTestCase):
         d1.contributors.add(u1)
         d1.save()
 
+        self.userid = u1.id
         self.fstid = d1.id
         
         d2 = Document.objects.create(title='B')
@@ -82,7 +83,7 @@ class ChannelReceiveTestCaseOne(ChannelTestCase):
         self.assertEqual(result['body'], 'header and body needed')
 
     def test_wr_receive_header_empty_error(self):
-        message = {"header":"", "body":{"document": str(self.fstid)}}
+        message = {"header":"", 'previous_request': 0, "body":{"document": str(self.fstid)}}
         self.client.send('websocket.receive', content={'order':0}, text=str(message))
         self.client.consume('websocket.receive')
         result = self.client.receive()
@@ -91,7 +92,7 @@ class ChannelReceiveTestCaseOne(ChannelTestCase):
         self.assertEqual(result['body'], 'empty command')
  
     def test_wr_receive_body_empty_error(self):
-        message = {"header":"hey", "body":{}}
+        message = {"header":"hey", 'previous_request': 0, "body":{}}
         self.client.send('websocket.receive', content={'order':0}, text=str(message))
         self.client.consume('websocket.receive')
         result = self.client.receive()
@@ -100,7 +101,7 @@ class ChannelReceiveTestCaseOne(ChannelTestCase):
         self.assertEqual(result['body'], 'empty body')
  
     def test_attempt_close_document_before_open_document(self):
-        message = {"header": "close_document", "body": {"document_id": str(self.fstid)}}
+        message = {"header": "close_document", 'previous_request': 0, "body": {"document_id": str(self.fstid)}}
         self.client.send("websocket.receive", content={'order':0}, text=str(message))
         self.client.consume('websocket.receive')
         result = self.client.receive()
@@ -110,7 +111,7 @@ class ChannelReceiveTestCaseOne(ChannelTestCase):
 
     # open document
     def test_open_document_Key_Error(self):
-        message = {'header': 'open_document', 'body':{'hey':'yey'}}
+        message = {'header': 'open_document', 'previous_request': 0, 'body':{'hey':'yey'}}
         self.client.send('websocket.receive', content={'order':0}, text=str(message))
         self.client.consume('websocket.receive')
         result = self.client.receive()
@@ -119,7 +120,7 @@ class ChannelReceiveTestCaseOne(ChannelTestCase):
         self.assertEqual(result['body'], 'document_id needed')
 
     def test_open_document_Document_Does_Not_Exist(self):
-        message = {'header': 'open_document', 'body': {'document_id':0}}
+        message = {'header': 'open_document', 'previous_request': 0, 'body': {'document_id':0}}
         self.client.send('websocket.receive', content={'order':0}, text=str(message))
         self.client.consume('websocket.receive')
         result = self.client.receive()
@@ -128,7 +129,7 @@ class ChannelReceiveTestCaseOne(ChannelTestCase):
         self.assertEqual(result['body'], 'document does not exist')
 
     def test_open_document_Not_Contributed_By(self):
-        message = {'header': 'open_document', 'body': {'document_id':str(self.sndid)}}
+        message = {'header': 'open_document', 'previous_request': 0, 'body': {'document_id':str(self.sndid)}}
         self.client.send('websocket.receive', content={'order':0}, text=str(message))
         self.client.consume('websocket.receive')
         result = self.client.receive()
@@ -137,13 +138,17 @@ class ChannelReceiveTestCaseOne(ChannelTestCase):
         self.assertEqual(result['body'], 'user does not contribute to the document')
 
     def test_open_document_success(self):
-        message = {'header': 'open_document', 'body': {'document_id':str(self.fstid)}}
+        message = {'header': 'open_document', 'previous_request': 0, 'body': {'document_id':str(self.fstid)}}
         self.client.send('websocket.receive', content={'order':0}, text=str(message))
         self.client.consume('websocket.receive')
         result = self.client.receive()
         self.assertEqual(result['header'], 'open_document')
         self.assertEqual(result['accept'], 'True')
         self.assertEqual(result['body']['document_id'], str(self.fstid))
+
+        result = self.client.receive();
+        self.assertEqual(result['header'], 'someone_open_document_detail')
+        self.assertEqual(result['body']['who'], self.userid)
 
         Group("document_detail-"+str(self.fstid)).send({"body":"wow"})
         result = self.client.receive()
@@ -183,11 +188,12 @@ class ChannelReceiveTestCaseTwo(ChannelTestCase):
         self.client.send_and_consume("websocket.connect", content=message)
         self.client.receive()
 
-        message = {'header': 'open_document', 'body': {'document_id': str(d1.id)}}
+        message = {'header': 'open_document', 'previous_request': 0, 'body': {'document_id': str(d1.id)}}
         self.client.send('websocket.receive', content={'order': 0}, text=str(message))
         self.client.consume('websocket.receive')
-        self.client.receive()
- 
+        result = self.client.receive()
+        self.previous_request = result['previous_request_id']
+''' 
     def test_wr_disconnect(self):
         self.client.send("websocket.disconnect", content={"body":""})
         message = self.get_next_message("websocket.disconnect", require=True)
@@ -521,4 +527,4 @@ class ChannelReceiveTestCaseThree(ChannelTestCase):
             return
         self.assertEqual(True, False)
 
-
+'''
