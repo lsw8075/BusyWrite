@@ -1,8 +1,11 @@
 from .models import *
-from .users import do_fetch_user
+from .users import fetch_user
 from .errors import *
+from .versions import *
 from django.utils import timezone
 from django.db import transaction
+from django.core.cache import cache
+import json
 
 @transaction.atomic
 def do_fetch_document(
@@ -26,7 +29,7 @@ def fetch_document_with_lock(user_id, document_id):
 def do_fetch_documents(
     user_id: int
     ):
-    user = do_fetch_user(user_id)
+    user = fetch_user(user_id)
     documents = Document.objects.filter(contributors=user).values()
     if len(documents) == 0:
         return []
@@ -38,7 +41,7 @@ def do_create_document(
     title: str
     ):
 
-    user = do_fetch_user(user_id)
+    user = fetch_user(user_id)
     
     document = Document.objects.create(title=title)
     
@@ -51,4 +54,62 @@ def do_fetch_contributors(
     ):
 
     document = do_fetch_document(user_id, document_id)
-    return list(document.contributors.all().values())
+    return [d['id'] for d in list(document.contributors.all().values())]
+
+def key_duser(document_id):
+    return 'Duser' + str(document_id)
+
+def do_user_connect_document(
+    user_id: int,
+    document_id: int
+    ):
+    key_doc = key_duser(document_id)
+    
+    with cache.lock('doclock' + str(document_id)):
+        connected_users = cache.get_or_set(key_doc, '[]')
+        connected_users = json.loads(connected_users)
+        connected_users.append(user_id)
+        connected_users = json.dumps(connected_users)
+
+        cache.set(key_doc, connected_users)
+
+    return get_latest_version_rid(document_id)
+
+def do_user_disconnect_document(
+    user_id: int,
+    document_id: int
+    ):
+    key_doc = key_duser(document_id)
+    with cache.lock('doclock' + str(document_id)):
+        connected_users = cache.get(key_doc)
+        connected_users = json.loads(connected_users)
+        connected_users.remove(user_id)
+        if len(connected_users) > 0:
+            connected_users = json.dumps(connected_users)
+            cache.set(key_doc, connected_users)
+        else:
+            cache.delete(key_doc)
+
+def do_get_connected_users_document(
+    user_id: int,
+    document_id: int
+    ):
+
+    key_doc = key_duser(document_id)
+    with cache.lock('doclock' + str(document_id)):
+        connected_users = cache.get(key_doc)
+        if connected_users is None:
+            return []
+        connected_users = json.loads(connected_users)
+        connected_users.sort()
+        return connected_users
+
+def do_clear_connected_users_document(
+    user_id: int,
+    document_id: int
+    ):
+    key_doc = key_duser(document_id)
+    with cache.lock('doclock' + str(document_id)):
+        connected_users = cache.get(key_doc)
+        if connected_users is not None:
+            cache.delete(key_doc)

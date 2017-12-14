@@ -28,5 +28,22 @@ class DocumentTestCase(TestCase):
 
     def test_do_fetch_contributors(self):
         cont = do_fetch_contributors(self.user1.id, self.doc1.id)
-        self.assertEqual(cont[0]['id'], self.user1.id)
+        self.assertEqual(cont[0], self.user1.id)
 
+    def test_connected_users(self):
+        do_clear_connected_users_document(self.user1.id, self.doc1.id)
+        con = do_get_connected_users_document(self.user1.id, self.doc1.id)
+        self.assertEqual(len(con), 0)
+        do_user_connect_document(self.user1.id, self.doc1.id)
+        do_user_connect_document(self.user2.id, self.doc1.id)
+        con = do_get_connected_users_document(self.user1.id, self.doc1.id)
+        self.assertEqual(con[0], self.user1.id)
+        self.assertEqual(con[1], self.user2.id)
+        do_user_disconnect_document(self.user1.id, self.doc1.id)
+        con = do_get_connected_users_document(self.user1.id, self.doc1.id)
+        self.assertEqual(con[0], self.user2.id)
+        do_user_disconnect_document(self.user2.id, self.doc1.id)
+        con = do_get_connected_users_document(self.user1.id, self.doc1.id)
+        self.assertEqual(len(con), 0)
+
+        
