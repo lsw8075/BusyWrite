@@ -48,6 +48,10 @@ import { TabViewModule } from 'primeng/primeng';
 import { EditorModule } from 'primeng/primeng';
 import { DialogModule } from 'primeng/primeng';
 
+import { CovalentLayoutModule, CovalentExpansionPanelModule, CovalentChipsModule } from '@covalent/core';
+
+import { MatListModule, MatIconModule, MatInputModule } from '@angular/material';
+
 const routes: Routes = [
     {path: '', component: DocumentDetailPageComponent},
 ];
@@ -94,6 +98,10 @@ const routes: Routes = [
     TooltipModule.forRoot(),
     AlertModule.forRoot(),
     ModalModule.forRoot(),
+
+    CovalentLayoutModule, CovalentExpansionPanelModule,
+
+    MatListModule, MatIconModule, MatInputModule, CovalentChipsModule
   ],
   exports: [
     DocumentDetailPageComponent

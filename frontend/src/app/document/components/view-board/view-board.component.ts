@@ -17,7 +17,7 @@ import { BubbleJsonHelper } from '../../models/bubble-json-helper';
 @Component({
     selector: 'app-view-board',
     templateUrl: './view-board.component.html',
-    styleUrls: ['./view-board.component.css'],
+    styleUrls: ['./view-board.component.css', '../board-style.css'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 

@@ -1,0 +1,51 @@
+/* You can add global styles to this file, and also import other style files */
+
+@import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
+@import "../node_modules/font-awesome/css/font-awesome.min.css";
+@import "../node_modules/primeng/resources/themes/omega/theme.css";
+@import "../node_modules/primeng/resources/primeng.min.css";
+@import "../node_modules/dragula/dist/dragula.min.css";
+@import "../node_modules/hover.css/css/hover-min.css";
+@import "../node_modules/quill/dist/quill.core.css";
+@import "./bubble-list-text.css";
+@import "../node_modules/@covalent/core/common/platform.css";
+
+p {
+  padding: 0px;
+  margin-bottom: 0px;
+}
+
+a.nav-link {
+    padding: 0;
+}
+
+
+@import '~@angular/material/theming';
+@import '~@covalent/core/theming/all-theme';
+
+// (optional) Additional themes
+@import '~@covalent/markdown/markdown-theme';
+@import '~@covalent/highlight/highlight-theme';
+
+// Define a custom typography config that overrides the font-family
+// or any typography level.
+$typography: mat-typography-config(
+  $font-family: 'Roboto, monospace',
+  $headline: mat-typography-level(32px, 48px, 700)
+);
+
+@include mat-core($typography); // $typography is an **optional** argument for the mat-core
+
+$primary: mat-palette($mat-orange, 800, 100, 900);
+$accent:  mat-palette($mat-light-blue, 600, 100, 900);
+
+$warn:    mat-palette($mat-red, 600, 100, 900);
+
+$theme: mat-light-theme($primary, $accent, $warn);
+
+@include angular-material-theme($theme);
+@include covalent-theme($theme, $typography); // $typography is an **optional** argument for the covalent-theme
+
+// (optional) Additional themes
+@include covalent-markdown-theme($theme);
+@include covalent-highlight-theme();
