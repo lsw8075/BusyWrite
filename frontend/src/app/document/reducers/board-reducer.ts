@@ -12,13 +12,19 @@ export interface BoardState {
     boardList: Board[];
     loading: boolean;
     error: string;
+
+    selectedBoard: Board;
 }
+
+const initalBoardList = [new Board(BoardType.view, BoardLocation.left, 0), new Board(BoardType.edit, BoardLocation.right, 1)];
 
 const initialState: BoardState = {
     newId: 2,
-    boardList: [new Board(BoardType.view, BoardLocation.left, 0), new Board(BoardType.edit, BoardLocation.right, 1)],
+    boardList: initalBoardList,
     loading: false,
-    error: ''
+    error: '',
+
+    selectedBoard: initalBoardList[0],
 };
 
 export function BoardReducer(state: BoardState = initialState, action: fromBoard.Actions) {
@@ -65,6 +71,9 @@ export function BoardReducer(state: BoardState = initialState, action: fromBoard
 
         case fromBoard.CLEAR_ERROR:
             return {...state, error: ''};
+
+        case fromBoard.SELECT:
+            return {...state, selectedBoard: {...action.payload}};
         default:
             return {...state };
     }

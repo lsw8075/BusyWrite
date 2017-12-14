@@ -45,13 +45,13 @@ export class BubbleMenuComponent implements OnInit {
         console.log(this.bubble, this.menu);
     }
 
-    public isWrapSelected(): boolean {
-        return this._eventBubbleService.getActionState() === ActionType.wrap;
-    }
+    // public isWrapSelected(): boolean {
+    //     return this._eventBubbleService.getActionState() === ActionType.wrap;
+    // }
 
-    public isMoveSelected(): boolean {
-        return this._eventBubbleService.getActionState() === ActionType.move;
-    }
+    // public isMoveSelected(): boolean {
+    //     return this._eventBubbleService.getActionState() === ActionType.move;
+    // }
 
     public openSangjunBoard() {
         // this._eventBubbleService.openSangjunBoard(this.bubble);
@@ -100,14 +100,15 @@ export class BubbleMenuComponent implements OnInit {
     }
 
     public getAction(): string {
-    switch (this._eventBubbleService.getActionState()) {
-        case ActionType.move:
-            return 'move bubble';
-        case ActionType.split:
-            return 'split bubble';
-        default:
-            return '';
-    }
+    // switch (this._eventBubbleService.getActionState()) {
+    //     case ActionType.move:
+    //         return 'move bubble';
+    //     case ActionType.split:
+    //         return 'split bubble';
+    //     default:
+    //         return '';
+    // }
+    return '';
     }
 
   public isBeingEditted(bubble: Bubble): boolean {

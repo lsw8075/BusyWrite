@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
+
+import { Board } from '../../models/board';
 
 @Component({
   selector: 'app-filter-board',
@@ -6,6 +8,8 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./filter-board.component.css']
 })
 export class FilterBoardComponent implements OnInit {
+
+    @Input() board: Board;
 
   constructor() { }
 

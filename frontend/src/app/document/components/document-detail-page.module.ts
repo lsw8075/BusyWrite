@@ -24,7 +24,7 @@ import { BoardManagerComponent } from './board-manager/board-manager.component';
 
 import { SplitBubbleComponent } from './view-board/split-bubble/split-bubble.component';
 
-import { ClickInsideDirective } from './directive/click-inside.directive';
+import { BoardFocusDirective } from './directive/board-focus.directive';
 import { ClickOutsideDirective } from './directive/click-outside.directive';
 import { InternalBubbleDirective } from './directive/internal-bubble.directive';
 import { LeafBubbleDirective } from './directive/leaf-bubble.directive';
@@ -49,7 +49,7 @@ import { CovalentLayoutModule, CovalentExpansionPanelModule, CovalentChipsModule
 import { MatListModule, MatIconModule, MatInputModule } from '@angular/material';
 
 const routes: Routes = [
-    {path: '', component: DocumentDetailPageComponent},
+    {path: ':id', component: DocumentDetailPageComponent},
 ];
 
 @NgModule({
@@ -74,7 +74,7 @@ const routes: Routes = [
     LeafBubbleDirective,
     StopClickPropagationDirective,
     StopHoverPropagationDirective,
-    ClickInsideDirective,
+    BoardFocusDirective,
   ],
   imports: [
     FormsModule,

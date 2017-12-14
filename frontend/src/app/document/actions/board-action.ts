@@ -39,6 +39,12 @@ export class ClearError implements Action {
     constructor(public payload ?: void) {}
 }
 
+export const SELECT = '[Board] select';
+export class Select implements Action {
+    readonly type = SELECT;
+    constructor(public payload: Board) {}
+}
+
 export type Actions =
     | Open
     | Add
@@ -46,4 +52,5 @@ export type Actions =
     | Hide
     | ShowLeft
     | ShowRight
-    | ClearError;
+    | ClearError
+    | Select;
