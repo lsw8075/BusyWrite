@@ -56,7 +56,7 @@ export class BoardManagerComponent implements OnInit {
     }
 
     public deleteAll(): void {
-
+        this._store.dispatch(new BoardAction.DeleteAll());
     }
 
     public getCardClassNameByBoard(board: Board): string {
