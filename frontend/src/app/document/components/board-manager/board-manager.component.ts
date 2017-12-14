@@ -24,9 +24,13 @@ export class BoardManagerComponent implements OnInit {
     isCollapsed = true;
 
     boardList$: Observable<Board[]>;
+    leftBoard$: Observable<Board>;
+    rightBoard$: Observable<Board>;
 
     constructor(private _store: Store<fromDocument.State>) {
         this.boardList$ = _store.select(fromDocument.getBoardList);
+        this.leftBoard$ = _store.select(fromDocument.getLeftBoard);
+        this.rightBoard$ = _store.select(fromDocument.getRightBoard);
      }
 
     ngOnInit() {}
@@ -51,12 +55,29 @@ export class BoardManagerComponent implements OnInit {
         this._store.dispatch(new BoardAction.ShowRight(board));
     }
 
-    icon(board: Board): string {
-        if (board.location === BoardLocation.left) {
-            return 'L';
-        } else if (board.location === BoardLocation.right) {
-            return 'R';
+    public deleteAll(): void {
+
+    }
+
+    public getCardClassNameByBoard(board: Board): string {
+        if (board) {
+            switch (board.type) {
+                case BoardType.view:
+                    return 'border-primary';
+                case BoardType.edit:
+                    return 'border-secondary';
+                case BoardType.filter:
+                    return 'border-success';
+                case BoardType.suggest:
+                    return 'border-info';
+            }
+        } else {
+            return '';
         }
+
+    }
+
+    icon(board: Board): string {
         switch (board.type) {
             case BoardType.view:
                 return 'V';
@@ -67,6 +88,24 @@ export class BoardManagerComponent implements OnInit {
             case BoardType.suggest:
                 return 'S';
         }
+    }
+
+    boardToString(board: Board): string {
+        if (board) {
+            switch (board.type) {
+                case BoardType.view:
+                    return 'View Board';
+                case BoardType.edit:
+                    return 'Edit Board';
+                case BoardType.filter:
+                    return 'Search Board';
+                case BoardType.suggest:
+                    return 'Suggest Board';
+            }
+        } else {
+            return 'No board';
+        }
+
     }
 
     isImportantBoard(board: Board): boolean {

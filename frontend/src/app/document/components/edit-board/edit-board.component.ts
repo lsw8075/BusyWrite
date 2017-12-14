@@ -8,7 +8,7 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 @Component({
   selector: 'app-edit-board',
   templateUrl: './edit-board.component.html',
-  styleUrls: ['./edit-board.component.css']
+  styleUrls: ['./edit-board.component.css', '../board-style.css']
 })
 export class EditBoardComponent implements OnInit, OnDestroy {
 

@@ -1,7 +1,8 @@
 .bubble-list {
-  height: 600px;
+  height: 580px;
+  /* height: inherit; */
   overflow-x: visible;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 .internalBubble {
@@ -46,4 +47,3 @@
   resize: vertical;
   overflow-y: auto;
 }
-

@@ -5,7 +5,7 @@ import * as fromBoard from '../actions/board-action';
 import * as _ from 'lodash';
 
 export const maxEditBoardCnt = 1;
-export const maxBoardCnt = 10;
+export const maxBoardCnt = 7;
 
 export interface BoardState {
     newId: number;
@@ -16,7 +16,7 @@ export interface BoardState {
 
 const initialState: BoardState = {
     newId: 2,
-    boardList: [new Board(BoardType.view, BoardLocation.right, 0), new Board(BoardType.edit, BoardLocation.left, 1)],
+    boardList: [new Board(BoardType.view, BoardLocation.left, 0), new Board(BoardType.edit, BoardLocation.right, 1)],
     loading: false,
     error: ''
 };
