@@ -13,8 +13,6 @@ import { Board } from '../../models/board';
 })
 export class EditBoardComponent implements OnInit, OnDestroy {
 
-    @Input() board: Board;
-
   notes: Array<Note>;
   editItems: Array<EditItem>;
 

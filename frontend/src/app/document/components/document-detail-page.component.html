@@ -36,30 +36,30 @@
 
 <ng-template #board let-board$>
     <div *ngIf="board$ | async as board">
-        <div [ngSwitch]="board.type">
-            <div *ngSwitchCase="boardType.view">
-                <app-view-board
-                    [board]="board"
-                    [rootBubble]="rootBubble$ | async"
-                    [bubbleList]="bubbleList$ | async"
-                    [userId]="userId$ | async"
-                    [selectedBubbleList]="selectedBubbleList$ | async"
-                    [hoverBubbleList]="hoverBubbleList$ | async"
-                    [selectedMenu]="selectedMenu$ | async">
-                    Your document view board is loading ...
-                </app-view-board>
-            </div>
-            <div *ngSwitchCase="boardType.edit">
-                <app-edit-board [board]="board"></app-edit-board>
-            </div>
-            <div *ngSwitchCase="boardType.suggest">
-                <app-sangjun-board
-                    [board]="board"
-                    [bubble]="sangjunBubble$ | async"
-                ></app-sangjun-board>
-            </div>
-            <div *ngSwitchCase="boardType.filter">
-                <app-filter-board [board]="board"></app-filter-board>
+        <div class="board list-group-item" [appBoardFocus]="board">
+            <div [ngSwitch]="board.type">
+                <div *ngSwitchCase="boardType.view">
+                    <app-view-board
+                        [rootBubble]="rootBubble$ | async"
+                        [bubbleList]="bubbleList$ | async"
+                        [userId]="userId$ | async"
+                        [selectedBubbleList]="selectedBubbleList$ | async"
+                        [hoverBubbleList]="hoverBubbleList$ | async"
+                        [selectedMenu]="selectedMenu$ | async">
+                        Your document view board is loading ...
+                    </app-view-board>
+                </div>
+                <div *ngSwitchCase="boardType.edit">
+                    <app-edit-board></app-edit-board>
+                </div>
+                <div *ngSwitchCase="boardType.suggest">
+                    <app-sangjun-board
+                        [bubble]="sangjunBubble$ | async"
+                    ></app-sangjun-board>
+                </div>
+                <div *ngSwitchCase="boardType.filter">
+                    <app-filter-board></app-filter-board>
+                </div>
             </div>
         </div>
     </div>

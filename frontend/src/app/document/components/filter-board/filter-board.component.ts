@@ -1,6 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 
 import { Board } from '../../models/board';
+import { Bubble } from '../../models/bubble';
 
 @Component({
   selector: 'app-filter-board',
@@ -9,11 +10,15 @@ import { Board } from '../../models/board';
 })
 export class FilterBoardComponent implements OnInit {
 
-    @Input() board: Board;
+    @Input() BubbleList: Array<Bubble>;
 
-  constructor() { }
+    constructor() { }
 
-  ngOnInit() {
-  }
+    ngOnInit() {
+    }
+
+    getFilteredResults(): Array<Bubble> {
+        return this.BubbleList;
+    }
 
 }

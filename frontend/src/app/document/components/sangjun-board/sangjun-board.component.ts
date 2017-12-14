@@ -14,7 +14,6 @@ import * as BoardAction from '../../actions/board-action';
 import * as BubbleAction from '../../actions/bubble-action';
 import * as RouterAction from '../../../shared/route/route-action';
 
-import { Board } from '../../models/board';
 
 @Component({
   selector: 'app-sangjun-board',
@@ -22,8 +21,6 @@ import { Board } from '../../models/board';
   styleUrls: ['./sangjun-board.component.css']
 })
 export class SangjunBoardComponent implements OnInit, OnDestroy {
-    @Input() board: Board;
-
 
     isOBChecked = true;
     isSBChecked = true;

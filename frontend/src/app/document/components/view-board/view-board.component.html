@@ -1,29 +1,27 @@
-<div class="board list-group-item" [appBoardFocus]="board">
-    <tabset [justified]="true" type="pills">
-        <tab>
-            <ng-template tabHeading>
-                <div class="tab">
-                    View
-                </div>
-            </ng-template>
-            <app-bubble-list-view [rootBubble]="rootBubble"
-                                  [bubbleList]="bubbleList"
-                                  [selectedBubbleList]="selectedBubbleList"
-                                  [hoverBubbleList]="hoverBubbleList"
-                                  [userId]="userId"
-                                  [selectedMenu]="selectedMenu">
-                Your bubbles are Loading ...!
-            </app-bubble-list-view>
-        </tab>
-        <tab>
-            <ng-template tabHeading>
-                <div class="tab">
-                    Preview
-                </div>
-            </ng-template>
-            <app-preview [rootBubble]="rootBubble" [bubbleList]="bubbleList">
-                Your preview is Loading ...!
-            </app-preview>
-        </tab>
-    </tabset>
-</div>
+<tabset [justified]="true" type="pills">
+    <tab>
+        <ng-template tabHeading>
+            <div class="tab">
+                View
+            </div>
+        </ng-template>
+        <app-bubble-list-view [rootBubble]="rootBubble"
+                                [bubbleList]="bubbleList"
+                                [selectedBubbleList]="selectedBubbleList"
+                                [hoverBubbleList]="hoverBubbleList"
+                                [userId]="userId"
+                                [selectedMenu]="selectedMenu">
+            Your bubbles are Loading ...!
+        </app-bubble-list-view>
+    </tab>
+    <tab>
+        <ng-template tabHeading>
+            <div class="tab">
+                Preview
+            </div>
+        </ng-template>
+        <app-preview [rootBubble]="rootBubble" [bubbleList]="bubbleList">
+            Your preview is Loading ...!
+        </app-preview>
+    </tab>
+</tabset>

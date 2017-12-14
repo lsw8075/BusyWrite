@@ -2,7 +2,7 @@ import { Component, OnInit, Output, Input, ChangeDetectionStrategy } from '@angu
 
 
 import { BubbleMenuComponent } from './bubble-menu/bubble-menu.component';
-import { MenuType, ActionType, Board } from './service';
+import { MenuType, ActionType } from './service';
 
 import { PreviewComponent } from './preview/preview.component';
 
@@ -11,7 +11,6 @@ import { BoardService } from '../../services/board.service';
 import { EventBubbleService } from '../../services/event/event-bubble.service';
 
 import { Bubble, BubbleType, InternalBubble, LeafBubble } from '../../models/bubble';
-import { BoardType } from '../../models/board';
 
 import { BubbleJsonHelper } from '../../models/bubble-json-helper';
 
@@ -24,7 +23,6 @@ import { BubbleJsonHelper } from '../../models/bubble-json-helper';
 
 export class ViewBoardComponent implements OnInit {
 
-    @Input() board: Board;
     @Input() rootBubble: InternalBubble;
     @Input() bubbleList: Array<Bubble>;
     @Input() userId: number;
