@@ -27,10 +27,16 @@ export class BoardManagerComponent implements OnInit {
     leftBoard$: Observable<Board>;
     rightBoard$: Observable<Board>;
 
+    activeBoard: Board = null;
+
     constructor(private _store: Store<fromDocument.State>) {
         this.boardList$ = _store.select(fromDocument.getBoardList);
         this.leftBoard$ = _store.select(fromDocument.getLeftBoard);
         this.rightBoard$ = _store.select(fromDocument.getRightBoard);
+
+        this._store.select(fromDocument.getActiveBoard).subscribe(board => {
+            this.activeBoard = board;
+        });
      }
 
     ngOnInit() {}
@@ -61,6 +67,9 @@ export class BoardManagerComponent implements OnInit {
 
     public getCardClassNameByBoard(board: Board): string {
         if (board) {
+            if (this.isBoardActive(board)) {
+                return 'border-danger';
+            }
             switch (board.type) {
                 case BoardType.view:
                     return 'border-primary';
@@ -93,6 +102,14 @@ export class BoardManagerComponent implements OnInit {
             return 'No board';
         }
 
+    }
+
+
+    public isBoardActive(board: Board): boolean {
+        if (this.activeBoard) {
+            return this.activeBoard.id === board.id;
+        }
+        return false;
     }
 
     isImportantBoard(board: Board): boolean {

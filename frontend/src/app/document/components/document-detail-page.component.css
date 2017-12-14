@@ -5,3 +5,7 @@
     /* position: relative; */
     height: 40em;
 }
+
+.activeBoard {
+    border-color: black;
+}

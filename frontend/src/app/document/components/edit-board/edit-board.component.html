@@ -37,8 +37,6 @@
             </div>
         </ng-template>
         <div *ngIf="notes">
-            <button (click)="addNote()" type="button" class="btn btn-primary"><i class="fa fa-fw fa-sticky-note-o"></i> New</button>
-            <hr>
             <accordion>
                 <div class='container' [dragula]='"note-bag"' [dragulaModel]='notes'>
                 <div *ngFor="let note of notes">

@@ -12,6 +12,8 @@ import { EventBubbleService } from '../../services/event/event-bubble.service';
 
 import { Bubble, BubbleType, InternalBubble, LeafBubble } from '../../models/bubble';
 
+import { Board } from '../../models/board';
+
 import { BubbleJsonHelper } from '../../models/bubble-json-helper';
 
 @Component({
@@ -23,6 +25,7 @@ import { BubbleJsonHelper } from '../../models/bubble-json-helper';
 
 export class ViewBoardComponent implements OnInit {
 
+    @Input() board: Board;
     @Input() rootBubble: InternalBubble;
     @Input() bubbleList: Array<Bubble>;
     @Input() userId: number;

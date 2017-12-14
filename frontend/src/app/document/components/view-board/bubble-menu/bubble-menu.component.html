@@ -11,16 +11,6 @@
         </button>
     </div>
 
-    <div *ngSwitchCase="menuType.topMenu">
-        <div class="btn-group" role="group">
-            <button type="button" class="btn btn-success" (click)="wrap()" [disabled]="!isWrapSelected()">
-                <i class="fa fa-square fa-fw"></i>
-                Wrap
-            </button>
-            <span class="badge badge-info">{{getAction()}}</span>
-        </div>
-    </div>
-
     <div *ngSwitchCase="menuType.leafMenu">
         <div class="btn-group" dropdown>
             <button type="button" dropdownToggle class="btn btn-primary btn-sm dropdown-toggle dropdown-toggle-split" appStopClickPropagation>

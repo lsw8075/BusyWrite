@@ -38,3 +38,4 @@ export const getRightBoard = createSelector(getBoardList,
     (state: Board[]) => state.find(board => board.location === BoardLocation.right));
 
 export const getBoardStateError = createSelector(getBoardState, (state: BoardState) => state.error);
+export const getActiveBoard = createSelector(getBoardState, (state: BoardState) => state.activeBoard);

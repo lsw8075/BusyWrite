@@ -9,3 +9,7 @@
 .card-footer {
     text-align: center;
 }
+
+.activeBoard {
+    color: red;
+}

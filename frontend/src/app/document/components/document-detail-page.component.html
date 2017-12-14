@@ -1,6 +1,6 @@
 <div class="container-fluid">
     <div class="row">
-        <div class="col-sm-3 alert alert-primary">
+        <div class="col-sm-3">
             <div class="mx-auto">
                 <ng-container *ngIf="changeTitle; then editTitle else showTitle"></ng-container>
             </div>
@@ -15,7 +15,7 @@
                 <i (click)="titleEditStart()" class="fa fa-pencil fa-fw"></i>
             </ng-template>
         </div>
-        <div class="col-sm-5 alert alert-info">
+        <div class="col-sm-5">
 
         </div>
         <div class="col-sm-4">
@@ -41,10 +41,11 @@
 
 <ng-template #board let-board$>
     <div *ngIf="board$ | async as board">
-        <div class="board list-group-item" [appBoardFocus]="board">
+        <div class="board list-group-item" [appBoardFocus]="board" [class.activeBoard]="isBoardActive(board)" >
             <div [ngSwitch]="board.type">
                 <div *ngSwitchCase="boardType.view">
                     <app-view-board
+                        [board]="board"
                         [rootBubble]="rootBubble$ | async"
                         [bubbleList]="bubbleList$ | async"
                         [userId]="userId$ | async"

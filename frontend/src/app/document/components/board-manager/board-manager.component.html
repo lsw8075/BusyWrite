@@ -8,8 +8,14 @@
 
         <ng-template td-expansion-panel-sublabel>
             <span>
-                Now on board : {{boardToString(leftBoard$ | async)}}
-                , {{boardToString(rightBoard$ | async)}}
+                Now on board :
+                <span [class.activeBoard]="isBoardActive(leftBoard$ | async)" >
+                    {{boardToString(leftBoard$ | async)}}
+                </span>
+                ,
+                <span [class.activeBoard]="isBoardActive(rightBoard$ | async)" >
+                    {{boardToString(rightBoard$ | async)}}
+                </span>
             </span>
         </ng-template>
 

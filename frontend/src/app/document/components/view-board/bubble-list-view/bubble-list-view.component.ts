@@ -4,6 +4,8 @@ import { ActionType, MenuType } from '../service';
 import { Bubble, InternalBubble, LeafBubble, BubbleType } from '../../../models/bubble';
 import { EventBubbleService, BoardService } from '../service';
 
+import { Board } from '../../../models/board';
+
 import { getBubbleById } from '../../../reducers/bubble-operation';
 
 import { Store } from '@ngrx/store';
@@ -11,6 +13,7 @@ import { Observable } from 'rxjs/Observable';
 
 import * as fromDocument from '../../../reducers/reducer';
 import * as BubbleAction from '../../../actions/bubble-action';
+import * as BoardAction from '../../../actions/board-action';
 import * as RouterAction from '../../../../shared/route/route-action';
 
 @Component({
@@ -23,6 +26,7 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
     menuType = MenuType;
     actionType = ActionType;
 
+    @Input() board: Board;
     @Input() rootBubble: Bubble; // bubbles that have root as parents
     @Input() bubbleList: Array<Bubble>;
     @Input() userId: number;
@@ -48,6 +52,7 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
     }
 
     public onClickEvent(bubble: Bubble, menu: MenuType, mouseEvent: MouseEvent): void {
+        this._store.dispatch(new BoardAction.Select(this.board));
         this._store.dispatch(new BubbleAction.Select({bubble, menu}));
     }
 
@@ -97,20 +102,6 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
     public clearState(event): void {
         this._store.dispatch(new BubbleAction.SelectClear());
     }
-
-//   private finishEdit(bubble: BubbleTemp) {
-//     bubble.releaseLock();
-//     this._eventBubbleService.edittedBubble = null;
-//     this._refreshBubbleList();
-//   }
-//   public editBubble(bubble: BubbleTemp) {
-//     if (bubble.type === BubbleType.leafBubble &&
-//         this.isBubbleContentShown(bubble)) {
-//     //  this._boardService.editBubble(bubble);
-//       this._eventBubbleService.clearState();
-//       this._refreshBubbleList();
-//     }
-//   }
 
   public isBubbleContentShown(bubble: LeafBubble): boolean {
         return (bubble.ownerId === -1) ||

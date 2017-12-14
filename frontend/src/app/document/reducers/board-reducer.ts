@@ -13,7 +13,7 @@ export interface BoardState {
     loading: boolean;
     error: string;
 
-    selectedBoard: Board;
+    activeBoard: Board;
 }
 
 const initalBoardList = [new Board(BoardType.view, BoardLocation.left, 0), new Board(BoardType.edit, BoardLocation.right, 1)];
@@ -24,7 +24,7 @@ const initialState: BoardState = {
     loading: false,
     error: '',
 
-    selectedBoard: initalBoardList[0],
+    activeBoard: initalBoardList[0],
 };
 
 export function BoardReducer(state: BoardState = initialState, action: fromBoard.Actions) {
@@ -48,7 +48,7 @@ export function BoardReducer(state: BoardState = initialState, action: fromBoard
             return {...state, boardList: newBoardList };
         case fromBoard.DELETE_ALL:
             console.log('delete all board');
-            return {...state, boardList: [], selectedBoard: null};
+            return {...state, boardList: [], activeBoard: null};
         case fromBoard.HIDE:
             const hideBoard = getBoardById(newBoardList, action.payload.id);
             hideBoard.location = BoardLocation.hidden;
@@ -87,7 +87,7 @@ export function BoardReducer(state: BoardState = initialState, action: fromBoard
             return {...state, error: ''};
 
         case fromBoard.SELECT:
-            return {...state, selectedBoard: {...action.payload}};
+            return {...state, activeBoard: {...action.payload}};
         default:
             return {...state };
     }

@@ -42,6 +42,8 @@ export class DocumentDetailPageComponent implements OnInit {
 
     sangjunBubble$: Observable<Bubble>;
 
+    activeBoard: Board = null;
+
     documentTitle = 'empty title';
     changeTitle = false;
 
@@ -62,6 +64,10 @@ export class DocumentDetailPageComponent implements OnInit {
         this.rightBoard$ = this._store.select(fromDocument.getRightBoard);
 
         this.sangjunBubble$ = this._store.select(fromDocument.getSangjunBubble);
+
+        this._store.select(fromDocument.getActiveBoard).subscribe(board => {
+            this.activeBoard = board;
+        });
 
         this._store.select(fromDocument.getBoardStateError).subscribe(err => {
             if (err) {
@@ -88,6 +94,13 @@ export class DocumentDetailPageComponent implements OnInit {
 
     public titleEditStart() {
         this.changeTitle = true;
+    }
+
+    public isBoardActive(board: Board): boolean {
+        if (this.activeBoard) {
+            return this.activeBoard.id === board.id;
+        }
+        return false;
     }
 
     addError(err: string): void {
