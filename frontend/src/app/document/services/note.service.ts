@@ -28,8 +28,10 @@ export class NoteService implements OnInit {
     const notes: Array<Note> = [];
     const newNote1: Note = new Note (1, 1, 1, 'note 1');
     const newNote2: Note = new Note (2, 1, 1, 'note 2');
+    const newNote3: Note = new Note (3, 1, 1, 'note 3');
     notes.push(newNote1);
     notes.push(newNote2);
+    notes.push(newNote3);
     return Promise.resolve(notes);
   }
 

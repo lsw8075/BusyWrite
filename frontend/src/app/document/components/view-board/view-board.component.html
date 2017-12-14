@@ -5,15 +5,19 @@
                 View
             </div>
         </ng-template>
-        <app-bubble-list-view   [board]="board"
-                                [rootBubble]="rootBubble"
-                                [bubbleList]="bubbleList"
-                                [selectedBubbleList]="selectedBubbleList"
-                                [hoverBubbleList]="hoverBubbleList"
-                                [userId]="userId"
-                                [selectedMenu]="selectedMenu">
-            Your bubbles are Loading ...!
-        </app-bubble-list-view>
+        <div class="container">
+            <app-bubble-list-view
+                [board]="board"
+                [rootBubble]="rootBubble"
+                [bubbleList]="bubbleList"
+                [selectedBubbleList]="selectedBubbleList"
+                [hoverBubbleList]="hoverBubbleList"
+                [userId]="userId"
+                [selectedMenu]="selectedMenu">
+                Your bubbles are Loading ...!
+            </app-bubble-list-view>
+        </div>
+
     </tab>
     <tab>
         <ng-template tabHeading>

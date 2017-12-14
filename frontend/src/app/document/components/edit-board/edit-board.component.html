@@ -36,7 +36,7 @@
                 Note
             </div>
         </ng-template>
-        <div *ngIf="notes">
+        <div *ngIf="notes container">
             <accordion>
                 <div class='container' [dragula]='"note-bag"' [dragulaModel]='notes'>
                 <div *ngFor="let note of notes">

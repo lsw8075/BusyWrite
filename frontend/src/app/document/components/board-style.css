@@ -5,3 +5,10 @@
     margin: 0;
 }
 
+.container {
+    box-sizing: border-box;
+    max-height: 96%;
+    position: absolute;
+    overflow-x: visible;
+    overflow-y: auto;
+}
