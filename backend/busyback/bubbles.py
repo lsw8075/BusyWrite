@@ -4,9 +4,12 @@ from .documents import fetch_document_with_lock
 from .users import fetch_user
 from .debug import print_bubble_tree
 from .bubble_cache import *
+from .versions import update_doc
 from django.utils import timezone
 from django.db import transaction
+from django.forms.models import model_to_dict
 from functools import wraps
+from .operation_no import Operation
 
 def create_normal(doc, content='', parent=None, location=0):
     return NormalBubble.objects.create(content=content, document=doc, location=location, parent_bubble=parent)
@@ -14,18 +17,25 @@ def create_normal(doc, content='', parent=None, location=0):
 def create_suggest(bind, content):
     return SuggestBubble.objects.create(content=content, normal_bubble=bind, hidden=False)
 
+def delete_normal(bubble):
+    bubble.deleted = True
+
 def normal_operation(func):
-    ''' Decorator for functions whose 3rd arg is bubble_id'''
+    ''' Decorator for functions whose 4th arg is bubble_id'''
     @wraps(func)
     def wrapper(*args, **kwargs):
         with transaction.atomic():
-            user_id = args[0]
-            doc_id = args[1]
-            bubble_id = args[2]
+            rid_version = args[0]
+            user_id = args[1]
+            doc_id = args[2]
+            bubble_id = args[3]
             document = fetch_document_with_lock(user_id, doc_id)
+
             try:
                 bubble = NormalBubble.objects.get(id=bubble_id) 
             except NormalBubble.DoesNotExist:
+                raise BubbleDoesNotExistError(bubble_id)
+            if bubble.deleted:
                 raise BubbleDoesNotExistError(bubble_id)
 
             # might-be problem with reverse relationship..
@@ -33,7 +43,6 @@ def normal_operation(func):
                 raise DocumentMismatchError()
 
             result = func(*args, document=document, bubble=bubble)
-            
             document.save()
 
         return result
@@ -41,13 +50,14 @@ def normal_operation(func):
         
         
 def suggest_operation(func):
-    ''' Decorator for functions whose 3rd arg is suggest_id'''
+    ''' Decorator for functions whose 4th arg is suggest_id'''
     @wraps(func)
     def wrapper(*args, **kwargs):
         with transaction.atomic():
-            user_id = args[0]
-            doc_id = args[1]
-            bubble_id = args[2]
+            rid_version = args[0]
+            user_id = args[1]
+            doc_id = args[2]
+            bubble_id = args[3]
             document = fetch_document_with_lock(user_id, doc_id)
             try:
                 suggest = SuggestBubble.objects.get(id=bubble_id) 
@@ -59,19 +69,19 @@ def suggest_operation(func):
                 raise DocumentMismatchError()
 
             result = func(*args, document=document, bubble=suggest)
-            
             document.save()
 
         return result
     return wrapper
 
 def bubble_operation(func):
-    ''' Decorator for functions that not consider 3rd arg '''
+    ''' Decorator for functions that not consider 4th arg '''
     @wraps(func)
     def wrapper(*args, **kwargs):
         with transaction.atomic():
-            user_id = args[0]
-            doc_id = args[1]
+            rid_version = args[0]
+            user_id = args[1]
+            doc_id = args[2]
             document = fetch_document_with_lock(user_id, doc_id)
             result = func(*args, document=document)
             document.save()
@@ -84,6 +94,9 @@ def fetch_normal(bubble_id):
         bubble = NormalBubble.objects.get(id=bubble_id)
     except NormalBubble.DoesNotExistError:
         raise BubbleDoesNotExistError(bubble_id)
+    if bubble.deleted:
+        raise BubbleDoesNotExistError(bubble_id)
+        
     return bubble
 
 def fetch_suggest(bubble_id):
@@ -93,53 +106,86 @@ def fetch_suggest(bubble_id):
         raise BubbleDoesNotExistError(bubble_id)
     return bubble
 
+def process_normal(bubble):
+    ''' convert model to dict with proper child info '''
+    result = model_to_dict(bubble)
+    child_count = bubble.child_count()
+
+    if child_count != 0:
+        result['type'] = 'internal'
+    else:
+        result['type'] = 'leaf'
+
+    child_list = []
+    for i in range(0, child_count):
+        child_list.append(0)
+    for child in bubble.child_bubbles.all():
+        child_list[child.location] = child.id
+
+    result['child_bubbles'] = child_list
+    
+    del result['type']
+    return result
+
+def process_suggest(bubble):
+    ''' covert model to dict '''
+    return model_to_dict(bubble)
+
 @normal_operation
 def do_fetch_normal_bubble(
+    rversion: int,
     user_id: int,
     document_id: int,
     bubble_id: int,
     **kw
     ):
-    return kw['bubble']
+    return process_normal(kw['bubble'])
 
 @suggest_operation
 def do_fetch_suggest_bubble(
+    rversion: int,
     user_id: int,
     document_id: int,
     bubble_id: int,
     **kw
     ):
-    return kw['bubble']
+    return process_suggest(kw['bubble'])
 
 @bubble_operation
 def do_fetch_normal_bubbles(
+    rversion: int,
     user_id: int,
     document_id: int,
     **kw
     ):
     document = kw['document']
-    bubbles = document.bubbles.values()
+    bubbles = document.bubbles.filter(deleted=False).all()
     if len(bubbles) == 0:
         raise InternalError('Document has no bubble')
     bubbles = list(bubbles)
+
+    bubbles = [process_normal(b) for b in bubbles]
     return bubbles
 
 @normal_operation
 def do_fetch_suggest_bubbles(
+    rversion: int,
     user_id: int,
     document_id: int,
     bubble_id: int,
     **kw
     ):
     bubble = kw['bubble']
-    suggests = bubble.suggest_bubbles.values()
+    suggests = bubble.suggest_bubbles.all()
     if len(suggests) == 0:
         return []
     suggests = list(suggests)
+    suggests = [process_suggest(b) for b in suggests]
     return suggests
 
 @bubble_operation
 def do_get_root_bubble(
+    rversion: int,
     user_id: int,
     document_id: int,
     **kw
@@ -151,13 +197,15 @@ def do_get_root_bubble(
         raise InternalError('Document %d has multiple root bubble' % document_id)
     except NormalBubble.DoesNotExist:
         raise InternalError('Document %d has no root bubble' % document_id)
-    return root_bubble
+    return process_normal(root_bubble)
 
 def get_root_bubble(user_id, document_id):
     return do_get_root_bubble(user_id, document_id)
 
 @normal_operation
+@update_doc
 def do_create_normal_bubble(
+    rversion: int,
     user_id: int,
     document_id: int,
     parent_id: int,
@@ -178,8 +226,9 @@ def do_create_normal_bubble(
 
     # check parent is leaf, locked
 
-#    if parent_bubble.is_leaf():
-#        raise BubbleIsLeafError(parent_bubble)
+    if parent_bubble.is_leaf():
+        raise BubbleIsLeafError(parent_bubble)
+
 
     # create a bubble
     new_bubble = create_normal(parent_bubble.document, content, parent_bubble, location)
@@ -191,10 +240,11 @@ def do_create_normal_bubble(
     
     load_bubble_to_cache(new_bubble, True)
 
-    return new_bubble
+    return (Operation.CREATE_NORMAL, process_normal(new_bubble))
 
 
 def do_updating_normal_bubble(
+    rversion: int,
     user_id: int,
     document_id: int,
     bubble_id: int,
@@ -206,7 +256,9 @@ def do_updating_normal_bubble(
         raise InvalidUpdateError(bubble_id)
 
 @normal_operation
+@update_doc
 def do_update_finish_normal_bubble(
+    rversion: int,
     user_id: int,
     document_id: int,
     bubble_id: int,
@@ -222,8 +274,12 @@ def do_update_finish_normal_bubble(
     bubble.change_content(content)
     bubble.save()
 
+    return (Operation.UPDATE_FINISH_NORMAL, process_normal(bubble))
+
 @normal_operation
+@update_doc
 def do_update_discard_normal_bubble(
+    rversion: int,
     user_id: int,
     document_id: int,
     bubble_id: int,
@@ -236,15 +292,20 @@ def do_update_discard_normal_bubble(
     
 
     bubble = kw['bubble']
+    parent = bubble.parent_bubble
     if del_flag == 'True':
-        parent = bubble.parent_bubble
+        check_updatable_with_sibilings([(parent, location+1)])
         parent.delete_children(bubble.location, 1)
-        bubble.delete()
+        delete_normal(bubble)
     else:
         bubble.unlock(fetch_user(user_id))
-    
+   
+    return (Operation.UPDATE_DISCARD_NORMAL, process_normal(bubble))
+
 @normal_operation
+@update_doc
 def do_edit_normal_bubble(
+    rversion: int,
     user_id: int,
     document_id: int,
     bubble_id: int,
@@ -268,10 +329,12 @@ def do_edit_normal_bubble(
 
     load_bubble_to_cache(bubble, False)
 
-    return bubble
+    return (Operation.EDIT_NORMAL, process_normal(bubble))
 
 @normal_operation
+@update_doc
 def do_unlock_bubble(
+    rversion: int,
     user_id: int,
     document_id: int,
     bubble_id: int,
@@ -283,8 +346,12 @@ def do_unlock_bubble(
 
     bubble.unlock(user)
 
+    return (Operation.INVALID_OPERATION, process_normal(bubble))
+
 @normal_operation
+@update_doc
 def do_move_normal_bubble(
+    rversion: int,
     user_id: int,
     document_id: int,
     bubble_id: int,
@@ -316,7 +383,7 @@ def do_move_normal_bubble(
     parent = bubble.parent_bubble
     parent.splice_children(bubble.location, 1, new_parent, new_location)
     
-    return new_parent
+    return (Operation.MOVE_NORMAL, process_normal(new_parent))
 
 def cascaded_delete_children(user, bubble):
     for child in bubble.child_bubbles.all():
@@ -324,10 +391,12 @@ def cascaded_delete_children(user, bubble):
             raise BubbleLockedError(bubble.id)
         cascaded_delete_children(user, child)
         bubble.delete_children(child.location, 1)
-        NormalBubble.delete(child)
+        delete_normal(child)
 
 @normal_operation
+@update_doc
 def do_delete_normal_bubble(
+    rversion: int,
     user_id: int,
     document_id: int,
     bubble_id: int,
@@ -348,12 +417,14 @@ def do_delete_normal_bubble(
     cascaded_delete_children(user, bubble)
     parent = bubble.parent_bubble
     parent.delete_children(bubble.location, 1)
-    bubble.delete()
+    delete_normal(bubble)
 
-    return None
+    return (Operation.DELETE_NORMAL, process_normal(parent))
 
 @normal_operation
+@update_doc
 def do_create_suggest_bubble(
+    rversion: int,
     user_id: int,
     document_id: int,
     binded_id: int,
@@ -366,10 +437,13 @@ def do_create_suggest_bubble(
 
     new_suggest = create_suggest(binded_bubble, content)
     new_suggest.save()
-    return new_suggest
+
+    return (Operation.CREATE_SUGGEST, process_suggest(new_suggest))
 
 @suggest_operation
+@update_doc
 def do_hide_suggest_bubble(
+    rversion: int,
     user_id: int,
     document_id: int,
     bubble_id: int,
@@ -379,10 +453,12 @@ def do_hide_suggest_bubble(
     bubble = kw['bubble']
     bubble.hide()
 
-    return bubble
+    return (Operation.HIDE_SUGGEST, process_suggest(bubble))
 
 @suggest_operation
+@update_doc
 def do_show_suggest_bubble(
+    rversion: int,
     user_id: int,
     document_id: int,
     bubble_id: int,
@@ -392,10 +468,21 @@ def do_show_suggest_bubble(
     bubble = kw['bubble']
     bubble.show()
 
-    return bubble
+    return (Operation.SHOW_SUGGEST, process_suggest(bubble))
 
 @bubble_operation
+@update_doc
 def do_wrap_normal_bubble(
+    rversion: int,
+    user_id: int,
+    document_id: int,
+    bubble_id_list: list,
+    **kw
+    ):
+    return (Operation.WRAP_NORMAL, process_normal(wrap_bubble(rversion, user_id, document_id, bubble_id_list, **kw)))
+
+def wrap_bubble(
+    rversion: int,
     user_id: int,
     document_id: int,
     bubble_id_list: list,
@@ -441,7 +528,9 @@ def do_wrap_normal_bubble(
     return wrapped
 
 @normal_operation
+@update_doc
 def do_pop_normal_bubble(
+    rversion: int,
     user_id: int,
     document_id: int,
     bubble_id: int,
@@ -463,7 +552,7 @@ def do_pop_normal_bubble(
 
     bubble.parent_bubble.pop_child(bubble.location)
 
-    return bubble.parent_bubble
+    return (Operation.POP_NORMAL, process_normal(bubble.parent_bubble))
 
 
 def cascaded_flatten_children(user, bubble):
@@ -477,7 +566,9 @@ def cascaded_flatten_children(user, bubble):
     return s
 
 @normal_operation
+@update_doc
 def do_flatten_normal_bubble(
+    rversion: int,
     user_id: int,
     document_id: int,
     bubble_id: int,
@@ -497,10 +588,12 @@ def do_flatten_normal_bubble(
     content = cascaded_flatten_children(user, bubble)
     bubble.change_content(content)
 
-    return bubble
+    return (Operation.FLATTEN_NORMAL, process_normal(bubble))
 
 @normal_operation
+@update_doc
 def do_split_leaf_bubble(
+    rversion: int,
     user_id: int,
     document_id: int,
     bubble_id: int,
@@ -532,10 +625,12 @@ def do_split_leaf_bubble(
     for idx, content in enumerate(split_content_list):
         create_normal(bubble.document, content, bubble, idx)
         
-    return bubble
+    return (Operation.SPLIT_LEAF, process_normal(bubble))
 
 @normal_operation
+@update_doc
 def do_split_internal_bubble(
+    rversion: int,
     user_id: int,
     document_id: int,
     bubble_id: int,
@@ -572,10 +667,12 @@ def do_split_internal_bubble(
 
         bubble.wrap_children(split_first, split_last - split_first)
 
-    return bubble
+    return (Operation.SPLIT_INTERNAL, process_normal(bubble))
 
 @suggest_operation
+@update_doc
 def do_vote_suggest_bubble(
+    rversion: int,
     user_id: int,
     document_id: int,
     bubble_id: int,
@@ -586,13 +683,15 @@ def do_vote_suggest_bubble(
     bubble = kw['bubble']
     bubble.vote(user)
 
-    return bubble
+    return (Operation.VOTE_SUGGEST, process_suggest(bubble))
 
-def do_vote_bubble(user_id, doc_id, bubble_id):
-    return do_vote_suggest_bubble(user_id, doc_id, bubble_id)
+def do_vote_bubble(rid, user_id, doc_id, bubble_id):
+    return do_vote_suggest_bubble(rid, user_id, doc_id, bubble_id)
 
 @suggest_operation
+@update_doc
 def do_unvote_suggest_bubble(
+    rversion: int,
     user_id: int,
     document_id: int,
     bubble_id: int,
@@ -603,13 +702,15 @@ def do_unvote_suggest_bubble(
     bubble = kw['bubble']
     bubble.unvote(user)
 
-    return bubble
+    return (Operation.UNVOTE_SUGGEST, process_suggest(bubble))
 
-def do_unvote_bubble(user_id, doc_id, bubble_id):
-    return do_unvote_suggest_bubble(user_id, doc_id, bubble_id)
+def do_unvote_bubble(rid, user_id, doc_id, bubble_id):
+    return do_unvote_suggest_bubble(rid, user_id, doc_id, bubble_id)
 
 @suggest_operation
+@update_doc
 def do_switch_bubble(
+    rversion: int,
     user_id: int,
     document_id: int,
     bubble_id: int,
@@ -674,6 +775,56 @@ def do_switch_bubble(
 
         suggest.save()
         binded_bubble.save()
-    return binded_bubble
 
+    return (Operation.SWITCH_SUGGEST, process_normal(binded_bubble), process_suggest(suggest))
 
+@normal_operation
+@update_doc
+def do_release_ownership(
+    rversion: int,
+    user_id: int,
+    document_id: int,
+    bubble_id: int,
+    **kw
+    ):
+    bubble = kw['bubble']
+    if (bubble.owner_with_lock is None):
+        raise BubbleNotOwnedError(bubble.id)
+    if (bubble.owner_with_lock is not None):
+        if (bubble.owner_with_lock.id != user_id):
+            raise BubbleOwnedError(bubble.id)
+    bubble.owner_with_lock = None
+    bubble.save()
+    return (Operation.RELEASE_OWNERSHIP_NORMAL, process_normal(bubble))
+
+@bubble_operation
+@update_doc
+def do_merge_normal_bubble(
+    rversion: int,
+    user_id: int,
+    document_id: int,
+    bubble_id_list: list,
+    **kw
+    ):
+    bubble = wrap_bubble(rversion, user_id, document_id, bubble_id_list, **kw)
+
+    content = cascaded_flatten_children(fetch_user(user_id), bubble)
+    bubble.change_content(content)
+    
+    return (Operation.MERGE_NORMAL, process_normal(bubble))
+
+@suggest_operation
+@update_doc
+def do_edit_suggest_bubble(
+    rversion: int,
+    user_id: int,
+    document_id: int,
+    bubble_id: int,
+    content,
+    **kw
+    ):
+    suggest = kw['bubble']
+    new_suggest = create_suggest(bind=suggest.normal_bubble, content=content)
+    suggest.hide()
+
+    return (Operation.EDIT_SUGGEST, process_suggest(new_suggest))
