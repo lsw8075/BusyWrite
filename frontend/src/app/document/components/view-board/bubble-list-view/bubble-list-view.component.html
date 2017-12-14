@@ -27,8 +27,8 @@
     <app-bubble-menu [bubble]="rootBubble" [menu]="menuType.topMenu"></app-bubble-menu>
 </div>-->
 
-<div class="bubble-list page">
-    <div class="mx-4 list-group-item subpage">
+<div class="bubble-list">
+    <div class="mx-4 list-group-item">
         <div (appClickOutside)="clearState($event)" *ngIf="rootBubble">
             <ng-container *ngTemplateOutlet="bubbleUnit; context: { $implicit: rootBubble }"></ng-container>
         </div>

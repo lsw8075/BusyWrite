@@ -1,5 +1,7 @@
 
 .board {
-    height: 80%;
+    /* display: block; */
     padding: 0px;
+    /* position: relative; */
+    height: 40em;
 }

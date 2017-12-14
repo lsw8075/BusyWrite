@@ -32,6 +32,11 @@
             <ng-container *ngTemplateOutlet="board; context: { $implicit: rightBoard$ }"></ng-container>
         </div>
     </div>
+    <div class="row">
+        <app-board-manager>
+            your board manager is Loading!
+        </app-board-manager>
+    </div>
 </div>
 
 <ng-template #board let-board$>
@@ -65,6 +70,3 @@
     </div>
 </ng-template>
 
-<app-board-manager>
-    your board manager is Loading!
-</app-board-manager>
