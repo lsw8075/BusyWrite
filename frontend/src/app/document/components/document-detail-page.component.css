@@ -9,3 +9,15 @@
 .activeBoard {
     border-color: black;
 }
+
+alert {
+    display: inline;
+}
+
+.btn-toolbar {
+    display: inline;
+}
+
+.title {
+    display: inline;
+}

@@ -69,7 +69,8 @@ export class BubbleEffects {
     create$: Observable<Action> = this.action$.ofType<BubbleAction.Create>(BubbleAction.CREATE)
         .map(action => action.payload).mergeMap(query => {
             return Observable.fromPromise(this.bubbleService.createBubble(query.bubbleId, query.isAbove))
-                .map((newBubble) => new BubbleAction.CreateComplete({bubbleId: query.bubbleId, isAbove: query.isAbove, newBubble: newBubble}))
+                .map((newBubble) => new BubbleAction.CreateComplete(
+                    {bubbleId: query.bubbleId, isAbove: query.isAbove, newBubble: newBubble}))
                 .catch(err => of(new BubbleAction.CreateError(err)));
         });
 
@@ -89,9 +90,13 @@ export class BubbleEffects {
 
     @Effect()
     wrap$: Observable<Action> = this.action$.ofType<BubbleAction.Wrap>(BubbleAction.WRAP)
-        .map(action => action.payload).mergeMap(query => {
-            return Observable.fromPromise(this.bubbleService.wrapBubble(query))
-                .map((newInternalBubble) => new BubbleAction.WrapComplete({wrapBubbleIds: query, newInternalBubble: newInternalBubble}))
+        .withLatestFrom(this._store).mergeMap(([action, state]) => {
+            console.log(state);
+            const bubbleState = (state as any).document.bubble;
+            const wrapBubbleList = bubbleState.selectedBubbleList.map(b => b.id);
+            return Observable.fromPromise(this.bubbleService.wrapBubble(wrapBubbleList))
+                .map((newInternalBubble) => new BubbleAction.WrapComplete(
+                    {wrapBubbleIds: wrapBubbleList, newInternalBubble: newInternalBubble}))
                 .catch(err => of(new BubbleAction.WrapError(err)));
         });
 

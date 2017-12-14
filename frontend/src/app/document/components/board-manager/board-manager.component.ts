@@ -90,13 +90,13 @@ export class BoardManagerComponent implements OnInit {
         if (board) {
             switch (board.type) {
                 case BoardType.view:
-                    return 'View Board';
+                    return 'View';
                 case BoardType.edit:
-                    return 'Edit Board';
+                    return 'Edit';
                 case BoardType.filter:
-                    return 'Search Board';
+                    return 'Search';
                 case BoardType.suggest:
-                    return 'Suggest Board';
+                    return 'Suggest';
             }
         } else {
             return 'No board';
@@ -106,7 +106,7 @@ export class BoardManagerComponent implements OnInit {
 
 
     public isBoardActive(board: Board): boolean {
-        if (this.activeBoard) {
+        if (this.activeBoard && board) {
             return this.activeBoard.id === board.id;
         }
         return false;

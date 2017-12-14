@@ -30,6 +30,11 @@ export const getHoverBubbleList = createSelector(getBubbleState, (state: BubbleS
 export const getBubbleStateError = createSelector(getBubbleState, (state: BubbleState) => state.error);
 export const getSangjunBubble = createSelector(getBubbleState, (state: BubbleState) => state.sangjunBoardBubble);
 
+export const isWrapActionState = createSelector(getBubbleState, (state: BubbleState) => state.isWrapAction);
+export const isMoveActionState = createSelector(getBubbleState, (state: BubbleState) => state.isMoveAction);
+
+
+
 export const getBoardState = createSelector(getDocumentState, (state: State) => state.board);
 export const getBoardList = createSelector(getBoardState, (state: BoardState) => state.boardList);
 export const getLeftBoard = createSelector(getBoardList,

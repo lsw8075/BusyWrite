@@ -38,7 +38,7 @@ import { QuillEditorModule } from 'ngx-quill-editor';
 import { AccordionModule } from 'ngx-bootstrap/accordion';
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
 
-import { AlertModule } from 'ngx-bootstrap/alert';
+// import { AlertModule } from 'ngx-bootstrap/alert';
 import { ModalModule } from 'ngx-bootstrap/modal';
 import { TabsModule } from 'ngx-bootstrap/tabs';
 import { CollapseModule } from 'ngx-bootstrap/collapse';
@@ -46,7 +46,7 @@ import { CarouselModule } from 'ngx-bootstrap/carousel';
 
 import { CovalentLayoutModule, CovalentExpansionPanelModule, CovalentChipsModule } from '@covalent/core';
 
-import { MatListModule, MatIconModule, MatInputModule } from '@angular/material';
+import { MatListModule, MatIconModule, MatInputModule, MatSnackBarModule } from '@angular/material';
 
 const routes: Routes = [
     {path: ':id', component: DocumentDetailPageComponent},
@@ -88,12 +88,12 @@ const routes: Routes = [
     QuillEditorModule,
     AccordionModule.forRoot(),
     TooltipModule.forRoot(),
-    AlertModule.forRoot(),
+    // AlertModule.forRoot(),
     ModalModule.forRoot(),
 
     CovalentLayoutModule, CovalentExpansionPanelModule,
 
-    MatListModule, MatIconModule, MatInputModule, CovalentChipsModule
+    MatListModule, MatIconModule, MatInputModule, CovalentChipsModule, MatSnackBarModule
   ],
   exports: [
     DocumentDetailPageComponent

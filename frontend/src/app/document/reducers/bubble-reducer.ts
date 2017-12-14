@@ -85,6 +85,7 @@ export function BubbleReducer(state: BubbleState = initialState, action: fromBub
         case fromBubble.FLATTEN:
         case fromBubble.FLATTEN_COMPLETE:
 
+        case fromBubble.WRAP_START:
         case fromBubble.WRAP:
         case fromBubble.WRAP_COMPLETE:
 
@@ -126,8 +127,9 @@ function UIReducer(state: BubbleState, action: fromBubble.Actions) {
             }
         } else if (state.isWrapAction &&
             (selectedMenu === MenuType.internalMenu || selectedMenu === MenuType.leafMenu) &&
-            (state.selectedBubbleList[0].parentBubbleId === selectedBubble.id)) {
+            (state.selectedBubbleList[0].parentBubbleId === selectedBubble.parentBubbleId)) {
 
+                console.log('add new wrap bubble');
             let newSelectedBubbleList = [...state.selectedBubbleList];
             if (isBubbleInList(newSelectedBubbleList, selectedBubble.id)) {
                 newSelectedBubbleList = newSelectedBubbleList.filter(b => b.id !== selectedBubble.id);
@@ -210,14 +212,16 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
             flattenBubble(newBubbleList, bubbleId, newLeafBubble);
             return {...state, bubbleList: newBubbleList, loading: false};
         }
+        case fromBubble.WRAP_START:
+            return {...state, isWrapAction: true , selectedMenu: null, hoverBubbleList: []};
         case fromBubble.WRAP:
-            return {...state, loading: true, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
+            return {...state, isWrapAction: false, loading: true};
         case fromBubble.WRAP_COMPLETE: {
             const wrapBubbleIds = action.payload.wrapBubbleIds;
             const newInternalBubble = action.payload.newInternalBubble;
             const newBubbleList = _.cloneDeep(state.bubbleList);
             wrapBubble(newBubbleList, wrapBubbleIds, newInternalBubble);
-            return {...state, bubbleList: newBubbleList, loading: false};
+            return {...state, bubbleList: newBubbleList, loading: false, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
         }
         case fromBubble.MERGE:
             return {...state, loading: true, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};

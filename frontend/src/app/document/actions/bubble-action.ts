@@ -118,11 +118,11 @@ export const WRAP_COMPLETE = '[Bubble] wrap Complete';
 export const WRAP_ERROR = '[Bubble] wrap Error';
 export class WrapStart implements Action {
     readonly type = WRAP_START;
-    constructor(public payload: Bubble) {}
+    constructor() {}
 }
 export class Wrap implements Action {
   readonly type = WRAP;
-  constructor(public payload: Array<number>) {}
+  constructor() {}
 }
 export class WrapComplete implements Action {
   readonly type = WRAP_COMPLETE;
