@@ -56,30 +56,30 @@ export class BubbleEffects {
         });
 
     @Effect()
-    pop$: Observable<Action> = this.action$.ofType<BubbleAction.Pop>(BubbleAction.POP)
+    pop$: Observable<Action> = this.action$.ofType<BubbleAction.PopBubble>(BubbleAction.POP_BUBBLE)
         .map(action => action.payload).mergeMap(query => {
             return Observable.of(this.bubbleService.popBubble(query))
-                .map(() => new BubbleAction.PopPending(null));
+                .map(() => new BubbleAction.PopBubblePending(null));
         });
 
     @Effect()
-    delete$: Observable<Action> = this.action$.ofType<BubbleAction.Delete>(BubbleAction.DELETE)
+    delete$: Observable<Action> = this.action$.ofType<BubbleAction.DeleteBubble>(BubbleAction.DELETE_BUBBLE)
         .map(action => action.payload).mergeMap(query => {
             return Observable.of(this.bubbleService.deleteBubble(query))
-                .map(() => new BubbleAction.DeletePending(null));
+                .map(() => new BubbleAction.DeleteBubblePending(null));
         });
 
     @Effect()
-    create$: Observable<Action> = this.action$.ofType<BubbleAction.Create>(BubbleAction.CREATE)
+    create$: Observable<Action> = this.action$.ofType<BubbleAction.CreateBubble>(BubbleAction.CREATE_BUBBLE)
         .map(action => action.payload).mergeMap(query => {
             return Observable.of(this.bubbleService.createBubble(0, 0, "create"))
-                .map(() => new BubbleAction.CreatePending(null));
+                .map(() => new BubbleAction.CreateBubblePending(null));
                 // .map((newBubble) => new BubbleAction.CreateComplete({bubbleId: query.bubbleId, isAbove: query.isAbove, newBubble: newBubble}))
                 // .catch(err => of(new BubbleAction.CreateError(err)));
         });
 
     @Effect()
-    createComplete$: Observable<Action> = this.action$.ofType<BubbleAction.CreateComplete>(BubbleAction.CREATE_COMPLETE)
+    createComplete$: Observable<Action> = this.action$.ofType<BubbleAction.CreateBubbleComplete>(BubbleAction.CREATE_BUBBLE_COMPLETE)
         .map(action => action.payload).mergeMap(query => {
             return Observable.of(new BubbleAction.EditUpdate(query.id));
         });
@@ -99,66 +99,66 @@ export class BubbleEffects {
         });
 
     @Effect()
-    edit$: Observable<Action> = this.action$.ofType<BubbleAction.Edit>(BubbleAction.EDIT)
+    edit$: Observable<Action> = this.action$.ofType<BubbleAction.EditBubble>(BubbleAction.EDIT_BUBBLE)
         .map(action => action.payload).mergeMap(query => {
             return Observable.of(this.bubbleService.startEdittingBubble(query))
-                .map(() => new BubbleAction.EditPending(null));
+                .map(() => new BubbleAction.EditBubblePending(null));
                 // .map(() => new BubbleAction.EditComplete({bubbleId: query, newContent: 'newly editted'}))
                 // .catch(err => of(new BubbleAction.EditError(err)));
         });
 
     @Effect()
-    wrap$: Observable<Action> = this.action$.ofType<BubbleAction.Wrap>(BubbleAction.WRAP)
+    wrap$: Observable<Action> = this.action$.ofType<BubbleAction.WrapBubble>(BubbleAction.WRAP_BUBBLE)
         .withLatestFrom(this._store).mergeMap(([action, state]) => {
             console.log(state);
             const bubbleState = (state as any).document.bubble;
             const wrapBubbleList = bubbleState.selectedBubbleList.map(b => b.id);
             return Observable.fromPromise(this.bubbleService._wrapBubble(wrapBubbleList))
-                .map((newInternalBubble) => new BubbleAction.WrapComplete(
-                    {wrapBubbleIds: wrapBubbleList, newInternalBubble: newInternalBubble}))
-                .catch(err => of(new BubbleAction.WrapError(err)));
+                .map((newInternalBubble) => new BubbleAction.WrapBubbleComplete(
+                    {wrapBubbleIdList: wrapBubbleList, newWrappedBubble: newInternalBubble}))
+                .catch(err => of(new BubbleAction.WrapBubbleError(err)));
 //         .map(action => action.payload).mergeMap(query => {
 //             return Observable.of(this.bubbleService.wrapBubble(query))
 //                 .map(() => new BubbleAction.WrapPending(null));
         });
 
     @Effect()
-    merge$: Observable<Action> = this.action$.ofType<BubbleAction.Merge>(BubbleAction.MERGE)
+    merge$: Observable<Action> = this.action$.ofType<BubbleAction.MergeBubble>(BubbleAction.MERGE_BUBBLE)
         .withLatestFrom(this._store).mergeMap(([action, state]) => {
             console.log(state);
             const bubbleState = (state as any).document.bubble;
             const mergeBubbleList = bubbleState.selectedBubbleList.map(b => b.id);
             return Observable.fromPromise(this.bubbleService._mergeBubble(mergeBubbleList))
-                .map((newBubble) => new BubbleAction.MergeComplete({mergeBubbleIds: mergeBubbleList, newBubble: newBubble}))
-                .catch(err => of(new BubbleAction.MergeError(err)));
+                .map((newBubble) => new BubbleAction.MergeBubbleComplete({bubbleIdList: mergeBubbleList, mergedBubble: newBubble}))
+                .catch(err => of(new BubbleAction.MergeBubbleError(err)));
 //         .map(action => action.payload).mergeMap(query => {
 //             return Observable.of(this.bubbleService.mergeBubble(query))
 //                 .map(() => new BubbleAction.MergePending(null));
         });
 
     @Effect()
-    split$: Observable<Action> = this.action$.ofType<BubbleAction.Split>(BubbleAction.SPLIT)
+    split$: Observable<Action> = this.action$.ofType<BubbleAction.SplitLeaf>(BubbleAction.SPLIT_LEAF)
         .map(action => action.payload).mergeMap(query => {
-            return Observable.fromPromise(this.bubbleService.splitBubble(query.bubbleId, query.contentList))
-                .map(() => new BubbleAction.SplitPending(null));
+            return Observable.of(this.bubbleService.splitLeafBubble(query.bubbleId, query.contentList))
+                .map(() => new BubbleAction.SplitLeafPending(null));
                 // .map((splitBubbleList) => new BubbleAction.SplitComplete({bubbleId: query.bubbleId, splitBubbleList: splitBubbleList}))
                 // .catch(err => of(new BubbleAction.SplitError(err)));
         });
 
     @Effect()
-    flatten$: Observable<Action> = this.action$.ofType<BubbleAction.Flatten>(BubbleAction.FLATTEN)
+    flatten$: Observable<Action> = this.action$.ofType<BubbleAction.FlattenBubble>(BubbleAction.FLATTEN_BUBBLE)
         .map(action => action.payload).mergeMap(query => {
             return Observable.of(this.bubbleService.flattenBubble(query))
-                .map(() => new BubbleAction.FlattenPending(null));
+                .map(() => new BubbleAction.FlattenBubblePending(null));
                 // .map((newBubble) => new BubbleAction.FlattenComplete({bubbleId: query, newBubble: newBubble}))
                 // .catch(err => of(new BubbleAction.FlattenError(err)));
         });
 
     @Effect()
-    move$: Observable<Action> = this.action$.ofType<BubbleAction.Move>(BubbleAction.MOVE)
+    move$: Observable<Action> = this.action$.ofType<BubbleAction.MoveBubble>(BubbleAction.MOVE_BUBBLE)
         .map(action => action.payload).mergeMap(query => {
             return Observable.of(this.bubbleService.moveBubble(query.bubbleId, 0, 0))
-                .map(() => new BubbleAction.MovePending(null));
+                .map(() => new BubbleAction.MoveBubblePending(null));
                 // .map((newBubble) => new BubbleAction.MoveComplete(query))
                 // .catch(err => of(new BubbleAction.MoveError(err)));
         });

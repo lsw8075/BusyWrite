@@ -52,7 +52,7 @@ export class BubbleMenuComponent implements OnInit {
     }
 
     public splitBubble() {
-        this._store.dispatch(new BubbleAction.Split(
+        this._store.dispatch(new BubbleAction.SplitLeaf(
             {bubbleId: 6,
             contentList: ['<p>BusyWrite is the per','fect solution for team writing. The concept of writing as a tea','m has been around for a long time, by services like Google Docs, but the approaches are impractical and unproductive. </p>']}));
     //    this.bsModalRef = this._modalService.show(SplitBubbleComponent);
@@ -60,7 +60,7 @@ export class BubbleMenuComponent implements OnInit {
     }
 
     public popBubble() {
-        this._store.dispatch(new BubbleAction.Pop(this.bubble.id));
+        this._store.dispatch(new BubbleAction.PopBubble(this.bubble.id));
     }
 
     public wrap() {
@@ -68,15 +68,15 @@ export class BubbleMenuComponent implements OnInit {
     }
 
     public createBubble() {
-        this._store.dispatch(new BubbleAction.Create({bubbleId: this.bubble.id, isAbove: this.menu === MenuType.borderTopMenu}));
+        this._store.dispatch(new BubbleAction.CreateBubble({bubbleId: this.bubble.id, isAbove: this.menu === MenuType.borderTopMenu}));
     }
 
     public editBubble() {
-        this._store.dispatch(new BubbleAction.Edit(this.bubble.id));
+        this._store.dispatch(new BubbleAction.EditBubble(this.bubble.id));
     }
 
     public deleteBubble() {
-        this._store.dispatch(new BubbleAction.Delete(this.bubble.id));
+        this._store.dispatch(new BubbleAction.DeleteBubble(this.bubble.id));
     }
 
     public mergeBubble() {
@@ -89,11 +89,11 @@ export class BubbleMenuComponent implements OnInit {
     }
 
     public flattenBubble() {
-        this._store.dispatch(new BubbleAction.Flatten(this.bubble.id));
+        this._store.dispatch(new BubbleAction.FlattenBubble(this.bubble.id));
     }
 
     public moveBubble() {
-        this._store.dispatch(new BubbleAction.Move({bubbleId: this.bubble.id, destBubbleId: 1, isAbove: false}));
+        this._store.dispatch(new BubbleAction.MoveBubble({bubbleId: this.bubble.id, destBubbleId: 1, isAbove: false}));
     }
 
     public getAction(): string {
