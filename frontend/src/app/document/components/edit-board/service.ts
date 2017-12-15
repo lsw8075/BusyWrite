@@ -1,1 +1,1 @@
-export { Note, NoteService, BubbleTemp, BoardService, EditItem, EventBubbleService } from '../service';
+export { Note, NoteService, Bubble, BoardService, EditItem, EventBubbleService } from '../service';

@@ -32,6 +32,7 @@ automatic bubbles, busy bubbles. Information relevant to your team’s work is c
 bubbles. Busy bubbles are created from messengers like slack, from other note services like evernote, \
 or from anywhere on the web. It will search google or wikipedia to grab relevant contents into bubbles \
 with citation. BusyWrite will make sure the whole web is on your side.</p>`);
+b14.ownerId = 2;
       const b13: LeafBubble = new LeafBubble(13, 'Body 1');
     const b12: InternalBubble = new InternalBubble(12, [13, 14]);
       const b11: LeafBubble = new LeafBubble(11,

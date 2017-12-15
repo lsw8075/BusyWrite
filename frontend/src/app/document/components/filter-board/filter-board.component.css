@@ -1,0 +1,7 @@
+.result {
+    box-sizing: border-box;
+    max-height: 94%;
+    position: absolute;
+    overflow-x: visible;
+    overflow-y: auto;
+}

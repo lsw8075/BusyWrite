@@ -7,7 +7,7 @@ import { EffectsModule } from '@ngrx/effects';
 import { StoreRouterConnectingModule } from '@ngrx/router-store';
 
 // Reducers
-import { BubbleReducer } from './reducers/reducer';
+import { reducer } from './reducers/reducer';
 
 // Effects
 import { BubbleEffects } from './effects/bubble-effect';
@@ -32,7 +32,7 @@ import { ServerSocket } from './services/websocket.service';
   imports: [
     CommonModule,
     HttpModule,
-    StoreModule.forFeature('bubble', BubbleReducer),
+    StoreModule.forFeature('document', reducer),
     EffectsModule.forFeature([
       BubbleEffects
     ]),

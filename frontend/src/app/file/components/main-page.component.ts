@@ -8,6 +8,8 @@ import { DirectoryService } from '../services/directory.service';
 })
 export class MainPageComponent implements OnInit {
 
+
+
   constructor() { }
 
   ngOnInit() {

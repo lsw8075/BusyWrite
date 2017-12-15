@@ -783,6 +783,8 @@ def do_release_ownership(
     **kw
     ):
     bubble = kw['bubble']
+    if (bubble.owner_with_lock is None):
+        raise BubbleNotOwnedError(bubble.id)
     if (bubble.owner_with_lock is not None):
         if (bubble.owner_with_lock.id != user_id):
             raise BubbleOwnedError(bubble.id)

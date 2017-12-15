@@ -100,7 +100,8 @@ class NormalBubble(Bubble):
 
     def is_leaf(self):
         '''check if self is leaf bubble'''
-        return self.child_count() == 0
+        return (self.parent_bubble is not None and
+                self.child_count() == 0)
 
     def is_root(self):
         '''check if self is root'''

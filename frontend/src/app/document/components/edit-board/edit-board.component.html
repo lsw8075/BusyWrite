@@ -1,60 +1,67 @@
-<p-tabView>
-  <p-tabPanel header="Edit">
-    <div *ngIf="editItems">
-      <accordion>
-        <ng-container class='container' [dragula]='"note-bag"' [dragulaModel]='notes'>
-          <ng-container *ngFor="let editItem of editItems">
-            <accordion-group #group>
-                <div accordion-heading>
-                  <span class="badge badge-pill badge-info">
-                    <div class="handle" tooltip="click me to drag notes around!" (click)="$event.stopPropagation()">
-                      +
-                    </div>
-                  </span>
-                  <span class="summary">{{editItem.bubble.id}}</span>
-                  <span class="badge float-right pull-right">
-                    <button (click)="finishEdit(editItem)" type="button" class="btn btn-secondary btn-sm hvr-sweep-to-right">
-                      <i tooltip="did you finish editting?" class="fa fa-fw fa-check"></i>
-                    </button>
-                  </span>
-                </div>
-                <app-edit-item (update)="updateEditItem(editItem)" (focus)="focusEditItem(editItem, $event)" [editItem]="editItem"></app-edit-item>
-            </accordion-group>
-          </ng-container>
-        </ng-container>
-      </accordion>
-    </div>
-  </p-tabPanel>
-
-  <p-tabPanel header="Note">
-    <div *ngIf="notes">
-      <button (click)="addNote()" type="button" class="btn btn-primary"><i class="fa fa-fw fa-sticky-note-o"></i> New</button>
-      <hr>
-      <accordion>
-        <div class='container' [dragula]='"note-bag"' [dragulaModel]='notes'>
-          <div *ngFor="let note of notes">
-            <accordion-group #group>
-                <div accordion-heading>
-                  <span class="badge badge-pill badge-info">
-                    <div class="handle" tooltip="click me to drag notes around!" (click)="$event.stopPropagation()">
-                      +
-                    </div>
-                  </span>
-                  <span class="summary">{{note.getSummary()}}</span>
-                  <span class="badge float-right pull-right">
-                    <button (click)="deleteNote(note)" type="button" class="btn btn-secondary btn-sm hvr-sweep-to-right">
-                      <i tooltip="delete note" class="fa fa-fw fa-times"></i>
-                    </button>
-                    <button (click)="toBubble(note)" type="button" class="btn btn-secondary btn-sm hvr-sweep-to-right">
-                      <i tooltip="send to edit board" class="fa fa-fw fa-pencil"></i>
-                    </button>
-                  </span>
-                </div>
-                <app-note-view [note]="note" (changed)="updateNote(note, $event)"></app-note-view>
-            </accordion-group>
-          </div>
+<tabset [justified]="true" type="pills">
+    <tab>
+        <ng-template tabHeading>
+            <div class="tab">
+                Edit
+            </div>
+        </ng-template>
+        <div *ngIf="editItems">
+            <accordion>
+                <ng-container class='container' [dragula]='"note-bag"' [dragulaModel]='notes'>
+                <ng-container *ngFor="let editItem of editItems">
+                    <accordion-group #group>
+                        <div accordion-heading>
+                        <span class="badge badge-pill badge-info">
+                            <div class="handle" tooltip="click me to drag notes around!" (click)="$event.stopPropagation()">
+                            +
+                            </div>
+                        </span>
+                        <span class="summary">{{editItem.bubble.id}}</span>
+                        <span class="badge float-right pull-right">
+                            <button (click)="finishEdit(editItem)" type="button" class="btn btn-secondary btn-sm hvr-sweep-to-right">
+                            <i tooltip="did you finish editting?" class="fa fa-fw fa-check"></i>
+                            </button>
+                        </span>
+                        </div>
+                        <app-edit-item (update)="updateEditItem(editItem)" (focus)="focusEditItem(editItem, $event)" [editItem]="editItem"></app-edit-item>
+                    </accordion-group>
+                </ng-container>
+                </ng-container>
+            </accordion>
         </div>
-      </accordion>
-    </div>
-  </p-tabPanel>
-</p-tabView>
+    </tab>
+    <tab>
+        <ng-template tabHeading>
+            <div class="tab">
+                Note
+            </div>
+        </ng-template>
+        <div *ngIf="notes container">
+            <accordion>
+                <div class='container' [dragula]='"note-bag"' [dragulaModel]='notes'>
+                <div *ngFor="let note of notes">
+                    <accordion-group #group>
+                        <div accordion-heading>
+                        <span class="badge badge-pill badge-info">
+                            <div class="handle" tooltip="click me to drag notes around!" (click)="$event.stopPropagation()">
+                            +
+                            </div>
+                        </span>
+                        <span class="summary">{{note.getSummary()}}</span>
+                        <span class="badge float-right pull-right">
+                            <button (click)="deleteNote(note)" type="button" class="btn btn-secondary btn-sm hvr-sweep-to-right">
+                            <i tooltip="delete note" class="fa fa-fw fa-times"></i>
+                            </button>
+                            <button (click)="toBubble(note)" type="button" class="btn btn-secondary btn-sm hvr-sweep-to-right">
+                            <i tooltip="send to edit board" class="fa fa-fw fa-pencil"></i>
+                            </button>
+                        </span>
+                        </div>
+                        <app-note-view [note]="note" (changed)="updateNote(note, $event)"></app-note-view>
+                    </accordion-group>
+                </div>
+                </div>
+            </accordion>
+        </div>
+    </tab>
+</tabset>

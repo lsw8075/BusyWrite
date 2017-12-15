@@ -9,7 +9,7 @@ export interface State extends fromRoot.State {
 }
 export { UserReducer };
 
-export const getUserState = createFeatureSelector<UserState>('agent');
+export const getUserState = createFeatureSelector<UserState>('user');
 
 export const getSignedIn = createSelector(getUserState, (state: UserState) => state.signedIn);
 export const getUserId = createSelector(getUserState, (state: UserState) => state.userId);

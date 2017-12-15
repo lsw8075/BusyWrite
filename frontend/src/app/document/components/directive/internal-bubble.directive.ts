@@ -1,84 +1,113 @@
 import { Directive, ElementRef, Renderer2, HostListener, HostBinding, Input, OnInit } from '@angular/core';
 import { EventBubbleService } from '../service';
-import { BubbleTemp } from '../service';
+import { Bubble, InternalBubble, BubbleType, LeafBubble } from '../../models/bubble';
+
+import { Store } from '@ngrx/store';
+import { Observable } from 'rxjs/Observable';
+
+import * as fromBubble from '../../reducers/bubble-reducer';
+import * as fromDocument from '../../reducers/reducer';
+import * as BubbleAction from '../../actions/bubble-action';
+
+import { getBubbleById } from '../../reducers/bubble-operation';
 
 @Directive({
   selector: '[appInternalBubble]'
 })
 export class InternalBubbleDirective implements OnInit {
 
-  @Input() appInternalBubble: BubbleTemp;
+    @Input() appInternalBubble: InternalBubble;
+    @Input() bubbleList: Array<Bubble>;
+    @Input() isSelected: boolean;
+    @Input() isHover: boolean;
 
-  private lineWidth = 3;
-  private space = 10;
-  private offset = -5;
-  private selectedColor = `rgb(157, 172, 255)`;
+    private lineWidth = 3;
+    private space = 10;
+    private offset = -5;
+    private selectedColor = `rgb(157, 172, 255)`;
 
-  constructor(
-    private el: ElementRef,
-    private renderer: Renderer2,
-    private _eventBubbleService: EventBubbleService) {}
+    constructor(
+        private el: ElementRef,
+        private renderer: Renderer2,
+        private _store: Store<fromDocument.State>,
+        private _eventBubbleService: EventBubbleService) {}
 
-  ngOnInit() {
-    this.setInternalBubbleStyle();
-  }
-
-  @HostBinding('style.background-color')
-  public get backgroundColor(): string {
-    if (this._eventBubbleService.isBubbleSelected(this.appInternalBubble)) {
-      return this.selectedColor;
+    ngOnInit() {
+        this.setInternalBubbleStyle();
     }
-  }
 
-  @HostBinding('style.border-left-color')
-  public get borderLeftColor(): string {
-    if (this.appInternalBubble.isBeingEditted()) {
-      return `green`;
-    } else if (this.appInternalBubble.parentBubble.id === 0) {
-      return this.selectedColor;
-    } else {
-      return (this.appInternalBubble.isMouseOver) ? this.selectedColor : 'transparent';
+    @HostBinding('style.background-color')
+    public get backgroundColor(): string {
+        if (this.isSelected) {
+            return this.selectedColor;
+        }
     }
-  }
 
-  @HostBinding('style.border-right-color')
-  public get borderRightColor(): string {
-    if (this.appInternalBubble.isBeingEditted()) {
-      return `green`;
-    } else if (this.appInternalBubble.parentBubble.id === 0) {
-      return this.selectedColor;
-    } else {
-      return (this.appInternalBubble.isMouseOver) ? this.selectedColor : 'transparent';
+    @HostBinding('style.border-left-color')
+    public get borderLeftColor(): string {
+        if (this._isBeingEditted(this.appInternalBubble)) {
+            return `green`;
+        } else if (this.appInternalBubble.parentBubbleId === 0) {
+            return this.selectedColor;
+        } else {
+            return (this.isHover) ? this.selectedColor : 'transparent';
+        }
     }
-  }
 
-  @HostBinding('style.margin')
-  public get margin(): string {
-    const height = this.appInternalBubble.getHeight();
-    return `0px -${this.offset + height * this.space}px`;
-  }
+    @HostBinding('style.border-right-color')
+    public get borderRightColor(): string {
+        if (this._isBeingEditted(this.appInternalBubble)) {
+            return `green`;
+        } else if (this.appInternalBubble.parentBubbleId === 0) {
+            return this.selectedColor;
+        } else {
+            return (this.isHover) ? this.selectedColor : 'transparent';
+        }
+    }
 
-  @HostBinding('style.padding')
-  public get padding(): string {
-    const height = this.appInternalBubble.getHeight();
-    return `0px ${this.offset + height * this.space - this.lineWidth}px`;
-  }
+    @HostBinding('style.margin')
+    public get margin(): string {
+        const height = this._getHeight(this.appInternalBubble);
+        return `0px -${this.offset + height * this.space}px`;
+    }
 
-  public setInternalBubbleStyle(): void {
-    this.renderer.setStyle(this.el.nativeElement, 'border-left-width', `${this.lineWidth}px`);
-    this.renderer.setStyle(this.el.nativeElement, 'border-right-width', `${this.lineWidth}px`);
-  }
+    @HostBinding('style.padding')
+    public get padding(): string {
+        const height = this._getHeight(this.appInternalBubble);
+        return `0px ${this.offset + height * this.space - this.lineWidth}px`;
+    }
 
-  @HostListener('mouseover', ['$event'])
-  onMouseOver($event) {
-    this.appInternalBubble.mouseOver(true);
-    // event.stopPropagation();
-  }
+    public setInternalBubbleStyle(): void {
+        this.renderer.setStyle(this.el.nativeElement, 'border-left-width', `${this.lineWidth}px`);
+        this.renderer.setStyle(this.el.nativeElement, 'border-right-width', `${this.lineWidth}px`);
+    }
 
-  @HostListener('mouseout', ['$event'])
-  onMouseOut($event) {
-    this.appInternalBubble.mouseOver(false);
-    // event.stopPropagation();
-  }
+    @HostListener('mouseover', ['$event'])
+    onMouseEnter($event) {
+        if (!this.isHover) {
+            this._store.dispatch(new BubbleAction.MouseOver(this.appInternalBubble));
+        }
+    }
+
+    @HostListener('mouseout', ['$event'])
+    onMouseOut($event) {
+        this._store.dispatch(new BubbleAction.MouseOut(this.appInternalBubble));
+    }
+
+    private _getHeight(bubble: Bubble): number {
+        if (bubble.type === BubbleType.leafBubble) {
+            return 1;
+        }
+        return (bubble as InternalBubble).childBubbleIds
+            .reduce((prev, curr) => Math.max(prev, this._getHeight(getBubbleById(this.bubbleList, curr)) + 1), 1);
+        }
+
+    private _isBeingEditted(bubble: Bubble): boolean {
+        if (bubble.type === BubbleType.leafBubble) {
+            return (bubble as LeafBubble).ownerId !== -1;
+        }
+        return (bubble as InternalBubble).childBubbleIds
+            .reduce((prev, curr) => prev || this._isBeingEditted(getBubbleById(this.bubbleList, curr)), false);
+    }
 
 }

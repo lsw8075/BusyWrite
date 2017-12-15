@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
-import { BubbleTemp } from '../service';
+import { Bubble} from '../service';
 import { EditItem } from '../service';
 
 @Component({
@@ -33,7 +33,7 @@ export class EditItemComponent implements OnInit {
   constructor() {}
 
   ngOnInit() {
-    this.editorContent = this.editItem.bubble.getContent();
+    // this.editorContent = this.editItem.bubble.getContent();
   }
 
   onEditorBlured(quill) {

@@ -15,6 +15,7 @@ export const initialState: UserState = {
     userId: -1,
 };
 
+
 export function UserReducer(state = initialState, action: any): UserState {
   switch (action.type) {
     case fromUser.GET_USER_INFO:

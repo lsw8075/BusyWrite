@@ -1,0 +1,15 @@
+
+.footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+}
+
+.card-footer {
+    text-align: center;
+}
+
+.activeBoard {
+    color: red;
+}

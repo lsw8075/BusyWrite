@@ -1,15 +1,34 @@
-<div class="view-board">
-  <p-tabView (onChange)="previewClick($event)">
+<div *tdLoading="'bubbleLoading'; type:'circle'; color:'accent'">
+<tabset [justified]="true" type="pills">
+    <tab>
+        <ng-template tabHeading>
+            <div class="tab">
+                View
+            </div>
+        </ng-template>
+        <div class="container">
+            <app-bubble-list-view
+                [board]="board"
+                [rootBubble]="rootBubble"
+                [bubbleList]="bubbleList"
+                [selectedBubbleList]="selectedBubbleList"
+                [hoverBubbleList]="hoverBubbleList"
+                [userId]="userId"
+                [selectedMenu]="selectedMenu">
+                Your bubbles are Loading ...!
+            </app-bubble-list-view>
+        </div>
 
-    <p-tabPanel header="View">
-      <app-bubble-list-view [rootBubble]="rootBubble$ | async" [bubbleList]="bubbleList$ | async"></app-bubble-list-view>
-    </p-tabPanel>
-
-    <p-tabPanel header="Preview">
-      <app-preview>
-        Loading...
-      </app-preview>
-    </p-tabPanel>
-
-  </p-tabView>
+    </tab>
+    <tab>
+        <ng-template tabHeading>
+            <div class="tab">
+                Preview
+            </div>
+        </ng-template>
+        <app-preview [rootBubble]="rootBubble" [bubbleList]="bubbleList">
+            Your preview is Loading ...!
+        </app-preview>
+    </tab>
+</tabset>
 </div>
