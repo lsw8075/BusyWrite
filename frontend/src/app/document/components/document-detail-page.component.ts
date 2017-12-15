@@ -17,6 +17,7 @@ import * as fromDocument from '../reducers/reducer';
 import * as BoardAction from '../actions/board-action';
 import * as BubbleAction from '../actions/bubble-action';
 import * as RouterAction from '../../shared/route/route-action';
+import * as UserAction from '../../user/actions/user-action';
 
 import { ViewBoardMenuType } from '../reducers/bubble-reducer';
 
@@ -115,6 +116,10 @@ export class DocumentDetailPageComponent implements OnInit {
 
     public mergeBubble(): void {
         this._store.dispatch(new BubbleAction.Merge());
+    }
+
+    public goBack(): void {
+        this._store.dispatch(new RouterAction.GoByUrl(`/files`));
     }
 
     public createNote(): void {

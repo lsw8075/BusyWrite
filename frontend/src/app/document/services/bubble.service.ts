@@ -229,7 +229,7 @@ export class BubbleService implements OnDestroy {
         this._socket.send(m);
     }
 
-    public deleteSuggestBubble(){
+    public deleteSuggestBubble() {
     }
 
     public async wrapBubble(wrapBubbleList: Array<number>): Promise<InternalBubble> {

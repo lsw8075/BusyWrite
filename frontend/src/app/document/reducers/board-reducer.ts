@@ -16,7 +16,12 @@ export interface BoardState {
     activeBoard: Board;
 }
 
-const initalBoardList = [new Board(BoardType.view, BoardLocation.left, 0), new Board(BoardType.edit, BoardLocation.right, 1)];
+const initalBoardList = [
+    new Board(BoardType.view, BoardLocation.left, 0),
+    new Board(BoardType.suggest, BoardLocation.right, 1),
+    new Board(BoardType.edit, BoardLocation.hidden, 2),
+    new Board(BoardType.filter, BoardLocation.hidden, 3)
+];
 
 const initialState: BoardState = {
     newId: 2,

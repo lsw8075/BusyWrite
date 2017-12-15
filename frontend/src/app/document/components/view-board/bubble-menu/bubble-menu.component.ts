@@ -17,6 +17,7 @@ import { Observable } from 'rxjs/Observable';
 import * as fromDocument from '../../../reducers/reducer';
 import * as fromBubble from '../../../reducers/bubble-reducer';
 import * as BubbleAction from '../../../actions/bubble-action';
+import * as SangjunBoardAction from '../../../actions/sangjun-bubble-action';
 import * as RouterAction from '../../../../shared/route/route-action';
 
 @Component({
@@ -45,16 +46,9 @@ export class BubbleMenuComponent implements OnInit {
         console.log(this.bubble, this.menu);
     }
 
-    // public isWrapSelected(): boolean {
-    //     return this._eventBubbleService.getActionState() === ActionType.wrap;
-    // }
-
-    // public isMoveSelected(): boolean {
-    //     return this._eventBubbleService.getActionState() === ActionType.move;
-    // }
-
     public openSangjunBoard() {
-        // this._eventBubbleService.openSangjunBoard(this.bubble);
+        this._store.dispatch(new BubbleAction.SelectClear());
+        this._store.dispatch(new SangjunBoardAction.Open(this.bubble));
     }
 
     public splitBubble() {

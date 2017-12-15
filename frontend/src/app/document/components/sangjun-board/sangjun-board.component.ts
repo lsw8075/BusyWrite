@@ -100,7 +100,7 @@ export class SangjunBoardComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy() {
-        this._store.dispatch(new BubbleAction.SelectSangjunBoard(null));
+        // this._store.dispatch(new BubbleAction.SelectSangjunBoard(null));
     }
 
 }
