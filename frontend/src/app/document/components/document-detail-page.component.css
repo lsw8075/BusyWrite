@@ -1,0 +1,23 @@
+
+.board {
+    /* display: block; */
+    padding: 0px;
+    /* position: relative; */
+    height: 40em;
+}
+
+.activeBoard {
+    border-color: black;
+}
+
+alert {
+    display: inline;
+}
+
+.btn-toolbar {
+    display: inline;
+}
+
+.title {
+    display: inline;
+}

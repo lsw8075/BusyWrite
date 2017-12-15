@@ -281,7 +281,7 @@ export class BubbleService implements OnDestroy {
             'body': {'bubble_id': bubbleId}};
         this._socket.send(m);
     }
-
+                                                     
     public hideSuggestBubble(suggestBubbleId: number) {
         const m = {'header': 'hide_suggest_bubble',
             'previous_request': this.previousRequestId,

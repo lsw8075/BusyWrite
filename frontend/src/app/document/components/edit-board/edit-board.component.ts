@@ -1,9 +1,10 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { DragulaService } from 'ng2-dragula/ng2-dragula';
 
 import { Note, NoteService, Bubble, BoardService, EditItem } from './service';
 import { EventBubbleService } from './service';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
+
+import { Board } from '../../models/board';
 
 @Component({
   selector: 'app-edit-board',

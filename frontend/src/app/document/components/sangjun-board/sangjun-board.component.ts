@@ -14,17 +14,20 @@ import * as BoardAction from '../../actions/board-action';
 import * as BubbleAction from '../../actions/bubble-action';
 import * as RouterAction from '../../../shared/route/route-action';
 
+
 @Component({
   selector: 'app-sangjun-board',
   templateUrl: './sangjun-board.component.html',
   styleUrls: ['./sangjun-board.component.css']
 })
 export class SangjunBoardComponent implements OnInit, OnDestroy {
+
+    @Input() bubble: Bubble;
+
     isOBChecked = true;
     isSBChecked = true;
     isCommentChecked = true;
     isWatching = false;
-    @Input() bubble: Bubble;
     selectedSB: SuggestBubble;
     suggestBubbles: Array<SuggestBubble>;
 
@@ -97,7 +100,7 @@ export class SangjunBoardComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy() {
-        this._store.dispatch(new BubbleAction.SelectSangjunBoard(null));
+        // this._store.dispatch(new BubbleAction.SelectSangjunBoard(null));
     }
 
 }

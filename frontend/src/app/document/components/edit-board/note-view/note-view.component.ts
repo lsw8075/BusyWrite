@@ -30,13 +30,13 @@ export class NoteViewComponent implements OnInit {
   ngOnInit() {
   }
 
-  // onEditorBlured(quill) {
-  //   // console.log('editor blur!', quill);
-  // }
+  onEditorBlured(quill) {
+    // console.log('editor blur!', quill);
+  }
 
-  // onEditorFocused(quill) {
-  //   // console.log('editor focus!', quill);
-  // }
+  onEditorFocused(quill) {
+    // console.log('editor focus!', quill);
+  }
 
   onEditorCreated(quill) {
     this.editor = quill;

@@ -24,6 +24,7 @@ import { BoardManagerComponent } from './board-manager/board-manager.component';
 
 import { SplitBubbleComponent } from './view-board/split-bubble/split-bubble.component';
 
+import { BoardFocusDirective } from './directive/board-focus.directive';
 import { ClickOutsideDirective } from './directive/click-outside.directive';
 import { InternalBubbleDirective } from './directive/internal-bubble.directive';
 import { LeafBubbleDirective } from './directive/leaf-bubble.directive';
@@ -37,23 +38,18 @@ import { QuillEditorModule } from 'ngx-quill-editor';
 import { AccordionModule } from 'ngx-bootstrap/accordion';
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
 
-import { AlertModule } from 'ngx-bootstrap/alert';
+// import { AlertModule } from 'ngx-bootstrap/alert';
 import { ModalModule } from 'ngx-bootstrap/modal';
 import { TabsModule } from 'ngx-bootstrap/tabs';
 import { CollapseModule } from 'ngx-bootstrap/collapse';
 import { CarouselModule } from 'ngx-bootstrap/carousel';
 
-import { ButtonModule } from 'primeng/primeng';
-import { TabViewModule } from 'primeng/primeng';
-import { EditorModule } from 'primeng/primeng';
-import { DialogModule } from 'primeng/primeng';
+import { CovalentLayoutModule, CovalentExpansionPanelModule, CovalentChipsModule, CovalentLoadingModule } from '@covalent/core';
 
-import { CovalentLayoutModule, CovalentExpansionPanelModule, CovalentChipsModule } from '@covalent/core';
-
-import { MatListModule, MatIconModule, MatInputModule } from '@angular/material';
+import { MatListModule, MatIconModule, MatInputModule, MatSnackBarModule } from '@angular/material';
 
 const routes: Routes = [
-    {path: '', component: DocumentDetailPageComponent},
+    {path: ':id', component: DocumentDetailPageComponent},
 ];
 
 @NgModule({
@@ -78,30 +74,26 @@ const routes: Routes = [
     LeafBubbleDirective,
     StopClickPropagationDirective,
     StopHoverPropagationDirective,
+    BoardFocusDirective,
   ],
   imports: [
     FormsModule,
     CommonModule,
     RouterModule.forChild(routes),
     TabsModule.forRoot(),
-    TabViewModule,
     BsDropdownModule.forRoot(),
     CollapseModule.forRoot(),
     CarouselModule.forRoot(),
-    ButtonModule,
     DragulaModule,
-    DialogModule,
-    EditorModule,
     QuillEditorModule,
-    DialogModule,
     AccordionModule.forRoot(),
     TooltipModule.forRoot(),
-    AlertModule.forRoot(),
+    // AlertModule.forRoot(),
     ModalModule.forRoot(),
 
-    CovalentLayoutModule, CovalentExpansionPanelModule,
+    CovalentLayoutModule, CovalentExpansionPanelModule, CovalentLoadingModule,
 
-    MatListModule, MatIconModule, MatInputModule, CovalentChipsModule
+    MatListModule, MatIconModule, MatInputModule, CovalentChipsModule, MatSnackBarModule
   ],
   exports: [
     DocumentDetailPageComponent

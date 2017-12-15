@@ -18,12 +18,6 @@ export class OpenError implements Action {
   constructor(public payload: string) {}
 }
 
-export const SELECT_SANGJUN_BOARD = '[SANGJUN BOARD] select bubble';
-export class SelectSangjunBoard implements Action {
-    readonly type = SELECT_SANGJUN_BOARD;
-    constructor(public payload: Bubble) {}
-}
-
 export const LOAD = '[Bubble] Load';
 export const LOAD_PENDING = '[Bubble] Loading';
 export const LOAD_COMPLETE = '[Bubble] load Complete';
@@ -147,11 +141,11 @@ export const WRAP_COMPLETE = '[Bubble] wrap Complete';
 export const WRAP_ERROR = '[Bubble] wrap Error';
 export class WrapStart implements Action {
     readonly type = WRAP_START;
-    constructor(public payload: Bubble) {}
+    constructor() {}
 }
 export class Wrap implements Action {
   readonly type = WRAP;
-  constructor(public payload: Array<number>) {}
+  constructor() {}
 }
 export class WrapPending implements Action {
   readonly type = WRAP_PENDING;
@@ -189,13 +183,18 @@ export class PopError implements Action {
   constructor(public payload: string) {}
 }
 
+export const MERGE_START = '[Bubble] merge start';
 export const MERGE = '[Bubble] merge';
 export const MERGE_PENDING = '[Bubble] merge pending';
 export const MERGE_COMPLETE = '[Bubble] merge Complete';
 export const MERGE_ERROR = '[Bubble] merge Error';
+export class MergeStart implements Action {
+    readonly type = MERGE_START;
+    constructor() {}
+}
 export class Merge implements Action {
   readonly type = MERGE;
-  constructor(public payload: Array<number>) {}
+  constructor() {}
 }
 export class MergePending implements Action {
     readonly type = MERGE_PENDING;
@@ -361,7 +360,6 @@ export type Actions =
   | Open
   | OpenComplete
   | OpenError
-  | SelectSangjunBoard
   | Load
   | LoadPending
   | LoadComplete
@@ -392,6 +390,7 @@ export type Actions =
   | PopPending
   | PopComplete
   | PopError
+  | MergeStart
   | Merge
   | MergePending
   | MergeComplete

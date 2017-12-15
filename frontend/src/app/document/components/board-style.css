@@ -5,7 +5,10 @@
     margin: 0;
 }
 
-.board {
-    height: 80%;
-    padding: 0px;
+.container {
+    box-sizing: border-box;
+    max-height: 96%;
+    position: absolute;
+    overflow-x: visible;
+    overflow-y: auto;
 }

@@ -109,20 +109,31 @@ export class BubbleEffects {
 
     @Effect()
     wrap$: Observable<Action> = this.action$.ofType<BubbleAction.Wrap>(BubbleAction.WRAP)
-        .map(action => action.payload).mergeMap(query => {
-            return Observable.of(this.bubbleService.wrapBubble(query))
-                .map(() => new BubbleAction.WrapPending(null));
-                // .map((newInternalBubble) => new BubbleAction.WrapComplete({wrapBubbleIds: query, newInternalBubble: newInternalBubble}))
-                // .catch(err => of(new BubbleAction.WrapError(err)));
+        .withLatestFrom(this._store).mergeMap(([action, state]) => {
+            console.log(state);
+            const bubbleState = (state as any).document.bubble;
+            const wrapBubbleList = bubbleState.selectedBubbleList.map(b => b.id);
+            return Observable.fromPromise(this.bubbleService.wrapBubble(wrapBubbleList))
+                .map((newInternalBubble) => new BubbleAction.WrapComplete(
+                    {wrapBubbleIds: wrapBubbleList, newInternalBubble: newInternalBubble}))
+                .catch(err => of(new BubbleAction.WrapError(err)));
+//         .map(action => action.payload).mergeMap(query => {
+//             return Observable.of(this.bubbleService.wrapBubble(query))
+//                 .map(() => new BubbleAction.WrapPending(null));
         });
 
     @Effect()
     merge$: Observable<Action> = this.action$.ofType<BubbleAction.Merge>(BubbleAction.MERGE)
-        .map(action => action.payload).mergeMap(query => {
-            return Observable.of(this.bubbleService.mergeBubble(query))
-                .map(() => new BubbleAction.MergePending(null));
-                // .map((newBubble) => new BubbleAction.MergeComplete({mergeBubbleIds: query, newBubble: newBubble}))
-                // .catch(err => of(new BubbleAction.MergeError(err)));
+        .withLatestFrom(this._store).mergeMap(([action, state]) => {
+            console.log(state);
+            const bubbleState = (state as any).document.bubble;
+            const mergeBubbleList = bubbleState.selectedBubbleList.map(b => b.id);
+            return Observable.fromPromise(this.bubbleService.mergeBubble(mergeBubbleList))
+                .map((newBubble) => new BubbleAction.MergeComplete({mergeBubbleIds: mergeBubbleList, newBubble: newBubble}))
+                .catch(err => of(new BubbleAction.MergeError(err)));
+//         .map(action => action.payload).mergeMap(query => {
+//             return Observable.of(this.bubbleService.mergeBubble(query))
+//                 .map(() => new BubbleAction.MergePending(null));
         });
 
     @Effect()
