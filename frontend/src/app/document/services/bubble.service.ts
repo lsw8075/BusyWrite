@@ -216,14 +216,14 @@ export class BubbleService implements OnDestroy {
             if (accept === 'True') {
                 console.log('received edit_bubble success');
                 if (body.who === this.userId) {
-                    this._store.dispatch(new BubbleAction.EditRequestComplete(Number(body.bubble_id)));
+                    this._store.dispatch(new BubbleAction.EditRequestSuccess(Number(body.bubble_id)));
                 } else {
                     this._store.dispatch(new BubbleAction.OthersEditRequest(Number(body.bubble_id)));
                 }           
                 this.previousRequestId = data.reqeust_id;
             } else {
                 console.log('received edit_bubble fail');
-                this._store.dispatch(new BubbleAction.OthersEditError(body));
+                this._store.dispatch(new BubbleAction.EditError(body));
             }
         } else if (command === 'update_content_of_editting_bubble') {
             if (accept === 'True') {
@@ -237,7 +237,7 @@ export class BubbleService implements OnDestroy {
                 this.previousRequestId = data.reqeust_id;
             } else {
                 console.log('received update_content_of_editting_bubble fail');
-                this._store_dispatch(new BubbleAction.OthersEditError(body));
+                this._store_dispatch(new BubbleAction.EditError(body));
             }
         } else if (command === 'finish_editting_bubble') {
             if (accept === 'True') {
@@ -316,7 +316,7 @@ export class BubbleService implements OnDestroy {
                 this.previousRequestId = data.reqeust_id;
             } else {
                 console.log('received hide_suggest_bubble fail');
-                this._store.dispatch(new BubbleAction.HideSuggestBubbleError(body));
+                this._store.dispatch(new BubbleAction.HideSuggestError(body));
             }
         } else if (command === 'show_suggest_bubble') {
             if (accept == 'True') {
@@ -329,7 +329,7 @@ export class BubbleService implements OnDestroy {
                 this.previousRequestId = data.reqeust_id;
             } else {
                 console.log('received show_suggest_bubble fail');
-                this._store.dispatch(new BubbleAction.ShowSuggestBubbleError(body));
+                this._store.dispatch(new BubbleAction.ShowSuggestError(body));
             }
         } else if (command === 'delete_comment_on_bubble') {
             if (accept == 'True') {

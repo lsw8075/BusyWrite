@@ -206,6 +206,7 @@ export const CREATE_SUGGEST = '[Suggest Bubble] create';
 export const CREATE_SUGGEST_PENDING = '[Suggest Bubble] create Pending';
 export const CREATE_SUGGEST_COMPLETE = '[Suggest Bubble] create Complete';
 export const CREATE_SUGGEST_ERROR = '[Suggest Bubble] create Error';
+export const OTHERS_CREATE_SUGGEST= '[Suggest Bubble] others create';
 export class CreateSuggest implements Action {
     readonly type = CREATE_SUGGEST;
     constructor(public payload: {
@@ -224,9 +225,8 @@ export class CreateSuggestError implements Action {
     readonly type = CREATE_SUGGEST_ERROR;
     constructor(public payload: string) {}
 }
-export const OTHERS_CREATE_SUGGEST_COMPLETE = '[Bubble] others create suggest bubble';
-export class OthersCreateSuggestComplete implements Action {
-  readonly type = OTHERS_CREATE_SUGGEST_COMPLETE;
+export class OthersCreateSuggest implements Action {
+  readonly type = OTHERS_CREATE_SUGGEST;
   constructor(public payload: SuggestBubble) {}
 }
 
@@ -400,7 +400,7 @@ export class ReleaseOwnershipError implements Action {
     readonly type = RELEASE_OWNERSHIP_ERROR;
     constructor(public payload: number) {}
 }
-export class OthersReleaseOnwership implements Action {
+export class OthersReleaseOwnership implements Action {
     readonly type = OTHERS_RELEASE_OWNERSHIP;
     constructor(public payload: number) {}
 }
@@ -408,7 +408,7 @@ export class OthersReleaseOnwership implements Action {
 export const EDIT_SUGGEST = '[Suggest Bubble] edit';
 export const EDIT_SUGGEST_PENDING = '[Suggest Bubble] edit pending';
 export const EDIT_SUGGEST_COMPLETE = '[Suggest Bubble] edit complete';
-export const EDIT_SUGGEST_DISCARD = '[Suggest Bubble] edit discard';
+export const EDIT_SUGGEST_ERROR = '[Suggest Bubble] edit discard';
 export const OTHERS_EDIT_SUGGEST = '[Suggest Bubble] others edit suggest';
 export class EditSuggest implements Action {
     readonly type = EDIT_SUGGEST;
@@ -416,14 +416,14 @@ export class EditSuggest implements Action {
 }
 export class EditSuggestPending implements Action {
     readonly type = EDIT_SUGGEST_PENDING;
-    cosntructor(public payload: void) {}
+    constructor(public payload: void) {}
 }
 export class EditSuggestComplete implements Action {
     readonly type = EDIT_SUGGEST_COMPLETE;
     constructor(public payload: number) {}
 } 
-export class EditSuggestDiscard implements Action {
-    readonly type = EDIT_SUGGEST_DISCARD;
+export class EditSuggestError implements Action {
+    readonly type = EDIT_SUGGEST_Error;
     constructor(public payload: number) {}
 }
 export class OthersEditSuggest implements Action {
@@ -734,6 +734,7 @@ export const MERGE_BUBBLE = '[Bubble] merge';
 export const MERGE_BUBBLE_PENDING = '[Bubble] merge pending';
 export const MERGE_BUBBLE_COMPLETE = '[Bubble] merge Complete';
 export const MERGE_BUBBLE_ERROR = '[Bubble] merge Error';
+export const OTHERS_MERGE_BUBBLE = '[Bubble] others merge';
 export class MergeStart implements Action {
     readonly type = MERGE_START;
     constructor() {}
@@ -884,10 +885,29 @@ export type Actions =
   | OpenPending
   | OpenComplete
   | OpenError
+  | OthersOpenDocument
+  | SelectSangjunBoard
+  | Close
+  | ClosePending
+  | CloseComplete
+  | CloseError
+  | OthersCloseDocument
   | Load
   | LoadPending
   | LoadComplete
   | LoadError
+  | LoadSuggest
+  | LoadSuggestPending
+  | LoadSuggestComplete
+  | LoadSuggestError
+  | LoadCommentOnBubble
+  | LoadCommentOnBubblePending
+  | LoadCommentOnBubbleComplete
+  | LoadCommentOnBubbleError
+  | LoadCommentOnSuggest
+  | LoadCommentOnSuggestPending
+  | LoadCommentOnSuggestComplete
+  | LoadCommentOnSuggestError 
   | Select
   | SelectClear
   | MouseOver
@@ -896,50 +916,125 @@ export type Actions =
   | CreatePending
   | CreateComplete
   | CreateError
+  | OthersCreate
+  | CreateSuggest
+  | CreateSuggestPending
+  | CreateSuggestComplete
+  | CreateSuggestError
+  | OthersCreateSuggest
+  | CreateCommentOnBubble
+  | CreateCommentOnBubblePending
+  | CreateCommentOnBubbleComplete
+  | CreateCommentOnBubbleError
+  | OthersCreateCommentOnBubble
+  | CreateCommentOnSuggest
+  | CreateCommentOnSuggestPending
+  | CreateCommentOnSuggestComplete
+  | CreateCommentOnSuggestError
+  | OthersCreateCommentOnSuggest
   | Edit
   | EditPending
+  | EditRequestSuccess
+  | OthersEditRequest
   | EditUpdate
   | EditUpdatePending
+  | EditUpdateSuccess
+  | OthersEditUpdate
   | EditComplete
   | EditCompletePending
+  | EditCompleteSuccess
+  | OthersEditComplete
   | EditDiscard
   | EditDiscardPending
+  | EditDiscardSuccess
+  | OthersEditDiscard
   | EditError
+  | ReleaseOwnership
+  | ReleaseOwnershipPending
+  | ReleaseOwnershipComplete
+  | ReleaseOwnershipError
+  | OthersReleaseOwnership
+  | EditSuggest
+  | EditSuggestPending
+  | EditSuggestComplete
+  | EditSuggestError
+  | OthersEditSuggest
+  | DeleteBubble
+  | DeleteBubblePending
+  | DeleteBubbleComplete
+  | DeleteBubbleError
+  | OthersDeleteBubble
+  | HideSuggest
+  | HideSuggestPending
+  | HideSuggestComplete
+  | HideSuggestError
+  | OthersHideSuggest
+  | ShowSuggest
+  | ShowSuggestPending
+  | ShowSuggestComplete
+  | ShowSuggestError
+  | OthersShowSuggest
+  | DeleteCommentOnBubble
+  | DeleteCommentOnBubblePending
+  | DeleteCommentOnBubbleComplete
+  | DeleteCommentOnBubbleError
+  | OthersDeleteCommentOnBubble
+  | DeleteCommentOnSuggest
+  | DeleteCommentOnSuggestPending
+  | DeleteCommentOnSuggestComplete
+  | DeleteCommentOnSuggestError
+  | OthersDeleteCommentOnSuggest
+  | MoveBubble
+  | MoveBubblePending
+  | MoveBubbleComplete
+  | MoveBubbleError
+  | OthersMoveBubble
   | WrapStart
-  | Wrap
-  | WrapPending
-  | WrapComplete
-  | WrapError
-  | Pop
-  | PopPending
-  | PopComplete
-  | PopError
+  | WrapBubble
+  | WrapBubblePending
+  | WrapBubbleComplete
+  | WrapBubbleError
+  | OthersWrapBubble
+  | PopBubble
+  | PopBubblePending
+  | PopBubbleComplete
+  | PopBubbleError
+  | OthersPopBubble
+  | SplitInternal
+  | SplitInternalPending
+  | SplitInternalComplete
+  | SplitInternalError
+  | OthersSplitInternal
+  | SplitLeaf
+  | SplitLeafPending
+  | SplitLeafComplete
+  | SplitLeafError
+  | OthersSplitLeaf
   | MergeStart
-  | Merge
-  | MergePending
-  | MergeComplete
-  | MergeError
-  | Split
-  | SplitPending
-  | SplitComplete
-  | SplitError
-  | Delete
-  | DeletePending
-  | DeleteComplete
-  | DeleteError
-  | Flatten
-  | FlattenPending
-  | FlattenComplete
-  | FlattenError
-  | Move
-  | MovePending
-  | MoveComplete
-  | MoveError
-  | OthersCreate
-  | OthersEdit
-  | OthersWrap
-  | OthersPop
-  | OthersMerge
-  | OthersDelete
+  | MergeBubble
+  | MergeBubblePending
+  | MergeBubbleComplete
+  | MergeBubbleError
+  | OthersMergeBubble
+  | FlattenBubble
+  | FlattenBubblePending
+  | FlattenBubbleComplete
+  | FlattenBubbleError
+  | OthersFlattenBubble
+  | SwitchBubble
+  | SwitchBubblePending
+  | SwitchBubbleComplete
+  | SwitchBubbleError
+  | OthersSwitchBubble
+  | VoteOnSuggest
+  | VoteOnSuggestPending
+  | VoteOnSuggestComplete
+  | VoteOnSuggestError
+  | OthersVoteOnSuggest
+  | UnvoteOnSuggest
+  | UnvoteOnSuggestPending
+  | UnvoteOnSuggestComplete
+  | UnvoteOnSuggestError
+  | OthersUnvoteOnSuggest
   | Refresh
   | ClearError;
