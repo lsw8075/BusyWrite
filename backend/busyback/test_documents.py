@@ -3,6 +3,8 @@ from .models import *
 from .mock_db_setup import mockDBSetup
 from .errors import *
 from .documents import *
+from .debug import print_bubble_tree
+from .bubbles import fetch_normal
 
 class DocumentTestCase(TestCase):
 
@@ -24,7 +26,7 @@ class DocumentTestCase(TestCase):
         do_fetch_documents(self.user4.id)
        
     def test_do_create_document(self):
-        do_create_document(self.user1.id, 'Create Document')
+        new_doc = do_create_document(self.user1.id, 'Create Document')
 
     def test_do_fetch_contributors(self):
         cont = do_fetch_contributors(self.user1.id, self.doc1.id)

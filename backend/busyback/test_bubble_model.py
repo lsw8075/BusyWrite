@@ -2,7 +2,7 @@ from django.test import TestCase
 from .models import *
 from .mock_db_setup import mockDBSetup
 from .errors import *
-from .bubbles import create_normal
+from .utils import create_normal, create_suggest
 from .debug import print_bubble_tree
 
 class BubbleModelTestCase(TestCase):
