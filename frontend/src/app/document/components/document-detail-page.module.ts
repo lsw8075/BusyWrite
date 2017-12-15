@@ -49,7 +49,7 @@ import { CovalentLayoutModule, CovalentExpansionPanelModule, CovalentChipsModule
 import { MatListModule, MatIconModule, MatInputModule, MatSnackBarModule } from '@angular/material';
 
 const routes: Routes = [
-    {path: ':id', component: DocumentDetailPageComponent},
+    {path: '', component: DocumentDetailPageComponent},
 ];
 
 @NgModule({

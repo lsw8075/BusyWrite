@@ -21,7 +21,7 @@ const routes: Routes = [
     { path: '', redirectTo: 'documents/1', pathMatch: 'full' }, // for easy testing, temporary
     { path: 'landing', pathMatch: 'full', component: LandingComponent },
     { path: 'users', loadChildren: './user/user-state.module#UserStateModule'},
-    { path: 'documents', loadChildren: './document/document-state.module#DocumentStateModule' },
+    { path: 'documents/:id', loadChildren: './document/document-state.module#DocumentStateModule' },
     { path: 'files', loadChildren: './file/file-state.module#FileStateModule' },
     { path: 'alerts', loadChildren: './alert/alert-state.module#AlertStateModule' },
     { path: '**', redirectTo: 'users/signin' }

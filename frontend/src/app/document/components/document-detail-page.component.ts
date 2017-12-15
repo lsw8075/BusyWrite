@@ -95,6 +95,7 @@ export class DocumentDetailPageComponent implements OnInit {
     }
 
     ngOnInit() {
+        console.log('hello');
         this._store.dispatch(new BubbleAction.Open(1));
     }
 
