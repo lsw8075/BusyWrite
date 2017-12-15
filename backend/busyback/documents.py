@@ -2,9 +2,11 @@ from .models import *
 from .users import fetch_user
 from .errors import *
 from .versions import *
+from .utils import create_normal
 from django.utils import timezone
 from django.db import transaction
 from django.core.cache import cache
+from django.forms.models import model_to_dict
 import json
 
 @transaction.atomic
@@ -46,7 +48,44 @@ def do_create_document(
     document = Document.objects.create(title=title)
     
     document.contributors.add(user)
+    root_bubble = create_normal(document)
 
+    # preset contents
+    t_title = '<h1 class=\"ql-align-center\">Title</h1>'
+    t_subtitle = '<h3>Subtitle</h3>'
+    t_author = '<p class=\"ql-align-right\">Authors</p>'
+    t_introheader = '<h3>Introduction</h3>'
+    t_introbody = '<p>Write your introduction here! </p>'
+    t_body1header = '<h3>Body</h3>'
+    t_body1body = '<p>Write your body here! </p>'
+    t_body2header = '<h3>Another Body</h3>'
+    t_body2body = '<p>Write your another body here! </p>'
+    t_conclheader = '<h3>Conclusion</h3>'
+    t_conclbody = '<p>Write your conclusion here! </p>'
+    # preset bubbles
+    header_bubble = create_normal(document, '', root_bubble, 0)
+    main_bubble = create_normal(document, '', root_bubble, 1)
+    title_bubble = create_normal(document, t_title, header_bubble, 0)
+    subt_bubble = create_normal(document, t_subtitle, header_bubble, 1)
+    author_bubble = create_normal(document, t_author, header_bubble, 2)
+    intro_bubble = create_normal(document, '', main_bubble, 0)
+    introheader_bubble = create_normal(document, t_introheader, intro_bubble, 0)
+    introbody_bubble = create_normal(document, t_introbody, intro_bubble, 1)
+
+    body1_bubble = create_normal(document, '', main_bubble, 1)
+    body1header_bubble = create_normal(document, t_body1header, body1_bubble, 0)
+    body1body_bubble = create_normal(document, t_body1body, body1_bubble, 1)
+    body2_bubble = create_normal(document, '', main_bubble, 2)
+    body2header_bubble = create_normal(document, t_body2header, body2_bubble, 0)
+    body2body_bubble = create_normal(document, t_body2body, body2_bubble, 1)
+    concl_bubble = create_normal(document, '', main_bubble, 3)
+    conclheader_bubble = create_normal(document, t_conclheader, concl_bubble, 0)
+    conclbody_bubble = create_normal(document, t_conclbody, concl_bubble, 1)
+
+    res = model_to_dict(document)
+    res['root_id'] = root_bubble.id
+    return res
+    
 @transaction.atomic
 def do_fetch_contributors(
     user_id: int,

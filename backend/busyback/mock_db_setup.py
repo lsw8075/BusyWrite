@@ -1,6 +1,6 @@
 from .models import *
 from datetime import datetime
-from .bubbles import create_normal, create_suggest
+from .utils import create_normal, create_suggest
 
 def mockDBSetup(m):    
     m.user1 = User.objects.create_user(username='testuser1', email='test1@test.com', password='1234')
