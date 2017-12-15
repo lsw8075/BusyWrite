@@ -44,7 +44,7 @@ import { TabsModule } from 'ngx-bootstrap/tabs';
 import { CollapseModule } from 'ngx-bootstrap/collapse';
 import { CarouselModule } from 'ngx-bootstrap/carousel';
 
-import { CovalentLayoutModule, CovalentExpansionPanelModule, CovalentChipsModule } from '@covalent/core';
+import { CovalentLayoutModule, CovalentExpansionPanelModule, CovalentChipsModule, CovalentLoadingModule } from '@covalent/core';
 
 import { MatListModule, MatIconModule, MatInputModule, MatSnackBarModule } from '@angular/material';
 
@@ -91,7 +91,7 @@ const routes: Routes = [
     // AlertModule.forRoot(),
     ModalModule.forRoot(),
 
-    CovalentLayoutModule, CovalentExpansionPanelModule,
+    CovalentLayoutModule, CovalentExpansionPanelModule, CovalentLoadingModule,
 
     MatListModule, MatIconModule, MatInputModule, CovalentChipsModule, MatSnackBarModule
   ],

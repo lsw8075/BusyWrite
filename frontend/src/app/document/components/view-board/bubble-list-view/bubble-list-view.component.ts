@@ -108,7 +108,6 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
             (bubble.ownerId === 1);
     }
     ngOnDestroy() {
-        alert('there might be unsaved changes');
     }
 
 } /* istanbul ignore next */

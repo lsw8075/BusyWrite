@@ -50,7 +50,6 @@ export class DocumentDetailPageComponent implements OnInit {
     isWrapMode$: Observable<boolean>;
     isMoveMode$: Observable<boolean>;
 
-
     documentTitle = 'empty title';
     changeTitle = false;
 
@@ -111,6 +110,10 @@ export class DocumentDetailPageComponent implements OnInit {
 
     public moveBubble(): void {
         // this._store.dispatch(new BubbleAction.Move());
+    }
+
+    public mergeBubble(): void {
+
     }
 
     public createNote(): void {

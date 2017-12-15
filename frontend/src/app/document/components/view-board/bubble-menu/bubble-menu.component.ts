@@ -58,7 +58,9 @@ export class BubbleMenuComponent implements OnInit {
     }
 
     public splitBubble() {
-        this._store.dispatch(new BubbleAction.Split({bubbleId: 6, contentList: ['<p>BusyWrite is the per','fect solution for team writing. The concept of writing as a tea','m has been around for a long time, by services like Google Docs, but the approaches are impractical and unproductive. </p>']}));
+        this._store.dispatch(new BubbleAction.Split(
+            {bubbleId: 6,
+            contentList: ['<p>BusyWrite is the per','fect solution for team writing. The concept of writing as a tea','m has been around for a long time, by services like Google Docs, but the approaches are impractical and unproductive. </p>']}));
     //    this.bsModalRef = this._modalService.show(SplitBubbleComponent);
     //    this.bsModalRef.content.bubble = this.bubble;
     }

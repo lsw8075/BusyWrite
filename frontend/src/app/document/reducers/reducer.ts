@@ -33,6 +33,7 @@ export const getSangjunBubble = createSelector(getBubbleState, (state: BubbleSta
 export const isWrapActionState = createSelector(getBubbleState, (state: BubbleState) => state.isWrapAction);
 export const isMoveActionState = createSelector(getBubbleState, (state: BubbleState) => state.isMoveAction);
 
+export const isLoading = createSelector(getBubbleState, (state: BubbleState) => state.loading);
 
 
 export const getBoardState = createSelector(getDocumentState, (state: State) => state.board);
@@ -44,3 +45,5 @@ export const getRightBoard = createSelector(getBoardList,
 
 export const getBoardStateError = createSelector(getBoardState, (state: BoardState) => state.error);
 export const getActiveBoard = createSelector(getBoardState, (state: BoardState) => state.activeBoard);
+
+

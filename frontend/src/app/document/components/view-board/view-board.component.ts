@@ -16,6 +16,14 @@ import { Board } from '../../models/board';
 
 import { BubbleJsonHelper } from '../../models/bubble-json-helper';
 
+import { Store } from '@ngrx/store';
+import { Observable } from 'rxjs/Observable';
+
+import * as fromUser from '../../../user/reducers/reducer';
+import * as fromDocument from '../../reducers/reducer';
+
+import { TdLoadingService } from '@covalent/core/loading/services/loading.service';
+
 @Component({
     selector: 'app-view-board',
     templateUrl: './view-board.component.html',
@@ -36,10 +44,20 @@ export class ViewBoardComponent implements OnInit {
   constructor(
     private _boardService: BoardService,
     private _bubbleService: BubbleService,
-    private _eventBubbleService: EventBubbleService) {}
+    private _eventBubbleService: EventBubbleService,
+    private _store: Store<fromDocument.State>,
+    private _loadingService: TdLoadingService) {
+        this._store.select(fromDocument.isLoading).subscribe(loading => {
+            console.log(loading);
+            if (loading) {
+                this._loadingService.register('bubbleLoading');
+            } else {
+                this._loadingService.resolve('bubbleLoading');
+            }
+        });
+    }
 
     ngOnInit() {
-
     }
 
 } /* istanbul ignore next */
