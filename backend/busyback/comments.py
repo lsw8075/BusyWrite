@@ -3,17 +3,21 @@ from .users import fetch_user
 from .documents import fetch_document_with_lock
 from .errors import *
 from .bubbles import normal_operation, suggest_operation
+from .versions import update_doc
 from django.db import transaction
 from functools import wraps
+from django.forms.models import model_to_dict
+from .operation_no import Operation
 
 def commentN_operation(func):
     ''' Decorator for comment under normal functions '''
     @wraps(func)
     def wrapper(*args, **kwargs):
         with transaction.atomic():
-            user_id = args[0]
-            doc_id = args[1]
-            comment_id = args[2]
+            rversion = args[0]
+            user_id = args[1]
+            doc_id = args[2]
+            comment_id = args[3]
             document = fetch_document_with_lock(user_id, doc_id)
             try:
                 comment = CommentUnderNormal.objects.get(id=comment_id)
@@ -35,9 +39,10 @@ def commentS_operation(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         with transaction.atomic():
-            user_id = args[0]
-            doc_id = args[1]
-            comment_id = args[2]
+            rversion = args[0]
+            user_id = args[1]
+            doc_id = args[2]
+            comment_id = args[3]
             document = fetch_document_with_lock(user_id, doc_id)
             try:
                 comment = CommentUnderSuggest.objects.get(id=comment_id)
@@ -53,28 +58,34 @@ def commentS_operation(func):
         return result
     return wrapper
 
+def process_comment(comment):
+    return model_to_dict(comment)
+
 @commentN_operation
 def do_fetch_comment_under_normal(
+    rversion: int,
     user_id: int,
     document_id: int,
     comment_id: int,
     **kw
     ):
-    return kw['comment']
+    return process_comment(kw['comment'])
 
   
 @commentS_operation
 def do_fetch_comment_under_suggest(
+    rversion: int,
     user_id: int,
     document_id: int,
     comment_id: int,
     **kw
     ):
-    return kw['comment']
+    return process_comment(kw['comment'])
 
 
 @normal_operation
 def do_fetch_comments_under_normal(
+    rversion: int,
     user_id: int,
     document_id: int,
     bubble_id: int,
@@ -82,13 +93,14 @@ def do_fetch_comments_under_normal(
     ):
     bubble = kw['bubble']
     
-    comments = bubble.comments.values()
+    comments = bubble.comments.all()
     if len(comments) == 0:
         return []
-    return list(comments)
+    return [process_comment(c) for c in comments]
 
 @suggest_operation
 def do_fetch_comments_under_suggest(
+    rversion: int,
     user_id: int,
     document_id: int,
     bubble_id: int,
@@ -96,13 +108,15 @@ def do_fetch_comments_under_suggest(
     ):
     bubble = kw['bubble']
     
-    comments = bubble.comments.values()
+    comments = bubble.comments.all()
     if len(comments) == 0:
         return []
-    return list(comments)
+    return [process_comment(c) for c in comments]
 
 @normal_operation
+@update_doc
 def do_create_comment_under_normal(
+    rversion: int,
     user_id: int,
     document_id: int,
     bubble_id: int,
@@ -122,10 +136,12 @@ def do_create_comment_under_normal(
     bubble.next_comment_order += 1
     bubble.save()
 
-    return comment
+    return (Operation.CREATE_NCOMMENT, process_comment(comment))
 
 @suggest_operation
+@update_doc
 def do_create_comment_under_suggest(
+    rversion: int,
     user_id: int,
     document_id: int,
     bubble_id: int,
@@ -145,10 +161,12 @@ def do_create_comment_under_suggest(
     bubble.next_comment_order += 1
     bubble.save()
 
-    return comment
+    return (Operation.CREATE_SCOMMENT, process_comment(comment))
 
 @commentN_operation
+@update_doc
 def do_edit_comment_under_normal(
+    rversion: int,
     user_id: int,
     document_id: int,
     comment_id: int,
@@ -167,10 +185,12 @@ def do_edit_comment_under_normal(
     comment.content = content
     comment.save()
 
-    return comment
+    return (Operation.EDIT_NCOMMENT, process_comment(comment))
 
 @commentS_operation
+@update_doc
 def do_edit_comment_under_suggest(
+    rversion: int,
     user_id: int,
     document_id: int,
     comment_id: int,
@@ -189,10 +209,12 @@ def do_edit_comment_under_suggest(
     comment.content = content
     comment.save()
 
-    return comment
+    return (Operation.EDIT_SCOMMENT, process_comment(comment))
 
 @commentN_operation
+@update_doc
 def do_delete_comment_under_normal(
+    rversion: int,
     user_id: int,
     document_id: int,
     comment_id: int,
@@ -205,9 +227,13 @@ def do_delete_comment_under_normal(
         raise UserIsNotCommentOwnerError(user_id, comment_id)
 
     comment.delete()
+
+    return (Operation.DELETE_NCOMMENT, None)
 
 @commentS_operation
+@update_doc
 def do_delete_comment_under_suggest(
+    rversion: int,
     user_id: int,
     document_id: int,
     comment_id: int,
@@ -220,3 +246,5 @@ def do_delete_comment_under_suggest(
         raise UserIsNotCommentOwnerError(user_id, comment_id)
 
     comment.delete()
+
+    return (Operation.DELETE_SCOMMENT, None)
