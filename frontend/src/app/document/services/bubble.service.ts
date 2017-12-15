@@ -81,7 +81,7 @@ export class BubbleService implements OnDestroy {
             if (accept === 'True') {
                 console.log('received open_document success');
                 this.currentDocumentId = Number(body.document_id);
-                this.previousRequestId = Number(body.previous_request);
+                this.previousRequestId = Number(body.previous_request_id);
                 const contributors = BubbleJsonHelper.getUserArrayObject(JSON.stringify(body.contributors));
                 const connectors = BubbleJsonHelper.getUserArrayObject(JSON.stringify(body.connectors));
                 this._store.dispatch(new BubbleAction.OpenComplete({documentId: Number(body.document_id), contributors: contributors, connectors: connectors}));
@@ -93,7 +93,9 @@ export class BubbleService implements OnDestroy {
             if (accept === 'True') {
                 console.log('received someone_open_document_detail');
                 const connector = BubbleJsonHelper.getUserObject(JSON.stringify(body));
-                this._store.dispatch(new BubbleAction.OthersOpenDocument(connector));
+                if (connector.id !== this.userId) {
+                    this._store.dispatch(new BubbleAction.OthersOpenDocument(connector));
+                }
             } else {
                 // this cannot happen
             }
