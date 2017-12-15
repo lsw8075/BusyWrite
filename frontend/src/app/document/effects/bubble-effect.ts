@@ -35,7 +35,7 @@ import {
 @Injectable()
 export class BubbleEffects {
 
-    @Effect({dispatch: false})
+    @Effect({dispatch: true})
     open$ = this.action$.ofType<BubbleAction.Open>(BubbleAction.OPEN)
         .map(action => action.payload).mergeMap(query => {
             this.bubbleService.openDocument(query);
