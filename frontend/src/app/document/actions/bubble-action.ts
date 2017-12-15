@@ -66,7 +66,6 @@ export class OthersCloseDocument implements Action {
     readonly type = OTHERS_CLOSE_DOCUMENT;
     constructor(public payload: User) {}
 }
-
 export const LOAD = '[Bubble] Load';
 export const LOAD_PENDING = '[Bubble] load pending';
 export const LOAD_COMPLETE = '[Bubble] load Complete';
@@ -210,7 +209,8 @@ export const CREATE_SUGGEST_ERROR = '[Suggest Bubble] create Error';
 export class CreateSuggest implements Action {
     readonly type = CREATE_SUGGEST;
     constructor(public payload: {
-            }) {}
+        bindedBubbleId: number,
+        content: string}) {}
 }
 export class CreateSuggestPending implements Action {
     readonly type = CREATE_SUGGEST_PENDING;
@@ -231,6 +231,15 @@ export class OthersCreateSuggestComplete implements Action {
 }
 
 
+export const CREATE_COMMENT_ON_BUBBLE = '[Comment on Bubble] create';
+export const CREATE_COMMENT_ON_BUBBLE_PENDING = '[Comment on Bubble] create Pending';
+export const CREATE_COMMENT_ON_BUBBLE_COMPLETE = '[Comment on Bubble] create complete';
+export const CREATE_COMMENT_ON_BUBBLE_ERROR = '[Comment on Bubble] create error';
+
+export const OTHERS_CREATE_SUGGEST = '[Suggest Bubble] others create';
+export class OthersCreateSuggest implements Action {
+    readonly type = OTHERS_CREATE_SUGGEST;
+    constructor(public payload: 
 export const EDIT = '[Bubble] edit (check if can get edit lock)';
 export const EDIT_PENDING = '[Bubble] edit pending';
 export const EDIT_UPDATE = '[Bubble] edit update';

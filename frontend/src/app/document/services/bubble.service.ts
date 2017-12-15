@@ -141,11 +141,20 @@ export class BubbleService implements OnDestroy {
         } else if (command === 'get_comment_list_for_bubble') {
             if (accept === 'True') {
                 console.log('received get_comment_list_for_bubble success');
-                // const commentArray = BubbleJsonHelper.getCommentArray(body));
-                // this._store.dispatch(new BubbleAction.LoadCommentOnBubbleComplete(commentArray));
+                const commentArray = BubbleJsonHelper.getCommentArrayObject(body);
+                this._store.dispatch(new BubbleAction.LoadCommentOnBubbleComplete(commentArray));
             } else {
                 console.log('received get_comment_list_for_bubble fail');
                 this._store.dispatch(new BubbleAction.LoadCommentOnBubbleError(body));
+            }
+        } else if (command === 'get_comment_list_for_suggest_bubble') {
+            if (accept === 'True') {
+                console.log('received get_comment_list_for_suggest_bubble success');
+                const commentArray = BubbleJsonHelper.getCommentArrayObject(body);
+                this._store.dispatch(new BubbleAction.LoadCommentOnSuggestComplete(commentArray));
+            } else {
+                console.log('received get_comment_list_for_suggest_bubble fail');
+                this._store.dispatch(new BubbleAction.LoadCommentOnSuggestError(body));
             }
         } else if (command === 'create_bubble') {
             if (accept === 'True') {
@@ -168,11 +177,24 @@ export class BubbleService implements OnDestroy {
                 if (body.who === this.userId) {
                     this._store.dispatch(new BubbleAction.CreateSuggestComplete(suggestBubble));
                 } else {
-                    this._store.dispatch(new BubbleAction.OthersCreateSuggestComplete(suggestBubble));
+                    this._store.dispatch(new BubbleAction.OthersCreateSuggest(suggestBubble));
                 }
             } else {
                 console.log('received create_suggest_bubble fail');
                 this._store.dispatch(new BubbleAction.CreateSuggestError(body));
+            }
+        } else if (command === 'create_comment_on_bubble') {
+            if (accept === 'True') {
+                console.log('received create_comment_on_bubble success');
+                const comment = BubbleJsonHelper.getCommentObject(JSON.stringify(body));
+                if (body.who === this.userId) {
+                    this._store.dispatch(new BubbleAction.CreateCommentOnBubbleComplete(comment));
+                } else {
+                    this._store.dispatch(new BubbleAction.OthersCreateCommentOnBubble(comment));
+                }
+            } else {
+                console.log('received create_comment_on_bubble error');
+                this._store.dispatch(new BubbleAction.CreateCommentOnBubbleError(body));
             }
         } else if (command === 'edit_bubble') {
             if (accept === 'True') {
@@ -263,7 +285,7 @@ export class BubbleService implements OnDestroy {
         this._socket.send(m);
     }
 
-    public createCommentOnNormalBubble(bindedBubbleId: number, content: string) {
+    public createCommentOnBubble(bindedBubbleId: number, content: string) {
         const m = {'header': 'create_comment_on_bubble',
             'previous_request': this.previousRequestId,
             'body': {'binded_bubble': bindedBubbleId,
