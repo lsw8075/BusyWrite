@@ -112,6 +112,12 @@
                     Move Bubble
                 </button>
             </ng-container>
+            <ng-container *ngIf="isMergeMode$ | async">
+                <button type="button" (click)="mergeBubble()" [tooltip]="'move bubble'" placement="bottom" class="btn btn-sm btn-success">
+                    <i class="fa fa-compress fa-fw"></i>
+                    Merge Bubble
+                </button>
+            </ng-container>
         </div>
 
         <div *ngSwitchCase="boardType.edit">

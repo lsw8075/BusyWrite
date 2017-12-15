@@ -23,6 +23,7 @@ export interface BubbleState {
     selectedMenu: MenuType;
     isMoveAction: boolean;
     isWrapAction: boolean;
+    isMergeAction: boolean;
 
     sangjunBoardBubble: Bubble;
 
@@ -39,8 +40,10 @@ const initialState: BubbleState = {
     selectedBubbleList: [],
     hoverBubbleList: [],
     selectedMenu: null,
+
     isMoveAction: false,
     isWrapAction: false,
+    isMergeAction: false,
 
     sangjunBoardBubble: null,
 
@@ -89,6 +92,7 @@ export function BubbleReducer(state: BubbleState = initialState, action: fromBub
         case fromBubble.WRAP:
         case fromBubble.WRAP_COMPLETE:
 
+        case fromBubble.MERGE_START:
         case fromBubble.MERGE:
         case fromBubble.MERGE_COMPLETE:
 
@@ -118,14 +122,14 @@ function UIReducer(state: BubbleState, action: fromBubble.Actions) {
         const selectedBubble = action.payload.bubble;
         const selectedMenu = action.payload.menu;
 
-        if (!state.isMoveAction && !state.isWrapAction) {
+        if (!state.isMoveAction && !state.isWrapAction && !state.isMergeAction) {
             if (isBubbleInList(state.selectedBubbleList, selectedBubble.id)) {
                 return {...state, selectedBubbleList: [], selectedMenu: null };
             } else {
                 const newSelectedBubbleList = [selectedBubble];
                 return {...state, selectedBubbleList: newSelectedBubbleList, selectedMenu: selectedMenu };
             }
-        } else if (state.isWrapAction &&
+        } else if ((state.isWrapAction || state.isMergeAction ) &&
             (selectedMenu === MenuType.internalMenu || selectedMenu === MenuType.leafMenu) &&
             (state.selectedBubbleList[0].parentBubbleId === selectedBubble.parentBubbleId)) {
 
@@ -134,7 +138,7 @@ function UIReducer(state: BubbleState, action: fromBubble.Actions) {
             if (isBubbleInList(newSelectedBubbleList, selectedBubble.id)) {
                 newSelectedBubbleList = newSelectedBubbleList.filter(b => b.id !== selectedBubble.id);
                 if (newSelectedBubbleList.length === 0) {
-                    return {...state, selectedBubbleList: [], isWrapAction: false, selectedMenu: null };
+                    return {...state, selectedBubbleList: [], isMergeAction: false, isWrapAction: false, selectedMenu: null };
                 }
             } else {
                 newSelectedBubbleList.push(selectedBubble);
@@ -223,14 +227,16 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
             wrapBubble(newBubbleList, wrapBubbleIds, newInternalBubble);
             return {...state, bubbleList: newBubbleList, loading: false, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
         }
+        case fromBubble.MERGE_START:
+            return {...state, isMergeAction: true , selectedMenu: null, hoverBubbleList: []};
         case fromBubble.MERGE:
-            return {...state, loading: true, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
+            return {...state, loading: true, isMergeAction: false};
         case fromBubble.MERGE_COMPLETE: {
             const mergeBubbleIds = action.payload.mergeBubbleIds;
             const newLeafBubble = action.payload.newBubble;
             const newBubbleList = _.cloneDeep(state.bubbleList);
             mergeBubble(newBubbleList, mergeBubbleIds, newLeafBubble);
-            return {...state, bubbleList: newBubbleList, loading: false};
+            return {...state, bubbleList: newBubbleList, loading: false, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
         }
         case fromBubble.SPLIT:
             return {...state, loading: true, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};

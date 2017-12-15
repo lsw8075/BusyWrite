@@ -102,9 +102,12 @@ export class BubbleEffects {
 
     @Effect()
     merge$: Observable<Action> = this.action$.ofType<BubbleAction.Merge>(BubbleAction.MERGE)
-        .map(action => action.payload).mergeMap(query => {
-            return Observable.fromPromise(this.bubbleService.mergeBubble(query))
-                .map((newBubble) => new BubbleAction.MergeComplete({mergeBubbleIds: query, newBubble: newBubble}))
+        .withLatestFrom(this._store).mergeMap(([action, state]) => {
+            console.log(state);
+            const bubbleState = (state as any).document.bubble;
+            const mergeBubbleList = bubbleState.selectedBubbleList.map(b => b.id);
+            return Observable.fromPromise(this.bubbleService.mergeBubble(mergeBubbleList))
+                .map((newBubble) => new BubbleAction.MergeComplete({mergeBubbleIds: mergeBubbleList, newBubble: newBubble}))
                 .catch(err => of(new BubbleAction.MergeError(err)));
         });
 

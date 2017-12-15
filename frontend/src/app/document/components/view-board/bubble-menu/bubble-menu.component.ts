@@ -86,7 +86,7 @@ export class BubbleMenuComponent implements OnInit {
     }
 
     public mergeBubble() {
-        this._store.dispatch(new BubbleAction.Merge([6, 7]));
+        this._store.dispatch(new BubbleAction.MergeStart());
     }
 
     public wrapBubble() {

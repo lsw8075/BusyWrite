@@ -151,12 +151,17 @@ export class PopError implements Action {
   constructor(public payload: string) {}
 }
 
+export const MERGE_START = '[Bubble] merge start';
 export const MERGE = '[Bubble] merge';
 export const MERGE_COMPLETE = '[Bubble] merge Complete';
 export const MERGE_ERROR = '[Bubble] merge Error';
+export class MergeStart implements Action {
+    readonly type = MERGE_START;
+    constructor() {}
+}
 export class Merge implements Action {
   readonly type = MERGE;
-  constructor(public payload: Array<number>) {}
+  constructor() {}
 }
 export class MergeComplete implements Action {
     readonly type = MERGE_COMPLETE;
@@ -321,6 +326,7 @@ export type Actions =
   | Pop
   | PopComplete
   | PopError
+  | MergeStart
   | Merge
   | MergeComplete
   | MergeError

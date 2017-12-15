@@ -48,6 +48,7 @@ export class DocumentDetailPageComponent implements OnInit {
     sangjunBubble$: Observable<Bubble>;
 
     isWrapMode$: Observable<boolean>;
+    isMergeMode$: Observable<boolean>;
     isMoveMode$: Observable<boolean>;
 
     documentTitle = 'empty title';
@@ -76,6 +77,7 @@ export class DocumentDetailPageComponent implements OnInit {
 
         this.isWrapMode$ = this._store.select(fromDocument.isWrapActionState);
         this.isMoveMode$ = this._store.select(fromDocument.isMoveActionState);
+        this.isMergeMode$ = this._store.select(fromDocument.isMoveActionState);
 
         this._store.select(fromDocument.getBoardStateError).subscribe(err => {
             if (err) {

@@ -32,6 +32,7 @@ export const getSangjunBubble = createSelector(getBubbleState, (state: BubbleSta
 
 export const isWrapActionState = createSelector(getBubbleState, (state: BubbleState) => state.isWrapAction);
 export const isMoveActionState = createSelector(getBubbleState, (state: BubbleState) => state.isMoveAction);
+export const isMergeActionState = createSelector(getBubbleState, (state: BubbleState) => state.isMergeAction);
 
 export const isLoading = createSelector(getBubbleState, (state: BubbleState) => state.loading);
 

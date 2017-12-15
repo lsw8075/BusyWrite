@@ -22,11 +22,12 @@ import * as RouterAction from '../../../shared/route/route-action';
 })
 export class SangjunBoardComponent implements OnInit, OnDestroy {
 
+    @Input() bubble: Bubble;
+
     isOBChecked = true;
     isSBChecked = true;
     isCommentChecked = true;
     isWatching = false;
-    @Input() bubble: Bubble;
     selectedSB: SuggestBubble;
     suggestBubbles: Array<SuggestBubble>;
 
