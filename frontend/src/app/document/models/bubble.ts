@@ -104,7 +104,7 @@ export class SuggestBubble {
   constructor(
     id: number,
     content: string,
-    commentIds: Array<number>,
+    commentIds: Array<number> = [],
     thumbUps: number = 0
   ) {
     // must initialize all attributes

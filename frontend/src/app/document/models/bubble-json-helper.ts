@@ -48,7 +48,7 @@ export namespace BubbleJsonHelper {
     }
     export function getUserArrayObject(jsonString: string): Array<User> {
         const jsonObjectArray = JSON.parse(jsonString);
-        const userList: Array<Document> = []; 
+        const userList: Array<User> = [];
         for (const jsonObject of jsonObjectArray) {
             userList.push(this.getUsrObject(JSON.stringify(jsonObject)));
         }

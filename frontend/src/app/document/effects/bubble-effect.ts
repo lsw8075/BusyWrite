@@ -45,7 +45,7 @@ export class BubbleEffects {
     @Effect()
     openComplete$: Observable<Action> = this.action$.ofType<BubbleAction.OpenComplete>(BubbleAction.OPEN_COMPLETE)
         .map(action => action.payload).mergeMap(query => {
-            return Observable.of(new BubbleAction.Load(query));
+            return Observable.of(new BubbleAction.Load(query.documentId));
         });
 
     @Effect()
@@ -81,7 +81,7 @@ export class BubbleEffects {
     @Effect()
     createComplete$: Observable<Action> = this.action$.ofType<BubbleAction.CreateComplete>(BubbleAction.CREATE_COMPLETE)
         .map(action => action.payload).mergeMap(query => {
-            return Observable.of(new BubbleAction.EditUpdate(query.bubbleId));
+            return Observable.of(new BubbleAction.EditUpdate(query.id));
         });
 
     @Effect()

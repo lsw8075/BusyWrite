@@ -170,12 +170,13 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
         case fromBubble.CREATE:
             return {...state, selectedBubbleList: [action.payload.bubbleId], loading: true, selectedMenu: null, hoverBubbleList: []};
         case fromBubble.CREATE_COMPLETE: {
-            const bubbleId = action.payload.bubbleId;
-            const isAbove = action.payload.isAbove;
-            const newBubble = action.payload.newBubble;
-            const newBubbleList = _.cloneDeep(state.bubbleList);
-            createBubble(newBubbleList, bubbleId, isAbove, newBubble);
-            return {...state, bubbleList: newBubbleList, loading: false };
+            const bubbleId = action.payload;
+            // const isAbove = action.payload.isAbove;
+            // const newBubble = action.payload.newBubble;
+            // const newBubbleList = _.cloneDeep(state.bubbleList);
+            // createBubble(newBubbleList, bubbleId, isAbove, newBubble);
+            // return {...state, bubbleList: newBubbleList, loading: false };
+            return {...state, loading: false };
         }
         case fromBubble.CREATE_ERROR:
             return {...state, loading: false, error: action.payload, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};

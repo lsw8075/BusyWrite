@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { MockBubbleRoot, MockBubbleList } from '../models/bubble.mock';
 import { Bubble, LeafBubble, InternalBubble, SuggestBubble, BubbleType } from '../models/bubble';
+import { User } from '../../user/models/user';
 import { Subscription } from 'rxjs/Subscription';
 import { ServerSocket } from './websocket.service';
 import { Observable } from 'rxjs/Observable';
@@ -13,7 +14,7 @@ import { MenuType } from './event/event-bubble.service';
 
 import * as Reducer from '../reducers/reducer';
 import * as BubbleAction from '../actions/bubble-action';
-import * as fromUser from '../../user/actions/user-action';
+import * as fromUser from '../../user/reducers/reducer';
 import { BubbleJsonHelper } from '../models/bubble-json-helper';
 import { OnDestroy } from '@angular/core';
 
@@ -28,7 +29,7 @@ export class BubbleService implements OnDestroy {
     private currentDocumentId: number;
     private bubbleList: Array<Bubble> = [];
     private bubbleRoot: InternalBubble;
-    private user$: Observable<>;
+    private user$: Observable<User>;
     private previousRequestId: number;
     private userId: number;
 
@@ -42,8 +43,9 @@ export class BubbleService implements OnDestroy {
                 this.channelMessageHandler(message);
         });
 
-        this.user$ = _store.select(fromUser.getUserState).
-            map(userState => this.userId = userState.userId);
+        this._store.select(fromUser.getUserState).subscribe(userState => {
+            this.userId = userState.userId;
+        });
 
         if (USE_MOCK) {
             this._getBubbleList().then(bubbleList => {
@@ -80,9 +82,9 @@ export class BubbleService implements OnDestroy {
                 console.log('received open_document success');
                 this.currentDocumentId = Number(body.document_id);
                 this.previousRequestId = Number(body.previous_request);
-                contributors = BubbleJsonHelper.getUserArrayObject(JSON.stringify(body.contributors));
-                connectors = BubbleJsonHelper.getUserArrayObject(JSON.stringify(body.connectors));
-                this._store.dispatch(new BubbleAction.OpenComplete(Number(body.document_id), contributors, connectors);
+                const contributors = BubbleJsonHelper.getUserArrayObject(JSON.stringify(body.contributors));
+                const connectors = BubbleJsonHelper.getUserArrayObject(JSON.stringify(body.connectors));
+                this._store.dispatch(new BubbleAction.OpenComplete({documentId: Number(body.document_id), contributors: contributors, connectors: connectors}));
             } else {
                 console.log('received open_document fail');
                 this._store.dispatch(new BubbleAction.OpenError(body));
@@ -90,7 +92,7 @@ export class BubbleService implements OnDestroy {
         } else if (command === 'someone_open_document_detail') {
             if (accept === 'True') {
                 console.log('received someone_open_document_detail');
-                connector = BubbleJsonHelper.getUserObject(JSON.stringify(body));
+                const connector = BubbleJsonHelper.getUserObject(JSON.stringify(body));
                 this._store.dispatch(new BubbleAction.OthersOpenDocument(connector));
             } else {
                 // this cannot happen
@@ -100,7 +102,7 @@ export class BubbleService implements OnDestroy {
                 console.log('received close_document success');
                 this.currentDocumentId = 0;
                 this.previousRequestId = 0;
-                this_store.dispatch(new BubbleAction.CloseComplete());
+                this._store.dispatch(new BubbleAction.CloseComplete(null));
             } else {
                 console.log('received close_document fail');
                 // TODO: decide whether to send it again or not
@@ -109,7 +111,7 @@ export class BubbleService implements OnDestroy {
         } else if (command === 'someone_close_document_detail') {
             if (accept === 'True') {
                 console.log('received someone_close_document_detail');
-                disconnector = BubbleJsonHelper.getUserObject(JSON.stringify(body));
+                const disconnector = BubbleJsonHelper.getUserObject(JSON.stringify(body));
                 this._store.dispatch(new BubbleAction.OthersCloseDocument(disconnector));
             } else {
                 // this cannot happen
@@ -132,7 +134,7 @@ export class BubbleService implements OnDestroy {
                 this._store.dispatch(new BubbleAction.LoadSuggestComplete(suggestBubbleArray));
             } else {
                 console.log('received get_suggest_bubble_list fail');
-                this._store.dispatch(new BubbleAction.LoadSuggestErrorbody));
+                this._store.dispatch(new BubbleAction.LoadSuggestError(body));
             }
         } else if (command === 'get_comment_list_for_bubble') {
             if (accept === 'True') {
