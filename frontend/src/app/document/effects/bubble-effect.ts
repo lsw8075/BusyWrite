@@ -113,7 +113,7 @@ export class BubbleEffects {
             console.log(state);
             const bubbleState = (state as any).document.bubble;
             const wrapBubbleList = bubbleState.selectedBubbleList.map(b => b.id);
-            return Observable.fromPromise(this.bubbleService.wrapBubble(wrapBubbleList))
+            return Observable.fromPromise(this.bubbleService._wrapBubble(wrapBubbleList))
                 .map((newInternalBubble) => new BubbleAction.WrapComplete(
                     {wrapBubbleIds: wrapBubbleList, newInternalBubble: newInternalBubble}))
                 .catch(err => of(new BubbleAction.WrapError(err)));
@@ -128,7 +128,7 @@ export class BubbleEffects {
             console.log(state);
             const bubbleState = (state as any).document.bubble;
             const mergeBubbleList = bubbleState.selectedBubbleList.map(b => b.id);
-            return Observable.fromPromise(this.bubbleService.mergeBubble(mergeBubbleList))
+            return Observable.fromPromise(this.bubbleService._mergeBubble(mergeBubbleList))
                 .map((newBubble) => new BubbleAction.MergeComplete({mergeBubbleIds: mergeBubbleList, newBubble: newBubble}))
                 .catch(err => of(new BubbleAction.MergeError(err)));
 //         .map(action => action.payload).mergeMap(query => {
