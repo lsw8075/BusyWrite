@@ -27,7 +27,7 @@ function removeBubbleById(bubbleList: Array<Bubble>, id: number): void {
     bubbleList.splice(index, 1);
 }
 
-function getParentBubble(bubbleList: Array<Bubble>, bubble: Bubble): InternalBubble {
+export function getParentBubble(bubbleList: Array<Bubble>, bubble: Bubble): InternalBubble {
     try {
         const parentBubble = getBubbleById(bubbleList, bubble.parentBubbleId);
         return parentBubble as InternalBubble;

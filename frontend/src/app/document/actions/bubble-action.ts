@@ -269,7 +269,7 @@ export class Flatten implements Action {
   constructor(public payload: number) {}
 }
 export class FlattenPending implements Action {
-  readonly type = FLATTEN_COMPLETE;
+  readonly type = FLATTEN_PENDING;
   constructor(public payload: void) {}
 }
 export class FlattenComplete implements Action {

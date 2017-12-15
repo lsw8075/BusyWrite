@@ -194,11 +194,7 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
         case fromBubble.EDIT:
             return {...state, loading: true, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
         case fromBubble.EDIT_COMPLETE: {
-            const bubbleId = action.payload.bubbleId;
-            const newContent = action.payload.newContent;
-            const newBubbleList = _.cloneDeep(state.bubbleList);
-            editBubble(newBubbleList, bubbleId, newContent);
-            return {...state, bubbleList: newBubbleList, loading: false};
+            return {...state, loading: false};
         }
         case fromBubble.FLATTEN:
             return {...state, loading: true, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};

@@ -19,12 +19,18 @@ import 'rxjs/observable/of';
 import 'rxjs/add/observable/fromPromise';
 import 'rxjs/add/operator/withLatestFrom';
 
-
 import * as BubbleAction from '../actions/bubble-action';
 import * as fromDocument from '../reducers/reducer';
 import { Bubble, BubbleType, InternalBubble, LeafBubble, SuggestBubble } from '../models/bubble';
 
 import { BubbleService } from '../services/bubble.service';
+import {
+    getBubbleById,
+    getParentBubble,
+    isBubbleInList,
+    mouseOverBubble,
+    deleteBubble, popBubble, getContent, flattenBubble, createBubble,
+    editBubble, mergeBubble, wrapBubble, moveBubble, splitBubble} from '../reducers/bubble-operation';
 
 @Injectable()
 export class BubbleEffects {
@@ -66,7 +72,7 @@ export class BubbleEffects {
     @Effect()
     create$: Observable<Action> = this.action$.ofType<BubbleAction.Create>(BubbleAction.CREATE)
         .map(action => action.payload).mergeMap(query => {
-            return Observable.of(this.bubbleService.createBubble(query.bubbleId, query.isAbove))
+            return Observable.of(this.bubbleService.createBubble(0, 0, "create"))
                 .map(() => new BubbleAction.CreatePending(null));
                 // .map((newBubble) => new BubbleAction.CreateComplete({bubbleId: query.bubbleId, isAbove: query.isAbove, newBubble: newBubble}))
                 // .catch(err => of(new BubbleAction.CreateError(err)));
@@ -81,14 +87,14 @@ export class BubbleEffects {
     @Effect()
     editUpdate$: Observable<Action> = this.action$.ofType<BubbleAction.EditUpdate>(BubbleAction.EDIT_UPDATE)
         .map(action => action.payload).mergeMap(query => {
-            return Observable.of(this.bubbleService.edittingBubble())
+            return Observable.of(this.bubbleService.updateEdittingBubble(query, "updateEdittingBubble"))
                 .map(() => new BubbleAction.EditUpdatePending(null));
         });
 
     @Effect()
     editDiscard: Observable<Action> = this.action$.ofType<BubbleAction.EditDiscard>(BubbleAction.EDIT_DISCARD)
         .map(action => action.payload).mergeMap(query => {
-            return Observable.of(this.bubbleService.edittingBubble())
+            return Observable.of(this.bubbleService.discardEdittingBubble(query))
                 .map(() => new BubbleAction.EditDiscardPending(null));
         });
 
@@ -113,7 +119,7 @@ export class BubbleEffects {
     @Effect()
     merge$: Observable<Action> = this.action$.ofType<BubbleAction.Merge>(BubbleAction.MERGE)
         .map(action => action.payload).mergeMap(query => {
-            return Observable.fromPromise(this.bubbleService.mergeBubble(query))
+            return Observable.of(this.bubbleService.mergeBubble(query))
                 .map(() => new BubbleAction.MergePending(null));
                 // .map((newBubble) => new BubbleAction.MergeComplete({mergeBubbleIds: query, newBubble: newBubble}))
                 // .catch(err => of(new BubbleAction.MergeError(err)));
@@ -131,7 +137,7 @@ export class BubbleEffects {
     @Effect()
     flatten$: Observable<Action> = this.action$.ofType<BubbleAction.Flatten>(BubbleAction.FLATTEN)
         .map(action => action.payload).mergeMap(query => {
-            return Observable.fromPromise(this.bubbleService.flattenBubble(query))
+            return Observable.of(this.bubbleService.flattenBubble(query))
                 .map(() => new BubbleAction.FlattenPending(null));
                 // .map((newBubble) => new BubbleAction.FlattenComplete({bubbleId: query, newBubble: newBubble}))
                 // .catch(err => of(new BubbleAction.FlattenError(err)));
@@ -140,7 +146,7 @@ export class BubbleEffects {
     @Effect()
     move$: Observable<Action> = this.action$.ofType<BubbleAction.Move>(BubbleAction.MOVE)
         .map(action => action.payload).mergeMap(query => {
-            return Observable.of(this.bubbleService.moveBubble(query.bubbleId, query.destBubbleId, query.isAbove))
+            return Observable.of(this.bubbleService.moveBubble(query.bubbleId, 0, 0))
                 .map(() => new BubbleAction.MovePending(null));
                 // .map((newBubble) => new BubbleAction.MoveComplete(query))
                 // .catch(err => of(new BubbleAction.MoveError(err)));
