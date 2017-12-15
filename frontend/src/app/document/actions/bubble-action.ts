@@ -1,5 +1,6 @@
 import { Action } from '@ngrx/store';
 import { Bubble, InternalBubble, LeafBubble, SuggestBubble } from '../models/bubble';
+import { Comment } from '../models/comment';
 import { MenuType } from '../services/event/event-bubble.service';
 import { User } from '../../user/models/user';
 
@@ -173,32 +174,32 @@ export class MouseOut implements Action {
     constructor(public payload: Bubble) {}
 }
 
-export const CREATE = '[Bubble] create';
-export const CREATE_PENDING = '[Bubble] create Pending';
-export const CREATE_COMPLETE = '[Bubble] create Complete';
-export const CREATE_ERROR = '[Bubble] create Error';
-export class Create implements Action {
-  readonly type = CREATE;
+export const CREATE_BUBBLE = '[Bubble] create';
+export const CREATE_BUBBLE_PENDING = '[Bubble] create Pending';
+export const CREATE_BUBBLE_COMPLETE = '[Bubble] create Complete';
+export const CREATE_BUBBLE_ERROR = '[Bubble] create Error';
+export const OTHERS_CREATE_BUBBLE = '[Bubble] others create';
+export class CreateBubble implements Action {
+  readonly type = CREATE_BUBBLE;
   constructor(public payload: {
     bubbleId: number,
     isAbove: boolean}) {}
 }
-export class CreatePending implements Action {
-  readonly type = CREATE_PENDING;
+export class CreateBubblePending implements Action {
+  readonly type = CREATE_BUBBLE_PENDING;
   constructor(public payload: void) {}
 }
-export class CreateComplete implements Action {
-  readonly type = CREATE_COMPLETE;
+export class CreateBubbleComplete implements Action {
+  readonly type = CREATE_BUBBLE_COMPLETE;
   constructor(public payload: Bubble) {}
 }
-export class CreateError implements Action {
-  readonly type = CREATE_ERROR;
+export class CreateBubbleError implements Action {
+  readonly type = CREATE_BUBBLE_ERROR;
   constructor(public payload: string) {}
 }
 
-export const OTHERS_CREATE = '[Bubble] others create';
-export class OthersCreate implements Action {
-  readonly type = OTHERS_CREATE;
+export class OthersCreateBubble implements Action {
+  readonly type = OTHERS_CREATE_BUBBLE;
   constructor(public payload: Bubble) {}
 }
 
@@ -289,8 +290,8 @@ export class OthersCreateCommentOnSuggest implements Action {
     constructor(public payload: Comment) {}
 }
 
-export const EDIT = '[Bubble] edit (check if can get edit lock)';
-export const EDIT_PENDING = '[Bubble] edit pending';
+export const EDIT_BUBBLE = '[Bubble] edit (check if can get edit lock)';
+export const EDIT_BUBBLE_PENDING = '[Bubble] edit pending';
 export const EDIT_REQUEST_SUCCESS = '[Bubble] edit success';
 export const OTHERS_EDIT_REQUEST = '[Bubble] others edit';
 export const EDIT_UPDATE = '[Bubble] edit update';
@@ -305,13 +306,13 @@ export const EDIT_DISCARD = '[Bubble] edit discard';
 export const EDIT_DISCARD_PENDING = '[Bubble] edit discard pending';
 export const EDIT_DISCARD_SUCCESS = '[Bubble] edit discard success';
 export const OTHERS_EDIT_DISCARD = '[Bubble] edit discard';
-export const EDIT_ERROR = '[Bubble] edit Error';
-export class Edit implements Action {
-    readonly type = EDIT;
+export const EDIT_BUBBLE_ERROR = '[Bubble] edit Error';
+export class EditBubble implements Action {
+    readonly type = EDIT_BUBBLE;
     constructor(public payload: number) {}
 }
-export class EditPending implements Action {
-    readonly type = EDIT_PENDING;
+export class EditBubblePending implements Action {
+    readonly type = EDIT_BUBBLE_PENDING;
     constructor(public payload: void) {}
 }
 export class EditRequestSuccess implements Action {
@@ -374,8 +375,8 @@ export class OthersEditDiscard implements Action {
     readonly type = OTHERS_EDIT_DISCARD;
     constructor(public payload: number) {}
 }
-export class EditError implements Action {
-  readonly type = EDIT_ERROR;
+export class EditBubbleError implements Action {
+  readonly type = EDIT_BUBBLE_ERROR;
   constructor(public payload: string) {}
 }
 
@@ -423,7 +424,7 @@ export class EditSuggestComplete implements Action {
     constructor(public payload: number) {}
 } 
 export class EditSuggestError implements Action {
-    readonly type = EDIT_SUGGEST_Error;
+    readonly type = EDIT_SUGGEST_ERROR;
     constructor(public payload: number) {}
 }
 export class OthersEditSuggest implements Action {
@@ -912,11 +913,11 @@ export type Actions =
   | SelectClear
   | MouseOver
   | MouseOut
-  | Create
-  | CreatePending
-  | CreateComplete
-  | CreateError
-  | OthersCreate
+  | CreateBubble
+  | CreateBubblePending
+  | CreateBubbleComplete
+  | CreateBubbleError
+  | OthersCreateBubble
   | CreateSuggest
   | CreateSuggestPending
   | CreateSuggestComplete
@@ -932,8 +933,8 @@ export type Actions =
   | CreateCommentOnSuggestComplete
   | CreateCommentOnSuggestError
   | OthersCreateCommentOnSuggest
-  | Edit
-  | EditPending
+  | EditBubble
+  | EditBubblePending
   | EditRequestSuccess
   | OthersEditRequest
   | EditUpdate
@@ -948,7 +949,7 @@ export type Actions =
   | EditDiscardPending
   | EditDiscardSuccess
   | OthersEditDiscard
-  | EditError
+  | EditBubbleError
   | ReleaseOwnership
   | ReleaseOwnershipPending
   | ReleaseOwnershipComplete

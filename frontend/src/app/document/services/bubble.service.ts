@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { MockBubbleRoot, MockBubbleList } from '../models/bubble.mock';
 import { Bubble, LeafBubble, InternalBubble, SuggestBubble, BubbleType } from '../models/bubble';
+import { Comment } from '../models/comment'; 
 import { User } from '../../user/models/user';
 import { Subscription } from 'rxjs/Subscription';
 import { ServerSocket } from './websocket.service';
@@ -160,14 +161,14 @@ export class BubbleService implements OnDestroy {
             if (accept === 'True') {
                 const bubble = BubbleJsonHelper.getBubbleObject(JSON.stringify(body.content));
                 if (body.who === this.userId) {
-                    this._store.dispatch(new BubbleAction.CreateComplete(bubble));
+                    this._store.dispatch(new BubbleAction.CreateBubbleComplete(bubble));
                 } else {
-                    this._store.dispatch(new BubbleAction.OthersCreate(bubble));
+                    this._store.dispatch(new BubbleAction.OthersCreateBubble(bubble));
                 }
                 this.previousRequestId = data.reqeust_id;
                 console.log('received create_bubble success');
             } else {
-                this._store.dispatch(new BubbleAction.CreateError(body));
+                this._store.dispatch(new BubbleAction.CreateBubbleError(body));
                 console.log('received create_bubble fail');
             }
         } else if (command === 'create_suggest_bubble') {
@@ -223,7 +224,7 @@ export class BubbleService implements OnDestroy {
                 this.previousRequestId = data.reqeust_id;
             } else {
                 console.log('received edit_bubble fail');
-                this._store.dispatch(new BubbleAction.EditError(body));
+                this._store.dispatch(new BubbleAction.EditBubbleError(body));
             }
         } else if (command === 'update_content_of_editting_bubble') {
             if (accept === 'True') {
@@ -232,12 +233,12 @@ export class BubbleService implements OnDestroy {
                     this._store.dispatch(new BubbleAction.EditUpdateSuccess(Number(body.bubble_id)));
                 } else {
                     this._store.dispatch(new BubbleAction.OthersEditUpdate(
-                                {bubble_id: Number(body.bubble_id), content: String(content)}));
+                                {bubbleId: Number(body.bubble_id), content: body.content}));
                 }
                 this.previousRequestId = data.reqeust_id;
             } else {
                 console.log('received update_content_of_editting_bubble fail');
-                this._store_dispatch(new BubbleAction.EditError(body));
+                this._store.dispatch(new BubbleAction.EditBubbleError(body));
             }
         } else if (command === 'finish_editting_bubble') {
             if (accept === 'True') {
@@ -250,7 +251,7 @@ export class BubbleService implements OnDestroy {
                 this.previousRequestId = data.reqeust_id;
             } else {
                 console.log('received finish_editting_bubble fail');
-                this._store.dispatch(new BubbleAction.EditError(body));
+                this._store.dispatch(new BubbleAction.EditBubbleError(body));
             }
         } else if (command === 'discard_editting_bubble') {
             if (accept === 'True') {
@@ -263,7 +264,7 @@ export class BubbleService implements OnDestroy {
                 this.previousRequestId = data.reqeust_id;
             } else {
                 console.log('received discard_editting_bubble fail');
-                this._store.dispatch(new BubbleAction.EditError(body));
+                this._store.dispatch(new BubbleAction.EditBubbleError(body));
             }
         } else if (command === 'release_ownership_of_bubble') {
             if (accept === 'True') {
