@@ -1,2 +1,4 @@
-export class FileSystemEntity {
+export interface FileSystemEntity {
+    id: number;
+    title: string;
 }

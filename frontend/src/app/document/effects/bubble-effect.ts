@@ -37,8 +37,10 @@ export class BubbleEffects {
 
     @Effect({dispatch: false})
     open$ = this.action$.ofType<BubbleAction.Open>(BubbleAction.OPEN)
-        .map(action => action.payload).mergeMap(query => {
-            this.bubbleService.openDocument(query);
+        .withLatestFrom(this._store).mergeMap(([action, state]) => {
+            console.log(state);
+            const routerState = (state as any).router.state;
+            this.bubbleService.openDocument(routerState.params.id);
             return Observable.of({});
         });
 

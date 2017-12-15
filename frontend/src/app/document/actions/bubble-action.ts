@@ -7,7 +7,7 @@ export const OPEN_COMPLETE = '[Document] open complete';
 export const OPEN_ERROR = '[Document] open error';
 export class Open implements Action {
   readonly type = OPEN;
-  constructor(public payload: number) {}
+  constructor() {}
 }
 export class OpenComplete implements Action {
   readonly type = OPEN_COMPLETE;

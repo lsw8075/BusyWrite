@@ -12,7 +12,11 @@
 
         </div>
         <div class="col-sm-9">
-
+            <ng-container *ngFor="let document of fileList$ | async">
+                <div class="list-group-item" (dblclick)="open(document)">
+                    title: {{document.title}}
+                </div>
+            </ng-container>
         </div>
     </div>
 </div>
