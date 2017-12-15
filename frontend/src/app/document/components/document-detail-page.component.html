@@ -1,5 +1,5 @@
 <div class="container-fluid">
-    <div class="row navbar navbar-expand-lg navbar-light bg-light mb-2">
+    <div class="row navbar navbar-expand-lg navbar-light bg-light mb-2 justify-content-between">
         <div class="col-sm-7">
             <ng-container *ngIf="changeTitle; then editTitle else showTitle"></ng-container>
             <div class="btn-toolbar" role="toolbar">
@@ -44,8 +44,16 @@
 
 
         </div>
-        <div class="col-sm-5">
+        <div class="col-sm-3">
             Show contributers
+        </div>
+        <div class="col-sm-2">
+            <button type="button" [tooltip]="'go to main page'" placement="bottom" class="btn btn-sm btn-outline-secondary">
+                <i class="fa fa-fw fa-chevron-circle-left"></i>
+            </button>
+            <button type="button" [tooltip]="'sign out'" placement="bottom" class="btn btn-sm btn-outline-secondary">
+                <i class="fa fa-fw fa-sign-out"></i>
+            </button>
         </div>
     </div>
     <div class="row">

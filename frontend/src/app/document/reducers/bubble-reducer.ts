@@ -64,7 +64,7 @@ export function BubbleReducer(state: BubbleState = initialState, action: fromBub
             return UIReducer(state, action);
 
         case fromBubble.LOAD:
-            return {...state, loading: true, documentId: action.payload};
+            return {...initialState, loading: true, documentId: action.payload};
         case fromBubble.LOAD_COMPLETE: {
             const bubbleList = MockBubbleList;
             // TODO: changed to mock bubble list
