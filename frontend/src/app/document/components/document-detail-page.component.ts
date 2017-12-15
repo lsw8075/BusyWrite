@@ -18,7 +18,9 @@ import * as BoardAction from '../actions/board-action';
 import * as BubbleAction from '../actions/bubble-action';
 import * as RouterAction from '../../shared/route/route-action';
 
-import {MatSnackBar} from '@angular/material';
+import { ViewBoardMenuType } from '../reducers/bubble-reducer';
+
+import { MatSnackBar } from '@angular/material';
 
 @Component({
   selector: 'app-document-detail-page',
@@ -31,6 +33,7 @@ import {MatSnackBar} from '@angular/material';
 export class DocumentDetailPageComponent implements OnInit {
 
     boardType = BoardType;
+    viewBoardMenuType = ViewBoardMenuType;
 
     leftBoard$: Observable<Board>;
     rightBoard$: Observable<Board>;
@@ -47,9 +50,7 @@ export class DocumentDetailPageComponent implements OnInit {
 
     sangjunBubble$: Observable<Bubble>;
 
-    isWrapMode$: Observable<boolean>;
-    isMergeMode$: Observable<boolean>;
-    isMoveMode$: Observable<boolean>;
+    viewBoardMenu$: Observable<ViewBoardMenuType>;
 
     documentTitle = 'empty title';
     changeTitle = false;
@@ -75,9 +76,7 @@ export class DocumentDetailPageComponent implements OnInit {
             this.activeBoard = board;
         });
 
-        this.isWrapMode$ = this._store.select(fromDocument.isWrapActionState);
-        this.isMoveMode$ = this._store.select(fromDocument.isMoveActionState);
-        this.isMergeMode$ = this._store.select(fromDocument.isMoveActionState);
+        this.viewBoardMenu$ = this._store.select(fromDocument.getViewBoardMenuState);
 
         this._store.select(fromDocument.getBoardStateError).subscribe(err => {
             if (err) {
@@ -115,7 +114,7 @@ export class DocumentDetailPageComponent implements OnInit {
     }
 
     public mergeBubble(): void {
-
+        this._store.dispatch(new BubbleAction.Merge());
     }
 
     public createNote(): void {

@@ -5,12 +5,12 @@
             <div class="btn-toolbar" role="toolbar">
                 <div class="btn-group ml-2" role="group">
                     <ng-container *ngIf="changeTitle">
-                        <button type="button" [tooltip]="'edit title'" placement="bottom" class="btn btn-sm btn-outline-secondary" (click)="titleEditDone()">
+                        <button type="button" [tooltip]="'edit finished?'" placement="bottom" class="btn btn-sm btn-outline-secondary" (click)="titleEditDone()">
                             <i class="fa fa-check fa-fw"></i>
                         </button>
                     </ng-container>
                     <ng-container *ngIf="!changeTitle">
-                        <button type="button" [tooltip]="'edit finished?'" placement="bottom" class="btn btn-sm btn-outline-secondary" (click)="titleEditStart()" >
+                        <button type="button" [tooltip]="'edit title'"  placement="bottom" class="btn btn-sm btn-outline-secondary" (click)="titleEditStart()" >
                             <i class="fa fa-pencil fa-fw"></i>
                         </button>
                     </ng-container>
@@ -26,7 +26,9 @@
                 </div>
 
                 <div class="btn-group mx-2" role="group">
-                    <ng-container *ngTemplateOutlet="boardMenu; context: { $implicit: activeBoard }"></ng-container>
+                    <ng-container *ngIf="activeBoard">
+                        <ng-container *ngTemplateOutlet="boardMenu; context: { $implicit: activeBoard }"></ng-container>
+                    </ng-container>
                 </div>
             </div>
 
@@ -88,7 +90,9 @@
                     ></app-sangjun-board>
                 </div>
                 <div *ngSwitchCase="boardType.filter">
-                    <app-filter-board></app-filter-board>
+                    <app-filter-board
+                        [bubbleList]="bubbleList$ | async"
+                    ></app-filter-board>
                 </div>
             </div>
         </div>
@@ -98,26 +102,27 @@
 
 <ng-template #boardMenu let-board>
     <div [ngSwitch]="board.type">
-
         <div *ngSwitchCase="boardType.view">
-            <ng-container *ngIf="isWrapMode$ | async">
-                <button type="button" (click)="wrapBubbles()" [tooltip]="'wrap bubbles'" placement="bottom" class="btn btn-sm btn-success">
-                    <i class="fa fa-fw fa-square"></i>
-                    Wrap Bubbles
-                </button>
-            </ng-container>
-            <ng-container *ngIf="isMoveMode$ | async">
-                <button type="button" (click)="moveBubble()" [tooltip]="'move bubble'" placement="bottom" class="btn btn-sm btn-success">
-                    <i class="fa fa-fw fa-square"></i>
-                    Move Bubble
-                </button>
-            </ng-container>
-            <ng-container *ngIf="isMergeMode$ | async">
-                <button type="button" (click)="mergeBubble()" [tooltip]="'move bubble'" placement="bottom" class="btn btn-sm btn-success">
-                    <i class="fa fa-compress fa-fw"></i>
-                    Merge Bubble
-                </button>
-            </ng-container>
+            <div [ngSwitch]="viewBoardMenu$ | async">
+                <div *ngSwitchCase="viewBoardMenuType.wrap">
+                    <button type="button" (click)="wrapBubbles()" [tooltip]="'wrap bubbles'" placement="bottom" class="btn btn-sm btn-success">
+                        <i class="fa fa-fw fa-square"></i>
+                        Wrap Bubbles
+                    </button>
+                </div>
+                <div *ngSwitchCase="viewBoardMenuType.move">
+                    <button type="button" (click)="moveBubble()" [tooltip]="'move bubble'" placement="bottom" class="btn btn-sm btn-success">
+                        <i class="fa fa-fw fa-square"></i>
+                        Move Bubble
+                    </button>
+                </div>
+                <div *ngSwitchCase="viewBoardMenuType.merge">
+                    <button type="button" (click)="mergeBubble()" [tooltip]="'move bubble'" placement="bottom" class="btn btn-sm btn-success">
+                        <i class="fa fa-compress fa-fw"></i>
+                        Merge Bubble
+                    </button>
+                </div>
+            </div>
         </div>
 
         <div *ngSwitchCase="boardType.edit">

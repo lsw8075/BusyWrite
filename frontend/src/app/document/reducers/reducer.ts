@@ -30,9 +30,7 @@ export const getHoverBubbleList = createSelector(getBubbleState, (state: BubbleS
 export const getBubbleStateError = createSelector(getBubbleState, (state: BubbleState) => state.error);
 export const getSangjunBubble = createSelector(getBubbleState, (state: BubbleState) => state.sangjunBoardBubble);
 
-export const isWrapActionState = createSelector(getBubbleState, (state: BubbleState) => state.isWrapAction);
-export const isMoveActionState = createSelector(getBubbleState, (state: BubbleState) => state.isMoveAction);
-export const isMergeActionState = createSelector(getBubbleState, (state: BubbleState) => state.isMergeAction);
+export const getViewBoardMenuState = createSelector(getBubbleState, (state: BubbleState) => state.viewBoardMenuType);
 
 export const isLoading = createSelector(getBubbleState, (state: BubbleState) => state.loading);
 
