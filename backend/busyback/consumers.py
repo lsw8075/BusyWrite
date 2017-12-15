@@ -109,8 +109,8 @@ def ws_receive(message):
         # tried sending before adding this person to the group but the message was sent to this person too
         # so just send after adding
         Group('document_detail-'+str(document_id), channel_layer=message.channel_layer).send({"text":
-                json.dumps({"header": "someone_open_document_detail", "accept": 'True',
-                        "body": {"who": message.user.id}})})
+                json.dumps({"header": "someone_open_document_detail", "accept": 'True', 
+                        "body": {"id": message.user.id, "email": message.user.email}})})
 
         return
 
@@ -165,11 +165,11 @@ def ws_receive(message):
 
         # Let other people in the group know that this person closed document detail page of this document
         Group('document_detail-'+str(document_id), channel_layer=message.channel_layer).send({"text":
-                json.dumps({"header": "someone_close_document_detail", "accept": 'True', "body": {"who": message.user.id}})})
+                json.dumps({"header": "someone_close_document_detail", "accept": 'True', "body": {"id": message.user.id, "email": message.user.email}})})
+        
+        return 
 
-        return
-
-
+      
     #########################
     ##   Get Bubble List   ##
     #########################
@@ -1559,7 +1559,7 @@ def ws_disconnect(message):
         message.reply_channel.send({'accept': True})
         # Let other people in the group know that this person closed document detail page of this document
         Group('document_detail-'+str(document_id), channel_layer=message.channel_layer).send({"text":
-                json.dumps({"header": "someone_close_document_detail", "accept": 'True', "body": {"who": message.user.id}})})
-
+                json.dumps({"header": "someone_close_document_detail", "accept": 'True', "body": {"id": message.user.id, "email": message.user.email}})})
+    
     except (KeyError, Document.DoesNotExist):
         message.reply_channel.send({'accept': True})
