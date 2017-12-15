@@ -40,14 +40,14 @@ def ws_receive(message):
         previous_state = text['previous_request']
         body = text['body']
     except KeyError:
-        message.reply_channel.send({"text": 
+        message.reply_channel.send({"text":
                 json.dumps({"header": "response", "accept": 'False', "body": "header, body, previous_request needed"})})
         return
     except ValueError:
         message.reply_channel.send({"text":
                 json.dumps({"header": "response", "accept": 'False', "body": "header, body, previous_request needed"})})
         return
-    
+
     if not command:
         message.reply_channel.send({"text":
                 json.dumps({"header": "response", "accept": 'False', "body": "empty command"})})
@@ -74,18 +74,18 @@ def ws_receive(message):
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False', "body": "document does not exist"})})
             return
- 
+
         # Check if user is contributor of the document
         if not document.is_contributed_by(message.user.id):
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False', "body": "user does not contribute to the document"})})
             return
-      
+
         try:
             result = do_user_connect_document(message.user.id, int(document_id))
-        except:
+        except Exception as e:
             message.reply_channel.send({"text":
-                    json.dumps({"header": command, "accept": 'False', "body": "adding user failed"})})
+                    json.dumps({"header": command, "accept": 'False', "body": "adding user failed"+str(e)})})
             return
 
         try:
@@ -95,7 +95,7 @@ def ws_receive(message):
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False', "body": "getting contributors failed"})})
             return
-      
+
         message.channel_session['document_id'] = str(document_id)
         # contributors and connectors would include herself! Be careful when using.
         message.reply_channel.send({"text":
@@ -104,21 +104,21 @@ def ws_receive(message):
                         "contributors": contributors, "connectors": connectors}})})
 
         Group('document_detail-'+str(document_id), channel_layer=message.channel_layer).add(message.reply_channel)
- 
+
         # Let people in the group know that new person opened document detail page of this document
         # tried sending before adding this person to the group but the message was sent to this person too
         # so just send after adding
         Group('document_detail-'+str(document_id), channel_layer=message.channel_layer).send({"text":
                 json.dumps({"header": "someone_open_document_detail", "accept": 'True', 
                         "body": {"id": message.user.id, "email": message.user.email}})})
-        
+
         return
 
 
     #####################
     ##   Common code   ##
     #####################
- 
+
     # Look up the document from the channel session, bailing if it doesn't exist
     try:
         document_id = str(message.channel_session['document_id'])
@@ -142,7 +142,7 @@ def ws_receive(message):
     ########################
     ##   Close Document   ##
     ########################
-  
+
     if command == 'close_document':
         try:
             if not int(document_id) == int(body['document_id']):
@@ -158,7 +158,7 @@ def ws_receive(message):
         except:
             message.reply_channle.send({"text":
                     json.dumps({"header": command, "accept": "False", "body": "cannot disconnect this user"})})
-           
+
         Group('document_id-'+str(document_id), channel_layer=message.channel_layer).discard(message.reply_channel)
         message.reply_channel.send({"text":
                 json.dumps({"header": command, "accept": 'True', "body": {"document_id": body['document_id']}})})
@@ -168,8 +168,8 @@ def ws_receive(message):
                 json.dumps({"header": "someone_close_document_detail", "accept": 'True', "body": {"id": message.user.id, "email": message.user.email}})})
         
         return 
-      
 
+      
     #########################
     ##   Get Bubble List   ##
     #########################
@@ -195,7 +195,7 @@ def ws_receive(message):
     ##########################
     ##   Get Bubble w/ ID   ##
     ##########################
-    
+
     elif command == 'get_bubble_by_id':
 
         if set(body.keys()) != set(('bubble_id', )):
@@ -212,7 +212,7 @@ def ws_receive(message):
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False', "body": "unknown error"})})
             return
-            
+
         message.reply_channel.send({"text":
                 json.dumps({"header": command, "accept": 'True', "body": result})})
         return
@@ -239,12 +239,12 @@ def ws_receive(message):
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False', "body": "unknown error"})})
             return
-            
+
         message.reply_channel.send({"text":
                 json.dumps({"header": command, "accept": 'True', "body": result})})
         return
 
- 
+
     ##################################
     ##   Get Suggest Bubble w/ ID   ##
     ##################################
@@ -265,7 +265,7 @@ def ws_receive(message):
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False', "body": "unknown error"})})
             return
-            
+
         message.reply_channel.send({"text":
                 json.dumps({"header": command, "accept": 'True', "body": result})})
         return
@@ -275,15 +275,15 @@ def ws_receive(message):
     ################################
     ##   Get Comment for Bubble   ##
     ################################
- 
+
     elif command == 'get_comment_list_for_bubble':
 
         if set(body.keys()) != set(('bubble_id', )):
             message.reply_channel.send({"text":
                     json.dumps({"header": command, 'accept': 'False', 'body': 'body does not follow format'})})
             return
- 
-        try: 
+
+        try:
             result = do_fetch_comments_under_normal(previous_state, message.user.id, int(document_id), int(body['bubble_id']))
         except BubbleDoesNotExistError:
             message.reply_channel.send({"text":
@@ -293,7 +293,7 @@ def ws_receive(message):
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False', "body": "unknown error"})})
             return
-            
+
         message.reply_channel.send({"text":
                 json.dumps({"header": command, "accept": 'True', "body": result})})
         return
@@ -302,14 +302,14 @@ def ws_receive(message):
     ########################################
     ##   Get Comment for Suggest Bubble   ##
     ########################################
- 
+
     elif command == 'get_comment_list_for_suggest_bubble':
 
         if set(body.keys()) != set(('suggest_bubble_id', )):
             message.reply_channel.send({"text":
                     json.dumps({"header": command, 'accept': 'False', 'body': 'body does not follow format'})})
             return
- 
+
         try:
             result = do_fetch_comments_under_suggest(previous_state, message.user.id, int(document_id), int(body['suggest_bubble_id']))
         except BubbleDoesNotExistError:
@@ -320,7 +320,7 @@ def ws_receive(message):
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False', "body": "unknown error"})})
             return
-            
+
         message.reply_channel.send({"text":
                 json.dumps({"header": command, "accept": 'True', "body": result})})
         return
@@ -332,16 +332,16 @@ def ws_receive(message):
     #######################
 
     elif command == 'create_bubble':
-      
+
         if set(body.keys()) != set(('parent_id', 'location', 'content')):
             message.reply_channel.send({"text":
                     json.dumps({'header': command, 'accept': 'False', 'body': 'body does not follow format'})})
             return
- 
+
         # do_create_bubble creates bubble and give edit lock to user
         try:
             # TODO: give ownership to user. change False -> True
-            get = do_create_normal_bubble(previous_state, message.user.id, int(document_id), 
+            get = do_create_normal_bubble(previous_state, message.user.id, int(document_id),
                     int(body['parent_id']), int(body['location']), False, body['content'])
         except InvalidLocationError:
             message.reply_channel.send({"text":
@@ -357,7 +357,7 @@ def ws_receive(message):
             message.reply_channel.send({"text":
                     json.dumps({'header': command, 'accept': 'False', 'body': 'create bubble failed'})})
             return
-        
+
 
         if not get:
             message.reply_channel.send({"text":
@@ -414,22 +414,22 @@ def ws_receive(message):
         Group('document_detail-'+document_id, channel_layer=message.channel_layer).send({"text":
                 json.dumps({'header': command, 'request_id': request_id, 'accept': 'True', 'body': result})})
         return
- 
+
 
     #########################################
     ##   Create Comment on Normal Bubble   ##
     #########################################
 
     elif command == 'create_comment_on_bubble':
-      
+
         # IMPORTANT: order should be generated by server!
         if set(body.keys()) != set(('binded_bubble', 'content')):
             message.reply_channel.send({"text":
                     json.dumps({'header': command, 'accept': 'False', 'body': 'body does not follow format'})})
             return
- 
+
         try:
-            get = do_create_comment_under_normal(previous_state, message.user.id, int(document_id), 
+            get = do_create_comment_under_normal(previous_state, message.user.id, int(document_id),
                     int(body['binded_bubble']), body['content'])
         except BubbleDoesNotExistError:
             message.reply_channel.send({"text":
@@ -439,7 +439,7 @@ def ws_receive(message):
             message.reply_channel.send({"text":
                     json.dumps({'header': command, 'accept': 'False', 'body': 'create comment on bubble failed'})})
             return
-        
+
 
         if not get:
             message.reply_channel.send({"text":
@@ -459,7 +459,7 @@ def ws_receive(message):
     ##########################################
     ##   Create Comment on Suggest Bubble   ##
     ##########################################
-   
+
     elif command == 'create_comment_on_suggest_bubble':
 
         if set(body.keys()) != set(('binded_suggest_bubble', 'content')):
@@ -545,7 +545,7 @@ def ws_receive(message):
         request_id = get[0];
         result = get[1];
         Group('document_detail-'+document_id, channel_layer=message.channel_layer).send({"text":
-            json.dumps({'header': command, 'request_id': request_id, 'accept': 'True', 
+            json.dumps({'header': command, 'request_id': request_id, 'accept': 'True',
             'body': {'who': message.user.id, 'bubble_id': body['bubble_id']}})})
         return
 
@@ -581,7 +581,7 @@ def ws_receive(message):
 
         # IMPORTANT: update_content_of_editting_bubble does not give request_id!
         Group('document_detail-'+document_id, channel_layer=message.channel_layer).send({"text":
-            json.dumps({'header': command, 'request_id': request_id, 'accept': 'True', 
+            json.dumps({'header': command, 'request_id': request_id, 'accept': 'True',
             'body': {'who': message.user.id, 'bubble_id': body['bubble_id']}})})
         return
 
@@ -596,7 +596,7 @@ def ws_receive(message):
             message.reply_channel.send({"text":
                     json.dumps({"header": command, 'accept': 'False', 'body': 'body does not follow format'})})
             return
-        
+
         try:
             # TODO: call appropriate function & change the name into do_unlock_normal_bubble
             get = do_update_finish_normal_bubble(previous_state, message.user.id, int(document_id), int(body['bubble_id']))
@@ -622,9 +622,9 @@ def ws_receive(message):
 
         request_id = get[0];
         result = get[1];
- 
+
         Group('document_detail-'+document_id, channel_layer=message.channel_layer).send({"text":
-                json.dumps({'header': command, 'request_id': request_id, 'accept': 'True', 
+                json.dumps({'header': command, 'request_id': request_id, 'accept': 'True',
                 'body': {'who': message.user.id, 'bubble_id': body['bubble_id']}})})
         return
 
@@ -639,7 +639,7 @@ def ws_receive(message):
             message.reply_channel.send({"text":
                     json.dumps({"header": command, 'accept': 'False', 'body': 'body does not follow format'})})
             return
-        
+
         try:
             # TODO: call appropriate function & change the name into do_unlock_normal_bubble
             get = do_update_discard_normal_bubble(previous_state, message.user.id, int(document_id), int(body['bubble_id']))
@@ -665,9 +665,9 @@ def ws_receive(message):
 
         request_id = get[0];
         result = get[1];
- 
+
         Group('document_detail-'+document_id, channel_layer=message.channel_layer).send({"text":
-                json.dumps({'header': command, 'request_id': request_id, 'accept': 'True', 
+                json.dumps({'header': command, 'request_id': request_id, 'accept': 'True',
                 'body': {'who': message.user.id, 'bubble_id': body['bubble_id']}})})
         return
 
@@ -685,18 +685,18 @@ def ws_receive(message):
 
         try:
             get = do_release_ownership(previous_state, message.user.id, int(document_id), int(body['bubble_id']))
- 
+
         except BubbleDoesNotExistError:
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False', "body": "bubble does not exist for the id"})})
             return
-        
+
         except BubbleNotOwnedError:
             message.reply_channel.send({"text":
                 json.dumps({'header': command, 'accept': 'False',
                         'body': 'this bubble is not owned by anyone'})})
             return
-            
+
         except BubbleOwnedError:
             message.reply_channel.send({"text":
                 json.dumps({'header': command, 'accept': 'False',
@@ -716,7 +716,7 @@ def ws_receive(message):
         request_id = get[0];
         result = get[1];
         Group('document_detail-'+document_id, channel_layer=message.channel_layer).send({"text":
-            json.dumps({'header': command, 'request_id': request_id, 'accept': 'True', 
+            json.dumps({'header': command, 'request_id': request_id, 'accept': 'True',
             'body': {'who': message.user.id, 'bubble_id': body['bubble_id']}})})
         return
 
@@ -731,7 +731,7 @@ def ws_receive(message):
             message.reply_channel.send({"text":
                     json.dumps({"header": command, 'accept': 'False', 'body': 'body does not follow format'})})
             return
-        
+
         try:
             get = do_edit_suggest_bubble(previous_state, message.user.id, int(document_id),
                     int(body['suggest_bubble_id']), body['content'])
@@ -753,14 +753,14 @@ def ws_receive(message):
 
         request_id = get[0];
         result = get[1];
- 
+
         Group('document_detail-'+document_id, channel_layer=message.channel_layer).send({"text":
-                json.dumps({'header': command, 'request_id': request_id, 'accept': 'True', 
+                json.dumps({'header': command, 'request_id': request_id, 'accept': 'True',
                 'body': {'who': message.user.id, 'suggest_bubble_id': body['bubble_id'],
                 'new_suggest_bubble': result}})})
         return
 
-   
+
     #######################
     ##   Delete Bubble   ##
     #######################
@@ -793,7 +793,7 @@ def ws_receive(message):
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False', 'body': 'unknown error'})})
             return
-        
+
         if not get:
             message.reply_channel.send({"text":
                     json.dumps({'header': command, 'accept': 'False',
@@ -802,7 +802,7 @@ def ws_receive(message):
 
         request_id = get[0];
         result = get[1];
- 
+
         Group('document_detail-'+document_id, channel_layer=message.channel_layer).send({"text":
                 json.dumps({'header': 'delete_bubble', 'request_id': request_id, 'accept': 'True',
                         'body': {'who': message.user.id, 'bubble_id': body['bubble_id']}})})
@@ -830,7 +830,7 @@ def ws_receive(message):
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False', 'body': 'unknown error'})})
             return
- 
+
         if not get:
             message.reply_channel.send({"text":
                     json.dumps({'header': command, 'accept': 'False',
@@ -839,12 +839,12 @@ def ws_receive(message):
 
         request_id = get[0];
         result = get[1];
-        
+
         Group('document_detail-'+document_id, channel_layer=message.channel_layer).send({"text":
                 json.dumps({'header': command, 'request_id': request_id, 'accept': 'True',
                         'body': {'who': message.user.id, 'suggest_bubble_id': body['suggest_bubble_id']}})})
         return
- 
+
 
     #############################
     ##   Show Suggest Bubble   ##
@@ -867,12 +867,12 @@ def ws_receive(message):
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False', 'body': 'cannot add suggest bubble to root bubble'})})
             return
- 
+
         except:
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False', 'body': 'unknown error'})})
             return
-        
+
         if not get:
             message.reply_channel.send({"text":
                     json.dumps({'header': command, 'accept': 'False',
@@ -881,12 +881,12 @@ def ws_receive(message):
 
         request_id = get[0];
         result = get[1];
- 
+
         Group('document_detail-'+document_id, channel_layer=message.channel_layer).send({"text":
                 json.dumps({'header': command, 'request_id': request_id, 'accept': 'True',
                         'body': {'who': message.user.id, 'suggest_bubble_id': body['suggest_bubble_id']}})})
         return
- 
+
 
     #########################################
     ##   Delete Comment on Normal Bubble   ##
@@ -916,7 +916,7 @@ def ws_receive(message):
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False', 'body': 'unknown error'})})
             return
-        
+
         if not get:
             message.reply_channel.send({"text":
                     json.dumps({'header': command, 'accept': 'False',
@@ -925,7 +925,7 @@ def ws_receive(message):
 
         request_id = get[0];
         result = get[1];
- 
+
         Group('document_detail-'+document_id, channel_layer=message.channel_layer).send({"text":
                 json.dumps({'header': command, 'request_id': request_id, 'accept': 'True',
                         'body': {'who': message.user.id, 'comment_id': body['comment_id']}})})
@@ -960,7 +960,7 @@ def ws_receive(message):
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False', 'body': 'unknown error'})})
             return
-        
+
         if not get:
             message.reply_channel.send({"text":
                     json.dumps({'header': command, 'accept': 'False',
@@ -969,14 +969,14 @@ def ws_receive(message):
 
         request_id = get[0];
         result = get[1];
- 
+
         Group('document_detail-'+document_id, channel_layer=message.channel_layer).send({"text":
                 json.dumps({'header': command, 'request_id': request_id, 'accept': 'True',
                         'body': {'who': message.user.id, 'comment_id': body['comment_id']}})})
         return
 
 
-        
+
     #####################
     ##   Move Bubble   ##
     #####################
@@ -1003,7 +1003,7 @@ def ws_receive(message):
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False', 'body': 'unknown error'})})
             return
-        
+
         if not get:
             message.reply_channel.send({"text":
                     json.dumps({'header': command, 'accept': 'False',
@@ -1012,13 +1012,13 @@ def ws_receive(message):
 
         request_id = get[0];
         result = get[1];
-           
+
         Group('document_detail-'+document_id, channel_layer=message.channel_layer).send({"text":
                 json.dumps({'header': command, 'request_id': request_id, 'accept': 'True',
                         'body': {'who': message.user.id, 'bubble_id': body['bubble_id'],
                         'new_parent_id': body['new_parent_id'], 'new_location': body['new_location']}})})
         return
- 
+
 
     #####################
     ##   Wrap Bubble   ##
@@ -1055,7 +1055,7 @@ def ws_receive(message):
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False', 'body': 'unknown error'})})
             return
- 
+
         if not get:
             message.reply_channel.send({"text":
                     json.dumps({'header': command, 'accept': 'False',
@@ -1064,7 +1064,7 @@ def ws_receive(message):
 
         request_id = get[0];
         result = get[1];
-                            
+
         Group('document_detail-'+document_id, channel_layer=message.channel_layer).send({"text":
                 json.dumps({'header': command, 'request_id': request_id, 'accept': 'True',
                         'body': {'who': message.user.id, 'bubble_id_list': body['bubble_id_list']}})})
@@ -1111,7 +1111,7 @@ def ws_receive(message):
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False', 'body': 'unknown error'})})
             return
- 
+
         if not get:
             message.reply_channel.send({"text":
                     json.dumps({'header': command, 'accept': 'False',
@@ -1120,17 +1120,17 @@ def ws_receive(message):
 
         request_id = get[0];
         result = get[1];
-                            
+
         Group('document_detail-'+document_id, channel_layer=message.channel_layer).send({"text":
                 json.dumps({'header': command, 'request_id': request_id, 'accept': 'True',
                         'body': {'who': message.user.id, 'bubble_id': body['bubble_id']}})})
         return
- 
+
 
     ###############################
     ##   Split Internal Bubble   ##
     ###############################
- 
+
     elif command == 'split_internal_bubble':
         if set(body.keys()) != set(('bubble_id', 'split_bubble_id_list')):
             message.reply_channel.send({"text":
@@ -1167,7 +1167,7 @@ def ws_receive(message):
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False', 'body': 'unknown error'})})
             return
- 
+
         if not get:
             message.reply_channel.send({"text":
                     json.dumps({'header': command, 'accept': 'False',
@@ -1176,7 +1176,7 @@ def ws_receive(message):
 
         request_id = get[0];
         result = get[1];
- 
+
         ## TODO: Change do_split_internal_bubble
         Group('document_detail-'+document_id, channel_layer=message.channel_layer).send({"text":
                 json.dumps({'header': command, 'request_id': request_id, 'accept': 'True',
@@ -1226,7 +1226,7 @@ def ws_receive(message):
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False', 'body': 'unknown error'})})
             return
- 
+
         if not get:
             message.reply_channel.send({"text":
                     json.dumps({'header': command, 'accept': 'False',
@@ -1235,7 +1235,7 @@ def ws_receive(message):
 
         request_id = get[0];
         result = get[1];
- 
+
         ## TODO: Change do_split_leaf_bubble
         Group('document_detail-'+document_id, channel_layer=message.channel_layer).send({"text":
                 json.dumps({'header': command, 'request_id': request_id, 'accept': 'True',
@@ -1243,7 +1243,7 @@ def ws_receive(message):
                         'split_bubble_object_list': result,
                         'split_content_list': body['split_content_list']}})})
         return
-        # [d['id'] for d in list(result.child_bubbles.all().values()] 
+        # [d['id'] for d in list(result.child_bubbles.all().values()]
 
 
 
@@ -1292,7 +1292,7 @@ def ws_receive(message):
 
         request_id = get[0];
         result = get[1];
-              
+
         Group('document_detail-'+document_id, channel_layer=message.channel_layer).send({"text":
                 json.dumps({'header': command, 'request_id': request_id, 'accept': 'True',
                         'body': {'who': message.user.id, 'bubble_id_list': body['bubble_id_list'],
@@ -1341,7 +1341,7 @@ def ws_receive(message):
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False', 'body': 'unknown error'})})
             return
- 
+
         if not get:
             message.reply_channel.send({"text":
                     json.dumps({'header': command, 'accept': 'False',
@@ -1350,12 +1350,12 @@ def ws_receive(message):
 
         request_id = get[0];
         result = get[1];
-                            
+
         Group('document_detail-'+document_id, channel_layer=message.channel_layer).send({"text":
                 json.dumps({'header': command, 'request_id': request_id, 'accept': 'True',
                         'body': {'who': message.user.id, 'bubble_id': body['bubble_id']}})})
         return
-    
+
 
     ########################################
     ##   Switch Bubble w/ Suggest Bubble  ##
@@ -1395,12 +1395,12 @@ def ws_receive(message):
 
         request_id = get[0];
         result = get[1];
-           
+
         Group('document_detail-'+document_id, channel_layer=message.channel_layer).send({"text":
                 json.dumps({'header': command, 'request_id': request_id, 'accept': 'True',
                         'body': {'who': message.user.id, 'suggest_bubble_id': body['suggest_bubble_id']}})})
         return
-    
+
 
     ################################
     ##   Vote on Suggest Bubble   ##
@@ -1422,7 +1422,7 @@ def ws_receive(message):
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False', 'body': 'unknown error'})})
             return
- 
+
         if not get:
             message.reply_channel.send({"text":
                     json.dumps({'header': command, 'accept': 'False',
@@ -1431,7 +1431,7 @@ def ws_receive(message):
 
         request_id = get[0];
         result = get[1];
-                            
+
         Group('document_detail-'+document_id, channel_layer=message.channel_layer).send({"text":
                 json.dumps({'header': command, 'request_id': request_id, 'accept': 'True',
                         'body': {'who': message.user.id, 'suggest_bubble_id': body['suggest_bubble_id']}})})
@@ -1458,7 +1458,7 @@ def ws_receive(message):
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False', 'body': 'unknown error'})})
             return
- 
+
         if not get:
             message.reply_channel.send({"text":
                     json.dumps({'header': command, 'accept': 'False',
@@ -1467,7 +1467,7 @@ def ws_receive(message):
 
         request_id = get[0];
         result = get[1];
-                            
+
         Group('document_detail-'+document_id, channel_layer=message.channel_layer).send({"text":
                 json.dumps({'header': command, 'request_id': request_id, 'accept': 'True',
                         'body': {'who': message.user.id, 'suggest_bubble_id': body['suggest_bubble_id']}})})
@@ -1560,6 +1560,6 @@ def ws_disconnect(message):
         # Let other people in the group know that this person closed document detail page of this document
         Group('document_detail-'+str(document_id), channel_layer=message.channel_layer).send({"text":
                 json.dumps({"header": "someone_close_document_detail", "accept": 'True', "body": {"id": message.user.id, "email": message.user.email}})})
- 
+    
     except (KeyError, Document.DoesNotExist):
         message.reply_channel.send({'accept': True})
