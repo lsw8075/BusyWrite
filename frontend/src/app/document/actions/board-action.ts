@@ -9,6 +9,7 @@ export class Open implements Action {
 
 export const ADD = '[Board] add';
 export const DELETE = '[Board] delete';
+export const DELETE_ALL = '[Board] delete all';
 export const HIDE = '[Board] hide';
 export const SHOW_LEFT = '[Board] show on left';
 export const SHOW_RIGHT = '[Board] show on right';
@@ -19,6 +20,10 @@ export class Add implements Action {
 export class Delete implements Action {
     readonly type = DELETE;
     constructor(public payload: Board) {}
+}
+export class DeleteAll implements Action {
+    readonly type = DELETE_ALL;
+    constructor() {}
 }
 export class Hide implements Action {
     readonly type = HIDE;
@@ -39,11 +44,19 @@ export class ClearError implements Action {
     constructor(public payload ?: void) {}
 }
 
+export const SELECT = '[Board] select';
+export class Select implements Action {
+    readonly type = SELECT;
+    constructor(public payload: Board) {}
+}
+
 export type Actions =
     | Open
     | Add
     | Delete
+    | DeleteAll
     | Hide
     | ShowLeft
     | ShowRight
-    | ClearError;
+    | ClearError
+    | Select;

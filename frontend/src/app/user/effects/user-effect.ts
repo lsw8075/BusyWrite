@@ -55,7 +55,7 @@ export class UserEffects {
     @Effect()
     signinSuccess$: Observable<Action> = this.action$.ofType<fromUser.SignInSuccess>(fromUser.SIGNIN_SUCCESS)
         .map(action => action.payload).mergeMap(query =>
-            Observable.of(new fromRouter.GoByUrl('documents'))
+            Observable.of(new fromRouter.GoByUrl('documents/1'))
         );
 
     @Effect()

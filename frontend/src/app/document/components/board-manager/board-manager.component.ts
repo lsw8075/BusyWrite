@@ -27,10 +27,16 @@ export class BoardManagerComponent implements OnInit {
     leftBoard$: Observable<Board>;
     rightBoard$: Observable<Board>;
 
+    activeBoard: Board = null;
+
     constructor(private _store: Store<fromDocument.State>) {
         this.boardList$ = _store.select(fromDocument.getBoardList);
         this.leftBoard$ = _store.select(fromDocument.getLeftBoard);
         this.rightBoard$ = _store.select(fromDocument.getRightBoard);
+
+        this._store.select(fromDocument.getActiveBoard).subscribe(board => {
+            this.activeBoard = board;
+        });
      }
 
     ngOnInit() {}
@@ -56,11 +62,14 @@ export class BoardManagerComponent implements OnInit {
     }
 
     public deleteAll(): void {
-
+        this._store.dispatch(new BoardAction.DeleteAll());
     }
 
     public getCardClassNameByBoard(board: Board): string {
         if (board) {
+            if (this.isBoardActive(board)) {
+                return 'border-danger';
+            }
             switch (board.type) {
                 case BoardType.view:
                     return 'border-primary';
@@ -77,35 +86,30 @@ export class BoardManagerComponent implements OnInit {
 
     }
 
-    icon(board: Board): string {
-        switch (board.type) {
-            case BoardType.view:
-                return 'V';
-            case BoardType.edit:
-                return 'E';
-            case BoardType.filter:
-                return 'F';
-            case BoardType.suggest:
-                return 'S';
-        }
-    }
-
     boardToString(board: Board): string {
         if (board) {
             switch (board.type) {
                 case BoardType.view:
-                    return 'View Board';
+                    return 'View';
                 case BoardType.edit:
-                    return 'Edit Board';
+                    return 'Edit';
                 case BoardType.filter:
-                    return 'Search Board';
+                    return 'Search';
                 case BoardType.suggest:
-                    return 'Suggest Board';
+                    return 'Suggest';
             }
         } else {
             return 'No board';
         }
 
+    }
+
+
+    public isBoardActive(board: Board): boolean {
+        if (this.activeBoard && board) {
+            return this.activeBoard.id === board.id;
+        }
+        return false;
     }
 
     isImportantBoard(board: Board): boolean {

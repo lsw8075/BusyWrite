@@ -17,6 +17,7 @@ import { Observable } from 'rxjs/Observable';
 import * as fromDocument from '../../../reducers/reducer';
 import * as fromBubble from '../../../reducers/bubble-reducer';
 import * as BubbleAction from '../../../actions/bubble-action';
+import * as SangjunBoardAction from '../../../actions/sangjun-bubble-action';
 import * as RouterAction from '../../../../shared/route/route-action';
 
 @Component({
@@ -45,20 +46,15 @@ export class BubbleMenuComponent implements OnInit {
 //        console.log(this.bubble, this.menu);
     }
 
-    public isWrapSelected(): boolean {
-        return this._eventBubbleService.getActionState() === ActionType.wrap;
-    }
-
-    public isMoveSelected(): boolean {
-        return this._eventBubbleService.getActionState() === ActionType.move;
-    }
-
     public openSangjunBoard() {
-        // this._eventBubbleService.openSangjunBoard(this.bubble);
+        this._store.dispatch(new BubbleAction.SelectClear());
+        this._store.dispatch(new SangjunBoardAction.Open(this.bubble));
     }
 
     public splitBubble() {
-        this._store.dispatch(new BubbleAction.Split({bubbleId: 6, contentList: ['<p>BusyWrite is the per','fect solution for team writing. The concept of writing as a tea','m has been around for a long time, by services like Google Docs, but the approaches are impractical and unproductive. </p>']}));
+        this._store.dispatch(new BubbleAction.Split(
+            {bubbleId: 6,
+            contentList: ['<p>BusyWrite is the per','fect solution for team writing. The concept of writing as a tea','m has been around for a long time, by services like Google Docs, but the approaches are impractical and unproductive. </p>']}));
     //    this.bsModalRef = this._modalService.show(SplitBubbleComponent);
     //    this.bsModalRef.content.bubble = this.bubble;
     }
@@ -84,11 +80,12 @@ export class BubbleMenuComponent implements OnInit {
     }
 
     public mergeBubble() {
-        this._store.dispatch(new BubbleAction.Merge([6, 7]));
+        this._store.dispatch(new BubbleAction.MergeStart());
     }
 
     public wrapBubble() {
-        this._store.dispatch(new BubbleAction.Wrap([6, 7]));
+        // this._store.dispatch(new BubbleAction.Wrap([6, 7]));
+        this._store.dispatch(new BubbleAction.WrapStart());
     }
 
     public flattenBubble() {
@@ -100,14 +97,15 @@ export class BubbleMenuComponent implements OnInit {
     }
 
     public getAction(): string {
-    switch (this._eventBubbleService.getActionState()) {
-        case ActionType.move:
-            return 'move bubble';
-        case ActionType.split:
-            return 'split bubble';
-        default:
-            return '';
-    }
+    // switch (this._eventBubbleService.getActionState()) {
+    //     case ActionType.move:
+    //         return 'move bubble';
+    //     case ActionType.split:
+    //         return 'split bubble';
+    //     default:
+    //         return '';
+    // }
+    return '';
     }
 
   public isBeingEditted(bubble: Bubble): boolean {

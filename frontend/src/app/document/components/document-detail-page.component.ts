@@ -17,6 +17,11 @@ import * as fromDocument from '../reducers/reducer';
 import * as BoardAction from '../actions/board-action';
 import * as BubbleAction from '../actions/bubble-action';
 import * as RouterAction from '../../shared/route/route-action';
+import * as UserAction from '../../user/actions/user-action';
+
+import { ViewBoardMenuType } from '../reducers/bubble-reducer';
+
+import { MatSnackBar } from '@angular/material';
 
 @Component({
   selector: 'app-document-detail-page',
@@ -29,6 +34,13 @@ import * as RouterAction from '../../shared/route/route-action';
 export class DocumentDetailPageComponent implements OnInit {
 
     boardType = BoardType;
+    viewBoardMenuType = ViewBoardMenuType;
+
+    leftBoard$: Observable<Board>;
+    rightBoard$: Observable<Board>;
+
+    activeBoard: Board = null;
+
 
     rootBubble$: Observable<InternalBubble>;
     bubbleList$: Observable<Array<Bubble>>;
@@ -37,19 +49,17 @@ export class DocumentDetailPageComponent implements OnInit {
     hoverBubbleList$: Observable<Bubble[]>;
     selectedMenu$: Observable<MenuType>;
 
-    leftBoard$: Observable<Board>;
-    rightBoard$: Observable<Board>;
-
     sangjunBubble$: Observable<Bubble>;
+
+    viewBoardMenu$: Observable<ViewBoardMenuType>;
 
     documentTitle = 'empty title';
     changeTitle = false;
 
-    alerts: any = [];
-
     constructor(
         private _documentService: DocumentService,
-        private _store: Store<fromDocument.State>
+        private _store: Store<fromDocument.State>,
+        public _snackBar: MatSnackBar
     ) {
         this.rootBubble$ = _store.select(fromDocument.getRootBubble);
         this.bubbleList$ = _store.select(fromDocument.getBubbleList);
@@ -63,22 +73,29 @@ export class DocumentDetailPageComponent implements OnInit {
 
         this.sangjunBubble$ = this._store.select(fromDocument.getSangjunBubble);
 
+        this._store.select(fromDocument.getActiveBoard).subscribe(board => {
+            this.activeBoard = board;
+        });
+
+        this.viewBoardMenu$ = this._store.select(fromDocument.getViewBoardMenuState);
+
         this._store.select(fromDocument.getBoardStateError).subscribe(err => {
             if (err) {
-                this.addError(err);
+                this.showErrorMsg(err);
                 this._store.dispatch(new BoardAction.ClearError());
             }
         });
 
         this._store.select(fromDocument.getBubbleStateError).subscribe(err => {
             if (err) {
-                this.addError(err);
+                this.showErrorMsg(err);
                 this._store.dispatch(new BubbleAction.ClearError());
             }
         });
     }
 
     ngOnInit() {
+        console.log('hello');
         this._store.dispatch(new BubbleAction.Open(1));
     }
 
@@ -90,11 +107,36 @@ export class DocumentDetailPageComponent implements OnInit {
         this.changeTitle = true;
     }
 
-    addError(err: string): void {
-        this.alerts.push({
-            type: 'warning',
-            msg: err,
-            timeout: 2500
+    public wrapBubbles(): void {
+        this._store.dispatch(new BubbleAction.Wrap());
+    }
+
+    public moveBubble(): void {
+        // this._store.dispatch(new BubbleAction.Move());
+    }
+
+    public mergeBubble(): void {
+        this._store.dispatch(new BubbleAction.Merge());
+    }
+
+    public goBack(): void {
+        this._store.dispatch(new RouterAction.GoByUrl(`/files`));
+    }
+
+    public createNote(): void {
+
+    }
+
+    public isBoardActive(board: Board): boolean {
+        if (this.activeBoard && board) {
+            return this.activeBoard.id === board.id;
+        }
+        return false;
+    }
+
+    showErrorMsg(err: string): void {
+        this._snackBar.open('Error!' , err, {
+            duration: 1500
         });
     }
 
