@@ -27,7 +27,7 @@ function removeBubbleById(bubbleList: Array<Bubble>, id: number): void {
     bubbleList.splice(index, 1);
 }
 
-function getParentBubble(bubbleList: Array<Bubble>, bubble: Bubble): InternalBubble {
+export function getParentBubble(bubbleList: Array<Bubble>, bubble: Bubble): InternalBubble {
     try {
         const parentBubble = getBubbleById(bubbleList, bubble.parentBubbleId);
         return parentBubble as InternalBubble;
@@ -252,6 +252,7 @@ export function wrapBubble(bubbleList: Array<Bubble>, wrapBubbleIds: Array<numbe
             if (bubble.parentBubbleId !== parentBubbleId) {
                 throw new Error('wrap bubbles should have same parent id');
             }
+            bubble.parentBubbleId = newInternalBubble.id;
         }
 
         const newLocation = wrapBubbleList[0].location;

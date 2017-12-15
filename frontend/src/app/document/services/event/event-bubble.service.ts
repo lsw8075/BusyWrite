@@ -5,7 +5,6 @@ import { Bubble, LeafBubble } from '../../models/bubble';
 const tempUserId = 1;
 @Injectable()
 export class EventBubbleService {
-
 }
 
 export enum MenuType {

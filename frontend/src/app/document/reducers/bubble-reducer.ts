@@ -64,7 +64,7 @@ export function BubbleReducer(state: BubbleState = initialState, action: fromBub
         case fromBubble.LOAD_COMPLETE: {
             const bubbleList = MockBubbleList;
             // TODO: changed to mock bubble list
-            // return {...state, bubbleList: [...action.payload], rootBubble: root, loading: false};
+    //         return {...state, bubbleList: [...action.payload], loading: false};
             return {...state, bubbleList: [...bubbleList], loading: false};
         }
         case fromBubble.LOAD_ERROR:
@@ -183,12 +183,7 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
         case fromBubble.EDIT:
             return {...state, loading: true, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
         case fromBubble.EDIT_COMPLETE: {
-            const bubbleId = action.payload.bubbleId;
-            const newContent = action.payload.newContent;
-            const newBubbleList = _.cloneDeep(state.bubbleList);
-            console.log('hello');
-            editBubble(newBubbleList, bubbleId, newContent);
-            return {...state, bubbleList: newBubbleList, loading: false};
+            return {...state, loading: false};
         }
         case fromBubble.EDIT_ERROR:
             return {...state, loading: false, error: action.payload, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};

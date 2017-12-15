@@ -40,11 +40,11 @@ def ws_receive(message):
         body = text['body']
     except KeyError:
         message.reply_channel.send({"text": 
-                json.dumps({"header": "response", "accept": 'False', "body": "header and body needed"})})
+                json.dumps({"header": "response", "accept": 'False', "body": "header, body, previous_request needed"})})
         return
     except ValueError:
         message.reply_channel.send({"text":
-                json.dumps({"header": "response", "accept": 'False', "body": "header and body needed"})})
+                json.dumps({"header": "response", "accept": 'False', "body": "header, body, previous_request needed"})})
         return
     
     if not command:
@@ -332,7 +332,7 @@ def ws_receive(message):
 
     elif command == 'create_bubble':
       
-        if set(body.keys()) != set(('parent', 'location', 'content')):
+        if set(body.keys()) != set(('parent_id', 'location', 'content')):
             message.reply_channel.send({"text":
                     json.dumps({'header': command, 'accept': 'False', 'body': 'body does not follow format'})})
             return
@@ -341,7 +341,7 @@ def ws_receive(message):
         try:
             # TODO: give ownership to user. change False -> True
             get = do_create_normal_bubble(previous_state, message.user.id, int(document_id), 
-                    int(body['parent']), int(body['location']), False, body['content'])
+                    int(body['parent_id']), int(body['location']), False, body['content'])
         except InvalidLocationError:
             message.reply_channel.send({"text":
                     json.dumps({'header': command, 'accept': 'False', 'body': 'invalid location'})})
@@ -1024,12 +1024,12 @@ def ws_receive(message):
     #####################
 
     elif command == 'wrap_bubble':
-        if set(body.keys()) != set(('bubble_id_list',)):
+        if set(body.keys()) != set(('wrap_bubble_id_list',)):
             message.reply_channel.send({"text":
                     json.dumps({'header': 'wrap_bubble', 'accept': 'False', 'body': 'body does not follow format'})})
             return
         try:
-            get = do_wrap_normal_bubble(previous_state, message.user.id, int(document_id), body['bubble_id_list'])
+            get = do_wrap_normal_bubble(previous_state, message.user.id, int(document_id), body['wrap_bubble_id_list'])
         except BubbleDoesNotExistError:
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False',
@@ -1131,12 +1131,12 @@ def ws_receive(message):
     ###############################
  
     elif command == 'split_internal_bubble':
-        if set(body.keys()) != set(('bubble_id', 'split_bubble_list')):
+        if set(body.keys()) != set(('bubble_id', 'split_bubble_id_list')):
             message.reply_channel.send({"text":
                     json.dumps({'header': command, 'accept': 'False', 'body': 'body does not follow format'})})
             return
         try:
-            get = do_split_internal_bubble(previous_state, message.user.id, int(document_id), int(body['bubble_id']), body['split_bubble_list'])
+            get = do_split_internal_bubble(previous_state, message.user.id, int(document_id), int(body['bubble_id']), body['split_bubble_id_list'])
         except BubbleDoesNotExistError:
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False',
@@ -1251,12 +1251,12 @@ def ws_receive(message):
     ######################
 
     elif command == 'merge_bubble':
-        if set(body.keys()) != set(('bubble_id_list', )):
+        if set(body.keys()) != set(('merge_bubble_id_list', )):
             message.reply_channel.send({"text":
                     json.dumps({'header': command, 'accept': 'False', 'body': 'body does not follow format'})})
             return
         try:
-            get = do_merge_normal_bubble(previous_state, message.user.id, int(document_id), int(body['bubble_id_list']))
+            get = do_merge_normal_bubble(previous_state, message.user.id, int(document_id), int(body['merge_bubble_id_list']))
         except BubbleDoesNotExistError:
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False',

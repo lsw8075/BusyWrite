@@ -43,7 +43,7 @@ export class BubbleMenuComponent implements OnInit {
     }
 
     ngOnInit() {
-        console.log(this.bubble, this.menu);
+//        console.log(this.bubble, this.menu);
     }
 
     public openSangjunBoard() {
