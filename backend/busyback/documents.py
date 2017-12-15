@@ -9,12 +9,17 @@ from django.core.cache import cache
 from django.forms.models import model_to_dict
 import json
 
+def process_document(document):
+    res = model_to_dict(document)
+    res['contributors'] = [user.id for user in res['contributors']]
+    return res
+
 @transaction.atomic
 def do_fetch_document(
     user_id: int,
     document_id: int
     ):
-    return model_to_dict(fetch_document_with_lock(user_id, document_id))
+    return process_document(fetch_document_with_lock(user_id, document_id))
 
 def fetch_document_with_lock(user_id, document_id):
     try:
@@ -82,7 +87,7 @@ def do_create_document(
     conclheader_bubble = create_normal(document, t_conclheader, concl_bubble, 0)
     conclbody_bubble = create_normal(document, t_conclbody, concl_bubble, 1)
 
-    res = model_to_dict(document)
+    res = process_document(document)
     res['rootbubble_id'] = root_bubble.id
     return res
     

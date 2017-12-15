@@ -14,7 +14,10 @@ def http_send(s, t, url, jd={}, result=False, login=False, csrf=None):
     if t != 'GET':
         csrf = s.getCSRF()
     if t == 'GET':
-        response = s.client.get(url)
+        if jd != {}:
+            response = s.client.get(url, jd)
+        else:
+            response = s.client.get(url)
     elif t == 'POST':
         response = s.client.post(url, json.dumps(jd), content_type='application/json', HTTP_X_CSRFTOKEN=csrf)
     elif t == 'PUT':
@@ -79,24 +82,15 @@ class HttpRequestTestCase(TestCase):
 
         self.assertEqual(405, self.send('DELETE', 'signout'))
 
-    def sendGET(self, url, jd):
-        return self.send('GET', url, jd, result=True, login=True)
-    def sendPOST(self, url, jd):
-        return self.send('POST', url, jd, result=True, login=True)
-    def sendPUT(self, url, jd):
-        return self.send('PUT', url, jd, result=True, login=True)
-    def sendDELETE(self, url, jd):
-        return self.send('DELETE', url, jd, result=True, login=True)
 
     def test_req_document(self):
         # create document and check title
-        self.sendPOST('document', {'user_id': 1, 'title': 'new_document'})
+        self.send('POST', 'documentlist', {'title': 'new_document'}, result=True, login=True)
         doc_id = self.result['id']
-        self.sendGET('document', {'user_id': 1, 'document_id': doc_id})
+        self.send('GET', 'document', {'document_id': doc_id})
         doc_title = self.result['title']
         self.assertEqual(doc_title, 'new_document')
-        self.sendGET('documentlist', {'user_id': 1})
-        print(self.result)
+        self.send('GET', 'documentlist', {'user_id': 1})
 
         pass
 

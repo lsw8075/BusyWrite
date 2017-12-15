@@ -8,6 +8,7 @@ from django.http import HttpResponse, HttpResponseNotAllowed
 from django.http import HttpResponseNotFound, JsonResponse
 
 from django.forms.models import model_to_dict
+from .documents import *
 
 import json
 
@@ -49,26 +50,29 @@ def token(request):
     else:
         return HttpResponseNotAllowed(['GET'])
 
-def jsonrequest(func):
-    def wrapper(*args, **kwargs):
+def docrequest(func):
+    def wrapper(request):
         if not request.user.is_authenticated:
             return HttpResponse(status=401)
+        req_user = request.user.id
         req_method = request.method
-        req_data = json.loads(request.body.decode())
+        if req_method != 'GET':
+            req_data = json.loads(request.body.decode())
+        else:
+            req_data = request.GET.dict()
         try:
-            result = func(req_method, req_data)
+            result = func(req_user, req_method, req_data)
         except Exception as ee:
             print('****Unknown exception****')
+            print(type(ee))
             print(str(ee))
             print('****************')
             return HttpResponse(status=500)
-        return 
+        return result
     return wrapper
 
-@jsonrequest
-def req_document_list(method, data):
-    user_id = data['user_id']
-
+@docrequest
+def req_document_list(user_id, method, data):
     if method == 'GET':
         try:
             documents = do_fetch_documents(user_id)
@@ -81,9 +85,8 @@ def req_document_list(method, data):
     else:
         return HttpResponseNotAllowed(['GET', 'POST'])
 
-@jsonrequest
-def req_document_detail(method, data):
-    user_id = data['user_id']
+@docrequest
+def req_document_detail(user_id, method, data):
     document_id = data['document_id']
 
     if method == 'GET':
@@ -91,15 +94,12 @@ def req_document_detail(method, data):
             document = do_fetch_document(user_id, document_id)
         except:
             return HttpResponse(status=404)
-        if not document.is_contributed_by(user_id):
-            return HtttResponse(status=403)
-        return document # id, title, contributors(id)
+        return JsonResponse(document, safe=False) # id, title, contributors(id)
     else:
         return HttpResponseNotAllowed(['GET'])
 
-@jsonrequest
-def req_document_contributors(method, data):
-    user_id = data['user_id']
+@docrequest
+def req_document_contributors(user_id, method, data):
     document_id = data['document_id']
 
     if method == 'GET':
@@ -111,10 +111,10 @@ def req_document_contributors(method, data):
     else:
         return HttpResponseNotAllowed(['GET'])
 
-@jsonrequest
+@docrequest
 def req_send_invitation(method, data):
     pass
 
-@jsonrequest
+@docrequest
 def req_add_contributors(method, data):
     pass
