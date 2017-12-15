@@ -6,6 +6,25 @@ from .users import *
 
 import json
 
+def http_send(s, t, url, jd={}, result=False, login=False, csrf=None):
+    if login:
+        s.client.login(username='testuser2', password='5678')
+    response = None
+    url = '/api/' + url
+    if t != 'GET':
+        csrf = s.getCSRF()
+    if t == 'GET':
+        response = s.client.get(url)
+    elif t == 'POST':
+        response = s.client.post(url, json.dumps(jd), content_type='application/json', HTTP_X_CSRFTOKEN=csrf)
+    elif t == 'PUT':
+        response = s.client.put(url, json.dumps(jd), content_type='application/json', HTTP_X_CSRFTOKEN=csrf)
+    elif t == 'DELETE':
+        response = s.client.delete(url, HTTP_X_CSRFTOKEN=csrf)
+    if result:
+        s.result = json.loads(response.content.decode())
+    return response.status_code
+
 class UsersTestCase(TestCase):
 
     def setUp(self):
@@ -17,7 +36,7 @@ class UsersTestCase(TestCase):
             do_fetch_user(100)
 
 
-class SignInTestCase(TestCase):
+class HttpRequestTestCase(TestCase):
 
     def setUp(self):
         self.client = Client()
@@ -30,23 +49,7 @@ class SignInTestCase(TestCase):
         return response.cookies['csrftoken'].value # Get csrf token from cookie
 
     def send(self, t, url, jd={}, result=False, login=False):
-        if login:
-            self.client.login(username='testuser2', password='5678')
-        response = None
-        url = '/api/' + url
-        if t != 'GET':
-            csrf = self.getCSRF()
-        if t == 'GET':
-            response = self.client.get(url)
-        elif t == 'POST':
-            response = self.client.post(url, json.dumps(jd), content_type='application/json', HTTP_X_CSRFTOKEN=csrf)
-        elif t == 'PUT':
-            response = self.client.put(url, json.dumps(jd), content_type='application/json', HTTP_X_CSRFTOKEN=csrf)
-        elif t == 'DELETE':
-            response = self.client.delete(url, HTTP_X_CSRFTOKEN=csrf)
-        if result:
-            self.result = json.loads(response.content.decode())
-        return response.status_code
+        return http_send(self, t, url, jd, result, login, self.getCSRF())
 
     def test_token(self):
         self.assertEqual(204, self.send('GET', 'token'))
@@ -75,3 +78,31 @@ class SignInTestCase(TestCase):
         self.assertEqual(200, self.send('GET', 'signout'))
 
         self.assertEqual(405, self.send('DELETE', 'signout'))
+
+    def sendGET(self, url, jd):
+        return self.send('GET', url, jd, result=True, login=True)
+    def sendPOST(self, url, jd):
+        return self.send('POST', url, jd, result=True, login=True)
+    def sendPUT(self, url, jd):
+        return self.send('PUT', url, jd, result=True, login=True)
+    def sendDELETE(self, url, jd):
+        return self.send('DELETE', url, jd, result=True, login=True)
+
+    def test_req_document(self):
+        # create document and check title
+        self.sendPOST('document', {'user_id': 1, 'title': 'new_document'})
+        doc_id = self.result['id']
+        self.sendGET('document', {'user_id': 1, 'document_id': doc_id})
+        doc_title = self.result['title']
+        self.assertEqual(doc_title, 'new_document')
+        self.sendGET('documentlist', {'user_id': 1})
+        print(self.result)
+
+        pass
+
+    def test_req_document_contributors(self):
+        pass
+
+    def test_req_send_invitation(self):
+        pass
+

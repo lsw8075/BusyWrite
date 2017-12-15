@@ -14,7 +14,7 @@ def do_fetch_document(
     user_id: int,
     document_id: int
     ):
-    return fetch_document_with_lock(user_id, document_id)
+    return model_to_dict(fetch_document_with_lock(user_id, document_id))
 
 def fetch_document_with_lock(user_id, document_id):
     try:
@@ -83,7 +83,7 @@ def do_create_document(
     conclbody_bubble = create_normal(document, t_conclbody, concl_bubble, 1)
 
     res = model_to_dict(document)
-    res['root_id'] = root_bubble.id
+    res['rootbubble_id'] = root_bubble.id
     return res
     
 @transaction.atomic
@@ -92,7 +92,7 @@ def do_fetch_contributors(
     document_id: int
     ):
 
-    document = do_fetch_document(user_id, document_id)
+    document = fetch_document_with_lock(user_id, document_id)
     return list(document.contributors.all().values())
 
 def key_duser(document_id):
