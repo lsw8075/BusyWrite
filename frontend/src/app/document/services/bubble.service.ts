@@ -36,7 +36,6 @@ export class BubbleService implements OnDestroy {
             private _socket: ServerSocket,
             private _http: Http)  {
         const stream = this._socket.connect();
-        console.log(stream);
         this.socketSubscription = stream.subscribe(message => {
                 console.log('recevied message from server: ', message);
                 this.channelMessageHandler(message);
@@ -67,12 +66,10 @@ export class BubbleService implements OnDestroy {
     }
 
     channelMessageHandler(msg) {
-
-        console.log(msg);
         const data = msg;
         // let data = JSON.parse(msg);
         // TODO: check if data has appropriate elements
-        
+
         const command = data.header;
         const accept = data.accept;
         const body = data.body;
@@ -101,6 +98,7 @@ export class BubbleService implements OnDestroy {
                 console.log(JSON.stringify(body));
                 const bubbleArray = BubbleJsonHelper.getBubbleArrayObject(JSON.stringify(body));
                 this._store.dispatch(new BubbleAction.LoadComplete(bubbleArray));
+                // TODO: FRONT needs LoadComplete with Array<Bubble>
             } else {
                 console.log('received get_bubble_list fail');
                 this._store.dispatch(new BubbleAction.LoadError(body));
@@ -115,6 +113,7 @@ export class BubbleService implements OnDestroy {
                 // }
                 // change bubbleslist and push it into appropriate Subject<Bubble>
                 console.log('received create_bubble success');
+                // TODO: FRONT needs CreateComplete with new LeafBubble
             } else {
                 this._store.dispatch(new BubbleAction.CreateError(body));
                 console.log('received create_bubble fail');
@@ -122,17 +121,20 @@ export class BubbleService implements OnDestroy {
         } else if (command === 'create_suggest_bubble') {
             if (accept === 'True') {
                 console.log('received create_suggest_bubble success');
+                // TODO: FRONT needs CreateSBComplete with new SuggestBubble
             } else {
                 console.log('received create_suggest_bubble fail');
             }
         } else if (command === 'edit_bubble') {
             if (accept === 'True') {
                 console.log('received edit_bubble success');
+                // TODO: FRONT needs EditUpdate with bubble id
             } else {
                 console.log('received edit_bubble fail');
             }
         } else if (command === 'finish_editting_bubble') {
             if (accept === 'True') {
+            // TODO: FRONT needs EditComplete with bubble id
             } else {
 
             }
@@ -140,6 +142,7 @@ export class BubbleService implements OnDestroy {
             if (accept === 'True') {
                 console.log('received pop_bubble success');
                 this._store.dispatch(new BubbleAction.PopComplete(body.bubble_id));
+                // TODO: FRONT needs PopComplete with bubble id
             } else {
                 console.log('received pop_bubble fail');
                 console.log(body);
@@ -322,7 +325,7 @@ export class BubbleService implements OnDestroy {
             'body': {'bubble_id_list': wrapBubbleIdList}};
         this._socket.send(m);
     }
-    
+
     public popBubble(bubbleId: number) {
         const m = {'header': 'pop_bubble',
             'previous_request': previousRequestId,
@@ -352,7 +355,7 @@ export class BubbleService implements OnDestroy {
             'body': {'merge_bubble_id_list': mergeBubbleIdList}};
         this._socket.send(m);
     }
-   
+
     public flattenBubble(bubbleId: number) {
         const m = {'header': 'flatten_bubble',
             'previous_request': previousRequestId,

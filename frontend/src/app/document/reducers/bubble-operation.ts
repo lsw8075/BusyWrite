@@ -252,6 +252,7 @@ export function wrapBubble(bubbleList: Array<Bubble>, wrapBubbleIds: Array<numbe
             if (bubble.parentBubbleId !== parentBubbleId) {
                 throw new Error('wrap bubbles should have same parent id');
             }
+            bubble.parentBubbleId = newInternalBubble.id;
         }
 
         const newLocation = wrapBubbleList[0].location;

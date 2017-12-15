@@ -40,7 +40,7 @@ export class EventBubbleService {
     // this.actionState = ActionType.none;
     // this.selectState = SelectState.none;
     // this.selectedBubble = null;
-    console.log('state initialized to none');
+//    console.log('state initialized to none');
   }
 
   public setState(nextState: ActionType) {
