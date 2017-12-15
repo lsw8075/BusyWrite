@@ -4,10 +4,15 @@ import { MenuType } from '../services/event/event-bubble.service';
 
 export const OPEN = '[Document] open';
 export const OPEN_COMPLETE = '[Document] open complete';
+export const OPEN_PENDING = '[Document] open pending';
 export const OPEN_ERROR = '[Document] open error';
 export class Open implements Action {
   readonly type = OPEN;
   constructor(public payload: number) {}
+}
+export class OpenPending implements Action {
+  readonly type = OPEN_PENDING;
+  constructor(public payload: void) {}
 }
 export class OpenComplete implements Action {
   readonly type = OPEN_COMPLETE;
@@ -19,7 +24,7 @@ export class OpenError implements Action {
 }
 
 export const LOAD = '[Bubble] Load';
-export const LOAD_PENDING = '[Bubble] Loading';
+export const LOAD_PENDING = '[Bubble] load pending';
 export const LOAD_COMPLETE = '[Bubble] load Complete';
 export const LOAD_ERROR = '[Bubble] load Error';
 export class Load implements Action {
@@ -358,6 +363,7 @@ export class ClearError implements Action {
 
 export type Actions =
   | Open
+  | OpenPending
   | OpenComplete
   | OpenError
   | Load

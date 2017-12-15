@@ -151,13 +151,12 @@ export class BubbleService implements OnDestroy {
         }
     }
 
-    public openDocument(documentId: number): Promise<void> {
+    public openDocument(documentId: number) {
         const m = {'header': 'open_document',
             'previous_request': 0,
             'body': {'document_id': documentId}};
         console.log('send open_document');
         this._socket.send(m);
-        return Promise.resolve(null);
     }
 
     public closeDocument(documentId: number) {
@@ -281,7 +280,7 @@ export class BubbleService implements OnDestroy {
             'body': {'bubble_id': bubbleId}};
         this._socket.send(m);
     }
-                                                     
+
     public hideSuggestBubble(suggestBubbleId: number) {
         const m = {'header': 'hide_suggest_bubble',
             'previous_request': this.previousRequestId,

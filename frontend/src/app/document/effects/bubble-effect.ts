@@ -38,14 +38,14 @@ export class BubbleEffects {
     @Effect({dispatch: true})
     open$ = this.action$.ofType<BubbleAction.Open>(BubbleAction.OPEN)
         .map(action => action.payload).mergeMap(query => {
-            this.bubbleService.openDocument(query);
-            return Observable.of({});
+            return Observable.of(this.bubbleService.openDocument(query))
+                .map(() => new BubbleAction.OpenPending(null));
         });
 
     @Effect()
     openComplete$: Observable<Action> = this.action$.ofType<BubbleAction.OpenComplete>(BubbleAction.OPEN_COMPLETE)
         .map(action => action.payload).mergeMap(query => {
-        return Observable.of(new BubbleAction.Load(query));
+            return Observable.of(new BubbleAction.Load(query));
         });
 
     @Effect()
