@@ -81,13 +81,13 @@ export class BubbleEffects {
     @Effect()
     createComplete$: Observable<Action> = this.action$.ofType<BubbleAction.CreateBubbleComplete>(BubbleAction.CREATE_BUBBLE_COMPLETE)
         .map(action => action.payload).mergeMap(query => {
-            return Observable.of(new BubbleAction.EditUpdate(query.id));
+            return Observable.of(new BubbleAction.EditUpdate({bubbleId: query.id, content: 'new'}));
         });
 
     @Effect()
     editUpdate$: Observable<Action> = this.action$.ofType<BubbleAction.EditUpdate>(BubbleAction.EDIT_UPDATE)
         .map(action => action.payload).mergeMap(query => {
-            return Observable.of(this.bubbleService.updateEdittingBubble(query, "updateEdittingBubble"))
+            return Observable.of(this.bubbleService.updateEdittingBubble(query.bubbleId, query.content))
                 .map(() => new BubbleAction.EditUpdatePending(null));
         });
 

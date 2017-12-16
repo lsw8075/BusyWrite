@@ -112,7 +112,7 @@ export class DocumentDetailPageComponent implements OnInit {
     }
 
     public moveBubble(): void {
-        this._store.dispatch(new BubbleAction.MoveBubble());
+        this._store.dispatch(new BubbleAction.MoveBubble({bubbleId: 2, destBubbleId: 1, isAbove: true}));
     }
 
     public mergeBubble(): void {

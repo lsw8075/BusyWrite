@@ -192,11 +192,11 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
         case fromBubble.FLATTEN_BUBBLE:
             return {...state, loading: true, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
         case fromBubble.FLATTEN_BUBBLE_COMPLETE: {
-            const bubbleId = action.payload.bubbleId;
-            const newLeafBubble = action.payload.newBubble;
-            const newBubbleList = _.cloneDeep(state.bubbleList);
-            flattenBubble(newBubbleList, bubbleId, newLeafBubble);
-            return {...state, bubbleList: newBubbleList, loading: false};
+            // const bubbleId = action.payload.bubbleId;
+            // const newLeafBubble = action.payload.newBubble;
+            // const newBubbleList = _.cloneDeep(state.bubbleList);
+            // flattenBubble(newBubbleList, bubbleId, newLeafBubble);
+            return {...state, loading: false};
         }
         case fromBubble.FLATTEN_BUBBLE_ERROR:
             return {...state, loading: false, error: action.payload, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
@@ -207,7 +207,7 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
             return {...state, viewBoardMenuType: ViewBoardMenuType.none, loading: true};
         case fromBubble.WRAP_BUBBLE_COMPLETE: {
             const wrapBubbleIds = action.payload.wrapBubbleIdList;
-            const newInternalBubble = action.payload.newWrappedBubble;
+            const newInternalBubble = action.payload.newWrappedBubble as InternalBubble;
             const newBubbleList = _.cloneDeep(state.bubbleList);
             wrapBubble(newBubbleList, wrapBubbleIds, newInternalBubble);
             return {...state, bubbleList: newBubbleList, loading: false, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
@@ -244,12 +244,13 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
         case fromBubble.MOVE_BUBBLE:
             return {...state, loading: true, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
         case fromBubble.MOVE_BUBBLE_COMPLETE: {
-            const bubbleId = action.payload.bubbleId;
-            const destBubbleId = action.payload.newParentId;
-            const isAbove = action.payload.isAbove;
-            const newBubbleList = _.cloneDeep(state.bubbleList);
-            moveBubble(newBubbleList, bubbleId, destBubbleId, isAbove);
-            return {...state, bubbleList: newBubbleList, loading: false};
+            // const bubbleId = action.payload.bubbleId;
+            // const destBubbleId = action.payload.newParentId;
+            // const isAbove = action.payload.isAbove;
+            // const newBubbleList = _.cloneDeep(state.bubbleList);
+            // moveBubble(newBubbleList, bubbleId, destBubbleId, isAbove);
+            // return {...state, bubbleList: newBubbleList, loading: false};
+            return {...state, loading: false};
         }
         case fromBubble.MOVE_BUBBLE_ERROR:
             return {...state, loading: false, error: action.payload, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
