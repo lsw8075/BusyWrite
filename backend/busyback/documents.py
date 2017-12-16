@@ -98,7 +98,9 @@ def do_fetch_contributors(
     ):
 
     document = fetch_document_with_lock(user_id, document_id)
-    return list(document.contributors.all().values())
+    users = list(document.contributors.all().values())
+    users = [{'id': user['id'], 'email': user['email']} for user in users]
+    return users
 
 def key_duser(document_id):
     return 'Duser' + str(document_id)
