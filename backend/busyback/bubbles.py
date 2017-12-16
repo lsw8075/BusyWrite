@@ -645,6 +645,7 @@ def do_split_internal_bubble(
     **kw
     ):
     
+    split_location = split_location[1:]
     if len(split_location) < 1:
         raise InvalidSplitError()
 
