@@ -3,6 +3,7 @@ import { Action } from '@ngrx/store';
 import * as FileModel from '../models/file-system-entity';
 
 import * as fromFile from '../actions/file-action';
+import * as _ from 'lodash';
 
 export interface FileState {
     fileList: FileModel.FileSystemEntity[];
@@ -31,7 +32,10 @@ export function FileReducer(state: FileState = initialState, action: fromFile.Ac
         case fromFile.CREATE:
             return {...state, loading: true};
         case fromFile.CREATE_COMPLETE:
-            return {...state, loading: false, fileList: [...state.fileList].push(action.payload)};
+            const newFileList = _.cloneDeep(state.fileList);
+            console.log('new document', action.payload);
+            newFileList.push(action.payload);
+            return {...state, loading: false, fileList: newFileList};
         case fromFile.CREATE_ERROR:
             return {...state, loading: false, error: action.payload};
         default:
