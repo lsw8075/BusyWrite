@@ -375,13 +375,14 @@ export class BubbleService implements OnDestroy {
         } else if (command === 'wrap_bubble') {
             if (accept == 'True') {
                 console.log('received wrap_bubble success');
-                const newWrappedBubble = BubbleJsonHelper.getBubbleObject(body.new_wrapped_bubble);
+
+                const newWrappedBubble = BubbleJsonHelper.getBubbleObject(JSON.stringify(body.new_wrapped_bubble));
                 if (body.who === this.userId) {
                     this._store.dispatch(new BubbleAction.WrapBubbleComplete(
-                                {wrapBubbleIdList: body.bubble_id_list, newWrappedBubble: newWrappedBubble}));
+                                {wrapBubbleIdList: body.wrap_bubble_id_list, newWrappedBubble: newWrappedBubble}));
                 } else {
                     this._store.dispatch(new BubbleAction.OthersWrapBubble(
-                                {wrapBubbleIdList: body.bubble_id_list, newWrappedBubble: newWrappedBubble}));
+                                {wrapBubbleIdList: body.wrap_bubble_id_list, newWrappedBubble: newWrappedBubble}));
                 }
                 this.previousRequestId = data.request_id;
             } else {
@@ -436,13 +437,13 @@ export class BubbleService implements OnDestroy {
         } else if (command === 'merge_bubble') {
             if (accept == 'True') {
                 console.log('received merge_bubble success');
-                const mergedBubble = BubbleJsonHelper.getBubbleObject(body.merged_bubble);
+                const mergedBubble = BubbleJsonHelper.getBubbleObject(JSON.stringify(body.merged_bubble));
                 if (body.who === this.userId) {
                     this._store.dispatch(new BubbleAction.MergeBubbleComplete(
-                                {bubbleIdList: body.bubble_id_list, mergedBubble: mergedBubble}));
+                                {bubbleIdList: body.merge_bubble_id_list, mergedBubble: mergedBubble}));
                 } else {
                     this._store.dispatch(new BubbleAction.OthersMergeBubble(
-                                {bubbleIdList: body.bubble_id_list, mergedBubble: mergedBubble}));
+                                {bubbleIdList: body.merge_bubble_id_list, mergedBubble: mergedBubble}));
                 }
                 this.previousRequestId = data.request_id;
             } else {
@@ -671,7 +672,7 @@ export class BubbleService implements OnDestroy {
     public wrapBubble(wrapBubbleIdList: Array<number>) {
         const m = {'header': 'wrap_bubble',
             'previous_request': this.previousRequestId,
-            'body': {'bubble_id_list': wrapBubbleIdList}};
+            'body': {'wrap_bubble_id_list': [...wrapBubbleIdList]}};
         this._socket.send(m);
     }
 
@@ -686,7 +687,7 @@ export class BubbleService implements OnDestroy {
         const m = {'header': 'split_internal_bubble',
             'previous_request': this.previousRequestId,
             'body': {'bubble_id': bubbleId,
-                'split_bubble_id_list': splitBubbleIdList}};
+                'split_bubble_id_list': [...splitBubbleIdList]}};
         this._socket.send(m);
     }
 
@@ -701,7 +702,7 @@ export class BubbleService implements OnDestroy {
     public mergeBubble(mergeBubbleIdList: Array<number>) {
         const m = {'header': 'merge_bubble',
             'previous_request': this.previousRequestId,
-            'body': {'merge_bubble_id_list': mergeBubbleIdList}};
+            'body': {'merge_bubble_id_list': [...mergeBubbleIdList]}};
         this._socket.send(m);
     }
 

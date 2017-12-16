@@ -1102,7 +1102,7 @@ def ws_receive(message):
 
         Group('document_detail-'+document_id, channel_layer=message.channel_layer).send({"text":
                 json.dumps({'header': command, 'request_id': request_id, 'accept': 'True',
-                        'body': {'who': message.user.id, 'bubble_id_list': body['bubble_id_list'],
+                        'body': {'who': message.user.id, 'wrap_bubble_id_list': body['wrap_bubble_id_list'],
                         'new_wrapped_bubble': result}})})
         return
 
@@ -1295,7 +1295,7 @@ def ws_receive(message):
                     json.dumps({'header': command, 'accept': 'False', 'body': 'body does not follow format'})})
             return
         try:
-            get = do_merge_normal_bubble(previous_state, message.user.id, int(document_id), int(body['merge_bubble_id_list']))
+            get = do_merge_normal_bubble(previous_state, message.user.id, int(document_id), body['merge_bubble_id_list'])
         except BubbleDoesNotExistError:
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False',
@@ -1334,7 +1334,7 @@ def ws_receive(message):
 
         Group('document_detail-'+document_id, channel_layer=message.channel_layer).send({"text":
                 json.dumps({'header': command, 'request_id': request_id, 'accept': 'True',
-                        'body': {'who': message.user.id, 'bubble_id_list': body['bubble_id_list'],
+                        'body': {'who': message.user.id, 'merge_bubble_id_list': body['merge_bubble_id_list'],
                         'merged_bubble': result}})})
         return
 

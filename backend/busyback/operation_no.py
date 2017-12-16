@@ -22,6 +22,7 @@ class Operation(Enum):
     GET_ROOT_BUBBLE         = 103
     CREATE_NORMAL           = 111
     EDIT_NORMAL             = 112
+    EDIT_UPDATE             = 94
     UPDATE_FINISH_NORMAL    = 113
     UPDATE_DISCARD_NORMAL   = 114
     DELETE_NORMAL           = 115
@@ -32,7 +33,7 @@ class Operation(Enum):
     SPLIT_LEAF              = 123
     SPLIT_INTERNAL          = 124
     FLATTEN_NORMAL          = 125
-    MERGE_NORMAL            = 126 
+    MERGE_NORMAL            = 126
     # suggest bubble operations: 2xx
     FETCH_SUGGEST           = 201
     FETCH_SUGGESTS          = 202
@@ -57,4 +58,3 @@ class Operation(Enum):
     # note operations: 4xx
     EXPORT_NOTE_TO_NORMAL   = 431
     EXPORT_NOTE_TO_SUGGEST  = 432
-     
