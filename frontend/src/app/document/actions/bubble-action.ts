@@ -10,7 +10,7 @@ export const OPEN_PENDING = '[Document] open pending';
 export const OPEN_ERROR = '[Document] open error';
 export class Open implements Action {
   readonly type = OPEN;
-  constructor() {}
+  constructor(public payload: number) {}
 }
 export class OpenPending implements Action {
   readonly type = OPEN_PENDING;
@@ -342,7 +342,7 @@ export class OthersEditUpdate implements Action {
     constructor(public payload: {
             bubbleId: number,
             content: string}) {}
-}       
+}
 export class EditComplete implements Action {
     readonly type = EDIT_COMPLETE;
     constructor(public payload: number) {}
@@ -380,11 +380,11 @@ export class EditBubbleError implements Action {
   constructor(public payload: string) {}
 }
 
-export const RELEASE_OWNERSHIP = '[Bubble] release ownership'; 
+export const RELEASE_OWNERSHIP = '[Bubble] release ownership';
 export const RELEASE_ONWERSHIP_PENDING = '[Bubble] release ownership pending';
 export const RELEASE_OWNERSHIP_COMPLETE = '[Bubble] release onwership complete';
 export const RELEASE_OWNERSHIP_ERROR = '[Bubble] release ownership error';
-export const OTHERS_RELEASE_OWNERSHIP = '[Bubble] others release ownership'; 
+export const OTHERS_RELEASE_OWNERSHIP = '[Bubble] others release ownership';
 export class ReleaseOwnership implements Action {
     readonly type = RELEASE_OWNERSHIP;
     constructor(public payload: number) {}
@@ -422,7 +422,7 @@ export class EditSuggestPending implements Action {
 export class EditSuggestComplete implements Action {
     readonly type = EDIT_SUGGEST_COMPLETE;
     constructor(public payload: number) {}
-} 
+}
 export class EditSuggestError implements Action {
     readonly type = EDIT_SUGGEST_ERROR;
     constructor(public payload: number) {}
@@ -568,7 +568,7 @@ export const MOVE_BUBBLE = '[Bubble] move';
 export const MOVE_BUBBLE_PENDING = '[Bubble] move pending';
 export const MOVE_BUBBLE_COMPLETE = '[Bubble] move Complete';
 export const MOVE_BUBBLE_ERROR = '[Bubble] move Error';
-export const OTHERS_MOVE_BUBBLE = '[Bubble] others move'; 
+export const OTHERS_MOVE_BUBBLE = '[Bubble] others move';
 export class MoveBubble implements Action {
   readonly type = MOVE_BUBBLE;
   constructor(public payload: {
@@ -908,7 +908,7 @@ export type Actions =
   | LoadCommentOnSuggest
   | LoadCommentOnSuggestPending
   | LoadCommentOnSuggestComplete
-  | LoadCommentOnSuggestError 
+  | LoadCommentOnSuggestError
   | Select
   | SelectClear
   | MouseOver
