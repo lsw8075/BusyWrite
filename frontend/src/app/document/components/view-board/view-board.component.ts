@@ -48,7 +48,6 @@ export class ViewBoardComponent implements OnInit {
     private _store: Store<fromDocument.State>,
     private _loadingService: TdLoadingService) {
         this._store.select(fromDocument.isLoading).subscribe(loading => {
-            console.log(loading);
             if (loading) {
                 this._loadingService.register('bubbleLoading');
             } else {
