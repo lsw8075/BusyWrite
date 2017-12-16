@@ -1,5 +1,5 @@
 import { Action } from '@ngrx/store';
-import * as FileModel from '../models/file-system-entity';
+import { FileSystemEntity } from '../models/file-system-entity';
 
 export const LOAD = '[File] Load';
 export const LOAD_COMPLETE = '[File] load Complete';
@@ -19,14 +19,16 @@ export const DELETE = '[File] delete';
 export const DELETE_COMPLETE = '[File] delete Complete';
 export const DELETE_ERROR = '[File] delete Error';
 
+export const OPEN = '[File] Open';
+
 export class Load implements Action {
     readonly type = LOAD;
-    constructor(public payload: void) {}
+    constructor() {}
 }
 
 export class LoadComplete implements Action {
     readonly type = LOAD_COMPLETE;
-    constructor(public payload: FileModel.FileSystemEntity[]) {}
+    constructor(public payload: FileSystemEntity[]) {}
 }
 
 export class LoadError implements Action {
@@ -36,12 +38,12 @@ export class LoadError implements Action {
 
 export class Select implements Action {
     readonly type = SELECT;
-    constructor(public payload: FileModel.FileSystemEntity) {}
+    constructor(public payload: FileSystemEntity) {}
 }
 
 export class Create implements Action {
     readonly type = CREATE;
-    constructor(public payload: FileModel.FileSystemEntity) {}
+    constructor(public payload: FileSystemEntity) {}
 }
 
 export class CreateComplete implements Action {
@@ -54,6 +56,11 @@ export class CreateError implements Action {
     constructor(public payload: string) {}
 }
 
+export class Open implements Action {
+    readonly type = OPEN;
+    constructor(public payload: FileSystemEntity) {}
+}
+
 export type Actions =
     | Load
     | LoadComplete
@@ -61,4 +68,5 @@ export type Actions =
     | Create
     | CreateComplete
     | CreateError
-    | Select;
+    | Select
+    | Open;

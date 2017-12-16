@@ -10,7 +10,7 @@ export const OPEN_PENDING = '[Document] open pending';
 export const OPEN_ERROR = '[Document] open error';
 export class Open implements Action {
   readonly type = OPEN;
-  constructor(public payload: number) {}
+  constructor() {}
 }
 export class OpenPending implements Action {
   readonly type = OPEN_PENDING;

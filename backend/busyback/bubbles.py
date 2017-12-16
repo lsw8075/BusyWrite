@@ -10,12 +10,7 @@ from django.db import transaction
 from django.forms.models import model_to_dict
 from functools import wraps
 from .operation_no import Operation
-
-def create_normal(doc, content='', parent=None, location=0):
-    return NormalBubble.objects.create(content=content, document=doc, location=location, parent_bubble=parent)
-
-def create_suggest(bind, content):
-    return SuggestBubble.objects.create(content=content, normal_bubble=bind, hidden=False)
+from .utils import create_normal, create_suggest
 
 def delete_normal(bubble):
     bubble.deleted = True
@@ -92,7 +87,7 @@ def bubble_operation(func):
 def fetch_normal(bubble_id):
     try:
         bubble = NormalBubble.objects.get(id=bubble_id)
-    except NormalBubble.DoesNotExistError:
+    except NormalBubble.DoesNotExist:
         raise BubbleDoesNotExistError(bubble_id)
     if bubble.deleted:
         raise BubbleDoesNotExistError(bubble_id)
@@ -102,7 +97,7 @@ def fetch_normal(bubble_id):
 def fetch_suggest(bubble_id):
     try:
         bubble = SuggestBubble.objects.get(id=bubble_id)
-    except SuggestBubble.DoesNotExistError:
+    except SuggestBubble.DoesNotExist:
         raise BubbleDoesNotExistError(bubble_id)
     return bubble
 
@@ -190,17 +185,17 @@ def do_get_root_bubble(
     document_id: int,
     **kw
     ):
+    document = kw['document']
+    return process_normal(get_root_bubble(document))
+
+def get_root_bubble(document):
     try:
-        document = kw['document']
         root_bubble = NormalBubble.objects.filter(parent_bubble=None).get(document=document)
     except NormalBubble.MultipleObjectsReturned:
-        raise InternalError('Document %d has multiple root bubble' % document_id)
+        raise InternalError('Document %d has multiple root bubble' % document.id)
     except NormalBubble.DoesNotExist:
-        raise InternalError('Document %d has no root bubble' % document_id)
-    return process_normal(root_bubble)
-
-def get_root_bubble(user_id, document_id):
-    return do_get_root_bubble(user_id, document_id)
+        raise InternalError('Document %d has no root bubble' % document.id)
+    return root_bubble
 
 @normal_operation
 @update_doc

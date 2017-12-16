@@ -7,6 +7,9 @@ urlpatterns = [
     url('^signin$', views.signin, name='signin'),
     url('^signout$', views.signout, name='signout'),
     url('^token$', views.token, name='token'),
+    url('^documentlist$', views.req_document_list, name='req_document_list'),
+    url('^document$', views.req_document_detail, name='req_document_detail'),
+
 ]
 
 channel_routing = [

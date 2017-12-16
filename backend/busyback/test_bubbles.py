@@ -4,6 +4,7 @@ from .mock_db_setup import *
 from .errors import *
 from .bubbles import *
 from .debug import *
+from .utils import create_normal, create_suggest
 
 class BubblesTestCase(TestCase):
     
@@ -48,7 +49,7 @@ class BubblesTestCase(TestCase):
         suggests = do_fetch_suggest_bubbles(0, self.user1.id, self.doc1.id, self.bubble4.id)
         self.assertEqual(len(suggests), 0)
 
-    def test_get_root_bubble(self):
+    def test_do_get_root_bubble(self):
         emptydoc = Document.objects.create(title='error doc')
         emptydoc.contributors.add(self.user1)
 
