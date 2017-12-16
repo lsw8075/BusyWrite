@@ -232,7 +232,8 @@ def do_create_normal_bubble(
     new_bubble = create_normal(parent_bubble.document, content, parent_bubble, location)
 
     new_bubble.edit_lock_holder = user
-    new_bubble.owner_with_lock = None
+    if is_owned:
+        new_bubble.owner_with_lock = user
 
     parent_bubble.insert_children(location, [new_bubble])
     
