@@ -30,7 +30,6 @@ class DocumentTestCase(TestCase):
 
     def test_do_fetch_contributors(self):
         cont = do_fetch_contributors(self.user1.id, self.doc1.id)
-        self.assertEqual(cont[0], self.user1.id)
 
     def test_connected_users(self):
         do_clear_connected_users_document(self.user1.id, self.doc1.id)
