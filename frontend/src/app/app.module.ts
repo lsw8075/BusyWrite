@@ -18,12 +18,12 @@ import { reducers, CustomSerializer } from './shared/reducer';
 import { RouterEffects } from './shared/route/route-effect';
 
 const routes: Routes = [
-    { path: '', redirectTo: 'users/signin', pathMatch: 'full' }, // for easy testing, temporary
+    { path: '', redirectTo: 'documents/1', pathMatch: 'full' }, // for easy testing, temporary
     { path: 'landing', pathMatch: 'full', component: LandingComponent },
-    { path: 'users', loadChildren: './user/user-state.module.ts#UserStateModule'},
-    { path: 'documents', loadChildren: './document/document-state.module.ts#DocumentStateModule' },
-    { path: 'files', loadChildren: './file/file-state.module.ts#FileStateModule' },
-    { path: 'alerts', loadChildren: './alert/alert-state.module.ts#AlertStateModule' },
+    { path: 'users', loadChildren: './user/user-state.module#UserStateModule'},
+    { path: 'documents/:id', loadChildren: './document/document-state.module#DocumentStateModule' },
+    { path: 'files', loadChildren: './file/file-state.module#FileStateModule' },
+    { path: 'alerts', loadChildren: './alert/alert-state.module#AlertStateModule' },
     { path: '**', redirectTo: 'users/signin' }
 ];
 

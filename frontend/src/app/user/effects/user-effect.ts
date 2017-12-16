@@ -55,7 +55,7 @@ export class UserEffects {
     @Effect()
     signinSuccess$: Observable<Action> = this.action$.ofType<fromUser.SignInSuccess>(fromUser.SIGNIN_SUCCESS)
         .map(action => action.payload).mergeMap(query =>
-            Observable.of(new fromRouter.GoByUrl('documents'))
+            Observable.of(new fromRouter.GoByUrl('documents/1'))
         );
 
     @Effect()
@@ -95,7 +95,6 @@ export class UserEffects {
         }));
 
     getCookie(name) {
-        console.log('cookie', document.cookie);
         const value = ';' + document.cookie;
         const parts = value.split(';' + name + '=');
         if (parts.length === 2) {

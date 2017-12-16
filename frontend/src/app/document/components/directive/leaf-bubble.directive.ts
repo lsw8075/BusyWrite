@@ -1,55 +1,53 @@
 import { Directive, ElementRef, Renderer2, HostListener, HostBinding, Input, TemplateRef, ViewContainerRef, OnInit } from '@angular/core';
 import { EventBubbleService } from '../service';
-import { BubbleTemp } from '../service';
+import { Bubble, LeafBubble } from '../../models/bubble';
 
 @Directive({
-  selector: '[appLeafBubble]'
+    selector: '[appLeafBubble]'
 })
 export class LeafBubbleDirective implements OnInit {
 
-  @Input() appLeafBubble: BubbleTemp;
+    @Input() appLeafBubble: LeafBubble;
+    @Input() isSelected: boolean;
 
-  private selectedColor = `rgb(157, 172, 255)`;
-  private editColor = `rgb(100, 100, 100)`;
+    private selectedColor = `rgb(157, 172, 255)`;
+    private editColor = `rgb(200, 230, 200)`;
 
-  constructor(
-    private el: ElementRef,
-    private renderer: Renderer2,
-    private _eventBubbleService: EventBubbleService) {}
+    constructor(
+        private el: ElementRef,
+        private renderer: Renderer2,
+        private _eventBubbleService: EventBubbleService) {}
 
-  ngOnInit() {}
+    ngOnInit() {}
 
-  @HostBinding('style.background-color')
-  public get backgroundColor(): string {
-    if (this._eventBubbleService.isBubbleSelected(this.appLeafBubble)) {
-      return this.selectedColor;
+    @HostBinding('style.background-color')
+    public get backgroundColor(): string {
+        if (this.isSelected) {
+        return this.selectedColor;
+        }
+        if (this._isBeingEditted()) {
+            return this.editColor;
+        }
     }
-    if (this._eventBubbleService.isBeingEditted(this.appLeafBubble)) {
-      return this.editColor;
-    }
-  }
 
-  @HostBinding('style.color')
-  public get color(): string {
-    if (this._eventBubbleService.isBeingEditted(this.appLeafBubble)) {
-      return 'white';
+    @HostListener('mouseenter')
+    onMouseEnter() {
+        this.renderer.setStyle(this.el.nativeElement, 'background-color', `rgba(157, 172, 255, 0.4)`);
     }
-  }
-
-  @HostListener('mouseenter')
-  onMouseEnter() {
-    this.renderer.setStyle(this.el.nativeElement, 'background-color', `rgba(157, 172, 255, 0.4)`);
-  }
 
   @HostListener('mouseleave')
-  onMouseLeave() {
-    if (this._eventBubbleService.isBubbleSelected(this.appLeafBubble)) {
-      this.renderer.setStyle(this.el.nativeElement, 'background-color', this.selectedColor);
-    } else if (this._eventBubbleService.isBeingEditted(this.appLeafBubble)) {
-      this.renderer.setStyle(this.el.nativeElement, 'background-color', this.editColor);
-    } else {
-      this.renderer.setStyle(this.el.nativeElement, 'background-color', `transparent`);
+    onMouseLeave() {
+        if (this.isSelected) {
+            this.renderer.setStyle(this.el.nativeElement, 'background-color', this.selectedColor);
+        } else if (this._isBeingEditted()) {
+            this.renderer.setStyle(this.el.nativeElement, 'background-color', this.editColor);
+        } else {
+            this.renderer.setStyle(this.el.nativeElement, 'background-color', `transparent`);
+        }
     }
-  }
+
+    private _isBeingEditted(): boolean {
+        return this.appLeafBubble.ownerId !== -1;
+    }
 
 }

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { BubbleTemp, BubbleService, EventBubbleService } from '../service';
+import { Bubble, BubbleService, EventBubbleService } from '../service';
 
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 
@@ -10,7 +10,7 @@ import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 })
 export class SplitBubbleComponent implements OnInit {
 
-  bubble: BubbleTemp;
+  bubble: Bubble;
 
   mouseDown = false;
   beforeText = '';
@@ -46,7 +46,7 @@ export class SplitBubbleComponent implements OnInit {
       this.highlightedText = text;
       this.highlightOffset = startOffset - 9;
 
-      const content = this.bubble.getContent();
+      const content = '';
       this.beforeText = content.substring(0, this.highlightOffset);
       this.afterText = content.substring(this.highlightOffset + text.length, content.length);
       this.mouseDown = false;

@@ -17,15 +17,15 @@ export class ServerSocket {
         if (this.outputStream) {
             return this.outputStream;
         }
-        
-        console.log("connecting websocket...");
+
+    //    console.log("connecting websocket...");
         return this.outputStream = this.socketFactory.connect(
                 'ws://localhost:8000',
                 this.inputStream = new QueueingSubject<any>()
         ).share();
     }
 
-    public send (message: any): void {
+    public send(message: any): void {
         this.inputStream.next(message);
         console.log("send message: ", message);
     }

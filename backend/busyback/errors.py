@@ -14,6 +14,11 @@ class BubbleOwnedError(Error):
     def __init__(self, owned_bubble):
         self.owned_bubble = owned_bubble
 
+class BubbleNotOwnedError(Error):
+    '''Raised when trying to release ownership of bubble not owned by anyone'''
+    def __init__(self, bubble):
+        self.bubble = bubble
+
 class BubbleDoesNotExistError(Error):
     '''Raised when bubble with id does not exist'''
     def __init__(self, bubble):

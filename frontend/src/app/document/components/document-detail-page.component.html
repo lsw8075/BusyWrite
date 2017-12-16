@@ -1,38 +1,143 @@
+<div class="container-fluid">
+    <div class="row navbar navbar-expand-lg navbar-light bg-light mb-2 justify-content-between">
+        <div class="col-sm-7">
+            <ng-container *ngIf="changeTitle; then editTitle else showTitle"></ng-container>
+            <div class="btn-toolbar" role="toolbar">
+                <div class="btn-group ml-2" role="group">
+                    <ng-container *ngIf="changeTitle">
+                        <button type="button" [tooltip]="'edit finished?'" placement="bottom" class="btn btn-sm btn-outline-secondary" (click)="titleEditDone()">
+                            <i class="fa fa-check fa-fw"></i>
+                        </button>
+                    </ng-container>
+                    <ng-container *ngIf="!changeTitle">
+                        <button type="button" [tooltip]="'edit title'"  placement="bottom" class="btn btn-sm btn-outline-secondary" (click)="titleEditStart()" >
+                            <i class="fa fa-pencil fa-fw"></i>
+                        </button>
+                    </ng-container>
+
+                </div>
+                <div class="btn-group ml-2" role="group">
+                    <button type="button" [tooltip]="'add member'" placement="bottom" class="btn btn-sm btn-outline-secondary">
+                        <i class="fa fa-fw fa-address-book"></i>
+                    </button>
+                    <button type="button" [tooltip]="'see all members'" placement="bottom" class="btn btn-sm btn-outline-secondary">
+                        <i class="fa fa-fw fa-users"></i>
+                    </button>
+                </div>
+
+                <div class="btn-group mx-2" role="group">
+                    <ng-container *ngIf="activeBoard">
+                        <ng-container *ngTemplateOutlet="boardMenu; context: { $implicit: activeBoard }"></ng-container>
+                    </ng-container>
+                </div>
+            </div>
+
+            <ng-template #editTitle>
+                <input (keyup.enter)="titleEditDone()" type="text" [(ngModel)]="documentTitle">
+            </ng-template>
+
+            <ng-template #showTitle>
+                <div class="title">
+                    {{documentTitle}}
+                </div>
+            </ng-template>
 
 
-  <app-view-board></app-view-board>
-<!---
-<p-dialog header="Change Title" [(visible)]="displayTitleEditDialog" modal="modal" width="500" [responsive]="true">
-  <p>
-    <span class="ui-float-label">
-      <input [(ngModel)]="documentTitle" id="float-input" type="text" maxlength="60" width="300" pInputText>
-      <label for="float-input">New Title</label>
-    </span>
-  </p>
-    <div *ngIf="shouldShowTitleError">
-      <em style='color: red'>
-        Please input valid title
-      </em>
+        </div>
+        <div class="col-sm-3">
+            Show contributers
+        </div>
+        <div class="col-sm-2">
+            <button type="button" (click)="goBack()" [tooltip]="'go to main page'" placement="bottom" class="btn btn-sm btn-outline-secondary">
+                <i class="fa fa-fw fa-chevron-circle-left"></i>
+            </button>
+            <button type="button" [tooltip]="'sign out'" placement="bottom" class="btn btn-sm btn-outline-secondary">
+                <i class="fa fa-fw fa-sign-out"></i>
+            </button>
+        </div>
     </div>
-  <p-footer>
-    <button type="button" class="changeTitle" pButton icon="fa-check" (click)="onChangeTitleButton()" label="Change"></button>
-    <button type="button" class="cancelTitle" pButton icon="fa-close" (click)="onCancelTitleButton()" label="Cancel"></button>
-  </p-footer>
-</p-dialog>
-
-Document Title : <button pButton id="document_title" type="button" class="ui-button-secondary" (click)="displayTitleEditDialog=true" [label]="documentTitle"> </button>
-
-<div class="ui-g">
-  <div class="ui-g-7 ui-sm-12">
-    <app-view-board></app-view-board>
-  </div>
-  <div class="ui-g-5 ui-sm-12">
-    <app-edit-board></app-edit-board>
-  </div>
-  <div class="ui-g-12 ui-sm-12">
-    <app-sangjun-board></app-sangjun-board>
-  </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <ng-container *ngTemplateOutlet="board; context: { $implicit: leftBoard$ }"></ng-container>
+        </div>
+        <div class="col-sm-6">
+            <ng-container *ngTemplateOutlet="board; context: { $implicit: rightBoard$ }"></ng-container>
+        </div>
+    </div>
+    <div class="row">
+        <app-board-manager>
+            your board manager is Loading!
+        </app-board-manager>
+    </div>
 </div>
 
-<app-board-manager></app-board-manager>
--->
+<ng-template #board let-board$>
+    <div *ngIf="board$ | async as board">
+        <div class="board list-group-item"
+                [appBoardFocus]="board"
+                [class.activeBoard]="isBoardActive(board)" >
+            <div [ngSwitch]="board.type">
+                <div *ngSwitchCase="boardType.view">
+                    <app-view-board
+                        [board]="board"
+                        [rootBubble]="rootBubble$ | async"
+                        [bubbleList]="bubbleList$ | async"
+                        [userId]="userId$ | async"
+                        [selectedBubbleList]="selectedBubbleList$ | async"
+                        [hoverBubbleList]="hoverBubbleList$ | async"
+                        [selectedMenu]="selectedMenu$ | async">
+                        Your document view board is loading ...
+                    </app-view-board>
+                </div>
+                <div *ngSwitchCase="boardType.edit">
+                    <app-edit-board></app-edit-board>
+                </div>
+                <div *ngSwitchCase="boardType.suggest">
+                    <app-sangjun-board
+                        [bubble]="sangjunBubble$ | async"
+                    ></app-sangjun-board>
+                </div>
+                <div *ngSwitchCase="boardType.filter">
+                    <app-filter-board
+                        [bubbleList]="bubbleList$ | async"
+                    ></app-filter-board>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+
+<ng-template #boardMenu let-board>
+    <div [ngSwitch]="board.type">
+        <div *ngSwitchCase="boardType.view">
+            <div [ngSwitch]="viewBoardMenu$ | async">
+                <div *ngSwitchCase="viewBoardMenuType.wrap">
+                    <button type="button" (click)="wrapBubbles()" [tooltip]="'wrap bubbles'" placement="bottom" class="btn btn-sm btn-success">
+                        <i class="fa fa-fw fa-square"></i>
+                        Wrap Bubbles
+                    </button>
+                </div>
+                <div *ngSwitchCase="viewBoardMenuType.move">
+                    <button type="button" (click)="moveBubble()" [tooltip]="'move bubble'" placement="bottom" class="btn btn-sm btn-success">
+                        <i class="fa fa-fw fa-square"></i>
+                        Move Bubble
+                    </button>
+                </div>
+                <div *ngSwitchCase="viewBoardMenuType.merge">
+                    <button type="button" (click)="mergeBubble()" [tooltip]="'move bubble'" placement="bottom" class="btn btn-sm btn-success">
+                        <i class="fa fa-compress fa-fw"></i>
+                        Merge Bubble
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div *ngSwitchCase="boardType.edit">
+            <button type="button" (click)="createNote()" [tooltip]="'create new note'" placement="bottom" class="btn btn-sm btn-success">
+                <i class="fa fa-fw fa-plus"></i>
+                Create Note
+            </button>
+        </div>
+    </div>
+</ng-template>

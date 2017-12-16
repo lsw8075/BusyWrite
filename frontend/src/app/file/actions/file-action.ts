@@ -1,23 +1,23 @@
 import { Action } from '@ngrx/store';
 import * as FileModel from '../models/file-system-entity';
 
-export const LOAD = '[Agent] Load';
-export const LOAD_COMPLETE = '[Agent] load Complete';
-export const LOAD_ERROR = '[Agent] load Error';
+export const LOAD = '[File] Load';
+export const LOAD_COMPLETE = '[File] load Complete';
+export const LOAD_ERROR = '[File] load Error';
 
-export const SELECT = '[Agent] Select';
+export const SELECT = '[File] Select';
 
-export const CREATE = '[Agent] create';
-export const CREATE_COMPLETE = '[Agent] create Complete';
-export const CREATE_ERROR = '[Agent] create Error';
+export const CREATE = '[File] create';
+export const CREATE_COMPLETE = '[File] create Complete';
+export const CREATE_ERROR = '[File] create Error';
 
-export const EDIT = '[Agent] edit';
-export const EDIT_COMPLETE = '[Agent] edit Complete';
-export const EDIT_ERROR = '[Agent] edit Error';
+export const EDIT = '[File] edit';
+export const EDIT_COMPLETE = '[File] edit Complete';
+export const EDIT_ERROR = '[File] edit Error';
 
-export const DELETE = '[Agent] delete';
-export const DELETE_COMPLETE = '[Agent] delete Complete';
-export const DELETE_ERROR = '[Agent] delete Error';
+export const DELETE = '[File] delete';
+export const DELETE_COMPLETE = '[File] delete Complete';
+export const DELETE_ERROR = '[File] delete Error';
 
 export class Load implements Action {
     readonly type = LOAD;

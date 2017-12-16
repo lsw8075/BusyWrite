@@ -8,7 +8,7 @@ export enum BubbleType {
   suggestBubble
 } /* istanbul ignore next */
 
-export interface Bubble {
+export class Bubble {
   id: number;
   type: BubbleType;
   parentBubbleId: number;
@@ -18,7 +18,6 @@ export interface Bubble {
   commentIds: Array<number>;
   suggestBubbleIds: Array<number>;
   watchUserIds: Array<number>;
-
 } /* istanbul ignore next */
 
 export class LeafBubble implements Bubble {
@@ -74,7 +73,7 @@ export class InternalBubble implements Bubble {
 
   constructor(
     id: number,
-    childBubbleIds: Array<number>,
+    childBubbleIds: Array<number> = [],
     suggestBubbleIds: Array<number> = [],
     commentIds: Array<number> = [],
     watchUserIds: Array<number> = [],
@@ -97,6 +96,10 @@ export class SuggestBubble {
   content: string;
   commentIds: Array<number>;
   thumbUps: number;
+
+  // related to UI
+  isMouseOver: boolean;
+  isSelected: boolean;
 
   constructor(
     id: number,

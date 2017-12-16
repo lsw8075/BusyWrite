@@ -1,3 +1,14 @@
-<p>
-  filter-board works!
-</p>
+<div class="input-group" appStopClickPropagation>
+    <input [(ngModel)]="searchKeyword" type="text" class="form-control" placeholder="Search for bubbles" appStopClickPropagation/>
+    <button type="button" class="btn btn-primary" appStopClickPropagation>
+        <i class="fa fa-fw fa-search"></i>
+    </button>
+</div>
+
+<div class="result" *ngIf="searchKeyword">
+    <ng-container *ngFor="let result of getFilteredResults()">
+        <div class="list-group-item" [innerHTML]="result">
+        </div>
+    </ng-container>
+</div>
+

@@ -1,0 +1,8 @@
+asgi-redis==1.4.3
+channels==1.1.8
+coverage==4.4.1
+coveralls==1.2.0
+Django==1.11.5
+django-extensions==1.9.7
+django-redis==4.8.0
+psycopg2==2.7.3.2

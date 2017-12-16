@@ -1,104 +1,102 @@
-{{bubbleList.length}}
-
+<!--
 <table class="table table-striped" *ngIf="bubbleList">
-<tr>
-    <th>id</th>
-    <th>type</th>
-    <th>content</th>
-    <th>parentBubbleId</th>
-    <th>childBubbleIds</th>
-    <th>location</th>
-</tr>
-<tr *ngFor="let bubble of bubbleList">
-    <td>{{bubble.id}}</td>
-    <td>{{bubble.type}}</td>
-    <td>
-    <div *ngIf=bubble.content>
-        {{bubble.content.substr(0,10)}}
-    </div>
-    </td>
-    <td>{{bubble.parentBubbleId}}</td>
-    <td>{{bubble.childBubbleIds}}</td>
-    <td>{{bubble.location}}</td>
-    <td>
-    <div class="">
-      <button class="btn" (click)="clickDelete(bubble)">delete</button>
-      <button class="btn" (click)="clickPop(bubble)">pop</button>
-      <button class="btn" (click)="clickCreateAbove(bubble)">create above</button>
-      <button class="btn" (click)="clickCreateBelow(bubble)">create below</button>
-      <button class="btn" (click)="clickEdit(bubble)">edit</button>
-      <button class="btn" (click)="clickFlatten(bubble)">flatten</button>
-    </div>
-    </td>
-</tr>
+    <tr>
+        <th>id</th>
+        <th>type</th>
+        <th>content</th>
+        <th>parentBubbleId</th>
+        <th>childBubbleIds</th>
+        <th>location</th>
+    </tr>
+    <tr *ngFor="let bubble of bubbleList">
+        <td>{{bubble.id}}</td>
+        <td>{{bubble.type}}</td>
+        <td>
+            <div *ngIf="bubble.content">
+                {{bubble.content.substr(0,50)}}
+            </div>
+        </td>
+        <td>{{bubble.parentBubbleId}}</td>
+        <td>{{bubble.childBubbleIds}}</td>
+        <td>{{bubble.location}}</td>
+    </tr>
 </table>
+-->
 
+<!--<div class="ml-5 my-2">
+    <app-bubble-menu [bubble]="rootBubble" [menu]="menuType.topMenu"></app-bubble-menu>
+</div>-->
 
-<!--<div class="container ml-5 my-2">
-  <app-bubble-menu [bubble]="rootBubble" [menu]="menuType.topMenu"></app-bubble-menu>
-</div>
-
-<div class="bubble-list">
-  <div class="container">
-    <div class="row">
-      <div class="col-md-9 offset-md-1 list-group-item">
-        <div (appClickOutside)="clearState($event)" *ngIf="rootBubble">
-          <ng-container *ngTemplateOutlet="bubbleUnit; context: { $implicit: rootBubble }"></ng-container>
-        </div>
-      </div>
+<div class="mx-4 list-group-item">
+    <div (appClickOutside)="clearState($event)" *ngIf="rootBubble">
+        <ng-container *ngTemplateOutlet="bubbleUnit; context: { $implicit: rootBubble }"></ng-container>
     </div>
-  </div>
 </div>
 
-< recursive unit >
+<!-- internal bubble -->
 <ng-template #bubbleUnit let-bubble>
-  <div class="bubbleUnit">
     <ng-container *ngIf="isInternal(bubble); then internal else leaf"></ng-container>
 
-    < internal bubble >
+    <!-- if internal -->
     <ng-template #internal>
-      <div *ngIf="isMenuOpen(bubble, menuType.internalMenu)" class="action" >
-        <app-bubble-menu [bubble]="bubble" [menu]="menuType.internalMenu"></app-bubble-menu>
-      </div>
-      <ng-container *ngFor="let childBubble of bubble.childBubbles">
-        <div [appInternalBubble]="childBubble" appStopClickPropagation class="internalBubble" (click)="onClickEvent(childBubble, menuType.internalMenu, $event);">
-          < recursive call >
-          <ng-container *ngTemplateOutlet="bubbleUnit; context: { $implicit: childBubble }"></ng-container>
+        <div *ngIf="isMenuOpen(bubble, menuType.internalMenu)" class="action">
+            <app-bubble-menu [bubble]="bubble" [menu]="menuType.internalMenu" [bubbleList]="bubbleList"></app-bubble-menu>
         </div>
-      </ng-container>
+        <ng-container *ngTemplateOutlet="internalBubble; context: { $implicit: bubble }"></ng-container>
     </ng-template>
 
-    < leaf bubble>
+    <!-- if leaf -->
     <ng-template #leaf>
-      < top border >
-      <div class="placeholder placeholder-top" appStopClickPropagation (click)="onClickEvent(bubble, menuType.borderTopMenu, $event);">
-        <app-bubble-menu *ngIf="isMenuOpen(bubble, menuType.borderTopMenu)" class="action" [bubble]="bubble" [menu]="menuType.borderTopMenu"></app-bubble-menu>
-      </div>
+        <!-- top border -->
+        <div class="placeholder placeholder-top" appStopClickPropagation (click)="onClickEvent(bubble, menuType.borderTopMenu, $event);">
+            <app-bubble-menu *ngIf="isMenuOpen(bubble, menuType.borderTopMenu)" class="action" [bubble]="bubble" [menu]="menuType.borderTopMenu" [bubbleList]="bubbleList" ></app-bubble-menu>
+        </div>
+        <ng-container *ngTemplateOutlet="leafBubble; context: { $implicit: bubble }"></ng-container>
+        <!-- bottom border -->
+        <div class="placeholder placeholder-bottom" appStopClickPropagation (click)="onClickEvent(bubble, menuType.borderBottomMenu, $event);">
+            <app-bubble-menu *ngIf="isMenuOpen(bubble, menuType.borderBottomMenu)" class="action" [bubble]="bubble" [menu]="menuType.borderBottomMenu" [bubbleList]="bubbleList" ></app-bubble-menu>
+        </div>
+    </ng-template>
+</ng-template>
 
-      < leaf bubble content >
-      <div class="leafBubble" appStopClickPropagation (click)="onClickEvent(bubble, menuType.leafMenu, $event);">
-        <app-bubble-menu *ngIf="isMenuOpen(bubble, menuType.leafMenu)" class="action"  [bubble]="bubble" [menu]="menuType.leafMenu"></app-bubble-menu>
+<ng-template #internalBubble let-bubble>
+    <ng-container *ngFor="let childId of bubble.childBubbleIds; ">
+        <ng-container *ngIf="getBubbleById(childId) as child">
+            <div [appInternalBubble]="child"
+                    [bubbleList]="bubbleList"
+                    [isSelected]="isSelected(child)"
+                    [isHover]="isHover(child)"
+                    appStopClickPropagation
+                    class="internalBubble"
+                    (click)="onClickEvent(child, menuType.internalMenu, $event);">
+                <!-- recursive call -->
+                <ng-container *ngTemplateOutlet="bubbleUnit; context: { $implicit: child}"></ng-container>
+            </div>
+        </ng-container>
+    </ng-container>
+</ng-template>
+
+<!-- leaf bubble -->
+<ng-template #leafBubble let-bubble>
+    <!-- leaf bubble content -->
+    <div class="leafBubble" appStopClickPropagation (click)="onClickEvent(bubble, menuType.leafMenu, $event);">
+        <!-- leaf bubble menu -->
+        <app-bubble-menu *ngIf="isMenuOpen(bubble, menuType.leafMenu)" class="action"  [bubble]="bubble" [menu]="menuType.leafMenu" [bubbleList]="bubbleList" ></app-bubble-menu>
+
+        <!-- is someone editting it? -->
         <ng-container *ngIf="isBubbleContentShown(bubble); then show else edit"></ng-container>
+
         <ng-template #show>
-          <div class="bubble-show" [appLeafBubble]="bubble" innerHtml="{{bubble.content}}"></div>
+            <div class="bubble-show" [appLeafBubble]="bubble" [isSelected]="isSelected(bubble)" innerHtml="{{bubble.content}}"></div>
         </ng-template>
         <ng-template #edit>
-          <div class="text-center">
-            <span [style.color]="'green'">
-              <i class="fa fa-fw fa-pencil"></i>
-              This bubble is being editted by {{bubble.whoIsEditting()}}
-            </span>
-          </div>
-          <div class="bubble-show editting" innerHtml="{{bubble.content}}"></div>
+            <div class="text-center">
+                <span [style.color]="'green'">
+                <i class="fa fa-fw fa-pencil"></i>
+                This bubble is being editted by {{bubble.ownerId}}
+                </span>
+            </div>
+            <div class="bubble-show editting" [appLeafBubble]="bubble" [isSelected]="isSelected(bubble)"  innerHtml="{{bubble.content}}"></div>
         </ng-template>
-
-      </div>
-
-      < bottom border >
-      <div class="placeholder placeholder-bottom" appStopClickPropagation (click)="onClickEvent(bubble, menuType.borderBottomMenu, $event);">
-        <app-bubble-menu *ngIf="isMenuOpen(bubble, menuType.borderBottomMenu)" class="action" [bubble]="bubble" [menu]="menuType.borderBottomMenu"></app-bubble-menu>
-      </div>
-
-    </ng-template>
-  </div>
-</ng-template> -->
+    </div>
+</ng-template>
