@@ -33,7 +33,7 @@ const initialState: BoardState = {
 };
 
 export function BoardReducer(state: BoardState = initialState, action: fromBoard.Actions) {
-    let newBoardList = [...state.boardList];
+    let newBoardList = _.cloneDeep(state.boardList);
     switch (action.type) {
         case fromBoard.ADD:
             if (state.boardList.length === maxBoardCnt) {

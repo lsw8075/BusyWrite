@@ -73,6 +73,7 @@
 
 <ng-template #board let-board$>
     <div *ngIf="board$ | async as board">
+        {{board | json}}
         <div class="board list-group-item"
                 [appBoardFocus]="board"
                 [class.activeBoard]="isBoardActive(board)" >

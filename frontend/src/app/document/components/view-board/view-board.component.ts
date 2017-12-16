@@ -48,15 +48,22 @@ export class ViewBoardComponent implements OnInit {
     private _store: Store<fromDocument.State>,
     private _loadingService: TdLoadingService) {
         this._store.select(fromDocument.isLoading).subscribe(loading => {
-            if (loading) {
-                this._loadingService.register('bubbleLoading');
-            } else {
-                this._loadingService.resolve('bubbleLoading');
+            if (this.board) {
+                if (loading) {
+                    this._loadingService.register(this.getBoardId());
+                } else {
+                    this._loadingService.resolve(this.getBoardId());
+                }
             }
         });
     }
 
+    public getBoardId(): string {
+        return 'board_' + this.board.id;
+    }
+
     ngOnInit() {
+        console.log('thi', this.board);
     }
 
 } /* istanbul ignore next */
