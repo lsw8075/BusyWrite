@@ -18,6 +18,7 @@ import * as fromDocument from '../../../reducers/reducer';
 import * as fromBubble from '../../../reducers/bubble-reducer';
 import * as BubbleAction from '../../../actions/bubble-action';
 import * as SangjunBoardAction from '../../../actions/sangjun-bubble-action';
+import * as EditBoardAction from '../../../actions/edit-board-action';
 import * as RouterAction from '../../../../shared/route/route-action';
 
 @Component({

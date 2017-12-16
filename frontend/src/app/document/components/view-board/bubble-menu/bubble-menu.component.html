@@ -86,9 +86,9 @@
               </a>
             </li>
             <li role="menuitem">
-              <a class="dropdown-item" (click)="editBubble(); " appStopClickPropagation>
-                <i class="fa fa-pencil fa-fw"></i>
-                Edit
+              <a class="dropdown-item" (click)="popBubble(); " appStopClickPropagation>
+                <i class="fa fa-ellipsis-v fa-fw"></i>
+                Pop
               </a>
             </li>
             <li role="menuitem">
@@ -99,12 +99,6 @@
             </li>
             <li class="divider dropdown-divider"></li>
           </ng-container>
-          <li role="menuitem">
-            <a class="dropdown-item" (click)="popBubble(); " appStopClickPropagation>
-              <i class="fa fa-ellipsis-v fa-fw"></i>
-              Pop
-            </a>
-          </li>
           <li role="menuitem"><a class="dropdown-item" (click)="wrapBubble(); " appStopClickPropagation>
               <i class="fa fa-square fa-fw"></i>
               Wrap

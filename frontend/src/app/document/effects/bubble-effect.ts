@@ -20,6 +20,7 @@ import 'rxjs/add/observable/fromPromise';
 import 'rxjs/add/operator/withLatestFrom';
 
 import * as BubbleAction from '../actions/bubble-action';
+import * as EditBoardAction from '../actions/edit-board-action';
 import * as fromDocument from '../reducers/reducer';
 import { Bubble, BubbleType, InternalBubble, LeafBubble, SuggestBubble } from '../models/bubble';
 
@@ -73,17 +74,33 @@ export class BubbleEffects {
 
     @Effect()
     create$: Observable<Action> = this.action$.ofType<BubbleAction.CreateBubble>(BubbleAction.CREATE_BUBBLE)
-        .map(action => action.payload).mergeMap(query => {
-            return Observable.of(this.bubbleService.createBubble(0, 0, "create"))
+        .withLatestFrom(this._store).mergeMap(([action, state]) => {
+            console.log(state);
+            const bubbleState = (state as any).document.bubble;
+            const bubbleList = bubbleState.bubbleList;
+            const bubble = getBubbleById(bubbleList, action.payload.bubbleId);
+            const parentBubble = getParentBubble(bubbleList, bubble);
+            let loc = bubble.location;
+            if (! action.payload.isAbove) {
+                loc++;
+            }
+            return Observable.of(this.bubbleService.createBubble(parentBubble.id, loc, "new bubble"))
                 .map(() => new BubbleAction.CreateBubblePending(null));
-                // .map((newBubble) => new BubbleAction.CreateComplete({bubbleId: query.bubbleId, isAbove: query.isAbove, newBubble: newBubble}))
-                // .catch(err => of(new BubbleAction.CreateError(err)));
         });
 
     @Effect()
     createComplete$: Observable<Action> = this.action$.ofType<BubbleAction.CreateBubbleComplete>(BubbleAction.CREATE_BUBBLE_COMPLETE)
         .map(action => action.payload).mergeMap(query => {
             return Observable.of(new BubbleAction.EditUpdate({bubbleId: query.id, content: 'new'}));
+        });
+
+    @Effect()
+    editRequestSuccess$: Observable<Action> = this.action$.ofType<BubbleAction.EditRequestSuccess>(BubbleAction.EDIT_REQUEST_SUCCESS)
+        .withLatestFrom(this._store).mergeMap(([action, state]) => {
+            console.log(state);
+            const bubbleState = (state as any).document.bubble;
+            const bubble = getBubbleById(bubbleState.bubbleList, action.payload);
+            return Observable.of(new EditBoardAction.Open(bubble));
         });
 
     @Effect()
@@ -115,13 +132,11 @@ export class BubbleEffects {
             console.log(state);
             const bubbleState = (state as any).document.bubble;
             const wrapBubbleList = bubbleState.selectedBubbleList.map(b => b.id);
-            return Observable.fromPromise(this.bubbleService._wrapBubble(wrapBubbleList))
-                .map((newInternalBubble) => new BubbleAction.WrapBubbleComplete(
-                    {wrapBubbleIdList: wrapBubbleList, newWrappedBubble: newInternalBubble}))
-                .catch(err => of(new BubbleAction.WrapBubbleError(err)));
-//         .map(action => action.payload).mergeMap(query => {
-//             return Observable.of(this.bubbleService.wrapBubble(query))
-//                 .map(() => new BubbleAction.WrapPending(null));
+            return Observable.of(this.bubbleService.wrapBubble(wrapBubbleList))
+                .map(() => new BubbleAction.WrapBubblePending(null));
+                // .map((newInternalBubble) => new BubbleAction.WrapBubbleComplete(
+                //     {wrapBubbleIdList: wrapBubbleList, newWrappedBubble: newInternalBubble}))
+                // .catch(err => of(new BubbleAction.WrapBubbleError(err)));
         });
 
     @Effect()
@@ -130,12 +145,10 @@ export class BubbleEffects {
             console.log(state);
             const bubbleState = (state as any).document.bubble;
             const mergeBubbleList = bubbleState.selectedBubbleList.map(b => b.id);
-            return Observable.fromPromise(this.bubbleService._mergeBubble(mergeBubbleList))
-                .map((newBubble) => new BubbleAction.MergeBubbleComplete({bubbleIdList: mergeBubbleList, mergedBubble: newBubble}))
-                .catch(err => of(new BubbleAction.MergeBubbleError(err)));
-//         .map(action => action.payload).mergeMap(query => {
-//             return Observable.of(this.bubbleService.mergeBubble(query))
-//                 .map(() => new BubbleAction.MergePending(null));
+            return Observable.of(this.bubbleService.mergeBubble(mergeBubbleList))
+                .map(() => new BubbleAction.MergeBubblePending(null));
+                // .map((newBubble) => new BubbleAction.MergeBubbleComplete({bubbleIdList: mergeBubbleList, mergedBubble: newBubble}))
+                // .catch(err => of(new BubbleAction.MergeBubbleError(err)));
         });
 
     @Effect()

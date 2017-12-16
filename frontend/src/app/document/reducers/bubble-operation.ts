@@ -155,24 +155,19 @@ export function flattenBubble(bubbleList: Array<Bubble>, id: number, newBubble: 
     }
 }
 
-export function createBubble(bubbleList: Array<Bubble>, id: number, isAbove: boolean, newBubble: Bubble) {
+export function createBubble(bubbleList: Array<Bubble>, newBubble: Bubble) {
     try {
-        const bubble = getBubbleById(bubbleList, id);
-        const parentBubble = getParentBubble(bubbleList, bubble);
-        if (isAbove) {
-            parentBubble.childBubbleIds.splice(bubble.location, 0, newBubble.id);
-        } else {
-            parentBubble.childBubbleIds.splice(bubble.location + 1, 0, newBubble.id);
-        }
-
+        console.log('[before create]', bubbleList);
+        const parentBubble = getParentBubble(bubbleList, newBubble);
+        parentBubble.childBubbleIds.splice(newBubble.location, 0, newBubble.id);
         bubbleList.push(newBubble);
-        newBubble.parentBubbleId = parentBubble.id;
 
-        for (let i = bubble.location; i < parentBubble.childBubbleIds.length; i++) {
+        for (let i = newBubble.location; i < parentBubble.childBubbleIds.length; i++) {
             const childBubble = getBubbleById(bubbleList, parentBubble.childBubbleIds[i]);
             childBubble.location = i;
             childBubble.parentBubbleId = parentBubble.id;
         }
+        console.log('[after create]', bubbleList);
     } catch (err) {
         console.log(err);
     //    throw err;

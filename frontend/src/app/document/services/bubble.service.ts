@@ -156,7 +156,7 @@ export class BubbleService implements OnDestroy {
             }
         } else if (command === 'create_bubble') {
             if (accept === 'True') {
-                const bubble = BubbleJsonHelper.getBubbleObject(JSON.stringify(body.content));
+                const bubble = BubbleJsonHelper.getBubbleObject(JSON.stringify(body));
                 if (body.who === this.userId) {
                     this._store.dispatch(new BubbleAction.CreateBubbleComplete(bubble));
                 } else {
@@ -548,9 +548,6 @@ export class BubbleService implements OnDestroy {
     }
 
     public createBubble(parentId: number, loc: number, content: string) {
-        // parent: parent bubble id (int)
-        // location: nth child (0 ~ #currentchildbubble) (int)
-        // content: (string)
         const m = {'header': 'create_bubble',
             'previous_request': this.previousRequestId,
             'body': {'parent_id': parentId,
@@ -734,20 +731,6 @@ export class BubbleService implements OnDestroy {
             'previous_request': this.previousRequestId,
             'body': {'suggest_bubble_id': suggestBubbleId}};
         this._socket.send(m);
-    }
-
-    public async _wrapBubble(wrapBubbleList: Array<number>): Promise<InternalBubble> {
-        await this.delay(1000);
-        return Promise.resolve(new InternalBubble(this._getTempBubbleId()));
-    }
-
-    public async _mergeBubble(mergeBubbleIds: Array<number>): Promise<Bubble> {
-        await this.delay(1000);
-        return Promise.resolve(new LeafBubble(this._getTempBubbleId()));
-    }
-    public async _flattenBubble(bubble_id: number): Promise<Bubble> {
-        await this.delay(1000);
-        return Promise.resolve(new LeafBubble(this._getTempBubbleId()));
     }
 
     public splitBubble(bubbleId: number, contentList: Array<string>) {
