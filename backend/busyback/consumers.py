@@ -90,10 +90,14 @@ def ws_receive(message):
 
         try:
             contributors = do_fetch_contributors(message.user.id, int(document_id))
+            print('contibutors:')
+            print(contributors)
             connectors = do_get_connected_users_document(message.user.id, int(document_id))
-        except:
+            print('connectors:')
+            print(connectors)
+        except Exception as e:
             message.reply_channel.send({"text":
-                    json.dumps({"header": command, "accept": 'False', "body": "getting contributors failed"})})
+                    json.dumps({"header": command, "accept": 'False', "body": "getting contributors failed"+str(e)})})
             return
 
         message.channel_session['document_id'] = str(document_id)
