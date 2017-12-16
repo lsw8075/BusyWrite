@@ -113,7 +113,7 @@ def ws_receive(message):
         # tried sending before adding this person to the group but the message was sent to this person too
         # so just send after adding
         Group('document_detail-'+str(document_id), channel_layer=message.channel_layer).send({"text":
-                json.dumps({"header": "someone_open_document_detail", "accept": 'True', 
+                json.dumps({"header": "someone_open_document_detail", "accept": 'True',
                         "body": {"id": message.user.id, "email": message.user.email}})})
 
         return
@@ -170,10 +170,10 @@ def ws_receive(message):
         # Let other people in the group know that this person closed document detail page of this document
         Group('document_detail-'+str(document_id), channel_layer=message.channel_layer).send({"text":
                 json.dumps({"header": "someone_close_document_detail", "accept": 'True', "body": {"id": message.user.id, "email": message.user.email}})})
-        
-        return 
 
-      
+        return
+
+
     #########################
     ##   Get Bubble List   ##
     #########################
@@ -583,6 +583,8 @@ def ws_receive(message):
                 json.dumps({'header': command, 'accept': 'False', 'body': 'unknown error'})})
             return
 
+        request_id = get[0];
+        
         # IMPORTANT: update_content_of_editting_bubble does not give request_id!
         Group('document_detail-'+document_id, channel_layer=message.channel_layer).send({"text":
             json.dumps({'header': command, 'request_id': request_id, 'accept': 'True',
@@ -1086,7 +1088,7 @@ def ws_receive(message):
                     json.dumps({'header': command, 'accept': 'False', 'body': 'body does not follow format'})})
             return
         try:
-            get = do_wrap_normal_bubble(previous_state, message.user.id, int(document_id), int(body['bubble_id']))
+            get = do_pop_normal_bubble(previous_state, message.user.id, int(document_id), int(body['bubble_id']))
         except BubbleDoesNotExistError:
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False',
@@ -1112,9 +1114,9 @@ def ws_receive(message):
                     json.dumps({"header": command, "accept": 'False',
                             'body': 'root bubble cannot be popped'})})
             return
-        except:
+        except Exception as e:
             message.reply_channel.send({"text":
-                    json.dumps({"header": command, "accept": 'False', 'body': 'unknown error'})})
+                    json.dumps({"header": command, "accept": 'False', 'body': 'unknown error: ' + str(e)})})
             return
 
         if not get:
@@ -1342,9 +1344,11 @@ def ws_receive(message):
                     json.dumps({"header": command, "accept": 'False',
                             'body': 'root bubble cannot be flattened'})})
             return
-        except:
+        except Exception as ee:
+            print(ee)
+            print(type(ee))
             message.reply_channel.send({"text":
-                    json.dumps({"header": command, "accept": 'False', 'body': 'unknown error'})})
+                    json.dumps({"header": command, "accept": 'False', 'body': 'unknown error' + str(type(ee))})})
             return
 
         if not get:
@@ -1565,6 +1569,6 @@ def ws_disconnect(message):
         # Let other people in the group know that this person closed document detail page of this document
         Group('document_detail-'+str(document_id), channel_layer=message.channel_layer).send({"text":
                 json.dumps({"header": "someone_close_document_detail", "accept": 'True', "body": {"id": message.user.id, "email": message.user.email}})})
-    
+
     except (KeyError, Document.DoesNotExist):
         message.reply_channel.send({'accept': True})
