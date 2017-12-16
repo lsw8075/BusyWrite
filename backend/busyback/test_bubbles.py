@@ -205,27 +205,26 @@ class BubblesTestCase(TestCase):
         with self.assertRaises(BubbleLockedError):
             do_split_leaf_bubble(0, self.user1.id, self.doc1.id, self.bubble4.id, ['Test', 'Bubble1'])
 
-
         do_split_leaf_bubble(0, self.user1.id, self.doc1.id, self.bubble3.id, ['Test', 'Bubble2'])
 
     def test_do_split_internal_bubble(self):
 
         with self.assertRaises(BubbleIsLeafError):
-            do_split_internal_bubble(0, self.user1.id, self.doc1.id, self.bubble3.id, [1,2])
+            do_split_internal_bubble(0, self.user1.id, self.doc1.id, self.bubble3.id, [0,1,2])
 
         with self.assertRaises(InvalidSplitError):
-            do_split_internal_bubble(0, self.user3.id, self.doc1.id, self.bubble2.id, [])
+            do_split_internal_bubble(0, self.user3.id, self.doc1.id, self.bubble2.id, [0])
 
         self.bubble2.lock(self.user2)
         with self.assertRaises(BubbleLockedError):
-            do_split_internal_bubble(0, self.user1.id, self.doc1.id, self.bubble2.id, [1])
+            do_split_internal_bubble(0, self.user1.id, self.doc1.id, self.bubble2.id, [0,1])
 
         self.bubble2.unlock(self.user2)
 
         with self.assertRaises(InvalidSplitError):
-            do_split_internal_bubble(0, self.user1.id, self.doc1.id, self.bubble2.id, [1, 2, 7])
+            do_split_internal_bubble(0, self.user1.id, self.doc1.id, self.bubble2.id, [0, 1, 2, 7])
 
-        do_split_internal_bubble(0, self.user1.id, self.doc1.id, self.bubble2.id, [1])
+        do_split_internal_bubble(0, self.user1.id, self.doc1.id, self.bubble2.id, [0,1])
 
     def test_do_vote_bubble(self):
         do_vote_bubble(0, self.user1.id, self.doc1.id, self.suggest1.id)

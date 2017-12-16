@@ -235,7 +235,8 @@ def do_create_normal_bubble(
     new_bubble = create_normal(parent_bubble.document, content, parent_bubble, location)
 
     new_bubble.edit_lock_holder = user
-    new_bubble.owner_with_lock = None
+    if is_owned:
+        new_bubble.owner_with_lock = user
 
     parent_bubble.insert_children(location, [new_bubble])
 
@@ -300,7 +301,7 @@ def do_update_discard_normal_bubble(
     check_updatable(rversion, bubble) 
     parent = bubble.parent_bubble
     if del_flag == 'True':
-        check_updatable_with_siblings([(parent, location+1)])
+        check_updatable_with_siblings([(parent, bubble.location+1)])
         parent.delete_children(bubble.location, 1)
         delete_normal(bubble)
     else:
@@ -614,8 +615,6 @@ def do_split_leaf_bubble(
     ):
     '''Split the leaf bubble'''
 
-    split_content_list = split_content_list[1:]
-
     if len(split_content_list) < 1:
         raise InvalidSplitError()
 
@@ -639,7 +638,7 @@ def do_split_leaf_bubble(
     created = []
     for idx, content in enumerate(split_content_list):
         created.append(create_normal(bubble.document, content, bubble, idx))
-        
+     
     return (Operation.SPLIT_LEAF, [process_normal(bubble) for bubble in created])
 
 @normal_operation
@@ -653,6 +652,8 @@ def do_split_internal_bubble(
     **kw
     ):
 
+    split_location = split_location[1:]
+    
     if len(split_location) < 1:
         raise InvalidSplitError()
 
