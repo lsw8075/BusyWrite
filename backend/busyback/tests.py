@@ -80,7 +80,7 @@ class ChannelReceiveTestCaseOne(ChannelTestCase):
         result = self.client.receive()
         self.assertEqual(result['header'], 'response')
         self.assertEqual(result['accept'], 'False')
-        self.assertEqual(result['body'], 'header and body needed')
+        self.assertEqual(result['body'], 'header, body, previous_request needed')
 
     def test_wr_receive_header_empty_error(self):
         message = {"header":"", 'previous_request': 0, "body":{"document": str(self.fstid)}}
@@ -148,7 +148,7 @@ class ChannelReceiveTestCaseOne(ChannelTestCase):
 
         result = self.client.receive();
         self.assertEqual(result['header'], 'someone_open_document_detail')
-        self.assertEqual(result['body']['who'], self.userid)
+        self.assertEqual(result['body']['id'], self.userid)
 
         Group("document_detail-"+str(self.fstid)).send({"body":"wow"})
         result = self.client.receive()
@@ -265,8 +265,8 @@ class ChannelReceiveTestCaseTwo(ChannelTestCase):
         self.assertEqual(result['body']['id'], self.bubbleid)
         self.assertEqual(result['body']['location'], 0)
 
-# Those that have to be broadcasted
-class ChannelReceiveTestCaseThree(ChannelTestCase):
+# Bubble operations that have to be broadcasted
+class ChannelBubbleOperationTestCase(ChannelTestCase):
     def setUp(self):
         d1 = Document.objects.create(title='A')
         b1 = NormalBubble.objects.create(location=0, document = d1)
@@ -330,7 +330,7 @@ class ChannelReceiveTestCaseThree(ChannelTestCase):
  
     def test_create_bubble_body_invalid_format(self):
         message = {'header': 'create_bubble', 'previous_request': self.previous_request,
-            'body': {'parent': str(self.bubbleid), 'location': '1', 'content': 'wow'}}
+            'body': {'parent_id': str(self.bubbleid), 'location': '1', 'content': 'wow'}}
         self.client.send('websocket.receive', content={'order':1}, text=str(message))
         self.client.consume('websocket.receive')
         result = self.client.receive()
@@ -340,7 +340,7 @@ class ChannelReceiveTestCaseThree(ChannelTestCase):
     
     def test_create_bubble_success(self):
         message = {'header': 'create_bubble', 'previous_request': self.previous_request,
-            'body': {'parent': str(self.bubbleid), 'location': '0', 'content': 'wow'}}
+            'body': {'parent_id': str(self.bubbleid), 'location': '0', 'content': 'wow'}}
         self.client.send("websocket.receive", content={'order':1}, text=str(message))
         self.client.consume('websocket.receive')
         result = self.client.receive()
@@ -357,9 +357,336 @@ class ChannelReceiveTestCaseThree(ChannelTestCase):
         self.assertEqual(result['body']['location'], 0)
         self.assertEqual(result['body']['content'], 'wow')
 
+    def test_edit_bubble_success(self):
+        # create bubble 
+        message = {'header': 'create_bubble', 'previous_request': self.previous_request,
+            'body': {'parent_id': self.bubbleid, 'location': '0', 'content': 'wow'}}
+        self.client.send("websocket.receive", content={'order':1}, text=str(message))
+        self.client.consume('websocket.receive')
+        result = self.client.receive()
+        new_bubble_id = result['body']['id']
+        create_request_id = result['request_id']
+
+        # finish editting bubble
+        message = {'header': 'finish_editting_bubble', 'previous_request': create_request_id,
+            'body': {'bubble_id': new_bubble_id}}
+        self.client.send("websocket.receive", content={'order':2}, text=str(message))
+        self.client.consume('websocket.receive')
+        result = self.client.receive()
+
+        self.assertEqual(result['header'], 'finish_editting_bubble')
+        self.assertEqual(result['accept'], 'True')
+        self.assertEqual(result['body']['bubble_id'], new_bubble_id)
+        finish_request_id = result['request_id']
+
+        # start editting bubble
+        message = {'header': 'edit_bubble', 'previous_request': finish_request_id,
+            'body': {'bubble_id': new_bubble_id}}
+        self.client.send("websocket.receive", content={'order':1}, text=str(message))
+        self.client.consume('websocket.receive')
+        result = self.client.receive()
+        self.assertEqual(result['header'], 'edit_bubble')
+        self.assertEqual(result['accept'], 'True')
+        self.assertEqual(result['body']['who'], self.userid)
+        self.assertEqual(result['body']['bubble_id'], new_bubble_id)
+        
+        start_edit_request_id = result['request_id']
+
+        changed_bubble = NormalBubble.objects.get(id=new_bubble_id)
+        this_user = User.objects.get(id=self.userid)
+        self.assertEqual(changed_bubble.edit_lock_holder, this_user)
+
+        self.sndClient.receive() #create
+        self.sndClient.receive() #finishedit
+        result = self.sndClient.receive() #edit
+        self.assertEqual(result['header'], 'edit_bubble')
+        self.assertEqual(result['accept'], 'True')
+        self.assertEqual(result['body']['who'], self.userid)
+        self.assertEqual(result['body']['bubble_id'], new_bubble_id)
+
+        # update editting bubble 
+        message = {'header': 'update_content_of_editting_bubble', 'previous_request': start_edit_request_id,
+            'body': {'bubble_id': new_bubble_id, 'content': 'hey i like you'}}
+        self.client.send("websocket.receive", content={'order':1}, text=str(message))
+        self.client.consume('websocket.receive')
+        result = self.client.receive()
+        self.assertEqual(result['header'], 'update_content_of_editting_bubble')
+        self.assertEqual(result['accept'], 'True')
+        self.assertEqual(result['body']['who'], self.userid)
+        self.assertEqual(result['body']['bubble_id'], new_bubble_id)
+        self.assertEqual(result['body']['content'], 'hey i like you')
+        
+        update_editting_request_id = result['request_id']
+
+        # Change is recorded at cache, not db!  
+        #self.assertEqual(changed_bubble.content, 'hey i like you')
+
+        result = self.sndClient.receive()
+        self.assertEqual(result['header'], 'update_content_of_editting_bubble')
+        self.assertEqual(result['accept'], 'True')
+        self.assertEqual(result['body']['who'], self.userid)
+        self.assertEqual(result['body']['bubble_id'], new_bubble_id)
+        self.assertEqual(result['body']['content'], 'hey i like you')
+
+        # finish editting bubble
+        message = {'header': 'finish_editting_bubble', 'previous_request': update_editting_request_id,
+             'body': {'bubble_id': new_bubble_id}}
+        self.client.send("websocket.receive", content={'order':1}, text=str(message))
+        self.client.consume('websocket.receive')
+        result = self.client.receive()
+        self.assertEqual(result['header'], 'finish_editting_bubble')
+        self.assertEqual(result['accept'], 'True')
+        self.assertEqual(result['body']['who'], self.userid)
+        self.assertEqual(result['body']['bubble_id'], new_bubble_id)
+        
+        changed_bubble = NormalBubble.objects.get(id=new_bubble_id)
+        this_user = User.objects.get(id=self.userid)
+        self.assertEqual(changed_bubble.edit_lock_holder, None)
+        self.assertEqual(changed_bubble.content, 'hey i like you')
+
+        result = self.sndClient.receive()
+        self.assertEqual(result['header'], 'finish_editting_bubble')
+        self.assertEqual(result['accept'], 'True')
+        self.assertEqual(result['body']['who'], self.userid)
+        self.assertEqual(result['body']['bubble_id'], new_bubble_id)
+
+
+    def test_discard_editting_bubble(self):
+        # create bubble 
+        message = {'header': 'create_bubble', 'previous_request': self.previous_request,
+            'body': {'parent_id': self.bubbleid, 'location': '0', 'content': 'wow'}}
+        self.client.send("websocket.receive", content={'order':1}, text=str(message))
+        self.client.consume('websocket.receive')
+        result = self.client.receive()
+        new_bubble_id = result['body']['id']
+        create_request_id = result['request_id']
+        self.sndClient.receive()
+        
+        # finish editting bubble
+        message = {'header': 'finish_editting_bubble', 'previous_request': create_request_id,
+            'body': {'bubble_id': new_bubble_id}}
+        self.client.send("websocket.receive", content={'order':2}, text=str(message))
+        self.client.consume('websocket.receive')
+
+        result = self.client.receive()
+        finish_request_id = result['request_id']
+        self.sndClient.receive()
+        
+        # start editting bubble
+        message = {'header': 'edit_bubble', 'previous_request': finish_request_id,
+            'body': {'bubble_id': new_bubble_id}}
+        self.client.send("websocket.receive", content={'order':1}, text=str(message))
+        self.client.consume('websocket.receive')
+        result = self.client.receive()
+        start_edit_request_id = result['request_id']
+        self.sndClient.receive()
+
+        # update editting bubble 
+        message = {'header': 'update_content_of_editting_bubble', 'previous_request': start_edit_request_id,
+            'body': {'bubble_id': new_bubble_id, 'content': 'hey i like you'}}
+        self.client.send("websocket.receive", content={'order':1}, text=str(message))
+        self.client.consume('websocket.receive')
+        result = self.client.receive()
+        update_editting_request_id = result['request_id']
+        self.sndClient.receive()
+
+        # discard editting bubble
+        message = {'header': 'discard_editting_bubble', 'previous_request': update_editting_request_id,
+             'body': {'bubble_id': new_bubble_id}}
+        self.client.send("websocket.receive", content={'order':1}, text=str(message))
+        self.client.consume('websocket.receive')
+        result = self.client.receive()
+        self.assertEqual(result['header'], 'discard_editting_bubble')
+        self.assertEqual(result['accept'], 'True')
+        self.assertEqual(result['body']['who'], self.userid)
+        self.assertEqual(result['body']['bubble_id'], new_bubble_id)
+        
+        changed_bubble = NormalBubble.objects.get(id=new_bubble_id)
+        this_user = User.objects.get(id=self.userid)
+        self.assertEqual(changed_bubble.edit_lock_holder, None)
+        self.assertEqual(changed_bubble.content, 'wow')
+
+        result = self.sndClient.receive()
+        self.assertEqual(result['header'], 'discard_editting_bubble')
+        self.assertEqual(result['accept'], 'True')
+        self.assertEqual(result['body']['who'], self.userid)
+        self.assertEqual(result['body']['bubble_id'], new_bubble_id)
+
+        
+    def test_discard_editting_newly_created_bubble(self):
+        # create bubble 
+        message = {'header': 'create_bubble', 'previous_request': self.previous_request,
+            'body': {'parent_id': self.bubbleid, 'location': '0', 'content': 'wow'}}
+        self.client.send("websocket.receive", content={'order':1}, text=str(message))
+        self.client.consume('websocket.receive')
+        result = self.client.receive()
+        new_bubble_id = result['body']['id']
+        create_request_id = result['request_id']
+        self.sndClient.receive()
+
+        # discard editting bubble
+        message = {'header': 'discard_editting_bubble', 'previous_request': create_request_id,
+             'body': {'bubble_id': new_bubble_id}}
+        self.client.send("websocket.receive", content={'order':1}, text=str(message))
+        self.client.consume('websocket.receive')
+        result = self.client.receive()
+        print(result['body'])
+        self.assertEqual(result['header'], 'discard_editting_bubble')
+        self.assertEqual(result['accept'], 'True')
+        self.assertEqual(result['body']['who'], self.userid)
+        self.assertEqual(result['body']['bubble_id'], new_bubble_id)
+        
+        changed_bubble = NormalBubble.objects.get(id=new_bubble_id)
+        self.assertIsNone(changed_bubble)
+
+        result = self.sndClient.receive()
+        self.assertEqual(result['header'], 'discard_editting_bubble')
+        self.assertEqual(result['accept'], 'True')
+        self.assertEqual(result['body']['who'], self.userid)
+        self.assertEqual(result['body']['bubble_id'], new_bubble_id)
+
+    def test_delete_bubble_BubbleIsRootError(self):
+        message = {'header': 'delete_bubble', 'previous_request': self.previous_request,
+            'body': {'bubble_id': self.bubbleid}}
+        self.client.send("websocket.receive", content={'order':1}, text=str(message))
+        self.client.consume('websocket.receive')
+        result = self.client.receive()
+        self.assertEqual(result['header'], 'delete_bubble')
+        self.assertEqual(result['accept'], 'False')
+        self.assertEqual(result['body'], 'root bubble cannot be deleted')
+
+        self.assertIsNotNone(Bubble.objects.get(id=self.bubbleid))
+       
+    # TODO: def test_release_ownership_of_bubble(self):
+
+    def test_finish_editting_split_move_delete_bubble_success(self):
+        
+        # create bubble 
+        message = {'header': 'create_bubble', 'previous_request': self.previous_request,
+            'body': {'parent_id': self.bubbleid, 'location': '0', 'content': 'wow'}}
+        self.client.send("websocket.receive", content={'order':1}, text=str(message))
+        self.client.consume('websocket.receive')
+        result = self.client.receive()
+        new_bubble_id = result['body']['id']
+        create_request_id = result['request_id']
+
+        # finish editting bubble
+        message = {'header': 'finish_editting_bubble', 'previous_request': create_request_id,
+            'body': {'bubble_id': new_bubble_id}}
+        self.client.send("websocket.receive", content={'order':2}, text=str(message))
+        self.client.consume('websocket.receive')
+        result = self.client.receive()
+
+        self.assertEqual(result['header'], 'finish_editting_bubble')
+        self.assertEqual(result['accept'], 'True')
+        self.assertEqual(result['body']['bubble_id'], new_bubble_id)
+        finish_request_id = result['request_id']
+
+        # split bubble
+        message = {'header': 'split_leaf_bubble', 'previous_request': finish_request_id,
+            'body': {'bubble_id': new_bubble_id, 'split_content_list': ['w', 'ow']}}
+        self.client.send("websocket.receive", content={'order':1}, text=str(message))
+        self.client.consume('websocket.receive')
+        result = self.client.receive()
+
+        self.assertEqual(result['header'], 'split_leaf_bubble')
+        self.assertEqual(result['accept'], 'True')
+        self.assertEqual(result['body']['bubble_id'], new_bubble_id)
+        self.assertEqual(result['body']['split_content_list'], ['w', 'ow'])
+        print(result['request_id'])
+        print(result['body'])
+        #self.assertEqual(result['body']['split_bubble_object_list'][0]['content'], 'w')
+        #self.assertEqual(result['body']['split_bubble_object_list'][1]['content'], 'ow')
+        new_new_bubble_id = result['body']['split_bubble_object_list'][0]['id']
+
+        # move bubble that is being editted: it is acceptable!
+        message = {'header': 'move_bubble', 'previous_request': self.previous_request,
+            'body': {'bubble_id': new_new_bubble_id, 
+            'new_parent_id': self.bubbleid, 'new_location': 1}}
+        self.client.send("websocket.receive", content={'order':2}, text=str(message))
+        self.client.consume('websocket.receive')
+        result = self.client.receive()
+
+        self.assertEqual(result['header'], 'move_bubble')
+        self.assertEqual(result['accept'], 'True')
+        self.assertEqual(result['body']['bubble_id'], new_new_bubble_id)
+        self.assertEqual(result['body']['new_parent_id'], self.bubbleid)
+
+        # delete bubbble
+        message = {'header': 'delete_bubble', 'previous_request': self.previous_request,
+            'body': {'bubble_id': new_bubble_id}}
+        self.client.send("websocket.receive", content={'order':3}, text=str(message))
+        self.client.consume('websocket.receive')
+        result = self.client.receive()
+        
+        self.assertEqual(result['header'], 'delete_bubble')
+        self.assertEqual(result['accept'], 'True')
+        self.assertEqual(result['body']['who'], self.userid)
+        self.assertEqual(result['body']['bubble_id'], new_bubble_id)
+
+        try:
+            Bubble.objects.get(id=new_bubble_id)
+        except Bubble.DoesNotExist:
+            self.assertEqual(True, True)
+            return
+        self.assertEqual(True, False)
+
+class ChannelSuggestBubbleTestCase(ChannelTestCase):
+    def setUp(self):
+        d1 = Document.objects.create(title='A')
+        b1 = NormalBubble.objects.create(location=0, document = d1)
+        u1 = User.objects.create_user(username='swpp')
+        u1.set_password('swpp')
+        u1.save()
+        d1.contributors.add(u1)
+        d1.save()
+
+        self.fstid = d1.id
+        self.bubbleid = b1.id
+        self.userid = u1.id
+
+        d2 = Document.objects.create(title='B')
+        b2 = NormalBubble.objects.create(location=0, document = d2)
+        u2 = User.objects.create_user(username='gonssam')
+        u2.set_password('gonssam')
+        u2.save()
+        d2.contributors.add(u2)
+        d2.save()
+    
+        d1.contributors.add(u2)
+        d1.save()
+
+        self.client = HttpClient()
+        self.client.login(username='swpp', password='swpp') 
+
+        message = {"header": "connect"}
+        self.client.send_and_consume("websocket.connect", content=message)
+        self.client.receive()
+        
+        message = {'header': 'open_document', "previous_request": 0, 'body': {'document_id': str(d1.id)}}
+        self.client.send('websocket.receive', content={'order': 0}, text=str(message))
+        self.client.consume('websocket.receive')
+        result = self.client.receive()
+        self.previous_request = result['body']['previous_request_id']
+        self.client.receive()
+
+        self.sndClient = HttpClient()
+        self.sndClient.login(username='gonssam', password='gonssam')
+
+        self.sndClient.send_and_consume("websocket.connect", content={"text": {"header": "connect"}})
+        self.sndClient.receive()
+        
+        self.sndClient.send('websocket.receive', content={'order':0}, 
+                text=str({"header": "open_document", "previous_request": 0, "body": {"document_id": str(self.fstid)}}))
+        self.sndClient.consume('websocket.receive')
+        self.sndClient.receive()
+        self.sndClient.receive()
+        result = self.client.receive()
+        self.assertEqual(result['header'], 'someone_open_document_detail')
+
     def test_create_suggest_Bubble_Does_Not_Exist(self):
         message = {'header': 'create_suggest_bubble', 'previous_request': self.previous_request,
-            'body': {'binded_bubble': 0, 'content': 'wow'}}
+            'body': {'binded_bubble_id': 0, 'content': 'wow'}}
         self.client.send("websocket.receive", content={'order':1}, text=str(message))
         self.client.consume('websocket.receive')
         result = self.client.receive()
@@ -371,7 +698,7 @@ class ChannelReceiveTestCaseThree(ChannelTestCase):
         
         # create suggest bubble
         message = {'header': 'create_suggest_bubble', 'previous_request': self.previous_request,
-            'body': {'binded_bubble': self.bubbleid, 'content': 'wow'}}
+            'body': {'binded_bubble_id': self.bubbleid, 'content': 'wow'}}
         self.client.send("websocket.receive", content={'order':1}, text=str(message))
         self.client.consume('websocket.receive')
         result = self.client.receive()
@@ -444,132 +771,5 @@ class ChannelReceiveTestCaseThree(ChannelTestCase):
         self.assertEqual(result['accept'], 'True')
         self.assertEqual(result['body']['who'], self.userid)
         self.assertEqual(result['body']['suggest_bubble_id'], sgbubbleid)
-
-    def test_edit_bubble_success(self):
-        # create bubble 
-        message = {'header': 'create_bubble', 'previous_request': self.previous_request,
-            'body': {'parent': self.bubbleid, 'location': '0', 'content': 'wow'}}
-        self.client.send("websocket.receive", content={'order':1}, text=str(message))
-        self.client.consume('websocket.receive')
-        result = self.client.receive()
-        new_bubble_id = result['body']['id']
-        create_request_id = result['request_id']
-
-        # finish editting bubble
-        message = {'header': 'finish_editting_bubble', 'previous_request': create_request_id,
-            'body': {'bubble_id': new_bubble_id}}
-        self.client.send("websocket.receive", content={'order':2}, text=str(message))
-        self.client.consume('websocket.receive')
-        result = self.client.receive()
-
-        self.assertEqual(result['header'], 'finish_editting_bubble')
-        self.assertEqual(result['accept'], 'True')
-        self.assertEqual(result['body']['bubble_id'], new_bubble_id)
-        finish_request_id = result['request_id']
-
-        # start editting bubble
-        message = {'header': 'edit_bubble', 'previous_request': finish_request_id,
-            'body': {'bubble_id': new_bubble_id}}
-        self.client.send("websocket.receive", content={'order':1}, text=str(message))
-        self.client.consume('websocket.receive')
-        result = self.client.receive()
-        self.assertEqual(result['header'], 'edit_bubble')
-        self.assertEqual(result['accept'], 'True')
-        self.assertEqual(result['body']['who'], self.userid)
-        self.assertEqual(result['body']['bubble_id'], new_bubble_id)
-        
-        changed_bubble = NormalBubble.objects.get(id=new_bubble_id)
-        this_user = User.objects.get(id=self.userid)
-        self.assertEqual(changed_bubble.edit_lock_holder, this_user)
-
-        self.sndClient.receive() #create
-        self.sndClient.receive() #finishedit
-        result = self.sndClient.receive() #edit
-        self.assertEqual(result['header'], 'edit_bubble')
-        self.assertEqual(result['accept'], 'True')
-        self.assertEqual(result['body']['who'], self.userid)
-        self.assertEqual(result['body']['bubble_id'], new_bubble_id)
-
-    def test_delete_bubble_BubbleIsRootError(self):
-        message = {'header': 'delete_bubble', 'previous_request': self.previous_request,
-            'body': {'bubble_id': self.bubbleid}}
-        self.client.send("websocket.receive", content={'order':1}, text=str(message))
-        self.client.consume('websocket.receive')
-        result = self.client.receive()
-        self.assertEqual(result['header'], 'delete_bubble')
-        self.assertEqual(result['accept'], 'False')
-        self.assertEqual(result['body'], 'root bubble cannot be deleted')
-
-        self.assertIsNotNone(Bubble.objects.get(id=self.bubbleid))
-        
-    def test_finish_editting_split_move_delete_bubble_success(self):
-        
-        # create bubble 
-        message = {'header': 'create_bubble', 'previous_request': self.previous_request,
-            'body': {'parent': self.bubbleid, 'location': '0', 'content': 'wow'}}
-        self.client.send("websocket.receive", content={'order':1}, text=str(message))
-        self.client.consume('websocket.receive')
-        result = self.client.receive()
-        new_bubble_id = result['body']['id']
-        create_request_id = result['request_id']
-
-        # finish editting bubble
-        message = {'header': 'finish_editting_bubble', 'previous_request': create_request_id,
-            'body': {'bubble_id': new_bubble_id}}
-        self.client.send("websocket.receive", content={'order':2}, text=str(message))
-        self.client.consume('websocket.receive')
-        result = self.client.receive()
-
-        self.assertEqual(result['header'], 'finish_editting_bubble')
-        self.assertEqual(result['accept'], 'True')
-        self.assertEqual(result['body']['bubble_id'], new_bubble_id)
-        finish_request_id = result['request_id']
-
-        # split bubble
-        message = {'header': 'split_leaf_bubble', 'previous_request': finish_request_id,
-            'body': {'bubble_id': new_bubble_id, 'split_content_list': ['w', 'ow']}}
-        self.client.send("websocket.receive", content={'order':1}, text=str(message))
-        self.client.consume('websocket.receive')
-        result = self.client.receive()
-
-        self.assertEqual(result['header'], 'split_leaf_bubble')
-        self.assertEqual(result['accept'], 'True')
-        self.assertEqual(result['body']['bubble_id'], new_bubble_id)
-        self.assertEqual(result['body']['split_content_list'], ['w', 'ow'])
-        #self.assertEqual(result['body']['split_bubble_object_list'][0]['content'], 'w')
-        #self.assertEqual(result['body']['split_bubble_object_list'][1]['content'], 'ow')
-        new_new_bubble_id = result['body']['split_bubble_object_list'][0]['id']
-
-        # move bubble that is being editted: it is acceptable!
-        message = {'header': 'move_bubble', 'previous_request': self.previous_request,
-            'body': {'bubble_id': new_new_bubble_id, 
-            'new_parent_id': self.bubbleid, 'new_location': 1}}
-        self.client.send("websocket.receive", content={'order':2}, text=str(message))
-        self.client.consume('websocket.receive')
-        result = self.client.receive()
-
-        self.assertEqual(result['header'], 'move_bubble')
-        self.assertEqual(result['accept'], 'True')
-        self.assertEqual(result['body']['bubble_id'], new_new_bubble_id)
-        self.assertEqual(result['body']['new_parent_id'], self.bubbleid)
-
-        # delete bubbble
-        message = {'header': 'delete_bubble', 'previous_request': self.previous_request,
-            'body': {'bubble_id': new_bubble_id}}
-        self.client.send("websocket.receive", content={'order':3}, text=str(message))
-        self.client.consume('websocket.receive')
-        result = self.client.receive()
-        
-        self.assertEqual(result['header'], 'delete_bubble')
-        self.assertEqual(result['accept'], 'True')
-        self.assertEqual(result['body']['who'], self.userid)
-        self.assertEqual(result['body']['bubble_id'], new_bubble_id)
-
-        try:
-            Bubble.objects.get(id=new_bubble_id)
-        except Bubble.DoesNotExist:
-            self.assertEqual(True, True)
-            return
-        self.assertEqual(True, False)
 
 

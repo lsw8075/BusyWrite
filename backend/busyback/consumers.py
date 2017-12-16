@@ -99,11 +99,7 @@ def ws_receive(message):
 
         try:
             contributors = do_fetch_contributors(message.user.id, int(document_id))
-            print('contibutors:')
-            print(contributors)
             connectors = do_get_connected_users_document(message.user.id, int(document_id))
-            print('connectors:')
-            print(connectors)
         except Exception as e:
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False', "body": "getting contributors failed"})})
@@ -286,7 +282,6 @@ def ws_receive(message):
         message.reply_channel.send({"text":
                 json.dumps({"header": command, "accept": 'True', "body": result})})
         return
-
 
 
     ################################
@@ -604,10 +599,9 @@ def ws_receive(message):
 
         request_id = get[0];
 
-        # IMPORTANT: update_content_of_editting_bubble does not give request_id!
         Group('document_detail-'+document_id, channel_layer=message.channel_layer).send({"text":
             json.dumps({'header': command, 'request_id': request_id, 'accept': 'True',
-            'body': {'who': message.user.id, 'bubble_id': body['bubble_id']}})})
+            'body': {'who': message.user.id, 'bubble_id': body['bubble_id'], 'content': body['content']}})})
         return
 
 
@@ -1279,7 +1273,7 @@ def ws_receive(message):
                 json.dumps({'header': command, 'request_id': request_id, 'accept': 'True',
                         'body': {'who': message.user.id, 'bubble_id': body['bubble_id'],
                         'split_bubble_object_list': result,
-                        'split_content_id_list': body['split_content_id_list']}})})
+                        'split_content_list': body['split_content_list']}})})
         return
         # [d['id'] for d in list(result.child_bubbles.all().values()]
 
