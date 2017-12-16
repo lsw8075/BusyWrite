@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { MockBubbleRoot, MockBubbleList } from '../models/bubble.mock';
 import { Bubble, LeafBubble, InternalBubble, SuggestBubble, BubbleType } from '../models/bubble';
+import { Comment } from '../models/comment'; 
 import { User } from '../../user/models/user';
 import { Subscription } from 'rxjs/Subscription';
 import { ServerSocket } from './websocket.service';
@@ -141,24 +142,33 @@ export class BubbleService implements OnDestroy {
         } else if (command === 'get_comment_list_for_bubble') {
             if (accept === 'True') {
                 console.log('received get_comment_list_for_bubble success');
-                // const commentArray = BubbleJsonHelper.getCommentArray(body));
-                // this._store.dispatch(new BubbleAction.LoadCommentOnBubbleComplete(commentArray));
+                const commentArray = BubbleJsonHelper.getCommentArrayObject(body);
+                this._store.dispatch(new BubbleAction.LoadCommentOnBubbleComplete(commentArray));
             } else {
                 console.log('received get_comment_list_for_bubble fail');
                 this._store.dispatch(new BubbleAction.LoadCommentOnBubbleError(body));
+            }
+        } else if (command === 'get_comment_list_for_suggest_bubble') {
+            if (accept === 'True') {
+                console.log('received get_comment_list_for_suggest_bubble success');
+                const commentArray = BubbleJsonHelper.getCommentArrayObject(body);
+                this._store.dispatch(new BubbleAction.LoadCommentOnSuggestComplete(commentArray));
+            } else {
+                console.log('received get_comment_list_for_suggest_bubble fail');
+                this._store.dispatch(new BubbleAction.LoadCommentOnSuggestError(body));
             }
         } else if (command === 'create_bubble') {
             if (accept === 'True') {
                 const bubble = BubbleJsonHelper.getBubbleObject(JSON.stringify(body.content));
                 if (body.who === this.userId) {
-                    this._store.dispatch(new BubbleAction.CreateComplete(bubble));
+                    this._store.dispatch(new BubbleAction.CreateBubbleComplete(bubble));
                 } else {
-                    this._store.dispatch(new BubbleAction.OthersCreate(bubble));
+                    this._store.dispatch(new BubbleAction.OthersCreateBubble(bubble));
                 }
                 this.previousRequestId = data.reqeust_id;
                 console.log('received create_bubble success');
             } else {
-                this._store.dispatch(new BubbleAction.CreateError(body));
+                this._store.dispatch(new BubbleAction.CreateBubbleError(body));
                 console.log('received create_bubble fail');
             }
         } else if (command === 'create_suggest_bubble') {
@@ -168,34 +178,331 @@ export class BubbleService implements OnDestroy {
                 if (body.who === this.userId) {
                     this._store.dispatch(new BubbleAction.CreateSuggestComplete(suggestBubble));
                 } else {
-                    this._store.dispatch(new BubbleAction.OthersCreateSuggestComplete(suggestBubble));
+                    this._store.dispatch(new BubbleAction.OthersCreateSuggest(suggestBubble));
                 }
+                this.previousRequestId = data.reqeust_id;
             } else {
                 console.log('received create_suggest_bubble fail');
                 this._store.dispatch(new BubbleAction.CreateSuggestError(body));
             }
+        } else if (command === 'create_comment_on_bubble') {
+            if (accept === 'True') {
+                console.log('received create_comment_on_bubble success');
+                const comment = BubbleJsonHelper.getCommentObject(JSON.stringify(body));
+                if (body.who === this.userId) {
+                    this._store.dispatch(new BubbleAction.CreateCommentOnBubbleComplete(comment));
+                } else {
+                    this._store.dispatch(new BubbleAction.OthersCreateCommentOnBubble(comment));
+                }
+                this.previousRequestId = data.reqeust_id;
+            } else {
+                console.log('received create_comment_on_bubble fail');
+                this._store.dispatch(new BubbleAction.CreateCommentOnBubbleError(body));
+            }
+        } else if (command === 'create_comment_on_suggest_bubble') {
+            if (accept === 'True') {
+                console.log('received crate_comment_on_suggest_bubble success');
+                const comment = BubbleJsonHelper.getCommentObject(JSON.stringify(body));
+                if (body.who === this.userId) {
+                    this._store.dispatch(new BubbleAction.CreateCommentOnSuggestComplete(comment));
+                } else {
+                    this._store.dispatch(new BubbleAction.OthersCreateCommentOnSuggest(comment));
+                }
+                this.previousRequestId = data.reqeust_id;
+            } else {
+                console.log('received create_comment_on_suggest_bubble fail');
+                this._store.dispatch(new BubbleAction.CreateCommentOnSuggestError(body));
+            }
         } else if (command === 'edit_bubble') {
             if (accept === 'True') {
                 console.log('received edit_bubble success');
-                // TODO: FRONT needs EditUpdate with bubble id
+                if (body.who === this.userId) {
+                    this._store.dispatch(new BubbleAction.EditRequestSuccess(Number(body.bubble_id)));
+                } else {
+                    this._store.dispatch(new BubbleAction.OthersEditRequest(Number(body.bubble_id)));
+                }           
+                this.previousRequestId = data.reqeust_id;
             } else {
                 console.log('received edit_bubble fail');
+                this._store.dispatch(new BubbleAction.EditBubbleError(body));
+            }
+        } else if (command === 'update_content_of_editting_bubble') {
+            if (accept === 'True') {
+                console.log('received update_content_of_editting_bubble success');
+                if (body.who === this.userId) {
+                    this._store.dispatch(new BubbleAction.EditUpdateSuccess(Number(body.bubble_id)));
+                } else {
+                    this._store.dispatch(new BubbleAction.OthersEditUpdate(
+                                {bubbleId: Number(body.bubble_id), content: body.content}));
+                }
+                this.previousRequestId = data.reqeust_id;
+            } else {
+                console.log('received update_content_of_editting_bubble fail');
+                this._store.dispatch(new BubbleAction.EditBubbleError(body));
             }
         } else if (command === 'finish_editting_bubble') {
             if (accept === 'True') {
-            // TODO: FRONT needs EditComplete with bubble id
+                console.log('received finish_editting_bubble success');
+                if (body.who === this.userId) {
+                    this._store.dispatch(new BubbleAction.EditCompleteSuccess(Number(body.bubble_id)));
+                } else {
+                    this._store.dispatch(new BubbleAction.OthersEditComplete(Number(body.bubble_id)));
+                }
+                this.previousRequestId = data.reqeust_id;
             } else {
-
+                console.log('received finish_editting_bubble fail');
+                this._store.dispatch(new BubbleAction.EditBubbleError(body));
+            }
+        } else if (command === 'discard_editting_bubble') {
+            if (accept === 'True') {
+                console.log('received discard_editting_bubble success');
+                if (body.who === this.userId) {
+                    this._store.dispatch(new BubbleAction.EditDiscardSuccess(Number(body.bubble_id)));
+                } else {
+                    this._store.dispatch(new BubbleAction.OthersEditDiscard(Number(body.bubble_id)));
+                }
+                this.previousRequestId = data.reqeust_id;
+            } else {
+                console.log('received discard_editting_bubble fail');
+                this._store.dispatch(new BubbleAction.EditBubbleError(body));
+            }
+        } else if (command === 'release_ownership_of_bubble') {
+            if (accept === 'True') {
+                console.log('received release_ownership_of_bubble success');
+                if (body.who === this.userId) {
+                    this._store.dispatch(new BubbleAction.ReleaseOwnershipComplete(Number(body.bubble_id)));
+                } else {
+                    this._store.dispatch(new BubbleAction.OthersReleaseOwnership(Number(body.bubble_id)));
+                }
+                this.previousRequestId = data.reqeust_id;
+            } else {
+                console.log('received release_ownership_of_bubble success');
+                this._store.dispatch(new BubbleAction.ReleaseOwnershipError(body));
+            }
+        } else if (command === 'edit_suggest_bubble') {
+            if (accept === 'True') {
+                console.log('received edit_suggest_bubble success');
+                if (body.who === this.userId) {
+                    this._store.dispatch(new BubbleAction.EditSuggestComplete(Number(body.suggest_bubble_id)));
+                } else {
+                    this._store.dispatch(new BubbleAction.OthersEditSuggest(
+                                {suggestBubbleId: Number(body.suggest_bubble_id), content: String(body.content)}));
+                }
+                this.previousRequestId = data.reqeust_id;
+            } else {
+                console.log('received edit_suggest_bubble fail');
+                this._store.dispatch(new BubbleAction.EditSuggestError(body));
+            }
+        } else if (command === 'delete_bubble') {
+            if (accept == 'True') {
+                console.log('received delete_bubble success');
+                if (body.who === this.userId) {
+                    this._store.dispatch(new BubbleAction.DeleteBubbleComplete(Number(body.bubble_id)));
+                } else {
+                    this._store.dispatch(new BubbleAction.OthersDeleteBubble(Number(body.bubble_id)));
+                }
+                this.previousRequestId = data.reqeust_id;
+            } else {
+                console.log('received delete_bubble fail');
+                this._store.dispatch(new BubbleAction.DeleteBubbleError(body));
+            }
+        } else if (command === 'hide_suggest_bubble') {
+            if (accept == 'True') {
+                console.log('received hide_suggest_bubble success');
+                if (body.who === this.userId) {
+                    this._store.dispatch(new BubbleAction.HideSuggestComplete(Number(body.suggest_bubble_id)));
+                } else {
+                    this._store.dispatch(new BubbleAction.OthersHideSuggest(Number(body.suggest_bubble_id)));
+                }
+                this.previousRequestId = data.reqeust_id;
+            } else {
+                console.log('received hide_suggest_bubble fail');
+                this._store.dispatch(new BubbleAction.HideSuggestError(body));
+            }
+        } else if (command === 'show_suggest_bubble') {
+            if (accept == 'True') {
+                console.log('received show_suggest_bubble success');
+                if (body.who === this.userId) {
+                    this._store.dispatch(new BubbleAction.ShowSuggestComplete(Number(body.suggest_bubble_id)));
+                } else {
+                    this._store.dispatch(new BubbleAction.OthersShowSuggest(Number(body.suggest_bubble_id)));
+                }
+                this.previousRequestId = data.reqeust_id;
+            } else {
+                console.log('received show_suggest_bubble fail');
+                this._store.dispatch(new BubbleAction.ShowSuggestError(body));
+            }
+        } else if (command === 'delete_comment_on_bubble') {
+            if (accept == 'True') {
+                console.log('received delete_comment_on_bubble success');
+                if (body.who === this.userId) {
+                    this._store.dispatch(new BubbleAction.DeleteCommentOnBubbleComplete(Number(body.comment_id)));
+                } else {
+                    this._store.dispatch(new BubbleAction.OthersDeleteCommentOnBubble(Number(body.comment_id)));
+                }
+                this.previousRequestId = data.reqeust_id;
+            } else {
+                console.log('received delete_comment_on_bubble fail');
+                this._store.dispatch(new BubbleAction.DeleteCommentOnBubbleError(body));
+            }
+        } else if (command === 'delete_comment_on_suggest_bubble') {
+            if (accept == 'True') {
+                console.log('received delete_comment_on_suggest_bubble success');
+                if (body.who === this.userId) {
+                    this._store.dispatch(new BubbleAction.DeleteCommentOnSuggestComplete(Number(body.comment_id)));
+                } else {
+                    this._store.dispatch(new BubbleAction.OthersDeleteCommentOnSuggest(Number(body.comment_id)));
+                }
+                this.previousRequestId = data.reqeust_id;
+            } else {
+                console.log('received delete_comment_on_suggest_bubble fail');
+                this._store.dispatch(new BubbleAction.DeleteCommentOnSuggestError(body));
+            }
+        } else if (command === 'move_bubble') {
+            if (accept == 'True') {
+                console.log('received move_bubble success');
+                if (body.who === this.userId) {
+                    this._store.dispatch(new BubbleAction.MoveBubbleComplete(
+                                {bubbleId: Number(body.bubble_id), newParentId: Number(body.new_parent_id),
+                                newLocation: Number(body.new_location)}));
+                } else {
+                    this._store.dispatch(new BubbleAction.OthersMoveBubble(
+                                {bubbleId: Number(body.bubble_id), newParentId: Number(body.new_parent_id),
+                                newLocation: Number(body.new_location)}));
+                }
+                this.previousRequestId = data.reqeust_id;
+            } else {
+                console.log('received move_bubble fail');
+                this._store.dispatch(new BubbleAction.MoveBubbleError(body));
+            }
+        } else if (command === 'wrap_bubble') {
+            if (accept == 'True') {
+                console.log('received wrap_bubble success');
+                const newWrappedBubble = BubbleJsonHelper.getBubbleObject(body.new_wrapped_bubble);
+                if (body.who === this.userId) {
+                    this._store.dispatch(new BubbleAction.WrapBubbleComplete(
+                                {wrapBubbleIdList: body.bubble_id_list, newWrappedBubble: newWrappedBubble}));
+                } else {
+                    this._store.dispatch(new BubbleAction.OthersWrapBubble(
+                                {wrapBubbleIdList: body.bubble_id_list, newWrappedBubble: newWrappedBubble}));
+                }
+                this.previousRequestId = data.reqeust_id;
+            } else {
+                console.log('received wrap_bubble fail');
+                this._store.dispatch(new BubbleAction.WrapBubbleError(body));
             }
         } else if (command === 'pop_bubble') {
-            if (accept === 'True') {
+            if (accept == 'True') {
                 console.log('received pop_bubble success');
-                this._store.dispatch(new BubbleAction.PopComplete(body.bubble_id));
-                // TODO: FRONT needs PopComplete with bubble id
+                if (body.who === this.userId) {
+                    this._store.dispatch(new BubbleAction.PopBubbleComplete(Number(body.bubble_id)));
+                } else {
+                    this._store.dispatch(new BubbleAction.OthersPopBubble(Number(body.bubble_id)));
+                }
+                this.previousRequestId = data.reqeust_id;
             } else {
                 console.log('received pop_bubble fail');
-                console.log(body);
-                this._store.dispatch(new BubbleAction.PopError(body));
+                this._store.dispatch(new BubbleAction.PopBubbleError(body));
+            }
+        } else if (command === 'split_internal_bubble') {
+            if (accept == 'True') {
+                console.log('received split_internal_bubble success');
+                const splitBubbleObjectList = BubbleJsonHelper.getBubbleArrayObject(body.split_bubble_object_list);
+                if (body.who === this.userId) {
+                    this._store.dispatch(new BubbleAction.SplitInternalComplete(
+                                {bubbleId: Number(body.bubble_id), splitBubbleObjectList: splitBubbleObjectList}));
+                } else {
+                    this._store.dispatch(new BubbleAction.OthersSplitInternal(
+                                {bubbleId: Number(body.bubble_id), splitBubbleObjectList: splitBubbleObjectList}));
+                }
+                this.previousRequestId = data.reqeust_id;
+            } else {
+                console.log('received split_internal_bubble fail');
+                this._store.dispatch(new BubbleAction.SplitInternalError(body));
+            }
+        } else if (command === 'split_leaf_bubble') {
+            if (accept == 'True') {
+                console.log('received split_leaf_bubble success');
+                const splitBubbleObjectList = BubbleJsonHelper.getBubbleArrayObject(body.split_bubble_object_list);
+                if (body.who === this.userId) {
+                    this._store.dispatch(new BubbleAction.SplitLeafComplete(
+                                {bubbleId: Number(body.bubble_id), splitBubbleObjectList: splitBubbleObjectList}));
+                } else {
+                    this._store.dispatch(new BubbleAction.OthersSplitLeaf(
+                                {bubbleId: Number(body.bubble_id), splitBubbleObjectList: splitBubbleObjectList}));
+                }
+                this.previousRequestId = data.reqeust_id;
+            } else {
+                console.log('received split_leaf_bubble fail');
+                this._store.dispatch(new BubbleAction.SplitLeafError(body));
+            }
+        } else if (command === 'merge_bubble') {
+            if (accept == 'True') {
+                console.log('received merge_bubble success');
+                const mergedBubble = BubbleJsonHelper.getBubbleObject(body.merged_bubble);
+                if (body.who === this.userId) {
+                    this._store.dispatch(new BubbleAction.MergeBubbleComplete(
+                                {bubbleIdList: body.bubble_id_list, mergedBubble: mergedBubble}));
+                } else {
+                    this._store.dispatch(new BubbleAction.OthersMergeBubble(
+                                {bubbleIdList: body.bubble_id_list, mergedBubble: mergedBubble}));
+                }
+                this.previousRequestId = data.reqeust_id;
+            } else {
+                console.log('received merge_bubble fail');
+                this._store.dispatch(new BubbleAction.MergeBubbleError(body));
+            }
+        } else if (command === 'flatten_bubble') {
+            if (accept == 'True') {
+                console.log('received flatten_bubble success');
+                if (body.who === this.userId) {
+                    this._store.dispatch(new BubbleAction.FlattenBubbleComplete(Number(body.bubble_id)));
+                } else {
+                    this._store.dispatch(new BubbleAction.OthersFlattenBubble(Number(body.bubble_id)));
+                }
+                this.previousRequestId = data.reqeust_id;
+            } else {
+                console.log('received flatten_bubble fail');
+                this._store.dispatch(new BubbleAction.FlattenBubbleError(body));
+            }
+        } else if (command === 'switch_bubble') {
+            if (accept == 'True') {
+                console.log('received switch_bubble success');
+                if (body.who === this.userId) {
+                    this._store.dispatch(new BubbleAction.SwitchBubbleComplete(Number(body.suggest_bubble_id)));
+                } else {
+                    this._store.dispatch(new BubbleAction.OthersSwitchBubble(Number(body.suggest_bubble_id)));
+                }
+                this.previousRequestId = data.reqeust_id;
+            } else {
+                console.log('received switch_bubble fail');
+                this._store.dispatch(new BubbleAction.SwitchBubbleError(body));
+            }
+        } else if (command === 'vote_on_suggest_bubble') {
+            if (accept == 'True') {
+                console.log('received vote_on_suggest_bubble success');
+                if (body.who === this.userId) {
+                    this._store.dispatch(new BubbleAction.VoteOnSuggestComplete(Number(body.suggest_bubble_id)));
+                } else {
+                    this._store.dispatch(new BubbleAction.OthersVoteOnSuggest(Number(body.suggest_bubble_id)));
+                }
+                this.previousRequestId = data.reqeust_id;
+            } else {
+                console.log('received vote_on_suggest_bubble fail');
+                this._store.dispatch(new BubbleAction.VoteOnSuggestError(body));
+            }
+        } else if (command === 'unvote_on_suggest_bubble') {
+            if (accept == 'True') {
+                console.log('received unvote_on_suggest_bubble success');
+                if (body.who === this.userId) {
+                    this._store.dispatch(new BubbleAction.UnvoteOnSuggestComplete(Number(body.suggest_bubble_id)));
+                } else {
+                    this._store.dispatch(new BubbleAction.OthersUnvoteOnSuggest(Number(body.suggest_bubble_id)));
+                }
+                this.previousRequestId = data.reqeust_id;
+            } else {
+                console.log('received unvote_on_suggest_bubble fail');
+                this._store.dispatch(new BubbleAction.UnvoteOnSuggestError(body));
             }
         }
     }
@@ -258,15 +565,15 @@ export class BubbleService implements OnDestroy {
     public createSuggestBubble(bindedBubbleId: number, content: string) {
         const m = {'header': 'create_suggest_bubble',
             'previous_request': this.previousRequestId,
-            'body': {'binded_bubble': bindedBubbleId,
+            'body': {'binded_bubble_id': bindedBubbleId,
                 'content': content}};
         this._socket.send(m);
     }
 
-    public createCommentOnNormalBubble(bindedBubbleId: number, content: string) {
+    public createCommentOnBubble(bindedBubbleId: number, content: string) {
         const m = {'header': 'create_comment_on_bubble',
             'previous_request': this.previousRequestId,
-            'body': {'binded_bubble': bindedBubbleId,
+            'body': {'binded_bubble_id': bindedBubbleId,
                 'content': content}};
         this._socket.send(m);
     }
@@ -274,7 +581,7 @@ export class BubbleService implements OnDestroy {
     public createCommentOnSuggestBubble(bindedSuggestBubbleId: number, content: string) {
         const m = {'header': 'create_comment_on_suggest_bubble',
             'previous_request': this.previousRequestId,
-            'body': {'binded_suggest_bubble': bindedSuggestBubbleId,
+            'body': {'binded_suggest_bubble_id': bindedSuggestBubbleId,
                 'content': content}};
         this._socket.send(m);
     }

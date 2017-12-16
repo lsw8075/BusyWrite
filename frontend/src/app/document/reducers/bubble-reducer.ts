@@ -70,15 +70,15 @@ export function BubbleReducer(state: BubbleState = initialState, action: fromBub
         case fromBubble.LOAD_ERROR:
             return {...state, error: action.payload};
 
-        case fromBubble.POP: case fromBubble.POP_COMPLETE: case fromBubble.POP_ERROR:
-        case fromBubble.DELETE: case fromBubble.DELETE_COMPLETE: case fromBubble.DELETE_ERROR:
-        case fromBubble.CREATE: case fromBubble.CREATE_COMPLETE: case fromBubble.CREATE_ERROR:
-        case fromBubble.EDIT: case fromBubble.EDIT_COMPLETE: case fromBubble.DELETE_ERROR:
-        case fromBubble.FLATTEN: case fromBubble.FLATTEN_COMPLETE: case fromBubble.FLATTEN_ERROR:
-        case fromBubble.WRAP_START: case fromBubble.WRAP: case fromBubble.WRAP_COMPLETE: case fromBubble.WRAP_ERROR:
-        case fromBubble.MERGE_START: case fromBubble.MERGE: case fromBubble.MERGE_COMPLETE: case fromBubble.MERGE_ERROR:
-        case fromBubble.SPLIT: case fromBubble.SPLIT_COMPLETE: case fromBubble.SPLIT_ERROR:
-        case fromBubble.MOVE:  case fromBubble.MOVE_COMPLETE: case fromBubble.MOVE_ERROR:
+        case fromBubble.POP_BUBBLE: case fromBubble.POP_BUBBLE_COMPLETE: case fromBubble.POP_BUBBLE_ERROR:
+        case fromBubble.DELETE_BUBBLE: case fromBubble.DELETE_BUBBLE_COMPLETE: case fromBubble.DELETE_BUBBLE_ERROR:
+        case fromBubble.CREATE_BUBBLE: case fromBubble.CREATE_BUBBLE_COMPLETE: case fromBubble.CREATE_BUBBLE_ERROR:
+        case fromBubble.EDIT_BUBBLE: case fromBubble.EDIT_REQUEST_SUCCESS: case fromBubble.DELETE_BUBBLE_ERROR:
+        case fromBubble.FLATTEN_BUBBLE: case fromBubble.FLATTEN_BUBBLE_COMPLETE: case fromBubble.FLATTEN_BUBBLE_ERROR:
+        case fromBubble.WRAP_START: case fromBubble.WRAP_BUBBLE: case fromBubble.WRAP_BUBBLE_COMPLETE: case fromBubble.WRAP_BUBBLE_ERROR:
+        case fromBubble.MERGE_START: case fromBubble.MERGE_BUBBLE: case fromBubble.MERGE_BUBBLE_COMPLETE: case fromBubble.MERGE_BUBBLE_ERROR:
+        case fromBubble.SPLIT_LEAF: case fromBubble.SPLIT_LEAF_COMPLETE: case fromBubble.SPLIT_LEAF_ERROR:
+        case fromBubble.MOVE_BUBBLE:  case fromBubble.MOVE_BUBBLE_COMPLETE: case fromBubble.MOVE_BUBBLE_ERROR:
             return BubbleOperationReducer(state, action);
 
         case fromBubble.CLEAR_ERROR:
@@ -145,31 +145,31 @@ function UIReducer(state: BubbleState, action: fromBubble.Actions) {
 function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) {
     switch (action.type) {
 
-        case fromBubble.POP:
+        case fromBubble.POP_BUBBLE:
             return {...state, loading: true, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
-        case fromBubble.POP_COMPLETE: {
+        case fromBubble.POP_BUBBLE_COMPLETE: {
             const bubbleId = action.payload;
             const newBubbleList = _.cloneDeep(state.bubbleList);
             popBubble(newBubbleList, bubbleId);
             return {...state, bubbleList: newBubbleList, loading: false};
         }
-        case fromBubble.POP_ERROR:
+        case fromBubble.POP_BUBBLE_ERROR:
             return {...state, loading: false, error: action.payload, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
 
-        case fromBubble.DELETE:
+        case fromBubble.DELETE_BUBBLE:
             return {...state, loading: true, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
-        case fromBubble.DELETE_COMPLETE: {
+        case fromBubble.DELETE_BUBBLE_COMPLETE: {
             const bubbleId = action.payload;
             const newBubbleList = _.cloneDeep(state.bubbleList);
             deleteBubble(newBubbleList, bubbleId);
             return {...state, bubbleList: newBubbleList, loading: false};
         }
-        case fromBubble.DELETE_ERROR:
+        case fromBubble.DELETE_BUBBLE_ERROR:
             return {...state, loading: false, error: action.payload, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
 
-        case fromBubble.CREATE:
+        case fromBubble.CREATE_BUBBLE:
             return {...state, selectedBubbleList: [action.payload.bubbleId], loading: true, selectedMenu: null, hoverBubbleList: []};
-        case fromBubble.CREATE_COMPLETE: {
+        case fromBubble.CREATE_BUBBLE_COMPLETE: {
             const bubbleId = action.payload;
             // const isAbove = action.payload.isAbove;
             // const newBubble = action.payload.newBubble;
@@ -178,80 +178,80 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
             // return {...state, bubbleList: newBubbleList, loading: false };
             return {...state, loading: false };
         }
-        case fromBubble.CREATE_ERROR:
+        case fromBubble.CREATE_BUBBLE_ERROR:
             return {...state, loading: false, error: action.payload, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
 
-        case fromBubble.EDIT:
+        case fromBubble.EDIT_BUBBLE:
             return {...state, loading: true, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
-        case fromBubble.EDIT_COMPLETE: {
+        case fromBubble.EDIT_REQUEST_SUCCESS: {
             return {...state, loading: false};
         }
-        case fromBubble.EDIT_ERROR:
+        case fromBubble.EDIT_BUBBLE_ERROR:
             return {...state, loading: false, error: action.payload, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
 
-        case fromBubble.FLATTEN:
+        case fromBubble.FLATTEN_BUBBLE:
             return {...state, loading: true, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
-        case fromBubble.FLATTEN_COMPLETE: {
+        case fromBubble.FLATTEN_BUBBLE_COMPLETE: {
             const bubbleId = action.payload.bubbleId;
             const newLeafBubble = action.payload.newBubble;
             const newBubbleList = _.cloneDeep(state.bubbleList);
             flattenBubble(newBubbleList, bubbleId, newLeafBubble);
             return {...state, bubbleList: newBubbleList, loading: false};
         }
-        case fromBubble.FLATTEN_ERROR:
+        case fromBubble.FLATTEN_BUBBLE_ERROR:
             return {...state, loading: false, error: action.payload, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
 
         case fromBubble.WRAP_START:
             return {...state, viewBoardMenuType: ViewBoardMenuType.wrap , selectedMenu: null, hoverBubbleList: []};
-        case fromBubble.WRAP:
+        case fromBubble.WRAP_BUBBLE:
             return {...state, viewBoardMenuType: ViewBoardMenuType.none, loading: true};
-        case fromBubble.WRAP_COMPLETE: {
-            const wrapBubbleIds = action.payload.wrapBubbleIds;
-            const newInternalBubble = action.payload.newInternalBubble;
+        case fromBubble.WRAP_BUBBLE_COMPLETE: {
+            const wrapBubbleIds = action.payload.wrapBubbleIdList;
+            const newInternalBubble = action.payload.newWrappedBubble;
             const newBubbleList = _.cloneDeep(state.bubbleList);
             wrapBubble(newBubbleList, wrapBubbleIds, newInternalBubble);
             return {...state, bubbleList: newBubbleList, loading: false, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
         }
-        case fromBubble.WRAP_ERROR:
+        case fromBubble.WRAP_BUBBLE_ERROR:
             return {...state, loading: false, error: action.payload, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
 
         case fromBubble.MERGE_START:
             return {...state, viewBoardMenuType: ViewBoardMenuType.merge , selectedMenu: null, hoverBubbleList: []};
-        case fromBubble.MERGE:
+        case fromBubble.MERGE_BUBBLE:
             return {...state, loading: true, viewBoardMenuType: ViewBoardMenuType.none};
-        case fromBubble.MERGE_COMPLETE: {
-            const mergeBubbleIds = action.payload.mergeBubbleIds;
-            const newLeafBubble = action.payload.newBubble;
+        case fromBubble.MERGE_BUBBLE_COMPLETE: {
+            const mergeBubbleIds = action.payload.bubbleIdList;
+            const newLeafBubble = action.payload.mergedBubble;
             const newBubbleList = _.cloneDeep(state.bubbleList);
             mergeBubble(newBubbleList, mergeBubbleIds, newLeafBubble);
             return {...state, bubbleList: newBubbleList, loading: false, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
         }
-        case fromBubble.MERGE_ERROR:
+        case fromBubble.MERGE_BUBBLE_ERROR:
             return {...state, loading: false, error: action.payload, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
 
-        case fromBubble.SPLIT:
+        case fromBubble.SPLIT_LEAF:
             return {...state, loading: true, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
-        case fromBubble.SPLIT_COMPLETE: {
+        case fromBubble.SPLIT_LEAF_COMPLETE: {
             const bubbleId = action.payload.bubbleId;
-            const splitBubbleList = action.payload.splitBubbleList;
+            const splitBubbleList = action.payload.splitBubbleObjectList;
             const newBubbleList = _.cloneDeep(state.bubbleList);
             splitBubble(newBubbleList, bubbleId, splitBubbleList);
             return {...state, bubbleList: newBubbleList, loading: false};
         }
-        case fromBubble.SPLIT_ERROR:
+        case fromBubble.SPLIT_LEAF_ERROR:
             return {...state, loading: false, error: action.payload, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
 
-        case fromBubble.MOVE:
+        case fromBubble.MOVE_BUBBLE:
             return {...state, loading: true, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
-        case fromBubble.MOVE_COMPLETE: {
+        case fromBubble.MOVE_BUBBLE_COMPLETE: {
             const bubbleId = action.payload.bubbleId;
-            const destBubbleId = action.payload.destBubbleId;
+            const destBubbleId = action.payload.newParentId;
             const isAbove = action.payload.isAbove;
             const newBubbleList = _.cloneDeep(state.bubbleList);
             moveBubble(newBubbleList, bubbleId, destBubbleId, isAbove);
             return {...state, bubbleList: newBubbleList, loading: false};
         }
-        case fromBubble.MOVE_ERROR:
+        case fromBubble.MOVE_BUBBLE_ERROR:
             return {...state, loading: false, error: action.payload, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
 
         default:

@@ -108,15 +108,15 @@ export class DocumentDetailPageComponent implements OnInit {
     }
 
     public wrapBubbles(): void {
-        this._store.dispatch(new BubbleAction.Wrap());
+        this._store.dispatch(new BubbleAction.WrapBubble());
     }
 
     public moveBubble(): void {
-        // this._store.dispatch(new BubbleAction.Move());
+        this._store.dispatch(new BubbleAction.MoveBubble());
     }
 
     public mergeBubble(): void {
-        this._store.dispatch(new BubbleAction.Merge());
+        this._store.dispatch(new BubbleAction.MergeBubble());
     }
 
     public goBack(): void {
