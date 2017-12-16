@@ -15,11 +15,20 @@ from .comments import *
 from .users import *
 import logging
 import pdb
+import sys, traceback
 
 # reference: antilibrary.or/1117, channels.readthedocs.io/en/stable/getting-started.html
 
 log = logging.getLogger(__name__)
 
+def see_error(e):
+    print('***Traceback (most recent call last) ***')
+    ex_type, ex, tb = sys.exc_info()
+    traceback.print_tb(tb)
+    print(type(e))
+    print(str(e))
+    print('****************************************')
+    del tb
 
 @channel_session_user_from_http
 def ws_connect(message):
@@ -85,7 +94,7 @@ def ws_receive(message):
             result = do_user_connect_document(message.user.id, int(document_id))
         except Exception as e:
             message.reply_channel.send({"text":
-                    json.dumps({"header": command, "accept": 'False', "body": "adding user failed"+str(e)})})
+                    json.dumps({"header": command, "accept": 'False', "body": "adding user failed"})})
             return
 
         try:
@@ -97,7 +106,8 @@ def ws_receive(message):
             print(connectors)
         except Exception as e:
             message.reply_channel.send({"text":
-                    json.dumps({"header": command, "accept": 'False', "body": "getting contributors failed"+str(e)})})
+                    json.dumps({"header": command, "accept": 'False', "body": "getting contributors failed"})})
+            see_error(e)
             return
 
         message.channel_session['document_id'] = str(document_id)
@@ -159,7 +169,7 @@ def ws_receive(message):
 
         try:
             do_user_disconnect_document(message.user.id, int(document_id))
-        except:
+        except Exception as e:
             message.reply_channle.send({"text":
                     json.dumps({"header": command, "accept": "False", "body": "cannot disconnect this user"})})
 
@@ -212,9 +222,10 @@ def ws_receive(message):
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False', "body": "bubble does not exist for the id"})})
             return
-        except:
+        except Exception as e:
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False', "body": "unknown error"})})
+            see_error(e)
             return
 
         message.reply_channel.send({"text":
@@ -239,9 +250,10 @@ def ws_receive(message):
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False', "body": "bubble does not exist for the id"})})
             return
-        except:
+        except Exception as e:
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False', "body": "unknown error"})})
+            see_error(e)
             return
 
         message.reply_channel.send({"text":
@@ -265,9 +277,10 @@ def ws_receive(message):
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False', "body": "bubble does not exist for the id"})})
             return
-        except:
+        except Exception as e:
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False', "body": "unknown error"})})
+            see_error(e)
             return
 
         message.reply_channel.send({"text":
@@ -293,9 +306,10 @@ def ws_receive(message):
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False', "body": "bubble does not exist for the id"})})
             return
-        except:
+        except Exception as e:
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False', "body": "unknown error"})})
+            see_error(e)
             return
 
         message.reply_channel.send({"text":
@@ -320,9 +334,10 @@ def ws_receive(message):
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False', "body": "suggest bubble does not exist for the id"})})
             return
-        except:
+        except Exception as e:
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False', "body": "unknown error"})})
+            see_error(e)
             return
 
         message.reply_channel.send({"text":
@@ -356,10 +371,9 @@ def ws_receive(message):
                     json.dumps({'header': command, 'accept': 'False', 'body': 'parent or ancestor is under edit'})})
             return
         except Exception as e:
-            print(e)
-            print(type(e))
             message.reply_channel.send({"text":
                     json.dumps({'header': command, 'accept': 'False', 'body': 'create bubble failed'})})
+            see_error(e)
             return
 
 
@@ -401,9 +415,10 @@ def ws_receive(message):
                     json.dumps({'header': command, 'accept': 'False',
                             'body': 'root bubble cannot have suggest bubble'})})
             return
-        except:
+        except Exception as e:
             message.reply_channel.send({"text":
                     json.dumps({'header': command, 'accept': 'False', 'body': 'create suggest bubble failed'})})
+            see_error(e)
             return
 
         if not get:
@@ -439,9 +454,10 @@ def ws_receive(message):
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False', "body": "bubble does not exist for the id"})})
             return
-        except:
+        except Exception as e:
             message.reply_channel.send({"text":
                     json.dumps({'header': command, 'accept': 'False', 'body': 'create comment on bubble failed'})})
+            see_error(e)
             return
 
 
@@ -480,10 +496,11 @@ def ws_receive(message):
                     json.dumps({'header': command, 'accept': 'False',
                             'body': 'suggest bubble does not exist for the id'})})
             return
-        except:
+        except Exception as e:
             message.reply_channel.send({"text":
                     json.dumps({'header': command, 'accept': 'False',
                             'body': 'create comment on suggest bubble failed'})})
+            see_error(e)
             return
 
         if not get:
@@ -535,9 +552,10 @@ def ws_receive(message):
                 json.dumps({'header': command, 'accept': 'False',
                         'body': 'cannot edit bubble that is being claimed ownership of'})})
             return
-        except:
+        except Exception as e:
             message.reply_channel.send({"text":
                 json.dumps({'header': command, 'accept': 'False', 'body': 'unknown error'})})
+            see_error(e)
             return
 
         if not get:
@@ -578,13 +596,14 @@ def ws_receive(message):
                 json.dumps({'header': command, 'accept': 'False',
                         'body': 'update failed'})})
             return
-        except:
+        except Exception as e:
             message.reply_channel.send({"text":
                 json.dumps({'header': command, 'accept': 'False', 'body': 'unknown error'})})
+            see_error(e)
             return
 
         request_id = get[0];
-        
+
         # IMPORTANT: update_content_of_editting_bubble does not give request_id!
         Group('document_detail-'+document_id, channel_layer=message.channel_layer).send({"text":
             json.dumps({'header': command, 'request_id': request_id, 'accept': 'True',
@@ -615,9 +634,10 @@ def ws_receive(message):
             message.reply_channel.send({"text":
                     json.dumps({'header': command, 'accept': 'False', 'body': 'update finish failed'})})
             return
-        except:
+        except Exception as e:
             message.reply_channel.send({"text":
                     json.dumps({'header': command, 'accept': 'False', 'body': 'unknown error'})})
+            see_error(e)
             return
 
         if not get:
@@ -658,9 +678,10 @@ def ws_receive(message):
             message.reply_channel.send({"text":
                     json.dumps({'header': command, 'accept': 'False', 'body': 'update discard failed'})})
             return
-        except:
+        except Exception as e:
             message.reply_channel.send({"text":
                     json.dumps({'header': command, 'accept': 'False', 'body': 'unknown error'})})
+            see_error(e)
             return
 
         if not get:
@@ -708,9 +729,10 @@ def ws_receive(message):
                 json.dumps({'header': command, 'accept': 'False',
                         'body': 'owner of this bubble is not this user'})})
             return
-        except:
+        except Exception as e:
             message.reply_channel.send({"text":
                 json.dumps({'header': command, 'accept': 'False', 'body': 'unknown error'})})
+            see_error(e)
             return
 
         if not get:
@@ -746,9 +768,10 @@ def ws_receive(message):
             message.reply_channel.send({"text":
                     json.dumps({'header': command, 'accept': 'False', 'body': 'suggest bubble does not exist for the id'})})
             return
-        except:
+        except Exception as e:
             message.reply_channel.send({"text":
                     json.dumps({'header': command, 'accept': 'False', 'body': 'unknown error'})})
+            see_error(e)
             return
 
         if not get:
@@ -795,9 +818,10 @@ def ws_receive(message):
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False', 'body': 'bubble is being claimed ownership'})})
             return
-        except:
+        except Exception as e:
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False', 'body': 'unknown error'})})
+            see_error(e)
             return
 
         if not get:
@@ -832,9 +856,10 @@ def ws_receive(message):
                     json.dumps({"header": command, "accept": 'False',
                             'body': 'suggest bubble does not exist for the id'})})
             return
-        except:
+        except Exception as e:
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False', 'body': 'unknown error'})})
+            see_error(e)
             return
 
         if not get:
@@ -874,9 +899,10 @@ def ws_receive(message):
                     json.dumps({"header": command, "accept": 'False', 'body': 'cannot add suggest bubble to root bubble'})})
             return
 
-        except:
+        except Exception as e:
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False', 'body': 'unknown error'})})
+            see_error(e)
             return
 
         if not get:
@@ -918,9 +944,10 @@ def ws_receive(message):
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False', 'body': 'this user did not write this comment'})})
             return
-        except:
+        except Exception as e:
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False', 'body': 'unknown error'})})
+            see_error(e)
             return
 
         if not get:
@@ -962,9 +989,10 @@ def ws_receive(message):
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False', 'body': 'this user did not write this comment'})})
             return
-        except:
+        except Exception as e:
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False', 'body': 'unknown error'})})
+            see_error(e)
             return
 
         if not get:
@@ -1005,9 +1033,10 @@ def ws_receive(message):
                     json.dumps({"header": command, "accept": 'False',
                             'body': 'new parent bubble is leaf bubble'})})
             return
-        except:
+        except Exception as e:
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False', 'body': 'unknown error'})})
+            see_error(e)
             return
 
         if not get:
@@ -1057,7 +1086,7 @@ def ws_receive(message):
                     json.dumps({"header": command, "accept": "False",
                             'body': 'one of bubbles is being claimed ownership of'})})
             return
-        except:
+        except Exception as e:
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False', 'body': 'unknown error'})})
             return
@@ -1170,9 +1199,10 @@ def ws_receive(message):
                     json.dumps({"header": command, "accept": "False",
                             'body': 'leaf bubble cannot be handled by split_internal_bubble'})})
             return
-        except:
+        except Exception as e:
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False', 'body': 'unknown error'})})
+            see_error(e)
             return
 
         if not get:
@@ -1229,9 +1259,10 @@ def ws_receive(message):
                     json.dumps({"header": command, "accept": "False",
                             'body': 'internal bubble cannot be handled by split_leaf_bubble'})})
             return
-        except:
+        except Exception as e:
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False', 'body': 'unknown error'})})
+            see_error(e)
             return
 
         if not get:
@@ -1286,9 +1317,10 @@ def ws_receive(message):
                     json.dumps({"header": command, "accept": 'False',
                             'body': 'root bubble cannot be merged'})})
             return
-        except:
+        except Exception as e:
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False', 'body': 'unknown error'})})
+            see_error(e)
             return
 
         if not get:
@@ -1344,11 +1376,10 @@ def ws_receive(message):
                     json.dumps({"header": command, "accept": 'False',
                             'body': 'root bubble cannot be flattened'})})
             return
-        except Exception as ee:
-            print(ee)
-            print(type(ee))
+        except Exception as e:
             message.reply_channel.send({"text":
-                    json.dumps({"header": command, "accept": 'False', 'body': 'unknown error' + str(type(ee))})})
+                    json.dumps({"header": command, "accept": 'False', 'body': 'unknown error'})})
+            see_error(e)
             return
 
         if not get:
@@ -1392,9 +1423,10 @@ def ws_receive(message):
                     json.dumps({"header": command, "accept": "False",
                             'body': 'bubble is being claimed ownership of'})})
             return
-        except:
+        except Exception as e:
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False', 'body': 'unknown error'})})
+            see_error(e)
             return
         if not get:
             message.reply_channel.send({"text":
@@ -1427,9 +1459,10 @@ def ws_receive(message):
                     json.dumps({"header": command, "accept": 'False',
                             'body': 'bubble does not exist for the id'})})
             return
-        except:
+        except Exception as e:
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False', 'body': 'unknown error'})})
+            see_error(e)
             return
 
         if not get:
@@ -1463,9 +1496,10 @@ def ws_receive(message):
                     json.dumps({"header": command, "accept": 'False',
                             'body': 'bubble does not exist for the id'})})
             return
-        except:
+        except Exception as e:
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False', 'body': 'unknown error'})})
+            see_error(e)
             return
 
         if not get:

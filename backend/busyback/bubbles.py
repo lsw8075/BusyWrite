@@ -19,6 +19,7 @@ def normal_operation(func):
     ''' Decorator for functions whose 4th arg is bubble_id'''
     @wraps(func)
     def wrapper(*args, **kwargs):
+        print('called ' + func.__name__ + '...')
         with transaction.atomic():
             rid_version = args[0]
             user_id = args[1]
@@ -36,7 +37,7 @@ def normal_operation(func):
             # might-be problem with reverse relationship..
             if bubble.document.id != doc_id:
                 raise DocumentMismatchError()
-
+            
             result = func(*args, document=document, bubble=bubble)
             document.save()
 
@@ -48,6 +49,7 @@ def suggest_operation(func):
     ''' Decorator for functions whose 4th arg is suggest_id'''
     @wraps(func)
     def wrapper(*args, **kwargs):
+        print('called ' + func.__name__ + '...')
         with transaction.atomic():
             rid_version = args[0]
             user_id = args[1]
@@ -73,6 +75,7 @@ def bubble_operation(func):
     ''' Decorator for functions that not consider 4th arg '''
     @wraps(func)
     def wrapper(*args, **kwargs):
+        print('called ' + func.__name__ + '...')
         with transaction.atomic():
             rid_version = args[0]
             user_id = args[1]
