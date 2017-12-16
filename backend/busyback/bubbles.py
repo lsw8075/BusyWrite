@@ -267,9 +267,9 @@ def do_update_finish_normal_bubble(
         raise InvalidUpdateError(bubble_id)
     (del_flag, content) = result
     
-    check_updatable(rversion, bubble)
 
     bubble = kw['bubble']
+    check_updatable(rversion, bubble)
     bubble.unlock(fetch_user(user_id))
     bubble.change_content(content)
     bubble.save()
@@ -290,9 +290,8 @@ def do_update_discard_normal_bubble(
         raise InvalidUpdateError(bubble_id)
     (del_flag, content) = result
    
-    check_updatable(rversion, bubble) 
-
     bubble = kw['bubble']
+    check_updatable(rversion, bubble) 
     parent = bubble.parent_bubble
     if del_flag == 'True':
         check_updatable_with_sibilings([(parent, location+1)])
@@ -368,7 +367,7 @@ def do_move_normal_bubble(
         raise BubbleLockedError(new_parent.id)
 
     parent = bubble.parent_bubble
-    check_updatable_with_siblings(rversion, parent, location)
+    check_updatable_with_siblings(rversion, parent, bubble.location)
     check_updatable_with_siblings(rversion, new_parent, new_location)
     parent.splice_children(bubble.location, 1, new_parent, new_location)
     
@@ -631,10 +630,11 @@ def do_split_leaf_bubble(
 
     bubble.change_content('')
 
+    created = []
     for idx, content in enumerate(split_content_list):
-        create_normal(bubble.document, content, bubble, idx)
+        created.append(create_normal(bubble.document, content, bubble, idx))
         
-    return (Operation.SPLIT_LEAF, process_normal(bubble))
+    return (Operation.SPLIT_LEAF, [process_normal(bubble) for bubble in created])
 
 @normal_operation
 @update_doc
@@ -669,15 +669,17 @@ def do_split_internal_bubble(
         if split_last - split_first < 1:
             raise InvalidSplitError()
 
+    check_updatable_with_descendants(rversion, bubble)
+
+    created = []
     for idx in range(0, len(split_location) - 1):
         split_first = split_location[idx]
         split_last = split_location[idx + 1]
 
-    check_updatable_with_descendants(rversion, bubble)
+        created.append(bubble.wrap_children(split_first, split_last - split_first))
 
-    bubble.wrap_children(split_first, split_last - split_first)
+    return (Operation.SPLIT_INTERNAL, [process_normal(bubble) for bubble in created])
 
-    return (Operation.SPLIT_INTERNAL, process_normal(bubble))
 
 @suggest_operation
 @update_doc
@@ -692,7 +694,7 @@ def do_vote_suggest_bubble(
     user = fetch_user(user_id)
     bubble = kw['bubble']
 
-    check_updatable(bubble.normal_bubble)
+    check_updatable(rversion, bubble.normal_bubble)
 
     bubble.vote(user)
 
@@ -714,7 +716,7 @@ def do_unvote_suggest_bubble(
     user = fetch_user(user_id)
     bubble = kw['bubble']
 
-    check_updatable(bubble.normal_bubble)
+    check_updatable(rversion, bubble.normal_bubble)
 
     bubble.unvote(user)
 

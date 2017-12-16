@@ -87,7 +87,7 @@ def update_doc(func):
         #bubbleset = get_involved_bubbles_by_operation(result, *args, **kwargs)
         #set_string = json.dumps(bubbleset)
         #new_version_no = commit_version(document, set_string)
-        return (new_version_no, result)
+        return (0, result)
     return wrapper
 
 # version no 
