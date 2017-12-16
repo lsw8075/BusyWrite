@@ -13,6 +13,7 @@ def commentN_operation(func):
     ''' Decorator for comment under normal functions '''
     @wraps(func)
     def wrapper(*args, **kwargs):
+        print('called ' + func.__name__ + '...')
         with transaction.atomic():
             rversion = args[0]
             user_id = args[1]
@@ -38,6 +39,7 @@ def commentS_operation(func):
     ''' Decorator for comment under suggest functions '''
     @wraps(func)
     def wrapper(*args, **kwargs):
+        print('called ' + func.__name__ + '...')
         with transaction.atomic():
             rversion = args[0]
             user_id = args[1]
