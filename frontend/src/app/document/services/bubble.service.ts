@@ -84,7 +84,22 @@ export class BubbleService implements OnDestroy {
                 this.currentDocumentId = Number(body.document_id);
                 this.previousRequestId = Number(body.previous_request_id);
                 const contributors = BubbleJsonHelper.getUserArrayObject(JSON.stringify(body.contributors));
-                const connectors = BubbleJsonHelper.getUserArrayObject(JSON.stringify(body.connectors));
+                const connectorIdList = body.connectors;
+                const cons = [];
+                try {
+                    for (const connectorId of connectorIdList) { 
+                        for (const contributor of contributors) {
+                            if (contributor.id === connectorId) 
+                                cons.push({
+                                        'id': connectorId,
+                                        'email': contributor.email
+                                        });
+                        }
+                    }
+                    throw new Error('cannot find connector in contributors');
+                } catch {
+                }
+                const connectors = BubbleJsonHelper.getUserArrayObject(JSON.stringify(cons));
                 this._store.dispatch(new BubbleAction.OpenComplete({documentId: Number(body.document_id), contributors: contributors, connectors: connectors}));
             } else {
                 console.log('received open_document fail');
