@@ -31,12 +31,6 @@
                     </a>
                     </li>
                     <li role="menuitem">
-                    <a class="dropdown-item" (click)="mergeBubble(); " appStopClickPropagation>
-                        <i class="fa fa-compress fa-fw"></i>
-                        Merge
-                    </a>
-                    </li>
-                    <li role="menuitem">
                     <a class="dropdown-item" (click)="editBubble(); " appStopClickPropagation>
                         <i class="fa fa-pencil fa-fw"></i>
                         Edit
@@ -54,8 +48,14 @@
                 </ng-container>
                 <li role="menuitem">
                     <a class="dropdown-item" (click)="wrapBubble(); " appStopClickPropagation>
-                    <i class="fa fa-square fa-fw"></i>
-                    Wrap
+                        <i class="fa fa-square fa-fw"></i>
+                        Wrap
+                    </a>
+                </li>
+                <li role="menuitem">
+                    <a class="dropdown-item" (click)="mergeBubble(); " appStopClickPropagation>
+                        <i class="fa fa-compress fa-fw"></i>
+                        Merge
                     </a>
                 </li>
             </ul>

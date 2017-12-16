@@ -2,7 +2,6 @@ import { Action } from '@ngrx/store';
 
 import { Bubble, BubbleType, InternalBubble, LeafBubble } from '../models/bubble';
 import { MenuType } from '../services/event/event-bubble.service';
-import { MockBubbleRoot, MockBubbleList } from '../models/bubble.mock';
 
 import * as fromBubble from '../actions/bubble-action';
 import * as _ from 'lodash';
@@ -64,6 +63,7 @@ export function BubbleReducer(state: BubbleState = initialState, action: fromBub
         case fromBubble.LOAD_COMPLETE: {
             // const bubbleList = MockBubbleList;
             // TODO: changed to mock bubble list
+            console.log(action.payload);
             return {...state, bubbleList: [...action.payload], loading: false};
             // return {...state, bubbleList: [...bubbleList], loading: false};
         }
@@ -192,11 +192,11 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
         case fromBubble.FLATTEN_BUBBLE:
             return {...state, loading: true, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
         case fromBubble.FLATTEN_BUBBLE_COMPLETE: {
-            // const bubbleId = action.payload.bubbleId;
-            // const newLeafBubble = action.payload.newBubble;
-            // const newBubbleList = _.cloneDeep(state.bubbleList);
-            // flattenBubble(newBubbleList, bubbleId, newLeafBubble);
-            return {...state, loading: false};
+            const bubbleId = action.payload;
+            const newLeafBubble = new LeafBubble(bubbleId);
+            const newBubbleList = _.cloneDeep(state.bubbleList);
+            flattenBubble(newBubbleList, bubbleId, newLeafBubble);
+            return {...state, bubbleList: newBubbleList, loading: false};
         }
         case fromBubble.FLATTEN_BUBBLE_ERROR:
             return {...state, loading: false, error: action.payload, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};

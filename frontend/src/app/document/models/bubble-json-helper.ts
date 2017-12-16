@@ -8,12 +8,12 @@ export namespace BubbleJsonHelper {
         if (jsonObject.child_bubbles.length > 0) {
             const childBubbleIds = jsonObject.child_bubbles;
             const internalBubble = new InternalBubble(jsonObject.id, childBubbleIds);
-            internalBubble.parentBubbleId = jsonObject.parent_bubble_id;
+            internalBubble.parentBubbleId = jsonObject.parent_bubble;
             internalBubble.location = jsonObject.location;
             return internalBubble;
         } else {
             const leafBubble = new LeafBubble(jsonObject.id, jsonObject.content);
-            leafBubble.parentBubbleId = jsonObject.parent_bubble_id;
+            leafBubble.parentBubbleId = jsonObject.parent_bubble;
             leafBubble.location = jsonObject.location;
             return leafBubble;
         }
@@ -21,9 +21,18 @@ export namespace BubbleJsonHelper {
     export function getBubbleArrayObject(jsonString: string): Array<Bubble> {
         const jsonObjectArray = JSON.parse(jsonString);
         const bubbleList: Array<Bubble> = [];
-        for (const jsonObject of jsonObjectArray) {
-            bubbleList.push(this.getBubbleObject(JSON.stringify(jsonObject)));
+        let rootBubbleLocation = 0;
+
+        for (let i = 0; i < jsonObjectArray.length; i++) {
+            const jsonObject = jsonObjectArray[i];
+            const bubble = this.getBubbleObject(JSON.stringify(jsonObject));
+            bubbleList.push(bubble);
+            if (! bubble.parentBubbleId) {
+                rootBubbleLocation = i;
+            }
         }
+        const rootBubble = bubbleList.splice(rootBubbleLocation, 1);
+        bubbleList.splice(0, 0, rootBubble[0]);
         return bubbleList;
     }
 

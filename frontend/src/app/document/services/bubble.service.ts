@@ -19,7 +19,6 @@ import * as fromUser from '../../user/reducers/reducer';
 import { BubbleJsonHelper } from '../models/bubble-json-helper';
 import { OnDestroy } from '@angular/core';
 
-const USE_MOCK = false;
 let Id = 30; // to be deleted after backend implemented
 const UserId = 1;
 
@@ -47,22 +46,6 @@ export class BubbleService implements OnDestroy {
         this._store.select(fromUser.getUserState).subscribe(userState => {
             this.userId = userState.userId;
         });
-
-        if (USE_MOCK) {
-            this._getBubbleList().then(bubbleList => {
-                for (const bubble of bubbleList) {
-                    if (bubble.type === BubbleType.internalBubble) {
-                        const internalBubble = bubble as InternalBubble;
-                        for (let i = 0; i < internalBubble.childBubbleIds.length; i++) {
-                            const childBubbleId = internalBubble.childBubbleIds[i];
-                            bubbleList[childBubbleId].parentBubbleId = internalBubble.id;
-                            bubbleList[childBubbleId].location = i;
-                        }
-                    }
-                }
-                this.bubbleList = bubbleList;
-            });
-        }
     }
 
     ngOnDestroy() {
@@ -87,9 +70,9 @@ export class BubbleService implements OnDestroy {
                 const connectorIdList = body.connectors;
                 const cons = [];
                 try {
-                    for (const connectorId of connectorIdList) { 
+                    for (const connectorId of connectorIdList) {
                         for (const contributor of contributors) {
-                            if (contributor.id === connectorId) 
+                            if (contributor.id === connectorId)
                                 cons.push({
                                         'id': connectorId,
                                         'email': contributor.email
@@ -137,7 +120,7 @@ export class BubbleService implements OnDestroy {
         } else if (command === 'get_bubble_list') {
             if (accept === 'True') {
                 console.log('received get_bubble_list success');
-                console.log(JSON.stringify(body));
+                console.log(body);
                 const bubbleArray = BubbleJsonHelper.getBubbleArrayObject(JSON.stringify(body));
                 this._store.dispatch(new BubbleAction.LoadComplete(bubbleArray));
             } else {
@@ -147,7 +130,6 @@ export class BubbleService implements OnDestroy {
         } else if (command === 'get_suggest_bubble_list') {
             if (accept === 'True') {
                 console.log('received get_suggest_bubble_list success');
-                console.log(JSON.stringify(body));
                 const suggestBubbleArray = BubbleJsonHelper.getSuggestBubbleArrayObject(JSON.stringify(body));
                 this._store.dispatch(new BubbleAction.LoadSuggestComplete(suggestBubbleArray));
             } else {
@@ -180,7 +162,7 @@ export class BubbleService implements OnDestroy {
                 } else {
                     this._store.dispatch(new BubbleAction.OthersCreateBubble(bubble));
                 }
-                this.previousRequestId = data.reqeust_id;
+                this.previousRequestId = data.request_id;
                 console.log('received create_bubble success');
             } else {
                 this._store.dispatch(new BubbleAction.CreateBubbleError(body));
@@ -195,7 +177,7 @@ export class BubbleService implements OnDestroy {
                 } else {
                     this._store.dispatch(new BubbleAction.OthersCreateSuggest(suggestBubble));
                 }
-                this.previousRequestId = data.reqeust_id;
+                this.previousRequestId = data.request_id;
             } else {
                 console.log('received create_suggest_bubble fail');
                 this._store.dispatch(new BubbleAction.CreateSuggestError(body));
@@ -209,7 +191,7 @@ export class BubbleService implements OnDestroy {
                 } else {
                     this._store.dispatch(new BubbleAction.OthersCreateCommentOnBubble(comment));
                 }
-                this.previousRequestId = data.reqeust_id;
+                this.previousRequestId = data.request_id;
             } else {
                 console.log('received create_comment_on_bubble fail');
                 this._store.dispatch(new BubbleAction.CreateCommentOnBubbleError(body));
@@ -223,7 +205,7 @@ export class BubbleService implements OnDestroy {
                 } else {
                     this._store.dispatch(new BubbleAction.OthersCreateCommentOnSuggest(comment));
                 }
-                this.previousRequestId = data.reqeust_id;
+                this.previousRequestId = data.request_id;
             } else {
                 console.log('received create_comment_on_suggest_bubble fail');
                 this._store.dispatch(new BubbleAction.CreateCommentOnSuggestError(body));
@@ -236,7 +218,7 @@ export class BubbleService implements OnDestroy {
                 } else {
                     this._store.dispatch(new BubbleAction.OthersEditRequest(Number(body.bubble_id)));
                 }
-                this.previousRequestId = data.reqeust_id;
+                this.previousRequestId = data.request_id;
             } else {
                 console.log('received edit_bubble fail');
                 this._store.dispatch(new BubbleAction.EditBubbleError(body));
@@ -250,7 +232,7 @@ export class BubbleService implements OnDestroy {
                     this._store.dispatch(new BubbleAction.OthersEditUpdate(
                                 {bubbleId: Number(body.bubble_id), content: body.content}));
                 }
-                this.previousRequestId = data.reqeust_id;
+                this.previousRequestId = data.request_id;
             } else {
                 console.log('received update_content_of_editting_bubble fail');
                 this._store.dispatch(new BubbleAction.EditBubbleError(body));
@@ -263,7 +245,7 @@ export class BubbleService implements OnDestroy {
                 } else {
                     this._store.dispatch(new BubbleAction.OthersEditComplete(Number(body.bubble_id)));
                 }
-                this.previousRequestId = data.reqeust_id;
+                this.previousRequestId = data.request_id;
             } else {
                 console.log('received finish_editting_bubble fail');
                 this._store.dispatch(new BubbleAction.EditBubbleError(body));
@@ -276,7 +258,7 @@ export class BubbleService implements OnDestroy {
                 } else {
                     this._store.dispatch(new BubbleAction.OthersEditDiscard(Number(body.bubble_id)));
                 }
-                this.previousRequestId = data.reqeust_id;
+                this.previousRequestId = data.request_id;
             } else {
                 console.log('received discard_editting_bubble fail');
                 this._store.dispatch(new BubbleAction.EditBubbleError(body));
@@ -289,7 +271,7 @@ export class BubbleService implements OnDestroy {
                 } else {
                     this._store.dispatch(new BubbleAction.OthersReleaseOwnership(Number(body.bubble_id)));
                 }
-                this.previousRequestId = data.reqeust_id;
+                this.previousRequestId = data.request_id;
             } else {
                 console.log('received release_ownership_of_bubble success');
                 this._store.dispatch(new BubbleAction.ReleaseOwnershipError(body));
@@ -303,7 +285,7 @@ export class BubbleService implements OnDestroy {
                     this._store.dispatch(new BubbleAction.OthersEditSuggest(
                                 {suggestBubbleId: Number(body.suggest_bubble_id), content: String(body.content)}));
                 }
-                this.previousRequestId = data.reqeust_id;
+                this.previousRequestId = data.request_id;
             } else {
                 console.log('received edit_suggest_bubble fail');
                 this._store.dispatch(new BubbleAction.EditSuggestError(body));
@@ -316,7 +298,7 @@ export class BubbleService implements OnDestroy {
                 } else {
                     this._store.dispatch(new BubbleAction.OthersDeleteBubble(Number(body.bubble_id)));
                 }
-                this.previousRequestId = data.reqeust_id;
+                this.previousRequestId = data.request_id;
             } else {
                 console.log('received delete_bubble fail');
                 this._store.dispatch(new BubbleAction.DeleteBubbleError(body));
@@ -329,7 +311,7 @@ export class BubbleService implements OnDestroy {
                 } else {
                     this._store.dispatch(new BubbleAction.OthersHideSuggest(Number(body.suggest_bubble_id)));
                 }
-                this.previousRequestId = data.reqeust_id;
+                this.previousRequestId = data.request_id;
             } else {
                 console.log('received hide_suggest_bubble fail');
                 this._store.dispatch(new BubbleAction.HideSuggestError(body));
@@ -342,7 +324,7 @@ export class BubbleService implements OnDestroy {
                 } else {
                     this._store.dispatch(new BubbleAction.OthersShowSuggest(Number(body.suggest_bubble_id)));
                 }
-                this.previousRequestId = data.reqeust_id;
+                this.previousRequestId = data.request_id;
             } else {
                 console.log('received show_suggest_bubble fail');
                 this._store.dispatch(new BubbleAction.ShowSuggestError(body));
@@ -355,7 +337,7 @@ export class BubbleService implements OnDestroy {
                 } else {
                     this._store.dispatch(new BubbleAction.OthersDeleteCommentOnBubble(Number(body.comment_id)));
                 }
-                this.previousRequestId = data.reqeust_id;
+                this.previousRequestId = data.request_id;
             } else {
                 console.log('received delete_comment_on_bubble fail');
                 this._store.dispatch(new BubbleAction.DeleteCommentOnBubbleError(body));
@@ -368,7 +350,7 @@ export class BubbleService implements OnDestroy {
                 } else {
                     this._store.dispatch(new BubbleAction.OthersDeleteCommentOnSuggest(Number(body.comment_id)));
                 }
-                this.previousRequestId = data.reqeust_id;
+                this.previousRequestId = data.request_id;
             } else {
                 console.log('received delete_comment_on_suggest_bubble fail');
                 this._store.dispatch(new BubbleAction.DeleteCommentOnSuggestError(body));
@@ -385,7 +367,7 @@ export class BubbleService implements OnDestroy {
                                 {bubbleId: Number(body.bubble_id), newParentId: Number(body.new_parent_id),
                                 newLocation: Number(body.new_location)}));
                 }
-                this.previousRequestId = data.reqeust_id;
+                this.previousRequestId = data.request_id;
             } else {
                 console.log('received move_bubble fail');
                 this._store.dispatch(new BubbleAction.MoveBubbleError(body));
@@ -401,7 +383,7 @@ export class BubbleService implements OnDestroy {
                     this._store.dispatch(new BubbleAction.OthersWrapBubble(
                                 {wrapBubbleIdList: body.bubble_id_list, newWrappedBubble: newWrappedBubble}));
                 }
-                this.previousRequestId = data.reqeust_id;
+                this.previousRequestId = data.request_id;
             } else {
                 console.log('received wrap_bubble fail');
                 this._store.dispatch(new BubbleAction.WrapBubbleError(body));
@@ -414,7 +396,7 @@ export class BubbleService implements OnDestroy {
                 } else {
                     this._store.dispatch(new BubbleAction.OthersPopBubble(Number(body.bubble_id)));
                 }
-                this.previousRequestId = data.reqeust_id;
+                this.previousRequestId = data.request_id;
             } else {
                 console.log('received pop_bubble fail');
                 this._store.dispatch(new BubbleAction.PopBubbleError(body));
@@ -430,7 +412,7 @@ export class BubbleService implements OnDestroy {
                     this._store.dispatch(new BubbleAction.OthersSplitInternal(
                                 {bubbleId: Number(body.bubble_id), splitBubbleObjectList: splitBubbleObjectList}));
                 }
-                this.previousRequestId = data.reqeust_id;
+                this.previousRequestId = data.request_id;
             } else {
                 console.log('received split_internal_bubble fail');
                 this._store.dispatch(new BubbleAction.SplitInternalError(body));
@@ -446,7 +428,7 @@ export class BubbleService implements OnDestroy {
                     this._store.dispatch(new BubbleAction.OthersSplitLeaf(
                                 {bubbleId: Number(body.bubble_id), splitBubbleObjectList: splitBubbleObjectList}));
                 }
-                this.previousRequestId = data.reqeust_id;
+                this.previousRequestId = data.request_id;
             } else {
                 console.log('received split_leaf_bubble fail');
                 this._store.dispatch(new BubbleAction.SplitLeafError(body));
@@ -462,7 +444,7 @@ export class BubbleService implements OnDestroy {
                     this._store.dispatch(new BubbleAction.OthersMergeBubble(
                                 {bubbleIdList: body.bubble_id_list, mergedBubble: mergedBubble}));
                 }
-                this.previousRequestId = data.reqeust_id;
+                this.previousRequestId = data.request_id;
             } else {
                 console.log('received merge_bubble fail');
                 this._store.dispatch(new BubbleAction.MergeBubbleError(body));
@@ -475,7 +457,7 @@ export class BubbleService implements OnDestroy {
                 } else {
                     this._store.dispatch(new BubbleAction.OthersFlattenBubble(Number(body.bubble_id)));
                 }
-                this.previousRequestId = data.reqeust_id;
+                this.previousRequestId = data.request_id;
             } else {
                 console.log('received flatten_bubble fail');
                 this._store.dispatch(new BubbleAction.FlattenBubbleError(body));
@@ -488,7 +470,7 @@ export class BubbleService implements OnDestroy {
                 } else {
                     this._store.dispatch(new BubbleAction.OthersSwitchBubble(Number(body.suggest_bubble_id)));
                 }
-                this.previousRequestId = data.reqeust_id;
+                this.previousRequestId = data.request_id;
             } else {
                 console.log('received switch_bubble fail');
                 this._store.dispatch(new BubbleAction.SwitchBubbleError(body));
@@ -501,7 +483,7 @@ export class BubbleService implements OnDestroy {
                 } else {
                     this._store.dispatch(new BubbleAction.OthersVoteOnSuggest(Number(body.suggest_bubble_id)));
                 }
-                this.previousRequestId = data.reqeust_id;
+                this.previousRequestId = data.request_id;
             } else {
                 console.log('received vote_on_suggest_bubble fail');
                 this._store.dispatch(new BubbleAction.VoteOnSuggestError(body));
@@ -514,7 +496,7 @@ export class BubbleService implements OnDestroy {
                 } else {
                     this._store.dispatch(new BubbleAction.OthersUnvoteOnSuggest(Number(body.suggest_bubble_id)));
                 }
-                this.previousRequestId = data.reqeust_id;
+                this.previousRequestId = data.request_id;
             } else {
                 console.log('received unvote_on_suggest_bubble fail');
                 this._store.dispatch(new BubbleAction.UnvoteOnSuggestError(body));

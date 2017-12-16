@@ -41,7 +41,7 @@ export class BubbleEffects {
             console.log(state);
             const routerState = (state as any).router.state;
             this.bubbleService.openDocument(routerState.params.id);
-            return null;
+            return Observable.of(new BubbleAction.OpenPending(null));
         });
 
     @Effect()
