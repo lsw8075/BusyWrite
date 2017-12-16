@@ -11,9 +11,11 @@ from django.forms.models import model_to_dict
 from functools import wraps
 from .operation_no import Operation
 from .utils import create_normal, create_suggest
+from .versions import *
 
 def delete_normal(bubble):
-    bubble.deleted = True
+    bubble.delete()
+    # todo : delete bubble to trash bin?
 
 def normal_operation(func):
     ''' Decorator for functions whose 4th arg is bubble_id'''
@@ -227,6 +229,7 @@ def do_create_normal_bubble(
     if parent_bubble.is_leaf():
         raise BubbleIsLeafError(parent_bubble)
 
+    check_updatable_with_siblings(rversion, parent_bubble, location)
 
     # create a bubble
     new_bubble = create_normal(parent_bubble.document, content, parent_bubble, location)
@@ -272,6 +275,7 @@ def do_update_finish_normal_bubble(
     (del_flag, content) = result
 
     bubble = kw['bubble']
+    check_updatable(rversion, bubble)
     bubble.unlock(fetch_user(user_id))
     bubble.change_content(content)
     bubble.save()
@@ -291,12 +295,12 @@ def do_update_discard_normal_bubble(
     if result is None:
         raise InvalidUpdateError(bubble_id)
     (del_flag, content) = result
-
-
+    
     bubble = kw['bubble']
+    check_updatable(rversion, bubble) 
     parent = bubble.parent_bubble
     if del_flag == 'True':
-        check_updatable_with_sibilings([(parent, location+1)])
+        check_updatable_with_siblings([(parent, location+1)])
         parent.delete_children(bubble.location, 1)
         delete_normal(bubble)
     else:
@@ -325,6 +329,8 @@ def do_edit_normal_bubble(
     if bubble.has_locked_ancestors() or bubble.is_locked():
         raise BubbleLockedError(bubble.id)
 
+    check_updatable(rversion, bubble) 
+    
     if content != '':
         bubble.change_content(content)
     bubble.lock(user)
@@ -333,22 +339,6 @@ def do_edit_normal_bubble(
 
     return (Operation.EDIT_NORMAL, process_normal(bubble))
 
-@normal_operation
-@update_doc
-def do_unlock_bubble(
-    rversion: int,
-    user_id: int,
-    document_id: int,
-    bubble_id: int,
-    **kw
-    ):
-    ''' unlock bubble '''
-    user = fetch_user(user_id)
-    bubble = kw['bubble']
-
-    bubble.unlock(user)
-
-    return (Operation.INVALID_OPERATION, process_normal(bubble))
 
 @normal_operation
 @update_doc
@@ -383,6 +373,8 @@ def do_move_normal_bubble(
         raise BubbleLockedError(new_parent.id)
 
     parent = bubble.parent_bubble
+    check_updatable_with_siblings(rversion, parent, bubble.location)
+    check_updatable_with_siblings(rversion, new_parent, new_location)
     parent.splice_children(bubble.location, 1, new_parent, new_location)
 
     return (Operation.MOVE_NORMAL, process_normal(new_parent))
@@ -415,9 +407,12 @@ def do_delete_normal_bubble(
     if bubble.has_locked_directs():
         raise BubbleLockedError(bubble.id)
 
+    parent = bubble.parent_bubble
+    check_updatable_with_descendants(rversion, bubble)
+    check_updatable_with_siblings(rversion, parent, bubble.location)
 
     cascaded_delete_children(user, bubble)
-    parent = bubble.parent_bubble
+    
     parent.delete_children(bubble.location, 1)
     delete_normal(bubble)
 
@@ -437,6 +432,8 @@ def do_create_suggest_bubble(
 
     binded_bubble = kw['bubble']
 
+    check_updatable(rversion, binded_bubble)
+
     new_suggest = create_suggest(binded_bubble, content)
     new_suggest.save()
 
@@ -453,6 +450,9 @@ def do_hide_suggest_bubble(
     ):
 
     bubble = kw['bubble']
+
+    check_updatable(rversion, bubble)
+
     bubble.hide()
 
     return (Operation.HIDE_SUGGEST, process_suggest(bubble))
@@ -468,6 +468,9 @@ def do_show_suggest_bubble(
     ):
 
     bubble = kw['bubble']
+
+    check_updatable(rversion, bubble)
+
     bubble.show()
 
     return (Operation.SHOW_SUGGEST, process_suggest(bubble))
@@ -525,6 +528,8 @@ def wrap_bubble(
         if bubble_locs[idx+1] - bubble_locs[idx] != 1:
             raise InvalidWrapError()
 
+    check_updatable_with_siblings(rversion, parent, bubble_locs[0])
+
     wrapped = parent.wrap_children(bubble_locs[0], len(bubble_locs))
 
     return wrapped
@@ -552,7 +557,10 @@ def do_pop_normal_bubble(
     if bubble.has_locked_directs():
         raise BubbleLockedError(bubble.id)
 
-    bubble.parent_bubble.pop_child(bubble.location)
+    parent = bubble.parent_bubble
+    check_updatable_with_siblings(rversion, parent, bubble.location)
+
+    parent.pop_child(bubble.location)
 
     return (Operation.POP_NORMAL, process_normal(bubble.parent_bubble))
 
@@ -587,6 +595,8 @@ def do_flatten_normal_bubble(
     if bubble.is_leaf():
         return bubble
 
+    check_updatable_with_descendants(rversion, bubble)
+
     content = cascaded_flatten_children(user, bubble)
     bubble.change_content(content)
 
@@ -617,6 +627,8 @@ def do_split_leaf_bubble(
     if bubble.has_locked_ancestors() or bubble.is_locked():
         raise BubbleLockedError(bubble.id)
 
+    check_updatable(rversion, bubble)
+    
     user = User.objects.get(id=user_id)
     # convert leaf bubble to internal bubble
     # whether bubble is leaf is determined by existence of child
@@ -624,10 +636,11 @@ def do_split_leaf_bubble(
 
     bubble.change_content('')
 
+    created = []
     for idx, content in enumerate(split_content_list):
-        create_normal(bubble.document, content, bubble, idx)
-
-    return (Operation.SPLIT_LEAF, process_normal(bubble))
+        created.append(create_normal(bubble.document, content, bubble, idx))
+        
+    return (Operation.SPLIT_LEAF, [process_normal(bubble) for bubble in created])
 
 @normal_operation
 @update_doc
@@ -653,7 +666,6 @@ def do_split_internal_bubble(
 
     # check split location
 
-    split_location[:0] = [0]
     split_location.append(bubble.child_count())
 
     for idx in range(0, len(split_location) - 1):
@@ -663,13 +675,17 @@ def do_split_internal_bubble(
         if split_last - split_first < 1:
             raise InvalidSplitError()
 
+    check_updatable_with_descendants(rversion, bubble)
+
+    created = []
     for idx in range(0, len(split_location) - 1):
         split_first = split_location[idx]
         split_last = split_location[idx + 1]
 
-        bubble.wrap_children(split_first, split_last - split_first)
+        created.append(bubble.wrap_children(split_first, split_last - split_first))
 
-    return (Operation.SPLIT_INTERNAL, process_normal(bubble))
+    return (Operation.SPLIT_INTERNAL, [process_normal(bubble) for bubble in created])
+
 
 @suggest_operation
 @update_doc
@@ -683,6 +699,9 @@ def do_vote_suggest_bubble(
 
     user = fetch_user(user_id)
     bubble = kw['bubble']
+
+    check_updatable(rversion, bubble.normal_bubble)
+
     bubble.vote(user)
 
     return (Operation.VOTE_SUGGEST, process_suggest(bubble))
@@ -702,6 +721,9 @@ def do_unvote_suggest_bubble(
 
     user = fetch_user(user_id)
     bubble = kw['bubble']
+
+    check_updatable(rversion, bubble.normal_bubble)
+
     bubble.unvote(user)
 
     return (Operation.UNVOTE_SUGGEST, process_suggest(bubble))
@@ -729,9 +751,13 @@ def do_switch_bubble(
 
 
     if not binded_bubble.is_leaf():
+        check_updatable_with_descendants(rversion, binded_bubble)
         content = cascaded_flatten_children(user, binded_bubble)
         binded_bubble.change_content(content)
+    else:
+        check_updatable(rversion, binded_bubble)
 
+    
     with transaction.atomic():
         # switch content
         switch_content = suggest.content
@@ -795,6 +821,8 @@ def do_release_ownership(
     if (bubble.owner_with_lock is not None):
         if (bubble.owner_with_lock.id != user_id):
             raise BubbleOwnedError(bubble.id)
+
+    check_updatable(rversion, bubble)
     bubble.owner_with_lock = None
     bubble.save()
     return (Operation.RELEASE_OWNERSHIP_NORMAL, process_normal(bubble))
@@ -808,8 +836,12 @@ def do_merge_normal_bubble(
     bubble_id_list: list,
     **kw
     ):
+
+    
+
     bubble = wrap_bubble(rversion, user_id, document_id, bubble_id_list, **kw)
 
+    check_updatable_with_descendants(rversion, bubble)
     content = cascaded_flatten_children(fetch_user(user_id), bubble)
     bubble.change_content(content)
 
@@ -826,7 +858,9 @@ def do_edit_suggest_bubble(
     **kw
     ):
     suggest = kw['bubble']
+    check_updatable(rversion, suggest.normal_bubble)
     new_suggest = create_suggest(bind=suggest.normal_bubble, content=content)
     suggest.hide()
 
     return (Operation.EDIT_SUGGEST, process_suggest(new_suggest))
+    

@@ -138,10 +138,6 @@ class BubblesTestCase(TestCase):
 
         do_move_normal_bubble(0, self.user1.id, self.doc1.id, self.bubble1.id, self.bubble2.id, 2)
 
-    def test_do_unlock_bubble(self):
-        self.bubble3.lock(self.user2)
-        do_unlock_bubble(0, self.user2.id, self.doc1.id, self.bubble3.id)
-
     def test_hide_and_show_suggest(self):
         do_hide_suggest_bubble(0, self.user1.id, self.doc1.id, self.suggest1.id)
         reload_suggests(self, [1])
