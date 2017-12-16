@@ -104,3 +104,6 @@ class InvalidNoteOrderError(Error):
 class InvalidUpdateError(Error):
     def __init__(self, bubble):
         self.bubble = bubble
+
+class OutdatedRequestError(Error):
+    pass
