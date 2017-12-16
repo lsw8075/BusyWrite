@@ -205,7 +205,6 @@ class BubblesTestCase(TestCase):
         with self.assertRaises(BubbleLockedError):
             do_split_leaf_bubble(0, self.user1.id, self.doc1.id, self.bubble4.id, ['Test', 'Bubble1'])
 
-
         do_split_leaf_bubble(0, self.user1.id, self.doc1.id, self.bubble3.id, ['Test', 'Bubble2'])
 
     def test_do_split_internal_bubble(self):
