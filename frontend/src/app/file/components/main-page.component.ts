@@ -31,4 +31,8 @@ export class MainPageComponent implements OnInit {
         this._store.dispatch(new RouterAction.GoByUrl(`/documents/${document.id}`));
     }
 
+    public create() {
+        this._store.dispatch(new FileAction.Create());
+    }
+
 }

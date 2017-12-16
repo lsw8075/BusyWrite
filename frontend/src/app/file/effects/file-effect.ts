@@ -22,13 +22,14 @@ import * as fromFile from '../actions/file-action';
 import * as fromRouter from '../../shared/route/route-action';
 import { DirectoryService } from '../services/directory.service';
 
-import { Http } from '@angular/http';
+import { Http, Headers } from '@angular/http';
 
 
 @Injectable()
 export class FileEffects {
 
     documentListUrl = `/api/documentlist`;
+    private tokenUrl = '/api/token';
 
     @Effect()
     load$: Observable<Action> = this.action$.ofType<fromFile.Load>(fromFile.LOAD)
@@ -46,12 +47,32 @@ export class FileEffects {
                 }
             }));
 
+    @Effect()
+    create$: Observable<Action> = this.action$.ofType<fromFile.Create>(fromFile.CREATE)
+            .mergeMap(() => {
+                const headers = new Headers({'Content-Type': 'application/json'});
+                return this._http.get(this.tokenUrl).toPromise().then(() => headers.append('X-CSRFToken', this.getCookie('csrftoken')))
+                .then(() => this._http.post(this.documentListUrl, JSON.stringify({'title': 'new_document'}), {headers: headers})
+                .toPromise().then(res => {
+                    const jsonData = JSON.parse(res.text());
+                    if (res.status === 200) {
+                        return new fromFile.CreateComplete({
+                            id: jsonData.id,
+                            title: jsonData.title
+                        });
+                    } else {
+                        return new fromFile.CreateError(jsonData);
+                    }
+                }));
+                });
 
-    // signout$: Observable<Action> = this.action$.ofType<fromUser.SignOut>(fromUser.SIGNOUT)
-    //     .map(action => action.payload).mergeMap(query =>
-    //         this._http.get(this.signOutUrl).toPromise().then(response => response.status).then(status => {
-    //             return new fromRouter.GoByUrl('users/signin');
-    //     }));
+    getCookie(name) {
+        const value = ';' + document.cookie;
+        const parts = value.split(';' + name + '=');
+        if (parts.length === 2) {
+            return parts.pop().split(';').shift();
+        }
+    }
 
   constructor(
     private action$: Actions,

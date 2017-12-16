@@ -28,6 +28,12 @@ export function FileReducer(state: FileState = initialState, action: fromFile.Ac
             return {...state, fileList: action.payload, loading: false};
         case fromFile.LOAD_ERROR:
             return {...state, error: action.payload};
+        case fromFile.CREATE:
+            return {...state, loading: true};
+        case fromFile.CREATE_COMPLETE:
+            return {...state, loading: false, fileList: [...state.fileList].push(action.payload)};
+        case fromFile.CREATE_ERROR:
+            return {...state, loading: false, error: action.payload};
         default:
             return state;
     }

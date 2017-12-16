@@ -62,10 +62,10 @@ export function BubbleReducer(state: BubbleState = initialState, action: fromBub
         case fromBubble.LOAD:
             return {...initialState, loading: true, documentId: action.payload};
         case fromBubble.LOAD_COMPLETE: {
-            const bubbleList = MockBubbleList;
+            // const bubbleList = MockBubbleList;
             // TODO: changed to mock bubble list
-    //         return {...state, bubbleList: [...action.payload], loading: false};
-            return {...state, bubbleList: [...bubbleList], loading: false};
+            return {...state, bubbleList: [...action.payload], loading: false};
+            // return {...state, bubbleList: [...bubbleList], loading: false};
         }
         case fromBubble.LOAD_ERROR:
             return {...state, error: action.payload};

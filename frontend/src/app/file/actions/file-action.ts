@@ -43,12 +43,12 @@ export class Select implements Action {
 
 export class Create implements Action {
     readonly type = CREATE;
-    constructor(public payload: FileSystemEntity) {}
+    constructor() {}
 }
 
 export class CreateComplete implements Action {
     readonly type = CREATE_COMPLETE;
-    constructor(public payload: void) {}
+    constructor(public payload: FileSystemEntity) {}
 }
 
 export class CreateError implements Action {

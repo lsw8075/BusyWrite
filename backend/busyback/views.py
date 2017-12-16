@@ -76,7 +76,9 @@ def req_document_list(user_id, method, data):
     if method == 'GET':
         try:
             documents = do_fetch_documents(user_id)
-        except:
+        except Exception as ee:
+            print(ee)
+            print(type(ee))
             return HttpResponse(status=404)
         return JsonResponse(documents, safe=False) # list of documents
     elif method == 'POST':

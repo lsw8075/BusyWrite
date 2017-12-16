@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { MockBubbleRoot, MockBubbleList } from '../models/bubble.mock';
 import { Bubble, LeafBubble, InternalBubble, SuggestBubble, BubbleType } from '../models/bubble';
-import { Comment } from '../models/comment'; 
+import { Comment } from '../models/comment';
 import { User } from '../../user/models/user';
 import { Subscription } from 'rxjs/Subscription';
 import { ServerSocket } from './websocket.service';
@@ -19,7 +19,7 @@ import * as fromUser from '../../user/reducers/reducer';
 import { BubbleJsonHelper } from '../models/bubble-json-helper';
 import { OnDestroy } from '@angular/core';
 
-let USE_MOCK = true;
+const USE_MOCK = false;
 let Id = 30; // to be deleted after backend implemented
 const UserId = 1;
 
@@ -220,7 +220,7 @@ export class BubbleService implements OnDestroy {
                     this._store.dispatch(new BubbleAction.EditRequestSuccess(Number(body.bubble_id)));
                 } else {
                     this._store.dispatch(new BubbleAction.OthersEditRequest(Number(body.bubble_id)));
-                }           
+                }
                 this.previousRequestId = data.reqeust_id;
             } else {
                 console.log('received edit_bubble fail');
