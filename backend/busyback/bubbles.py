@@ -294,7 +294,7 @@ def do_update_discard_normal_bubble(
     check_updatable(rversion, bubble) 
     parent = bubble.parent_bubble
     if del_flag == 'True':
-        check_updatable_with_sibilings([(parent, location+1)])
+        check_updatable_with_siblings([(parent, location+1)])
         parent.delete_children(bubble.location, 1)
         delete_normal(bubble)
     else:
