@@ -14,22 +14,12 @@ from .documents import *
 from .comments import *
 from .users import *
 from .notes import *
+from .utils import see_error
 import logging
 import pdb
-import sys, traceback
-
 # reference: antilibrary.or/1117, channels.readthedocs.io/en/stable/getting-started.html
 
 log = logging.getLogger(__name__)
-
-def see_error(e):
-    print('***Traceback (most recent call last) ***')
-    ex_type, ex, tb = sys.exc_info()
-    traceback.print_tb(tb)
-    print(type(e))
-    print(str(e))
-    print('****************************************')
-    del tb
 
 @channel_session_user_from_http
 def ws_connect(message):
