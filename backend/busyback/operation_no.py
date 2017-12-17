@@ -58,3 +58,5 @@ class Operation(Enum):
     # note operations: 4xx
     EXPORT_NOTE_TO_NORMAL   = 431
     EXPORT_NOTE_TO_SUGGEST  = 432
+    EXPORT_NOTE_TO_NCOMMENT = 433
+    EXPORT_NOTE_TO_SCOMMENT = 434

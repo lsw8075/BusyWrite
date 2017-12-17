@@ -99,11 +99,7 @@ def ws_receive(message):
 
         try:
             contributors = do_fetch_contributors(message.user.id, int(document_id))
-            print('contibutors:')
-            print(contributors)
             connectors = do_get_connected_users_document(message.user.id, int(document_id))
-            print('connectors:')
-            print(connectors)
         except Exception as e:
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False', "body": "getting contributors failed"})})
@@ -286,7 +282,6 @@ def ws_receive(message):
         message.reply_channel.send({"text":
                 json.dumps({"header": command, "accept": 'True', "body": result})})
         return
-
 
 
     ################################
@@ -604,10 +599,9 @@ def ws_receive(message):
 
         request_id = get[0];
 
-        # IMPORTANT: update_content_of_editting_bubble does not give request_id!
         Group('document_detail-'+document_id, channel_layer=message.channel_layer).send({"text":
             json.dumps({'header': command, 'request_id': request_id, 'accept': 'True',
-            'body': {'who': message.user.id, 'bubble_id': body['bubble_id']}})})
+            'body': {'who': message.user.id, 'bubble_id': body['bubble_id'], 'content': body['content']}})})
         return
 
 
@@ -768,6 +762,10 @@ def ws_receive(message):
             message.reply_channel.send({"text":
                     json.dumps({'header': command, 'accept': 'False', 'body': 'suggest bubble does not exist for the id'})})
             return
+        except ContentEmptyError:
+            message.reply_channel.send({"text":
+                    json.dumps({"header": command, "accept": 'False', 'body': 'empty content'})})
+            return
         except Exception as e:
             message.reply_channel.send({"text":
                     json.dumps({'header': command, 'accept': 'False', 'body': 'unknown error'})})
@@ -785,8 +783,106 @@ def ws_receive(message):
 
         Group('document_detail-'+document_id, channel_layer=message.channel_layer).send({"text":
                 json.dumps({'header': command, 'request_id': request_id, 'accept': 'True',
-                'body': {'who': message.user.id, 'suggest_bubble_id': body['bubble_id'],
-                'new_suggest_bubble': result}})})
+                'body': {'who': message.user.id, 'hided_suggest_bubble_id': body['suggest_bubble_id'],
+                'new_editted_suggest_bubble': result}})})
+        return
+
+
+    #######################################
+    ##   Edit Comment on Normal Bubble   ##
+    #######################################
+
+    elif command == 'edit_comment_on_bubble':
+
+        if set(body.keys()) != set(('comment_id', 'content')):
+            message.reply_channel.send({"text":
+                    json.dumps({"header": command, 'accept': 'False', 'body': 'body does not follow format'})})
+            return
+
+        try:
+            get = do_edit_comment_under_normal(previous_state, message.user.id, int(document_id),
+                    int(body['comment_id']), body['content'])
+
+        except CommentDoesNotExistError:
+            message.reply_channel.send({"text":
+                    json.dumps({'header': command, 'accept': 'False', 'body': 'comment does not exist for the id'})})
+            return
+        except UserIsNotCommentOwnerError:
+            message.reply_channel.send({"text":
+                    json.dumps({"header": command, "accept": 'False', 'body': 'this user did not write this comment'})})
+            return
+        except ContentEmptyError:
+            message.reply_channel.send({"text":
+                    json.dumps({"header": command, "accept": 'False', 'body': 'empty content'})})
+            return
+        except Exception as e:
+            message.reply_channel.send({"text":
+                    json.dumps({'header': command, 'accept': 'False', 'body': 'edit comment failed'})})
+            see_error(e)
+            return
+
+        if not get:
+            message.reply_channel.send({"text":
+                    json.dumps({'header': command, 'accept': 'False',
+                            'body': 'function returned null'})})
+            return
+
+        request_id = get[0];
+        result = get[1];
+
+        Group('document_detail-'+document_id, channel_layer=message.channel_layer).send({"text":
+                json.dumps({'header': command, 'request_id': request_id, 'accept': 'True',
+                'body': {'who': message.user.id, 'comment_id': body['comment_id'],
+                'content': body['content']}})})
+        return
+
+
+    ########################################
+    ##   Edit Comment on Suggest Bubble   ##
+    ########################################
+
+    elif command == 'edit_comment_on_suggest_bubble':
+
+        if set(body.keys()) != set(('comment_id', 'content')):
+            message.reply_channel.send({"text":
+                    json.dumps({"header": command, 'accept': 'False', 'body': 'body does not follow format'})})
+            return
+
+        try:
+            get = do_edit_comment_under_suggest(previous_state, message.user.id, int(document_id),
+                    int(body['comment_id']), body['content'])
+
+        except CommentDoesNotExistError:
+            message.reply_channel.send({"text":
+                    json.dumps({'header': command, 'accept': 'False', 'body': 'comment does not exist for the id'})})
+            return
+        except UserIsNotCommentOwnerError:
+            message.reply_channel.send({"text":
+                    json.dumps({"header": command, "accept": 'False', 'body': 'this user did not write this comment'})})
+            return
+        except ContentEmptyError:
+            message.reply_channel.send({"text":
+                    json.dumps({"header": command, "accept": 'False', 'body': 'empty content'})})
+            return
+        except Exception as e:
+            message.reply_channel.send({"text":
+                    json.dumps({'header': command, 'accept': 'False', 'body': 'edit comment failed'})})
+            see_error(e)
+            return
+
+        if not get:
+            message.reply_channel.send({"text":
+                    json.dumps({'header': command, 'accept': 'False',
+                            'body': 'function returned null'})})
+            return
+
+        request_id = get[0];
+        result = get[1];
+
+        Group('document_detail-'+document_id, channel_layer=message.channel_layer).send({"text":
+                json.dumps({'header': command, 'request_id': request_id, 'accept': 'True',
+                'body': {'who': message.user.id, 'comment_id': body['comment_id'],
+                'content': body['content']}})})
         return
 
 
@@ -931,14 +1027,10 @@ def ws_receive(message):
             return
 
         try:
-            get = do_delete_normal_bubble(previous_state, message.user.id, int(document_id), int(body['comment_id']))
-        except BubbleDoesNotExistError:
+            get = do_delete_comment_under_normal(previous_state, message.user.id, int(document_id), int(body['comment_id']))
+        except CommentDoesNotExistError:
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": "False", "body": 'comment does not exist for the id'})})
-            return
-        except BubbleIsRootError:
-            message.reply_channel.send({"text":
-                    json.dumps({"header": command, "accept": 'False', 'body': 'cannot add comment on root bubble'})})
             return
         except UserIsNotCommentOwnerError:
             message.reply_channel.send({"text":
@@ -976,14 +1068,10 @@ def ws_receive(message):
             return
 
         try:
-            get = do_delete_normal_bubble(previous_state, message.user.id, int(document_id), int(body['comment_id']))
-        except BubbleDoesNotExistError:
+            get = do_delete_comment_under_suggest(previous_state, message.user.id, int(document_id), int(body['comment_id']))
+        except CommentDoesNotExistError:
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": "False", "body": 'comment does not exist for the id'})})
-            return
-        except BubbleIsRootError:
-            message.reply_channel.send({"text":
-                    json.dumps({"header": command, "accept": 'False', 'body': 'cannot add comment on root bubble'})})
             return
         except UserIsNotCommentOwnerError:
             message.reply_channel.send({"text":
@@ -1279,7 +1367,7 @@ def ws_receive(message):
                 json.dumps({'header': command, 'request_id': request_id, 'accept': 'True',
                         'body': {'who': message.user.id, 'bubble_id': body['bubble_id'],
                         'split_bubble_object_list': result,
-                        'split_content_id_list': body['split_content_id_list']}})})
+                        'split_content_list': body['split_content_list']}})})
         return
         # [d['id'] for d in list(result.child_bubbles.all().values()]
 
@@ -1521,26 +1609,31 @@ def ws_receive(message):
     ##   Get Note   ##
     ##################
 
+    # will be done by http(get)
 
     #####################
     ##   Create Note   ##
     #####################
 
+    # will be done by http(post)
 
     #####################
     ##   Delete Note   ##
     #####################
 
+    # will be done by http(:id/delete)
 
     ##############################
     ##   Change order of Note   ##
     ##############################
 
+    # will be done by html(:id/put)
 
     ###########################
     ##   Update(Edit) Note   ##
     ###########################
 
+    # will be done by html(:id/put)
 
     #######################################
     ##   Export Note as Suggest Bubble   ##
@@ -1572,7 +1665,8 @@ def ws_receive(message):
     #########################
     ##   Add Contributor   ##
     #########################
-
+    
+    # will be done by http
 
 
 

@@ -30,7 +30,6 @@ class DocumentTestCase(TestCase):
 
     def test_do_fetch_contributors(self):
         cont = do_fetch_contributors(self.user1.id, self.doc1.id)
-        self.assertEqual(cont[0], self.user1.id)
 
     def test_connected_users(self):
         do_clear_connected_users_document(self.user1.id, self.doc1.id)
@@ -49,3 +48,5 @@ class DocumentTestCase(TestCase):
         self.assertEqual(len(con), 0)
 
         
+    def do_change_title_of_document(self):
+        do_change_title_of_document(0, self.user1.id, self.doc1.id, 'Hello world')
