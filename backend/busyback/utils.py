@@ -7,13 +7,17 @@ def create_normal(doc, content='', parent=None, location=0):
 def create_suggest(bind, content):
     return SuggestBubble.objects.create(content=content, normal_bubble=bind, hidden=False)
 
+def getCSRF(s):
+    response = s.client.get('/api/token')
+    return response.cookies['csrftoken'].value # Get csrf token from cookie
+
 def http_send(s, t, url, jd={}, result=False, login=False, csrf=None):
     if login:
         s.client.login(username='testuser2', password='5678')
     response = None
     url = '/api/' + url
     if t != 'GET':
-        csrf = s.getCSRF()
+        csrf = getCSRF(s)
     if t == 'GET':
         if jd != {}:
             response = s.client.get(url, jd)

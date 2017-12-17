@@ -6,15 +6,21 @@ from .documents import *
 import json
 
 def docrequest(func):
-    def wrapper(request):
+    def wrapper(*args, **kwargs):
+        request = args[0]
         if not request.user.is_authenticated:
             return HttpResponse(status=401)
         req_user = request.user.id
         req_method = request.method
-        if req_method != 'GET':
+        if (req_method == 'GET') or (req_method == 'DELETE'):
+            if len(args) > 1:
+                req_data = args[1]
+            else:
+                req_data = None
+        elif (req_method == 'POST') or (req_method == 'PUT'):
             req_data = json.loads(request.body.decode())
         else:
-            req_data = request.GET.dict()
+            return HttpResponse(status=501)
         try:
             result = func(req_user, req_method, req_data)
         except Exception as ee:
@@ -43,7 +49,6 @@ def req_document_list(user_id, method, data):
 @docrequest
 def req_document_detail(user_id, method, data):
     document_id = data['document_id']
-
     if method == 'GET':
         try:
             document = do_fetch_document(user_id, document_id)
