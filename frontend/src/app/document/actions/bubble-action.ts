@@ -207,7 +207,7 @@ export const CREATE_SUGGEST = '[Suggest Bubble] create';
 export const CREATE_SUGGEST_PENDING = '[Suggest Bubble] create Pending';
 export const CREATE_SUGGEST_COMPLETE = '[Suggest Bubble] create Complete';
 export const CREATE_SUGGEST_ERROR = '[Suggest Bubble] create Error';
-export const OTHERS_CREATE_SUGGEST= '[Suggest Bubble] others create';
+export const OTHERS_CREATE_SUGGEST = '[Suggest Bubble] others create';
 export class CreateSuggest implements Action {
     readonly type = CREATE_SUGGEST;
     constructor(public payload: {
@@ -564,11 +564,16 @@ export class OthersDeleteCommentOnSuggest implements Action {
     constructor(public payload: number) {}
 }
 
+export const MOVE_BUBBLE_START = '[Bubble] move start';
 export const MOVE_BUBBLE = '[Bubble] move';
 export const MOVE_BUBBLE_PENDING = '[Bubble] move pending';
 export const MOVE_BUBBLE_COMPLETE = '[Bubble] move Complete';
 export const MOVE_BUBBLE_ERROR = '[Bubble] move Error';
 export const OTHERS_MOVE_BUBBLE = '[Bubble] others move';
+export class MoveBubbleStart implements Action {
+    readonly type = MOVE_BUBBLE_START;
+    constructor(public payload: Bubble) {}
+}
 export class MoveBubble implements Action {
   readonly type = MOVE_BUBBLE;
   constructor(public payload: {
@@ -660,11 +665,16 @@ export class OthersPopBubble implements Action {
   constructor(public payload: number) {}
 }
 
+export const SPLIT_INTERNAL_START = '[Internal Bubble] split action';
 export const SPLIT_INTERNAL = '[Internal Bubble] split';
 export const SPLIT_INTERNAL_PENDING = '[Internal Bubble] split pending';
 export const SPLIT_INTERNAL_COMPLETE = '[Internal Bubble] split Complete';
 export const SPLIT_INTERNAL_ERROR = '[Internal Bubble] split Error';
 export const OTHERS_SPLIT_INTERNAL = '[Internal Bubble] others split';
+export class SplitInternalStart implements Action {
+    readonly type = SPLIT_INTERNAL_START;
+    constructor(public payload: Bubble) {}
+}
 export class SplitInternal implements Action {
   readonly type = SPLIT_INTERNAL;
   constructor(public payload: {
@@ -695,11 +705,16 @@ export class OthersSplitInternal implements Action {
     }) {}
 }
 
+export const SPLIT_LEAF_START = '[Leaf Bubble] split start';
 export const SPLIT_LEAF = '[Leaf Bubble] split';
 export const SPLIT_LEAF_PENDING = '[Leaf Bubble] split pending';
 export const SPLIT_LEAF_COMPLETE = '[Leaf Bubble] split Complete';
 export const SPLIT_LEAF_ERROR = '[Leaf Bubble] split Error';
 export const OTHERS_SPLIT_LEAF = '[Leaf Bubble] others split';
+export class SplitLeafStart implements Action {
+    readonly type = SPLIT_LEAF_START;
+    constructor(public payload: Bubble) {}
+}
 export class SplitLeaf implements Action {
   readonly type = SPLIT_LEAF;
   constructor(public payload: {
@@ -985,6 +1000,7 @@ export type Actions =
   | DeleteCommentOnSuggestComplete
   | DeleteCommentOnSuggestError
   | OthersDeleteCommentOnSuggest
+  | MoveBubbleStart
   | MoveBubble
   | MoveBubblePending
   | MoveBubbleComplete
@@ -1001,11 +1017,13 @@ export type Actions =
   | PopBubbleComplete
   | PopBubbleError
   | OthersPopBubble
+  | SplitInternalStart
   | SplitInternal
   | SplitInternalPending
   | SplitInternalComplete
   | SplitInternalError
   | OthersSplitInternal
+  | SplitLeafStart
   | SplitLeaf
   | SplitLeafPending
   | SplitLeafComplete

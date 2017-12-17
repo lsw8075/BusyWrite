@@ -35,7 +35,6 @@ export class BubbleMenuComponent implements OnInit {
 
     bsModalRef: BsModalRef;
 
-
     constructor(
         private _store: Store<fromDocument.State>,
         private _bubbleSerivce: BubbleService,
@@ -52,20 +51,19 @@ export class BubbleMenuComponent implements OnInit {
         this._store.dispatch(new SangjunBoardAction.Open(this.bubble));
     }
 
-    public splitBubble() {
-        this._store.dispatch(new BubbleAction.SplitLeaf(
-            {bubbleId: 6,
-            contentList: ['<p>BusyWrite is the per','fect solution for team writing. The concept of writing as a tea','m has been around for a long time, by services like Google Docs, but the approaches are impractical and unproductive. </p>']}));
-    //    this.bsModalRef = this._modalService.show(SplitBubbleComponent);
-    //    this.bsModalRef.content.bubble = this.bubble;
+    public splitBubble(bubble: Bubble) {
+        if (bubble.type === BubbleType.leafBubble) {
+            this._store.dispatch(new BubbleAction.SplitLeafStart(this.bubble));
+        } else if (bubble.type === BubbleType.internalBubble) {
+            this._store.dispatch(new BubbleAction.SplitInternalStart(this.bubble));
+        }
+
+       this.bsModalRef = this._modalService.show(SplitBubbleComponent);
+       this.bsModalRef.content.bubble = this.bubble;
     }
 
     public popBubble() {
         this._store.dispatch(new BubbleAction.PopBubble(this.bubble.id));
-    }
-
-    public wrap() {
-
     }
 
     public createBubble() {
@@ -94,19 +92,7 @@ export class BubbleMenuComponent implements OnInit {
     }
 
     public moveBubble() {
-        this._store.dispatch(new BubbleAction.MoveBubble({bubbleId: this.bubble.id, destBubbleId: 1, isAbove: false}));
-    }
-
-    public getAction(): string {
-    // switch (this._eventBubbleService.getActionState()) {
-    //     case ActionType.move:
-    //         return 'move bubble';
-    //     case ActionType.split:
-    //         return 'split bubble';
-    //     default:
-    //         return '';
-    // }
-    return '';
+        this._store.dispatch(new BubbleAction.MoveBubbleStart(this.bubble));
     }
 
   public isBeingEditted(bubble: Bubble): boolean {

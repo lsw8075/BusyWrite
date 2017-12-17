@@ -23,6 +23,8 @@ import * as BubbleAction from '../actions/bubble-action';
 import * as EditBoardAction from '../actions/edit-board-action';
 import * as fromDocument from '../reducers/reducer';
 import { Bubble, BubbleType, InternalBubble, LeafBubble, SuggestBubble } from '../models/bubble';
+import { MenuType } from '../services/event/event-bubble.service';
+import { ViewBoardMenuType} from '../reducers/bubble-reducer';
 
 import { BubbleService } from '../services/bubble.service';
 import {
@@ -152,6 +154,25 @@ export class BubbleEffects {
         });
 
     @Effect()
+    select$: Observable<Action> = this.action$.ofType<BubbleAction.Select>(BubbleAction.SELECT)
+        .withLatestFrom(this._store).filter(([action, state]) =>
+            ((state as any).document.bubble.viewBoardMenuType === ViewBoardMenuType.move &&
+            (action.payload.menu === MenuType.borderTopMenu ||
+                action.payload.menu === MenuType.borderBottomMenu)))
+        .mergeMap(([action, state]) => {
+            console.log('moving start', state);
+            const bubbleState = (state as any).document.bubble;
+            const bubbleList = bubbleState.bubbleList;
+            const selectedMenuType = action.payload.menu;
+            const bubbleId = bubbleList[0].id;
+            const destBubbleId = action.payload.bubble.id;
+            const isAbove = selectedMenuType === MenuType.borderTopMenu;
+            return Observable.of(new BubbleAction.MoveBubble({
+                bubbleId, destBubbleId, isAbove
+            }));
+        });
+
+    @Effect()
     split$: Observable<Action> = this.action$.ofType<BubbleAction.SplitLeaf>(BubbleAction.SPLIT_LEAF)
         .map(action => action.payload).mergeMap(query => {
             return Observable.of(this.bubbleService.splitLeafBubble(query.bubbleId, query.contentList))
@@ -172,7 +193,7 @@ export class BubbleEffects {
     @Effect()
     move$: Observable<Action> = this.action$.ofType<BubbleAction.MoveBubble>(BubbleAction.MOVE_BUBBLE)
         .map(action => action.payload).mergeMap(query => {
-            return Observable.of(this.bubbleService.moveBubble(query.bubbleId, 0, 0))
+            return Observable.of(this.bubbleService.moveBubble(query.bubbleId, query.destBubbleId, 0))
                 .map(() => new BubbleAction.MoveBubblePending(null));
                 // .map((newBubble) => new BubbleAction.MoveComplete(query))
                 // .catch(err => of(new BubbleAction.MoveError(err)));

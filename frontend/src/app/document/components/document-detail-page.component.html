@@ -73,7 +73,6 @@
 
 <ng-template #board let-board$>
     <div *ngIf="board$ | async as board">
-        {{board | json}}
         <div class="board list-group-item"
                 [appBoardFocus]="board"
                 [class.activeBoard]="isBoardActive(board)" >
@@ -120,10 +119,10 @@
                     </button>
                 </div>
                 <div *ngSwitchCase="viewBoardMenuType.move">
-                    <button type="button" (click)="moveBubble()" [tooltip]="'move bubble'" placement="bottom" class="btn btn-sm btn-success">
-                        <i class="fa fa-fw fa-square"></i>
-                        Move Bubble
-                    </button>
+                    click in-between bubbles to move it
+                </div>
+                <div *ngSwitchCase="viewBoardMenuType.split">
+                    splitting bubbles...
                 </div>
                 <div *ngSwitchCase="viewBoardMenuType.merge">
                     <button type="button" (click)="mergeBubble()" [tooltip]="'move bubble'" placement="bottom" class="btn btn-sm btn-success">

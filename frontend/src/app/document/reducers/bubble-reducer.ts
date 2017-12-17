@@ -17,7 +17,8 @@ export enum ViewBoardMenuType {
     none = 1,
     wrap,
     merge,
-    move
+    move,
+    split
 }
 
 export interface BubbleState {
@@ -76,9 +77,11 @@ export function BubbleReducer(state: BubbleState = initialState, action: fromBub
         case fromBubble.EDIT_BUBBLE: case fromBubble.EDIT_REQUEST_SUCCESS: case fromBubble.DELETE_BUBBLE_ERROR:
         case fromBubble.FLATTEN_BUBBLE: case fromBubble.FLATTEN_BUBBLE_COMPLETE: case fromBubble.FLATTEN_BUBBLE_ERROR:
         case fromBubble.WRAP_START: case fromBubble.WRAP_BUBBLE: case fromBubble.WRAP_BUBBLE_COMPLETE: case fromBubble.WRAP_BUBBLE_ERROR:
-        case fromBubble.MERGE_START: case fromBubble.MERGE_BUBBLE: case fromBubble.MERGE_BUBBLE_COMPLETE: case fromBubble.MERGE_BUBBLE_ERROR:
-        case fromBubble.SPLIT_LEAF: case fromBubble.SPLIT_LEAF_COMPLETE: case fromBubble.SPLIT_LEAF_ERROR:
-        case fromBubble.MOVE_BUBBLE:  case fromBubble.MOVE_BUBBLE_COMPLETE: case fromBubble.MOVE_BUBBLE_ERROR:
+        case fromBubble.MERGE_START: case fromBubble.MERGE_BUBBLE:
+        case fromBubble.MERGE_BUBBLE_COMPLETE: case fromBubble.MERGE_BUBBLE_ERROR:
+        case fromBubble.SPLIT_LEAF_START: case fromBubble.SPLIT_LEAF: case fromBubble.SPLIT_LEAF_COMPLETE: case fromBubble.SPLIT_LEAF_ERROR:
+        case fromBubble.MOVE_BUBBLE_START: case fromBubble.MOVE_BUBBLE: 
+        case fromBubble.MOVE_BUBBLE_COMPLETE: case fromBubble.MOVE_BUBBLE_ERROR:
             return BubbleOperationReducer(state, action);
 
         case fromBubble.CLEAR_ERROR:
@@ -226,8 +229,12 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
         case fromBubble.MERGE_BUBBLE_ERROR:
             return {...state, loading: false, error: action.payload, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
 
+        case fromBubble.SPLIT_LEAF_START:
+            return {...state, loading: false, viewBoardMenuType: ViewBoardMenuType.split,
+                selectedBubbleList: [action.payload], selectedMenu: null, hoverBubbleList: []};
         case fromBubble.SPLIT_LEAF:
-            return {...state, loading: true, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
+            return {...state, loading: true, viewBoardMenuType: ViewBoardMenuType.none,
+                selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
         case fromBubble.SPLIT_LEAF_COMPLETE: {
             const bubbleId = action.payload.bubbleId;
             const splitBubbleList = action.payload.splitBubbleObjectList;
@@ -238,8 +245,19 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
         case fromBubble.SPLIT_LEAF_ERROR:
             return {...state, loading: false, error: action.payload, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
 
+            // internal
+        case fromBubble.SPLIT_INTERNAL_START:
+            return {...state, loading: false, viewBoardMenuType: ViewBoardMenuType.split,
+                selectedBubbleList: [action.payload], selectedMenu: null, hoverBubbleList: []};
+            // split_internal <- viewBoardMenuType: ViewBoardMenuType.none, refer leaf split
+
+        case fromBubble.MOVE_BUBBLE_START:
+            return {...state, loading: false, viewBoardMenuType: ViewBoardMenuType.move,
+                selectedBubbleList: [action.payload], selectedMenu: null, hoverBubbleList: []};
+
         case fromBubble.MOVE_BUBBLE:
-            return {...state, loading: true, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
+            return {...state, loading: true, viewBoardMenuType: ViewBoardMenuType.none,
+                 selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
         case fromBubble.MOVE_BUBBLE_COMPLETE: {
             // const bubbleId = action.payload.bubbleId;
             // const destBubbleId = action.payload.newParentId;
