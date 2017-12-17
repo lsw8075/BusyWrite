@@ -190,11 +190,12 @@ def do_user_connect_document(
     
     with cache.lock('doclock' + str(document_id)):
         connected_users = cache.get_or_set(key_doc, '[]')
+        cache.persist("key_doc")
         connected_users = json.loads(connected_users)
         connected_users.append(user_id)
         connected_users = json.dumps(connected_users)
 
-        cache.set(key_doc, connected_users)
+        cache.set(key_doc, connected_users, timeout=None)
 
     return get_latest_version_rid(document_id)
 
@@ -209,7 +210,7 @@ def do_user_disconnect_document(
         connected_users.remove(user_id)
         if len(connected_users) > 0:
             connected_users = json.dumps(connected_users)
-            cache.set(key_doc, connected_users)
+            cache.set(key_doc, connected_users, timeout=None)
         else:
             cache.delete(key_doc)
 

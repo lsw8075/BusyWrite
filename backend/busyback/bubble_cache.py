@@ -13,15 +13,15 @@ def key_bdel(bubble_id):
 def load_bubble_to_cache(bubble, del_flag=False):
     with cache.lock("bubblelock" + str(bubble.id)):
         cache.set(key_blh(bubble.id), str(bubble.edit_lock_holder.id), timeout=None)
-        cache.set(key_bcon(bubble.id), bubble.content)
-        cache.set(key_bdel(bubble.id), str(del_flag))
+        cache.set(key_bcon(bubble.id), bubble.content, timeout=None)
+        cache.set(key_bdel(bubble.id), str(del_flag), timeout=None)
     
 def update_bubble_on_cache(user_id, bubble_id, content):
     with cache.lock("bubblelock" + str(bubble_id)):
         editor = cache.get(key_blh(bubble_id))
         if editor is None or editor != str(user_id):
             return False
-        cache.set(key_bcon(bubble_id), content)
+        cache.set(key_bcon(bubble_id), content, timeout=None)
         return True
  
 def unload_bubble_from_cache(user_id, bubble_id):
