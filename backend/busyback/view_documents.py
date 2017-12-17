@@ -81,7 +81,7 @@ def req_document_contributors(request, document_id):
     else:
         return HttpResponseNotAllowed(['GET', 'POST'])
 
-def req_document_contributors(request):
+def req_document_accept_invitation(request):
     (user_id, method, data) = parse_request(request)
     if method == 'GET':
         try:

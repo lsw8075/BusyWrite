@@ -294,13 +294,13 @@ class InvitationHash(models.Model):
     salt = models.CharField(primary_key=True, max_length=56)
     document = models.ForeignKey(
     	'Document',
-    	related_name='invitations',
+    	related_name='invitation_hashs',
     	null=False,
         on_delete=models.CASCADE
     )
     receiver = models.ForeignKey(
-    	'User',
-    	related_name='invitations',
+    	User,
+    	related_name='invitation_hashs',
     	null=False,
         on_delete=models.CASCADE
     )

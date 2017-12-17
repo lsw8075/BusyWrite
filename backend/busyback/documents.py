@@ -7,7 +7,7 @@ from django.utils import timezone
 from django.db import transaction
 from django.core.cache import cache
 from django.forms.models import model_to_dict
-from django.core.mail import send_mail
+from django.core.mail import EmailMessage
 import json
 
 def process_document(document):
@@ -99,19 +99,25 @@ def do_send_invitation_email(
     document_id: int,
     who_id: int
     ):
+
     try:
         document = Document.objects.get(id=document_id)
     except Document.DoesNotExist:
         raise DocumentDoesNotExistError(document_id)
     
-    if document.contributors.filter(id=user_id).exists():
+    if not document.is_contributed_by(user_id):
+        raise UserIsNotContributorError(user_id, doc_id)
+
+    if document.contributors.filter(id=who_id).exists():
         raise InvalidInvitationError()
     
     user = fetch_user(user_id)
     who_to_send = fetch_user(who_id)
     salt = generate_hash()
-    InvitationHash.objects.create(salt=new_hash, document=document, receiver=who)
-    mail_title = '[Busywrite] %s invited you to document \'%s\'' % (user.name, document.title)
+    InvitationHash.objects.create(salt=salt, document=document, receiver=who_to_send)
+
+    # generate mail body
+    mail_subject = '[Busywrite] %s invited you to document \'%s\'' % (user.username, document.title)
     invite_route = 'invitation'
     invite_addr = 'http://busywrite.ribosome.kr/%s?salt=%s' % (invite_route, salt)
     mail_body = '<h2>Busywrite invitation</h2> <p> click <a href=\"%s\">this link</a> to accept invitation </p>' % invite_addr
@@ -119,8 +125,13 @@ def do_send_invitation_email(
     debug_addr = 'http://localhost:4200/%s?salt=%s' % (invite_route, salt)
     mail_body = mail_body + '<p> invitation at debug: <a href=\"%s\">this link</a> to accept invitation </p>' % debug_addr
     # for debug.. please remove above code at practice!
-    send_mail(mail_title, mail_body, 'no-reply@busywrite.ribosome.kr', who_to_send.email)
-    return
+    
+    # send invitation mail
+    email = EmailMessage(mail_subject, mail_body, 'no-reply@busywrite.ribosome.kr', to=[who_to_send.email])
+    email.send(fail_silently=True)
+    
+    # this return is only for testing. http does not use the value
+    return salt
 
 @transaction.atomic
 def do_add_contributor(salt_value):    
@@ -165,7 +176,7 @@ def do_fetch_contributors(
 
     document = fetch_document_with_lock(user_id, document_id)
     users = list(document.contributors.all().values())
-    users = [{'id': user['id'], 'email': user['email']} for user in users]
+    users = [{'id': user['id'], 'username': user['username'], 'email': user['email']} for user in users]
     return users
 
 def key_duser(document_id):
