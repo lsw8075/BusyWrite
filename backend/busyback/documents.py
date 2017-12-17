@@ -157,3 +157,17 @@ def do_clear_connected_users_document(
         connected_users = cache.get(key_doc)
         if connected_users is not None:
             cache.delete(key_doc)
+
+@transaction.atomic
+@update_doc
+def do_change_title_of_document(
+    rversion,
+    user_id,
+    doc_id,
+    new_title
+    ):
+
+    document = fetch_document_with_lock(user_id, doc_id)
+    document.title = new_title
+    document.save()
+    return (Operation.CHANGE_TITLE, new_title)
