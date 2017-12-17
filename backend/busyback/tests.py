@@ -194,7 +194,22 @@ class ChannelReceiveTestCaseTwo(ChannelTestCase):
         result = self.client.receive()
         self.previous_request = result['body']['previous_request_id']
         self.client.receive()
- 
+
+    def test_change_document_title(self):
+        message = {'header': "change_title_of_document", 'previous_request': self.previous_request,
+            'body': {"new_title": "i dont like swpp"}}
+        self.client.send("websocket.receive", content={'order':1}, text=str(message))
+        self.client.consume('websocket.receive')
+        result = self.client.receive()
+       
+        print(result['body'])
+        self.assertEqual(result['header'], 'change_title_of_document')
+        self.assertEqual(result['accept'], 'True')
+        self.assertEqual(result['body']['new_comment'], "i don't like swpp")
+
+        document = Document.objects.get(id=self.fstid)
+        self.assertEqual(document.title, "i dont like swpp")
+       
     def test_wr_disconnect(self):
         self.client.send("websocket.disconnect", content={"body":""})
         message = self.get_next_message("websocket.disconnect", require=True)
@@ -530,7 +545,6 @@ class ChannelBubbleOperationTestCase(ChannelTestCase):
         self.client.send("websocket.receive", content={'order':1}, text=str(message))
         self.client.consume('websocket.receive')
         result = self.client.receive()
-        print(result['body'])
         self.assertEqual(result['header'], 'discard_editting_bubble')
         self.assertEqual(result['accept'], 'True')
         self.assertEqual(result['body']['who'], self.userid)
@@ -1122,7 +1136,6 @@ class ChannelSuggestBubbleTestCase(ChannelTestCase):
         self.client.consume('websocket.receive')
         result = self.client.receive()
        
-        print(result['body'])
         self.assertEqual(result['header'], 'get_comment_list_for_suggest_bubble')
         self.assertEqual(result['accept'], 'True')
         self.assertEqual(len(result['body']), 1)
@@ -1189,3 +1202,97 @@ class ChannelSuggestBubbleTestCase(ChannelTestCase):
 
         with self.assertRaises(Comment.DoesNotExist):
             Comment.objects.get(id=comment_id)
+
+
+class ChannelNoteTestCase(ChannelTestCase):
+    def setUp(self):
+        d1 = Document.objects.create(title='A')
+        b1 = NormalBubble.objects.create(location=0, document = d1)
+        b2 = NormalBubble.objects.create(parent_bubble=b1, location=0, document = d1, content='hey')
+        u1 = User.objects.create_user(username='swpp')
+        u1.set_password('swpp')
+        u1.save()
+        d1.contributors.add(u1)
+        d1.save()
+
+        n1 = Note.objects.create(content='first note', order=0, owner=u1, document=d1)
+        n2 = Note.objects.create(content='second note', order=1, owner=u1, document=d1)
+        n3 = Note.objects.create(content='third note', order=2, owner=u1, document=d1)
+        n4 = Note.objects.create(content='fourth note', order=3, owner=u1, document=d1)
+
+        self.fstid = d1.id
+        self.rootid = b1.id
+        self.bubbleid = b2.id
+        self.userid = u1.id
+
+        self.first_note_id = n1.id 
+        self.second_note_id = n2.id
+        self.third_note_id = n3.id
+        self.fourth_note_id = n4.id
+
+        d2 = Document.objects.create(title='B')
+        b2 = NormalBubble.objects.create(location=0, document = d2)
+        u2 = User.objects.create_user(username='gonssam')
+        u2.set_password('gonssam')
+        u2.save()
+        d2.contributors.add(u2)
+        d2.save()
+    
+        d1.contributors.add(u2)
+        d1.save()
+
+        self.client = HttpClient()
+        self.client.login(username='swpp', password='swpp') 
+
+        message = {"header": "connect"}
+        self.client.send_and_consume("websocket.connect", content=message)
+        self.client.receive()
+        
+        message = {'header': 'open_document', "previous_request": 0, 'body': {'document_id': str(d1.id)}}
+        self.client.send('websocket.receive', content={'order': 0}, text=str(message))
+        self.client.consume('websocket.receive')
+        result = self.client.receive()
+        self.previous_request = result['body']['previous_request_id']
+        self.client.receive()
+
+        self.sndClient = HttpClient()
+        self.sndClient.login(username='gonssam', password='gonssam')
+
+        self.sndClient.send_and_consume("websocket.connect", content={"text": {"header": "connect"}})
+        self.sndClient.receive()
+        
+        self.sndClient.send('websocket.receive', content={'order':0}, 
+                text=str({"header": "open_document", "previous_request": 0, "body": {"document_id": str(self.fstid)}}))
+        self.sndClient.consume('websocket.receive')
+        self.sndClient.receive()
+        self.sndClient.receive()
+        result = self.client.receive()
+        self.assertEqual(result['header'], 'someone_open_document_detail')
+
+    def test_note_operations(self):
+        # export note as bubble
+        message = {'header': 'export_note_as_bubble', "previous_request": 0,
+            'body': {'parent_id': self.rootid, 'location': 1, 'note_id': self.first_note_id}}
+        self.client.send('websocket.receive', content={'order': 0}, text=str(message))
+        self.client.consume('websocket.receive')
+        result = self.client.receive()
+
+        self.assertEqual(result['body']['who'], self.userid)
+        self.assertEqual(result['body']['new_bubble']['parent_id'], self.rootid)
+        self.assertEqual(result['body']['new_bubble']['location'], 1)
+        self.assertEqual(result['body']['new_bubble']['content'], 'first note')
+        self.assertEqual(result['body']['edit_lock_holder'], None)
+        self.assertEqual(result['body']['owner_with_lock'], None)
+        
+        bubble_id = result['body']['id']
+        bubble = NormalBubble.objects.get(id=bubble_id)
+
+        self.assertEqual(bubble.who, self.userid)
+        self.assertEqual(bubble.parent_id, self.rootid)
+        self.assertEqual(bubble.location, 1)
+        self.assertEqual(bubble.content, 'first note')
+        self.assertEqual(bubble.edit_lock_holder, None)
+        self.assertEqual(bubble.owner_with_lock, None)
+            
+        # export note as suggest bubble
+
