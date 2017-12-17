@@ -83,7 +83,6 @@ export class BubbleMenuComponent implements OnInit {
     }
 
     public wrapBubble() {
-        // this._store.dispatch(new BubbleAction.Wrap([6, 7]));
         this._store.dispatch(new BubbleAction.WrapStart());
     }
 

@@ -101,7 +101,8 @@ export class BubbleEffects {
         .withLatestFrom(this._store).mergeMap(([action, state]) => {
             console.log(state);
             const bubbleState = (state as any).document.bubble;
-            const bubble = getBubbleById(bubbleState.bubbleList, action.payload);
+            const bubble = getBubbleById(bubbleState.bubbleList, action.payload) as LeafBubble;
+            bubble.editLock = true;
             return Observable.of(new EditBoardAction.Open(bubble));
         });
 
@@ -162,10 +163,11 @@ export class BubbleEffects {
         .mergeMap(([action, state]) => {
             console.log('moving start', state);
             const bubbleState = (state as any).document.bubble;
-            const bubbleList = bubbleState.bubbleList;
+            const selectedBubbleList = bubbleState.selectedBubbleList;
             const selectedMenuType = action.payload.menu;
-            const bubbleId = bubbleList[0].id;
+            const bubbleId = selectedBubbleList[0].id;
             const destBubbleId = action.payload.bubble.id;
+            console.log((action.payload.bubble));
             const isAbove = selectedMenuType === MenuType.borderTopMenu;
             return Observable.of(new BubbleAction.MoveBubble({
                 bubbleId, destBubbleId, isAbove
@@ -192,13 +194,27 @@ export class BubbleEffects {
 
     @Effect()
     move$: Observable<Action> = this.action$.ofType<BubbleAction.MoveBubble>(BubbleAction.MOVE_BUBBLE)
-        .map(action => action.payload).mergeMap(query => {
-            return Observable.of(this.bubbleService.moveBubble(query.bubbleId, query.destBubbleId, 0))
-                .map(() => new BubbleAction.MoveBubblePending(null));
-                // .map((newBubble) => new BubbleAction.MoveComplete(query))
-                // .catch(err => of(new BubbleAction.MoveError(err)));
-        });
+        .withLatestFrom(this._store).mergeMap(([action, state]) => {
+            const bubbleState = (state as any).document.bubble;
+            const bubbleList = bubbleState.bubbleList;
 
+            const bubble = getBubbleById(bubbleList, action.payload.bubbleId);
+            const parentBubble = getParentBubble(bubbleList, bubble);
+
+            const destBubble = getBubbleById(bubbleList, action.payload.destBubbleId);
+            const destParentBubble = getParentBubble(bubbleList, destBubble);
+
+            let location = destBubble.location;
+            if (parentBubble.id === destParentBubble.id && bubble.location < destBubble.location) {
+                location--;
+            }
+            if (! action.payload.isAbove) {
+                location++;
+            }
+            console.log(bubble.id, parentBubble.id, location);
+            return Observable.of(this.bubbleService.moveBubble(bubble.id, parentBubble.id, location))
+                .map(() => new BubbleAction.MoveBubblePending(null));
+        });
 
 
     constructor(

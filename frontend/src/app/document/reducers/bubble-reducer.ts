@@ -259,13 +259,13 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
             return {...state, loading: true, viewBoardMenuType: ViewBoardMenuType.none,
                  selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
         case fromBubble.MOVE_BUBBLE_COMPLETE: {
-            // const bubbleId = action.payload.bubbleId;
-            // const destBubbleId = action.payload.newParentId;
-            // const isAbove = action.payload.isAbove;
-            // const newBubbleList = _.cloneDeep(state.bubbleList);
-            // moveBubble(newBubbleList, bubbleId, destBubbleId, isAbove);
-            // return {...state, bubbleList: newBubbleList, loading: false};
-            return {...state, loading: false};
+            const bubbleId = action.payload.bubbleId;
+            const newParentId = action.payload.newParentId;
+            const newLocation = action.payload.newLocation;
+            const newBubbleList = _.cloneDeep(state.bubbleList);
+            moveBubble(newBubbleList, bubbleId, newParentId, newLocation);
+            return {...state, bubbleList: newBubbleList, loading: false};
+        //    return {...state, loading: false};
         }
         case fromBubble.MOVE_BUBBLE_ERROR:
             return {...state, loading: false, error: action.payload, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};

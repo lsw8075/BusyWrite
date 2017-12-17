@@ -278,16 +278,13 @@ export function wrapBubble(bubbleList: Array<Bubble>, wrapBubbleIds: Array<numbe
     }
 }
 
-export function moveBubble(bubbleList: Array<Bubble>, id: number, destBubbleId: number, isAbove: boolean) {
+export function moveBubble(bubbleList: Array<Bubble>, id: number, parentId: number, location: number) {
     try {
         console.log('[before move]', bubbleList);
-        // only leaf?
-        const destBubble = getBubbleById(bubbleList, destBubbleId);
-        const parentDestBubble = getParentBubble(bubbleList, destBubble);
+        const parentDestBubble = getBubbleById(bubbleList, parentId) as InternalBubble;
         const bubble = getBubbleById(bubbleList, id);
         const parentBubble = getParentBubble(bubbleList, bubble);
 
-        console.log(bubble);
         parentBubble.childBubbleIds.splice(bubble.location, 1);
         for (let i = bubble.location; i < parentBubble.childBubbleIds.length; i++) {
             const childBubble = getBubbleById(bubbleList, parentBubble.childBubbleIds[i]);
@@ -295,13 +292,8 @@ export function moveBubble(bubbleList: Array<Bubble>, id: number, destBubbleId: 
             childBubble.parentBubbleId = parentBubble.id;
         }
 
-        if (isAbove) {
-            parentDestBubble.childBubbleIds.splice(destBubble.location, 0, bubble.id);
-        } else {
-            parentDestBubble.childBubbleIds.splice(destBubble.location + 1, 0, bubble.id);
-        }
-
-        for (let i = destBubble.location; i < parentDestBubble.childBubbleIds.length; i++) {
+        parentDestBubble.childBubbleIds.splice(location, 0, bubble.id);
+        for (let i = location; i < parentDestBubble.childBubbleIds.length; i++) {
             const childBubble = getBubbleById(bubbleList, parentDestBubble.childBubbleIds[i]);
             childBubble.location = i;
             childBubble.parentBubbleId = parentDestBubble.id;
