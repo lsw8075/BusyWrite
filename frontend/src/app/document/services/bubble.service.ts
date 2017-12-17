@@ -214,7 +214,7 @@ export class BubbleService implements OnDestroy {
             if (accept === 'True') {
                 console.log('received edit_bubble success');
                 if (body.who === this.userId) {
-                    this._store.dispatch(new BubbleAction.EditRequestSuccess(Number(body.bubble_id)));
+                    this._store.dispatch(new BubbleAction.EditRequestSuccess({userId: this.userId, bubbleId: Number(body.bubble_id)}));
                 } else {
                     this._store.dispatch(new BubbleAction.OthersEditRequest(Number(body.bubble_id)));
                 }

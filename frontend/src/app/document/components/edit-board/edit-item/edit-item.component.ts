@@ -51,7 +51,7 @@ export class EditItemComponent implements OnInit {
   }
 
   onContentChanged({ quill, html, text }) {
-    console.log('quill content is changed!', quill, html, text);
+    // console.log('quill content is changed!', quill, html, text);
     this.update.emit(html);
   }
 

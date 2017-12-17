@@ -97,11 +97,11 @@ export class BubbleEffects {
             return Observable.of(new BubbleAction.EditUpdate({bubbleId: query.id, content: 'new'}));
         });
 
-    @Effect()
+    @Effect({dispatch: false})
     editRequestSuccess$: Observable<Action> = this.action$.ofType<BubbleAction.EditRequestSuccess>(BubbleAction.EDIT_REQUEST_SUCCESS)
         .withLatestFrom(this._store).mergeMap(([action, state]) => {
             console.log(state);
-            return Observable.of(new BubbleAction.EditBubblePending(null));
+            return Observable.of();
         });
 
     @Effect()
