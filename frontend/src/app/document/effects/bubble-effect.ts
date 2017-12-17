@@ -23,6 +23,9 @@ import * as BubbleAction from '../actions/bubble-action';
 import * as EditBoardAction from '../actions/edit-board-action';
 import * as fromDocument from '../reducers/reducer';
 import { Bubble, BubbleType, InternalBubble, LeafBubble, SuggestBubble } from '../models/bubble';
+import { Comment } from '../models/comment';
+import { Note } from '../models/note';
+import { User } from '../../user/models/user';
 import { MenuType } from '../services/event/event-bubble.service';
 import { ViewBoardMenuType } from '../reducers/bubble-reducer';
 
@@ -55,9 +58,18 @@ export class BubbleEffects {
         });
 
     @Effect()
+    close$: Observable<Action> = this.action$.ofType<BubbleAction.Close>(BubbleAction.CLOSE)
+        .withLatestFrom(this._store).mergeMap(([action, state]) => {
+            const bubbleState = (state as any).document.bubble;
+            const documentId = bubbleState.documentId;
+            return Observable.of(this.bubbleService.closeDocument(documentId))
+                .map(() => new BubbleAction.ClosePending(null));
+        });
+
+    @Effect()
     load$: Observable<Action> = this.action$.ofType<BubbleAction.Load>(BubbleAction.LOAD)
         .map(action => action.payload).mergeMap(query => {
-            return Observable.of(this.bubbleService.getBubbleList())
+            return Observable.of(this.bubbleService.getWholeDocument())
                 .map(() => new BubbleAction.LoadPending(null));
         });
 

@@ -37,6 +37,8 @@ export class SangjunBoardComponent implements OnInit, OnDestroy {
         private _eventBubbleService: EventBubbleService,
         private _eventSangjunBoardService: EventSangjunBoardService
     ) {
+        this._store.select(fromDocument.isLoading).subscribe(loading => {
+        });
     // _eventBubbleService.sangjunBoardOpenEvent$.subscribe((bubble) => {
     //   this.bubble = bubble;
     //   this.suggestBubbles = bubble.suggestBubbles;

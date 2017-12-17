@@ -1,6 +1,7 @@
 import { Bubble, LeafBubble, SuggestBubble, InternalBubble, BubbleType } from './bubble';
 import { User } from '../../user/models/user';
 import { Comment } from './comment';
+import { Note } from './note';
 
 export namespace BubbleJsonHelper {
     export function  getBubbleObject(jsonString: string): Bubble {
@@ -81,4 +82,20 @@ export namespace BubbleJsonHelper {
         }
         return commentList;
     }
+    
+    export function getNoteObject(jsonString: string): Note {
+        const jsonObject = JSON.parse(jsonString);
+        const note = new Note(jsonObject.id, jsonObject.document_id,
+                jsonObject.owner_id, jsonObject.content);
+        return note;
+    }
+    export function getNoteArrayObject(jsonString: string): Array<Note> {
+        const jsonObjectArray = JSON.parse(jsonString);
+        const noteList: Array<Note> = [];
+        for (const jsonObject in jsonObjectArray) {
+            noteList.push(this.getNoteObject(JSON.stringify(jsonObject)));
+        }
+        return noteList;
+    }
+ 
 }

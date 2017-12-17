@@ -45,7 +45,7 @@ def ws_connect(message):
 # @enforce_ordering
 def ws_receive(message):
     try:
-        text = json.loads(message.content['text'].replace("'", '"'))
+        text = json.loads(message.content['text'])
         command = text['header']
         previous_state = text['previous_request']
         body = text['body']
@@ -181,11 +181,11 @@ def ws_receive(message):
         return
 
 
-    #########################
-    ##   Get Bubble List   ##
-    #########################
+    ###########################
+    ##   Get Whole Document  ##
+    ###########################
 
-    elif command == 'get_bubble_list':
+    elif command == 'get_whole_document':
 
         try:
             result = do_fetch_normal_bubbles(previous_state, message.user.id, int(document_id))
@@ -198,148 +198,16 @@ def ws_receive(message):
                     json.dumps({"header": command, "accept": 'False', "body": "bubble does not exist for this document"})})
             return
 
-        message.reply_channel.send({"text":
-                json.dumps({"header": command, "accept": 'True', "body": result})})
-        return
-
-
-    ##########################
-    ##   Get Bubble w/ ID   ##
-    ##########################
-
-    elif command == 'get_bubble_by_id':
-
-        if set(body.keys()) != set(('bubble_id', )):
-            message.reply_channel.send({"text":
-                    json.dumps({"header": command, 'accept': 'False', 'body': 'body does not follow format'})})
-            return
-        try:
-            result = do_fetch_normal_bubble(previous_state, message.user.id, int(document_id), int(body['bubble_id']))
-        except BubbleDoesNotExistError:
-            message.reply_channel.send({"text":
-                    json.dumps({"header": command, "accept": 'False', "body": "bubble does not exist for the id"})})
-            return
-        except Exception as e:
-            message.reply_channel.send({"text":
-                    json.dumps({"header": command, "accept": 'False', "body": "unknown error"})})
-            see_error(e)
-            return
+        bubble_list = result[0]
+        suggest_bubble_list = result[1]
+        comment_list = result[2]
+        note_list = result[3]
 
         message.reply_channel.send({"text":
-                json.dumps({"header": command, "accept": 'True', "body": result})})
+                json.dumps({"header": command, "accept": 'True', "body": 
+                        {'bubble_list': bubble_list, 'suggest_bubble_list': suggest_bubble_list,
+                        'comment_list': comment_list, 'note_list': note_list}})})
         return
-
-
-    ##############################################
-    ##   Get Suggest Bubble List for a Bubble   ##
-    ##############################################
-
-    elif command == 'get_suggest_bubble_list':
-
-        if set(body.keys()) != set(('bubble_id', )):
-            message.reply_channel.send({"text":
-                    json.dumps({"header": command, 'accept': 'False', 'body': 'body does not follow format'})})
-            return
-        try:
-            # This function returns whole suggest bubble list, including those that are hided!
-            result = do_fetch_suggest_bubbles(previous_state, message.user.id, int(document_id), int(body['bubble_id']))
-        except BubbleDoesNotExistError:
-            message.reply_channel.send({"text":
-                    json.dumps({"header": command, "accept": 'False', "body": "bubble does not exist for the id"})})
-            return
-        except Exception as e:
-            message.reply_channel.send({"text":
-                    json.dumps({"header": command, "accept": 'False', "body": "unknown error"})})
-            see_error(e)
-            return
-
-        message.reply_channel.send({"text":
-                json.dumps({"header": command, "accept": 'True', "body": result})})
-        return
-
-
-    ##################################
-    ##   Get Suggest Bubble w/ ID   ##
-    ##################################
-
-    elif command == 'get_suggest_bubble_by_id':
-
-        if set(body.keys()) != set(('suggest_bubble_id', )):
-            message.reply_channel.send({"text":
-                    json.dumps({"header": command, 'accept': 'False', 'body': 'body does not follow format'})})
-            return
-        try:
-            result = do_fetch_suggest_bubble(previous_state, message.user.id, int(document_id), int(body['suggest_bubble_id']))
-        except BubbleDoesNotExistError:
-            message.reply_channel.send({"text":
-                    json.dumps({"header": command, "accept": 'False', "body": "bubble does not exist for the id"})})
-            return
-        except Exception as e:
-            message.reply_channel.send({"text":
-                    json.dumps({"header": command, "accept": 'False', "body": "unknown error"})})
-            see_error(e)
-            return
-
-        message.reply_channel.send({"text":
-                json.dumps({"header": command, "accept": 'True', "body": result})})
-        return
-
-
-    ################################
-    ##   Get Comment for Bubble   ##
-    ################################
-
-    elif command == 'get_comment_list_for_bubble':
-
-        if set(body.keys()) != set(('bubble_id', )):
-            message.reply_channel.send({"text":
-                    json.dumps({"header": command, 'accept': 'False', 'body': 'body does not follow format'})})
-            return
-
-        try:
-            result = do_fetch_comments_under_normal(previous_state, message.user.id, int(document_id), int(body['bubble_id']))
-        except BubbleDoesNotExistError:
-            message.reply_channel.send({"text":
-                    json.dumps({"header": command, "accept": 'False', "body": "bubble does not exist for the id"})})
-            return
-        except Exception as e:
-            message.reply_channel.send({"text":
-                    json.dumps({"header": command, "accept": 'False', "body": "unknown error"})})
-            see_error(e)
-            return
-
-        message.reply_channel.send({"text":
-                json.dumps({"header": command, "accept": 'True', "body": result})})
-        return
-
-
-    ########################################
-    ##   Get Comment for Suggest Bubble   ##
-    ########################################
-
-    elif command == 'get_comment_list_for_suggest_bubble':
-
-        if set(body.keys()) != set(('suggest_bubble_id', )):
-            message.reply_channel.send({"text":
-                    json.dumps({"header": command, 'accept': 'False', 'body': 'body does not follow format'})})
-            return
-
-        try:
-            result = do_fetch_comments_under_suggest(previous_state, message.user.id, int(document_id), int(body['suggest_bubble_id']))
-        except BubbleDoesNotExistError:
-            message.reply_channel.send({"text":
-                    json.dumps({"header": command, "accept": 'False', "body": "suggest bubble does not exist for the id"})})
-            return
-        except Exception as e:
-            message.reply_channel.send({"text":
-                    json.dumps({"header": command, "accept": 'False', "body": "unknown error"})})
-            see_error(e)
-            return
-
-        message.reply_channel.send({"text":
-                json.dumps({"header": command, "accept": 'True', "body": result})})
-        return
-
 
 
     #######################

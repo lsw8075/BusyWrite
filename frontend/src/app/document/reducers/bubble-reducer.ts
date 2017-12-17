@@ -1,6 +1,9 @@
 import { Action } from '@ngrx/store';
 
-import { Bubble, BubbleType, InternalBubble, LeafBubble } from '../models/bubble';
+import { Bubble, BubbleType, InternalBubble, LeafBubble, SuggestBubble } from '../models/bubble';
+import { Comment } from '../models/comment';
+import { Note } from '../models/note';
+import { User } from '../../user/models/user';
 import { MenuType } from '../services/event/event-bubble.service';
 
 import * as fromBubble from '../actions/bubble-action';
@@ -23,7 +26,11 @@ export enum ViewBoardMenuType {
 
 export interface BubbleState {
     documentId: number;
+    connectors: User[];
     bubbleList: Bubble[];
+    suggestBubbleList: SuggestBubble[];
+    commentList: Comment[];
+    noteList: Note[];
 
     selectedBubbleList: Bubble[];
     hoverBubbleList: Bubble[];
@@ -39,7 +46,11 @@ export interface BubbleState {
 
 const initialState: BubbleState = {
     documentId: -1,
+    connectors: [],
     bubbleList: [],
+    suggestBubbleList: [],
+    commentList: [],
+    noteList: [],
 
     selectedBubbleList: [],
     hoverBubbleList: [],
@@ -59,15 +70,9 @@ export function BubbleReducer(state: BubbleState = initialState, action: fromBub
         case fromBubble.MOUSE_OVER: case fromBubble.MOUSE_OUT:
             return UIReducer(state, action);
 
-        case fromBubble.LOAD:
-            return {...initialState, loading: true, documentId: action.payload};
-        case fromBubble.LOAD_COMPLETE: {
-            console.log(action.payload);
-            return {...state, bubbleList: [...action.payload], loading: false};
-        }
-        case fromBubble.LOAD_ERROR:
-            return {...state, error: action.payload};
-
+        case fromBubble.OPEN: case fromBubble.OPEN_COMPLETE: case fromBubble.OPEN_ERROR: case fromBubble.OTHERS_OPEN_DOCUMENT:
+        case fromBubble.CLOSE: case fromBubble.CLOSE_COMPLETE: case fromBubble.CLOSE_ERROR: case fromBubble.OTHERS_CLOSE_DOCUMENT:
+        case fromBubble.LOAD: case fromBubble.LOAD_COMPLETE: case fromBubble.LOAD_ERROR:
         case fromBubble.POP_BUBBLE: case fromBubble.POP_BUBBLE_COMPLETE: case fromBubble.POP_BUBBLE_ERROR:
         case fromBubble.DELETE_BUBBLE: case fromBubble.DELETE_BUBBLE_COMPLETE: case fromBubble.DELETE_BUBBLE_ERROR:
         case fromBubble.CREATE_BUBBLE: case fromBubble.CREATE_BUBBLE_COMPLETE: case fromBubble.CREATE_BUBBLE_ERROR:
@@ -145,6 +150,46 @@ function UIReducer(state: BubbleState, action: fromBubble.Actions) {
 
 function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) {
     switch (action.type) {
+
+        case fromBubble.OPEN:
+            return {...initialState, loading: true}
+        case fromBubble.OPEN_COMPLETE:
+            // TODO: add contributors info to document object
+            return {...state, loading: false, connectors: action.payload.connectors}
+        case fromBubble.OPEN_ERROR:
+            return {...state, loading: false, error: action.payload, documentId: -1};
+        case fromBubble.OTHERS_OPEN_DOCUMENT:
+            const addConnectors = _.cloneDeep(state.connectors);
+            addConnectors.push(action.payload)
+            return {...state, connectors: addConnectors}
+        case fromBubble.CLOSE:
+            return {...state, loading: true}
+        case fromBubble.CLOSE_COMPLETE:
+            return {...state, loading: false, documentId: -1};
+        case fromBubble.CLOSE_ERROR:
+            return {...state, loading: false, error: action.payload}
+        case fromBubble.OTHERS_CLOSE_DOCUMENT:
+            const deleteConnectors = _.cloneDeep(state.connectors);
+            const index = deleteConnectors.indexOf(action.payload, 0);
+            try {
+                if (index > -1) {
+                    deleteConnectors.splice(index, 1);
+                } else {
+                    throw new Error('connector who closed document is not in connectors list');
+                }
+            } catch (err){ 
+            }
+            return {...state, connectors: deleteConnectors};
+        case fromBubble.LOAD:
+            return {...state, loading: true, documentId: action.payload};
+        case fromBubble.LOAD_COMPLETE: {
+            console.log(action.payload);
+            return {...state, bubbleList: [...action.payload.bubbleList],
+                suggestBubbleList: [action.payload.suggestBubbleList], commentLIst: [action.payload.commentList],
+                noteList: [action.payload.noteList], loading: false};
+        }
+        case fromBubble.LOAD_ERROR:
+            return {...state, error: action.payload, loading:false, documentId: -1};
         case fromBubble.POP_BUBBLE:
             return {...state, loading: true, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
         case fromBubble.POP_BUBBLE_COMPLETE: {
