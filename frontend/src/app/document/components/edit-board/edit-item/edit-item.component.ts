@@ -43,7 +43,6 @@ export class EditItemComponent implements OnInit {
 
   onEditorFocused(quill) {
     this.focus.emit(true);
-    console.log('focused');
   }
 
   onEditorCreated(quill) {

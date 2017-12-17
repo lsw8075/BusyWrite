@@ -130,8 +130,6 @@ export class BubbleEffects {
         .map(action => action.payload).mergeMap(query => {
             return Observable.of(this.bubbleService.startEdittingBubble(query))
                 .map(() => new BubbleAction.EditBubblePending(null));
-                // .map(() => new BubbleAction.EditComplete({bubbleId: query, newContent: 'newly editted'}))
-                // .catch(err => of(new BubbleAction.EditError(err)));
         });
 
     @Effect()

@@ -381,7 +381,10 @@ export class EditDiscardPending implements Action {
 }
 export class EditDiscardSuccess implements Action {
     readonly type = EDIT_DISCARD_SUCCESS;
-    constructor(public payload: number) {}
+    constructor(public payload: {
+        bubbleId: number,
+        content: string
+    }) {}
 }
 export class OthersEditDiscard implements Action {
     readonly type = OTHERS_EDIT_DISCARD;

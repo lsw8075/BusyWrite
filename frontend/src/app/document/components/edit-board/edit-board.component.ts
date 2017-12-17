@@ -27,6 +27,10 @@ export class EditBoardComponent implements OnInit, OnDestroy {
   notes$: Observable<Array<Note>>;
   editBubbles$: Observable<Array<Bubble>>;
   editBubbles: Array<Bubble>;
+  editBubbleId: number;
+  editBubbleString: string;
+  loading: boolean;
+  isEditting: boolean = false;
 
   constructor(
         private _store: Store<fromDocument.State>,
@@ -35,8 +39,15 @@ export class EditBoardComponent implements OnInit, OnDestroy {
         private _eventBubbleService: EventBubbleService) {
         this.editBubbles$ = this._store.select(fromDocument.getEditBubbles);
         this._store.select(fromDocument.getEditBubbles).subscribe((editBubbles) => {
-            this.editBubbles = _.cloneDeep(editBubbles);
-            console.log(editBubbles);
+            if (! this.isEditting) {
+                this.editBubbles = _.cloneDeep(editBubbles);
+                console.log(editBubbles);
+            }
+        });
+        this._store.select(fromDocument.getBubbleState).subscribe((bubbleState) => {
+            this.editBubbleId = bubbleState.editBubbleId;
+            this.editBubbleString = bubbleState.editBubbleString;
+            this.loading = bubbleState.loading;
         });
 
   }
@@ -45,10 +56,16 @@ export class EditBoardComponent implements OnInit, OnDestroy {
   }
 
   public finishEdit(bubble: Bubble) {
-
+      
+      this.isEditting = false;
       this._store.dispatch(new BubbleAction.EditComplete(bubble.id));
 //    this._boardService.finishEdit(editItem.bubble, editItem.content);
     // this.editItems = this.editItems.filter(e => e.id !== editItem.id);
+  }
+
+  public discardEdit(bubble: Bubble) {
+      this.isEditting = false;
+      this._store.dispatch(new BubbleAction.EditDiscard(bubble.id));
   }
 
   public createNewEditItem(bubble: Bubble) {
@@ -59,18 +76,22 @@ export class EditBoardComponent implements OnInit, OnDestroy {
   public focusEditItem(bubble: Bubble, focused: boolean) {
       console.log(bubble.id, focused);
       if (focused) {
+          this.isEditting = true;
           const content = (bubble as LeafBubble).content;
           this._store.dispatch(new BubbleAction.EditUpdateResume({bubbleId: bubble.id, content: content}));
+      } else {
+          this.isEditting = false;
       }
     // this._eventBubbleService.edittedBubble = (focused) ? editItem.bubble : null;
   }
 
   public updateEditItem(bubble: Bubble, updateString: string) {
-      if ((bubble as LeafBubble).content !== updateString) {
-          console.log(bubble, updateString);
+      if (this.loading === false && this.editBubbleId === bubble.id) {
+          if (updateString !== this.editBubbleString) {
+              console.log(bubble.id, updateString, this.editBubbleString);
+              this._store.dispatch(new BubbleAction.EditUpdate({bubbleId: bubble.id, content: updateString}));
+          }
       }
-//      this._store.dispatch(new BubbleAction.EditUpdate({bubbleId: bubble.id, content: updateString}));
-//    this._boardService.updateEdit(editItem.bubble, editItem.content);
   }
 
   addNote() {

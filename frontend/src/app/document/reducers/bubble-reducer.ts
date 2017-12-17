@@ -50,7 +50,7 @@ const initialState: BubbleState = {
 
     viewBoardMenuType: ViewBoardMenuType.none,
 
-    editBubbleId: 1,
+    editBubbleId: -1,
     editBubbleString: "",
 
     loading: false,
@@ -207,15 +207,14 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
         case fromBubble.EDIT_UPDATE:
             return {...state, loading: true, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
         case fromBubble.EDIT_UPDATE_SUCCESS:
-            console.log(action.payload);
             const bubbleId = action.payload.bubbleId;
             const content = action.payload.content;
             console.log(bubbleId, content);
-        //    const bubble = getBubbleById(state.bubbleList, bubbleId) as LeafBubble;
-    //        bubble.content = content;
-    //        const newBubbleList = _.cloneDeep(state.bubbleList);
-    //        return {...state, bubbleList: newBubbleList, loading: false};
-            return {...state, loading: false};
+            const bubble = getBubbleById(state.bubbleList, bubbleId) as LeafBubble;
+            bubble.content = content;
+            const newBubbleList = _.cloneDeep(state.bubbleList);
+            return {...state, bubbleList: newBubbleList, loading: false, editBubbleId: bubbleId, editBubbleString: content};
+    //        return {...state, loading: false};
         case fromBubble.EDIT_COMPLETE:
             console.log('EDIT_COMPLETE');
             return {...state, loading: true, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
@@ -223,8 +222,15 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
             return {...state, loading: false};
         case fromBubble.EDIT_DISCARD:
             return {...state, loading: true, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
-        case fromBubble.EDIT_DISCARD_SUCCESS:
-            return {...state, loading: false};
+        case fromBubble.EDIT_DISCARD_SUCCESS: {
+            const bubbleId = action.payload.bubbleId;
+            const content = action.payload.content;
+            const bubble = getBubbleById(state.bubbleList, bubbleId) as LeafBubble;
+            bubble.content = content;
+            bubble.editLockHoder = null;
+            const newBubbleList = _.cloneDeep(state.bubbleList);
+            return {...state, bubbleList: newBubbleList, loading: false, editBubbleId: -1, editBubbleString: ""};
+        }
         case fromBubble.FLATTEN_BUBBLE:
             return {...state, loading: true, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
         case fromBubble.FLATTEN_BUBBLE_COMPLETE: {
