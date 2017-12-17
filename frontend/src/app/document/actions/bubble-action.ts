@@ -421,7 +421,9 @@ export class EditSuggestPending implements Action {
 }
 export class EditSuggestComplete implements Action {
     readonly type = EDIT_SUGGEST_COMPLETE;
-    constructor(public payload: number) {}
+    constructor(public payload: {
+            hidedSuggestBubbleId: number,
+            newEdittedSuggestBubble: SuggestBubble}) {}
 }
 export class EditSuggestError implements Action {
     readonly type = EDIT_SUGGEST_ERROR;
@@ -430,7 +432,67 @@ export class EditSuggestError implements Action {
 export class OthersEditSuggest implements Action {
     readonly type = OTHERS_EDIT_SUGGEST;
     constructor(public payload: {
-            suggestBubbleId: number,
+            hidedSuggestBubbleId: number,
+            newEdittedSuggestBubble: SuggestBubble}) {}
+}
+
+export const EDIT_COMMENT_ON_BUBBLE = '[Comment on Bubble] edit';
+export const EDIT_COMMENT_ON_BUBBLE_PENDING = '[Comment on Bubble] edit pending';
+export const EDIT_COMMENT_ON_BUBBLE_COMPLETE = '[Comment on Bubble] edit complete';
+export const EDIT_COMMENT_ON_BUBBLE_ERROR = '[Comment on Bubble] edit discard';
+export const OTHERS_EDIT_COMMENT_ON_BUBBLE = '[Comment on Bubble] others edit suggest';
+export class EditCommentOnBubble implements Action {
+    readonly type = EDIT_COMMENT_ON_BUBBLE;
+    constructor(public payload: number) {}
+}
+export class EditCommentOnBubblePending implements Action {
+    readonly type = EDIT_COMMENT_ON_BUBBLE_PENDING;
+    constructor(public payload: void) {}
+}
+export class EditCommentOnBubbleComplete implements Action {
+    readonly type = EDIT_COMMENT_ON_BUBBLE_COMPLETE;
+    constructor(public payload: {
+            commentId: number,
+            content: string}) {}
+}
+export class EditCommentOnBubbleError implements Action {
+    readonly type = EDIT_COMMENT_ON_BUBBLE_ERROR;
+    constructor(public payload: number) {}
+}
+export class OthersEditCommentOnBubble implements Action {
+    readonly type = OTHERS_EDIT_COMMENT_ON_BUBBLE;
+    constructor(public payload: {
+            commentId: number,
+            content: string}) {}
+}
+
+export const EDIT_COMMENT_ON_SUGGEST = '[Comment on Suggest] edit';
+export const EDIT_COMMENT_ON_SUGGEST_PENDING = '[Comment on Suggest] edit pending';
+export const EDIT_COMMENT_ON_SUGGEST_COMPLETE = '[Comment on Suggest] edit complete';
+export const EDIT_COMMENT_ON_SUGGEST_ERROR = '[Comment on Suggest] edit discard';
+export const OTHERS_EDIT_COMMENT_ON_SUGGEST = '[Comment on Suggest] others edit suggest';
+export class EditCommentOnSuggest implements Action {
+    readonly type = EDIT_COMMENT_ON_SUGGEST;
+    constructor(public payload: number) {}
+}
+export class EditCommentOnSuggestPending implements Action {
+    readonly type = EDIT_COMMENT_ON_SUGGEST_PENDING;
+    constructor(public payload: void) {}
+}
+export class EditCommentOnSuggestComplete implements Action {
+    readonly type = EDIT_COMMENT_ON_SUGGEST_COMPLETE;
+    constructor(public payload: {
+            commentId: number,
+            content: string}) {}
+}
+export class EditCommentOnSuggestError implements Action {
+    readonly type = EDIT_COMMENT_ON_SUGGEST_ERROR;
+    constructor(public payload: number) {}
+}
+export class OthersEditCommentOnSuggest implements Action {
+    readonly type = OTHERS_EDIT_COMMENT_ON_SUGGEST;
+    constructor(public payload: {
+            commentId: number,
             content: string}) {}
 }
 
@@ -975,6 +1037,16 @@ export type Actions =
   | EditSuggestComplete
   | EditSuggestError
   | OthersEditSuggest
+  | EditCommentOnBubble
+  | EditCommentOnBubblePending
+  | EditCommentOnBubbleComplete
+  | EditCommentOnBubbleError
+  | OthersEditCommentOnBubble
+  | EditCommentOnSuggest
+  | EditCommentOnSuggestPending
+  | EditCommentOnSuggestComplete
+  | EditCommentOnSuggestError
+  | OthersEditCommentOnSuggest
   | DeleteBubble
   | DeleteBubblePending
   | DeleteBubbleComplete

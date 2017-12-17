@@ -279,17 +279,52 @@ export class BubbleService implements OnDestroy {
         } else if (command === 'edit_suggest_bubble') {
             if (accept === 'True') {
                 console.log('received edit_suggest_bubble success');
+                const suggestBubble = BubbleJsonHelper.getSuggestBubbleObject(JSON.stringify(body.new_editted_suggest_bubble));
                 if (body.who === this.userId) {
-                    this._store.dispatch(new BubbleAction.EditSuggestComplete(Number(body.suggest_bubble_id)));
+                    this._store.dispatch(new BubbleAction.EditSuggestComplete(
+                                {hidedSuggestBubbleId: Number(body.hided_suggest_bubble_id),
+                                newEdittedSuggestBubble: suggestBubble}));
                 } else {
                     this._store.dispatch(new BubbleAction.OthersEditSuggest(
-                                {suggestBubbleId: Number(body.suggest_bubble_id), content: String(body.content)}));
+                                {hidedSuggestBubbleId: Number(body.hided_suggest_bubble_id),
+                                newEdittedSuggestBubble: suggestBubble}));
                 }
                 this.previousRequestId = data.request_id;
             } else {
                 console.log('received edit_suggest_bubble fail');
                 this._store.dispatch(new BubbleAction.EditSuggestError(body));
             }
+        } else if (command === 'edit_comment_on_bubble') {
+            if (accept === 'True') {
+                console.log('received edit_comment_on_bubble success');
+                if (body.who === this.userId) {
+                    this._store.dispatch(new BubbleAction.EditCommentOnBubbleComplete(
+                                {commentId: Number(body.comment_id), content: String(body.content)}));
+                } else {
+                    this._store.dispatch(new BubbleAction.OthersEditCommentOnBubble(
+                                {commentId: Number(body.comment_id), content: String(body.content)}));
+                }
+                this.previousRequestId = data.request_id;
+            } else {
+                console.log('received edit_comment_on_bubble fail');
+                this._store.dispatch(new BubbleAction.EditCommentOnBubbleError(body));
+            }
+        } else if (command === 'edit_comment_on_suggest_bubble') {
+            if (accept === 'True') {
+                console.log('received edit_comment_on_suggest_bubble success');
+                if (body.who === this.userId) {
+                    this._store.dispatch(new BubbleAction.EditCommentOnSuggestComplete(
+                                {commentId: Number(body.comment_id), content: String(body.content)}));
+                } else {
+                    this._store.dispatch(new BubbleAction.OthersEditCommentOnSuggest(
+                                {commentId: Number(body.comment_id), content: String(body.content)}));
+                }
+                this.previousRequestId = data.request_id;
+            } else {
+                console.log('received edit_comment_on_suggest_bubble fail');
+                this._store.dispatch(new BubbleAction.EditCommentOnSuggestError(body));
+            }
+        
         } else if (command === 'delete_bubble') {
             if (accept == 'True') {
                 console.log('received delete_bubble success');
