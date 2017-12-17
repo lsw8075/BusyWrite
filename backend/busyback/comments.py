@@ -129,6 +129,9 @@ def do_create_comment_under_normal(
     user = fetch_user(user_id)
     bubble = kw['bubble']
 
+    if bubble.is_root():
+        raise BubbleIsRootError(bubble.id)
+
     if content == '':
         raise ContentEmptyError()
 

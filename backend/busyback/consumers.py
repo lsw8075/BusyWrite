@@ -13,6 +13,7 @@ from .errors import *
 from .documents import *
 from .comments import *
 from .users import *
+from .notes import *
 import logging
 import pdb
 import sys, traceback
@@ -44,7 +45,7 @@ def ws_connect(message):
 # @enforce_ordering
 def ws_receive(message):
     try:
-        text = json.loads(message.content['text'].replace("'", "\""))
+        text = json.loads(message.content['text'].replace("'", '"'))
         command = text['header']
         previous_state = text['previous_request']
         body = text['body']
@@ -357,6 +358,11 @@ def ws_receive(message):
             # TODO: give ownership to user. change False -> True
             get = do_create_normal_bubble(previous_state, message.user.id, int(document_id),
                     int(body['parent_id']), int(body['location']), False, body['content'])
+        except BubbleDoesNotExistError:
+            message.reply_channel.send({"text":
+                    json.dumps({"header": command, "accept": 'False',
+                            'body': 'bubble does not exist for the id'})})
+            return
         except InvalidLocationError:
             message.reply_channel.send({"text":
                     json.dumps({'header': command, 'accept': 'False', 'body': 'invalid location'})})
@@ -365,6 +371,11 @@ def ws_receive(message):
             message.reply_channel.send({"text":
                     json.dumps({'header': command, 'accept': 'False', 'body': 'parent or ancestor is under edit'})})
             return
+        except BubbleIsLeafError:
+            message.reply_channel.send({"text":
+                    json.dumps({"header": command, "accept": 'False',
+                            'body': 'parent bubble is leaf bubble'})})
+            return 
         except Exception as e:
             message.reply_channel.send({"text":
                     json.dumps({'header': command, 'accept': 'False', 'body': 'create bubble failed'})})
@@ -1575,7 +1586,7 @@ def ws_receive(message):
     elif command == 'unvote_on_suggest_bubble':
         if set(body.keys()) != set(('suggest_bubble_id', )):
             message.reply_channel.send({"text":
-                    json.dumps({'header': 'vote_on_suggest_bubble', 'accept': 'False', 'body': 'body does not follow format'})})
+                    json.dumps({'header': command, 'accept': 'False', 'body': 'body does not follow format'})})
             return
         try:
             get = do_unvote_suggest_bubble(previous_state, message.user.id, int(document_id), int(body['suggest_bubble_id']))
@@ -1635,31 +1646,212 @@ def ws_receive(message):
 
     # will be done by html(:id/put)
 
+    ####################################
+    ##   Export Note as Leaf Bubble   ##
+    ####################################
+
+    elif command == 'export_note_as_bubble':
+        if set(body.keys()) != set(('parent_id', 'location', 'note_id' )):
+            message.reply_channel.send({"text":
+                    json.dumps({'header': command, 'accept': 'False', 'body': 'body does not follow format'})})
+            return
+        try:
+            get = do_export_note_to_normal(previous_state, message.user.id, int(document_id),
+                    int(body['parent_id']), int(body['location']), int(body['note_id']))
+        except BubbleDoesNotExistError:
+            message.reply_channel.send({"text":
+                    json.dumps({"header": command, "accept": 'False',
+                            'body': 'bubble does not exist for the id'})})
+            return
+        except InvalidLocationError:
+            message.reply_channel.send({"text":
+                    json.dumps({'header': command, 'accept': 'False', 'body': 'invalid location'})})
+            return
+        except BubbleLockedError:
+            message.reply_channel.send({"text":
+                    json.dumps({'header': command, 'accept': 'False', 'body': 'parent or ancestor is under edit'})})
+            return
+        except BubbleIsLeafError:
+            message.reply_channel.send({"text":
+                    json.dumps({"header": command, "accept": 'False',
+                            'body': 'parent bubble is leaf bubble'})})
+            return
+ 
+        except Exception as e:
+            message.reply_channel.send({"text":
+                    json.dumps({"header": command, "accept": 'False', 'body': 'unknown error'})})
+            see_error(e)
+            return
+        if not get:
+            message.reply_channel.send({"text":
+                    json.dumps({'header': command, 'accept': 'False',
+                            'body': 'function returned null'})})
+            return
+
+        request_id = get[0];
+        result = get[1];
+
+        Group('document_detail-'+document_id, channel_layer=message.channel_layer).send({"text":
+                json.dumps({'header': command, 'request_id': request_id, 'accept': 'True',
+                        'body': {'who': message.user.id, 'new_bubble': result}})})
+        return
+
+
+
     #######################################
     ##   Export Note as Suggest Bubble   ##
     #######################################
 
+    elif command == 'export_note_as_suggest_bubble':
+        if set(body.keys()) != set(('binded_bubble_id', 'note_id' )):
+            message.reply_channel.send({"text":
+                    json.dumps({'header': command, 'accept': 'False', 'body': 'body does not follow format'})})
+            return
+        try:
+            get = do_export_note_to_suggest(previous_state, message.user.id, int(document_id),
+                    int(body['binded_bubble_id']), int(body['note_id']))
+        except BubbleDoesNotExistError:
+            message.reply_channel.send({"text":
+                    json.dumps({"header": command, "accept": 'False',
+                            'body': 'bubble does not exist for the id'})})
+            return
+        except InvalidLocationError:
+            message.reply_channel.send({"text":
+                    json.dumps({'header': command, 'accept': 'False', 'body': 'invalid location'})})
+            return
+        except Exception as e:
+            message.reply_channel.send({"text":
+                    json.dumps({"header": command, "accept": 'False', 'body': 'unknown error'})})
+            see_error(e)
+            return
 
-    ####################################
-    ##   Export Note as Leaf Bubble   ##
-    ####################################
+        if not get:
+            message.reply_channel.send({"text":
+                    json.dumps({'header': command, 'accept': 'False',
+                            'body': 'function returned null'})})
+            return
+
+        request_id = get[0];
+        result = get[1];
+
+        Group('document_detail-'+document_id, channel_layer=message.channel_layer).send({"text":
+                json.dumps({'header': command, 'request_id': request_id, 'accept': 'True',
+                        'body': {'who': message.user.id, 'new_suggest_bubble': result}})})
+        return
 
 
     #################################################
     ##   Export Note as Comment on Normal Bubble   ##
     #################################################
 
+    elif command == 'export_note_as_comment_under_bubble':
+        if set(body.keys()) != set(('binded_bubble_id', 'note_id' )):
+            message.reply_channel.send({"text":
+                    json.dumps({'header': command, 'accept': 'False', 'body': 'body does not follow format'})})
+            return
+        try:
+            get = do_export_note_to_comment_under_normal(previous_state, message.user.id, int(document_id),
+                    int(body['binded_bubble_id']), int(body['note_id']))
+        except BubbleDoesNotExistError:
+            message.reply_channel.send({"text":
+                    json.dumps({"header": command, "accept": 'False',
+                            'body': 'bubble does not exist for the id'})})
+            return
+        except Exception as e:
+            message.reply_channel.send({"text":
+                    json.dumps({"header": command, "accept": 'False', 'body': 'unknown error'})})
+            see_error(e)
+            return
+
+        if not get:
+            message.reply_channel.send({"text":
+                    json.dumps({'header': command, 'accept': 'False',
+                            'body': 'function returned null'})})
+            return
+
+        request_id = get[0];
+        result = get[1];
+
+        Group('document_detail-'+document_id, channel_layer=message.channel_layer).send({"text":
+                json.dumps({'header': command, 'request_id': request_id, 'accept': 'True',
+                        'body': {'who': message.user.id, 'new_comment': result}})})
+        return
+
 
     ##################################################
     ##   Export Note as Comment on Suggest Bubble   ##
     ##################################################
 
+    elif command == 'export_note_as_comment_under_suggest_bubble':
+        if set(body.keys()) != set(('binded_suggest_bubble_id', 'note_id' )):
+            message.reply_channel.send({"text":
+                    json.dumps({'header': command, 'accept': 'False', 'body': 'body does not follow format'})})
+            return
+        try:
+            get = do_export_note_to_comment_under_normal(previous_state, message.user.id, int(document_id),
+                    int(body['binded_suggest_bubble_id']), int(body['note_id']))
+        except BubbleDoesNotExistError:
+            message.reply_channel.send({"text":
+                    json.dumps({"header": command, "accept": 'False',
+                            'body': 'bubble does not exist for the id'})})
+            return
+        except Exception as e:
+            message.reply_channel.send({"text":
+                    json.dumps({"header": command, "accept": 'False', 'body': 'unknown error'})})
+            see_error(e)
+            return
 
+        if not get:
+            message.reply_channel.send({"text":
+                    json.dumps({'header': command, 'accept': 'False',
+                            'body': 'function returned null'})})
+            return
+
+        request_id = get[0];
+        result = get[1];
+
+        Group('document_detail-'+document_id, channel_layer=message.channel_layer).send({"text":
+                json.dumps({'header': command, 'request_id': request_id, 'accept': 'True',
+                        'body': {'who': message.user.id, 'new_comment': result}})})
+        return
 
 
     ###############################
     ##   Change Document Title   ##
     ###############################
+
+    elif command == 'change_title_of_document':
+        if set(body.keys()) != set(('new_title', )):
+            message.reply_channel.send({"text":
+                    json.dumps({'header': command, 'accept': 'False', 'body': 'body does not follow format'})})
+            return
+        try:
+            get = do_change_title_of_document(previous_state, message.user.id, int(document_id),
+                    str(body['new_title']))
+        except DocumentDoesNotExistError:
+            message.reply_channel.send({"text":
+                    json.dumps({"header": command, "accept": 'False',
+                            'body': 'document does not exist for the id'})})
+            return
+        except Exception as e:
+            message.reply_channel.send({"text":
+                    json.dumps({"header": command, "accept": 'False', 'body': 'unknown error'})})
+            see_error(e)
+            return
+
+        if not get:
+            message.reply_channel.send({"text":
+                    json.dumps({'header': command, 'accept': 'False',
+                            'body': 'function returned null'})})
+            return
+
+        request_id = get[0];
+        result = get[1];
+
+        Group('document_detail-'+document_id, channel_layer=message.channel_layer).send({"text":
+                json.dumps({'header': command, 'request_id': request_id, 'accept': 'True',
+                        'body': {'who': message.user.id, 'new_title': body['new_title']}})})
+        return
 
 
     #########################
@@ -1668,18 +1860,9 @@ def ws_receive(message):
     
     # will be done by http
 
-
-
-
-
-
-
-
-
     #########################################
     ##   If you came here, it's wrong...   ##
     #########################################
-
 
     else:
         message.reply_channel.send({"text":
