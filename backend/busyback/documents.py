@@ -53,6 +53,7 @@ def do_create_document(
     document = Document.objects.create(title=title)
     
     document.contributors.add(user)
+    document.save()
     root_bubble = create_normal(document)
 
     # preset contents
@@ -90,7 +91,42 @@ def do_create_document(
     res = process_document(document)
     res['rootbubble_id'] = root_bubble.id
     return res
+
+@transaction.atomic
+def do_add_contributor(
+    user_id: int,
+    document_id: int,
+    hash_value
+    ):
+    try:
+        document = Document.objects.get(id=document_id)
+    except Document.DoesNotExist:
+        raise DocumentDoesNotExistError(document_id)
     
+    if not document.contributors.filter(id=user_id).exists():
+        document.contributors.add(fetch_user(user_id))
+    else:
+        raise InvalidInvitationError()
+    document.save()
+    
+@transaction.atomic
+def do_delete_document(
+    user_id: int,
+    document_id: int
+    ):
+    document = fetch_document_with_lock(user_id, document_id)
+    user = fetch_user(user_id)
+
+    if document.contributors.filter(id=user_id).exists():
+        document.contributors.remove(user)
+    else:
+        raise UserIsNotContributorError(user_id, document_id)
+
+    if document.contributors.count() == 0:
+        document.delete()
+    else:
+        document.save()
+
 @transaction.atomic
 def do_fetch_contributors(
     user_id: int,
