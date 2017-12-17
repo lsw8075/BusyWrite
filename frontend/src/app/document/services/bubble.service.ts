@@ -537,6 +537,62 @@ export class BubbleService implements OnDestroy {
                 console.log('received unvote_on_suggest_bubble fail');
                 this._store.dispatch(new BubbleAction.UnvoteOnSuggestError(body));
             }
+        } else if (command === 'export_note_as_bubble') {
+            if (accept == 'True') {
+                console.log('received export_note_as_bubble success');
+                const bubble = BubbleJsonHelper.getBubbleObject(JSON.stringify(body.new_bubble));
+                if (body.who === this.userId) {
+                    this._store.dispatch(new BubbleAction.ExportNoteAsBubbleComplete(bubble));
+                } else {
+                    this._store.dispatch(new BubbleAction.OthersExportNoteAsBubble(bubble));
+                }
+                this.previousRequestId = data.request_id;
+            } else {
+                console.log('received export_note_as_bubble fail');
+                this._store.dispatch(new BubbleAction.ExportNoteAsBubbleError(body));
+            }
+        } else if (command === 'export_note_as_suggest_bubble') {
+            if (accept == 'True') {
+                console.log('received export_note_as_suggest_bubble success');
+                const suggestBubble = BubbleJsonHelper.getSuggestBubbleObject(JSON.stringify(body.new_suggest_bubble));
+                if (body.who === this.userId) {
+                    this._store.dispatch(new BubbleAction.ExportNoteAsSuggestComplete(suggestBubble));
+                } else {
+                    this._store.dispatch(new BubbleAction.OthersExportNoteAsSuggest(suggestBubble));
+                }
+                this.previousRequestId = data.request_id;
+            } else {
+                console.log('received export_note_as_suggest_bubble fail');
+                this._store.dispatch(new BubbleAction.ExportNoteAsSuggestError(body));
+            }
+        } else if (command === 'export_note_as_comment_under_bubble') {
+            if (accept == 'True') {
+                console.log('received export_note_as_comment_under_bubble success');
+                const comment = BubbleJsonHelper.getCommentObject(JSON.stringify(body.new_comment));
+                if (body.who === this.userId) {
+                    this._store.dispatch(new BubbleAction.ExportNoteAsCommentOnBubbleComplete(comment));
+                } else {
+                    this._store.dispatch(new BubbleAction.OthersExportNoteAsCommentOnBubble(comment));
+                }
+                this.previousRequestId = data.request_id;
+            } else {
+                console.log('received export_note_as_comment_under_bubble fail');
+                this._store.dispatch(new BubbleAction.ExportNoteAsCommentOnBubbleError(body));
+            }
+        } else if (command === 'export_note_as_comment_under_suggest_bubble') {
+            if (accept == 'True') {
+                console.log('received export_note_as_comment_under_suggest_bubble success');
+                const comment = BubbleJsonHelper.getCommentObject(JSON.stringify(body.new_comment));
+                if (body.who === this.userId) {
+                    this._store.dispatch(new BubbleAction.ExportNoteAsCommentOnSuggestComplete(comment));
+                } else {
+                    this._store.dispatch(new BubbleAction.OthersExportNoteAsCommentOnSuggest(comment));
+                }
+                this.previousRequestId = data.request_id;
+            } else {
+                console.log('received export_note_as_comment_under_suggest_bubble fail');
+                this._store.dispatch(new BubbleAction.ExportNoteAsCommentOnSuggestError(body));
+            }
         }
     }
 
@@ -660,6 +716,20 @@ export class BubbleService implements OnDestroy {
         this._socket.send(m);
     }
 
+    public editCommentOnBubble(commentId: number, content: string) {
+        const m = {'header': 'edit_comment_on_bubble',
+            'previous_request': this.previousRequestId,
+            'body': {'comment_id': commentId, 'content': content}};
+        this._socket.send(m);
+    }
+
+    public editCommentOnSuggestBubble(commentId: number, content: string) {
+        const m = {'header': 'edit_comment_on_suggest_bubble',
+            'previous_request': this.previousRequestId,
+            'body': {'comment_id': commentId, 'content': content}};
+        this._socket.send(m);
+    }
+
     public deleteBubble(bubbleId: number) {
         const m = {'header': 'delete_bubble',
             'previous_request': this.previousRequestId,
@@ -769,6 +839,38 @@ export class BubbleService implements OnDestroy {
         this._socket.send(m);
     }
 
+    public exportNoteAsBubble(parentId: number, loc: number, noteId: number) {
+        const m = {'header': 'export_note_as_bubble',
+            'previous_request': this.previousRequestId,
+            'body': {'parent_id': parentId, 'location': loc, 'note_id': noteId}};
+        this._socket.send(m);
+    }
+
+    public exportNoteAsSuggestBubble(bindedBubbleId: number, noteId: number) {
+        const m = {'header': 'export_note_as_suggest_bubble',
+            'previous_request': this.previousRequestId,
+            'body': {'binded_bubble_id': bindedBubbleId, 'note_id': noteId}};
+        this._socket.send(m);
+    }
+
+    public exportNoteAsCommentOnBubble(bindedBubbleId: number, noteId: number) {
+        const m = {'header': 'export_note_as_comment_on_bubble',
+            'previous_request': this.previousRequestId,
+            'body': {'binded_bubble_id': bindedBubbleId, 'note_id': noteId}};
+        this._socket.send(m);
+    }
+
+    public exportNoteAsCommentOnSuggestBubble(bindedSuggestBubbleId: number, noteId: number) {
+        const m = {'header': 'export_note_as_comment_on_suggest_bubble',
+            'previous_request': this.previousRequestId,
+            'body': {'binded_suggest_bubble_id': bindedSuggestBubbleId, 'note_id': noteId}};
+        this._socket.send(m);
+    }
+    
+    
+    
+    // these are legacy codes
+
     public splitBubble(bubbleId: number, contentList: Array<string>) {
         const splitBubbleList: Array<Bubble> = [];
         for (let content of contentList) {
@@ -776,6 +878,7 @@ export class BubbleService implements OnDestroy {
         }
         return Promise.resolve(splitBubbleList);
     }
+
 
 
     public _moveBubble(bubbleId: number, destBubbleId: number, isAbove: boolean) {
