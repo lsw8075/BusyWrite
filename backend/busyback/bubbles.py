@@ -427,6 +427,9 @@ def do_create_suggest_bubble(
 
     binded_bubble = kw['bubble']
 
+    if binded_bubble.is_root():
+        raise BubbleIsRootError(binded_bubble.id)
+
     check_updatable(rversion, binded_bubble)
 
     new_suggest = create_suggest(binded_bubble, content)
@@ -590,6 +593,9 @@ def do_flatten_normal_bubble(
     if bubble.is_leaf():
         raise BubbleIsLeafError(bubble.id)
 
+    if bubble.is_root():
+        raise BubbleIsRootError(bubble.id)
+
     check_updatable_with_descendants(rversion, bubble)
 
     content = cascaded_flatten_children(user, bubble)
@@ -743,6 +749,8 @@ def do_switch_bubble(
     if binded_bubble.has_locked_directs():
         raise BubbleLockedError(binded_bubble.id)
 
+    if binded_bubble.is_root():
+        raise BubbleIsRootError(binded_bubble.id)
 
     if not binded_bubble.is_leaf():
         check_updatable_with_descendants(rversion, binded_bubble)
@@ -830,9 +838,7 @@ def do_merge_normal_bubble(
     bubble_id_list: list,
     **kw
     ):
-
     
-
     bubble = wrap_bubble(rversion, user_id, document_id, bubble_id_list, **kw)
 
     check_updatable_with_descendants(rversion, bubble)

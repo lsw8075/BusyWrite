@@ -63,6 +63,9 @@ def do_export_note_to_suggest(
 
     binded_bubble = kw['bubble']
     
+    if binded_bubble.is_root():
+        raise BubbleIsRootError(binded_bubble.id)
+
     new_suggest = create_suggest(binded_bubble, content)
     new_suggest.save()
     
@@ -86,6 +89,9 @@ def do_export_note_to_comment_under_normal(
     
     bubble = kw['bubble']
     order = bubble.next_comment_order
+    if bubble.is_root():
+        raise BubbleIsRootError(bubble.id)
+
 
     new_comment = CommentUnderNormal.objects.create(content=content, owner=user, bubble=bubble, order=order)
     bubble.next_comment_order += 1
