@@ -588,7 +588,7 @@ def do_flatten_normal_bubble(
         raise BubbleLockedError(bubble.id)
 
     if bubble.is_leaf():
-        return bubble
+        raise BubbleIsLeafError(bubble.id)
 
     check_updatable_with_descendants(rversion, bubble)
 
