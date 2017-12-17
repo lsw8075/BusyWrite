@@ -1,4 +1,5 @@
 from .models import *
+import sys, traceback
 import json
 
 def create_normal(doc, content='', parent=None, location=0):
@@ -32,3 +33,12 @@ def http_send(s, t, url, jd={}, result=False, login=False, csrf=None):
     if result:
         s.result = json.loads(response.content.decode())
     return response.status_code
+
+def see_error(e):
+    print('***Traceback (most recent call last) ***')
+    ex_type, ex, tb = sys.exc_info()
+    traceback.print_tb(tb)
+    print(type(e))
+    print(str(e))
+    print('****************************************')
+    del tb
