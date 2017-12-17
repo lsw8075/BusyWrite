@@ -202,10 +202,9 @@ class ChannelReceiveTestCaseTwo(ChannelTestCase):
         self.client.consume('websocket.receive')
         result = self.client.receive()
        
-        print(result['body'])
         self.assertEqual(result['header'], 'change_title_of_document')
         self.assertEqual(result['accept'], 'True')
-        self.assertEqual(result['body']['new_comment'], "i don't like swpp")
+        self.assertEqual(result['body']['new_title'], "i dont like swpp")
 
         document = Document.objects.get(id=self.fstid)
         self.assertEqual(document.title, "i dont like swpp")
@@ -1278,17 +1277,16 @@ class ChannelNoteTestCase(ChannelTestCase):
         result = self.client.receive()
 
         self.assertEqual(result['body']['who'], self.userid)
-        self.assertEqual(result['body']['new_bubble']['parent_id'], self.rootid)
+        self.assertEqual(result['body']['new_bubble']['parent_bubble'], self.rootid)
         self.assertEqual(result['body']['new_bubble']['location'], 1)
         self.assertEqual(result['body']['new_bubble']['content'], 'first note')
-        self.assertEqual(result['body']['edit_lock_holder'], None)
-        self.assertEqual(result['body']['owner_with_lock'], None)
+        self.assertEqual(result['body']['new_bubble']['edit_lock_holder'], None)
+        self.assertEqual(result['body']['new_bubble']['owner_with_lock'], None)
         
-        bubble_id = result['body']['id']
+        bubble_id = result['body']['new_bubble']['id']
         bubble = NormalBubble.objects.get(id=bubble_id)
 
-        self.assertEqual(bubble.who, self.userid)
-        self.assertEqual(bubble.parent_id, self.rootid)
+        self.assertEqual(bubble.parent_bubble.id, self.rootid)
         self.assertEqual(bubble.location, 1)
         self.assertEqual(bubble.content, 'first note')
         self.assertEqual(bubble.edit_lock_holder, None)

@@ -197,7 +197,6 @@ def do_clear_connected_users_document(
             cache.delete(key_doc)
 
 @transaction.atomic
-@update_doc
 def do_change_title_of_document(
     rversion,
     user_id,
@@ -208,4 +207,4 @@ def do_change_title_of_document(
     document = fetch_document_with_lock(user_id, doc_id)
     document.title = new_title
     document.save()
-    return (Operation.CHANGE_TITLE, new_title)
+    return (0, new_title)

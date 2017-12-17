@@ -1,5 +1,6 @@
 from django.conf.urls import url
 from busyback import views
+from busyback import view_documents
 from channels.routing import route
 
 urlpatterns = [
@@ -7,8 +8,8 @@ urlpatterns = [
     url('^signin$', views.signin, name='signin'),
     url('^signout$', views.signout, name='signout'),
     url('^token$', views.token, name='token'),
-    url('^documentlist$', views.req_document_list, name='req_document_list'),
-    url('^document$', views.req_document_detail, name='req_document_detail'),
+    url('^documentlist$', view_documents.req_document_list, name='req_document_list'),
+    url('^document$', view_documents.req_document_detail, name='req_document_detail'),
 
 ]
 
