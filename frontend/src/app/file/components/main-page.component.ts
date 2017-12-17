@@ -35,4 +35,9 @@ export class MainPageComponent implements OnInit {
         this._store.dispatch(new FileAction.Create());
     }
 
+    clickDeleteDocument(documentId: number) {
+        this._store.dispatch(new FileAction.Delete(documentId));
+    }
+
+
 }

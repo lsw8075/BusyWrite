@@ -66,6 +66,26 @@ export class FileEffects {
                 }));
                 });
 
+    @Effect()
+    delete$: Observable<Action> = this.action$.ofType<fromFile.Delete>(fromFile.DELETE)
+        .map(action => action.payload).mergeMap(query => {
+            this._http.delete(this.documentListUrl).map(res => {
+                console.log(res);
+                const status = res.status;
+                return new fromFile.DeleteComplete(1);
+            });
+                    // if (status === 200) {
+                    //     const jsonData = JSON.parse(res.text());
+                    //     console.log(jsonData);
+                    //     return new fromFile.LoadComplete(JSON.parse(res.text()));
+                    // } else if (status === 404) {
+                    //     return new fromFile.LoadError(res.json());
+                    // } else {
+                    //     return new fromFile.LoadError('unknown error');
+                    // }
+
+        };
+
     getCookie(name) {
         const value = ';' + document.cookie;
         const parts = value.split(';' + name + '=');

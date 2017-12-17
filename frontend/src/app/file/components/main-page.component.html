@@ -8,16 +8,20 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-sm-3">
 
+        <div class="col-sm-1">
         </div>
         <div class="col-sm-9">
             <ng-container *ngFor="let document of fileList$ | async">
                 <div class="list-group-item" (click)="open(document)">
-                    title: {{document.title}}
+                    #{{document.id}}. {{document.title}}
                 </div>
+                <i (click)="clickStartEditDocumentTitle(document.id)" class="fa fa-pencil fa-fw"></i>
+                <i (click)="clickDeleteDocument(document.id)" class="fa fa-trash fa-fw"></i>
             </ng-container>
+
             <button type="button" class="btn btn-lg btn-success" (click)="create()">Create</button>
         </div>
+
     </div>
 </div>

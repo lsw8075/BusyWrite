@@ -184,7 +184,10 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
         case fromBubble.EDIT_BUBBLE:
             return {...state, loading: true, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
         case fromBubble.EDIT_REQUEST_SUCCESS: {
-            return {...state, loading: false};
+            const bubble = getBubbleById(state.bubbleList, action.payload) as LeafBubble;
+            bubble.editLockHoder = 1;//(state as any).user.userId;
+            const newBubbleList = _.cloneDeep(state.bubbleList);
+            return {...state, bubbleList: newBubbleList, loading: false};
         }
         case fromBubble.EDIT_BUBBLE_ERROR:
             return {...state, loading: false, error: action.payload, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};

@@ -61,6 +61,21 @@ export class Open implements Action {
     constructor(public payload: FileSystemEntity) {}
 }
 
+export class Delete implements Action {
+    readonly type = DELETE;
+    constructor(public payload: number) {}
+}
+
+export class DeleteComplete implements Action {
+    readonly type = DELETE_COMPLETE;
+    constructor(public payload: number) {}
+}
+
+export class DeleteError implements Action {
+    readonly type = DELETE_ERROR;
+    constructor(public payload: string) {}
+}
+
 export type Actions =
     | Load
     | LoadComplete
@@ -68,5 +83,8 @@ export type Actions =
     | Create
     | CreateComplete
     | CreateError
+    | Delete
+    | DeleteComplete
+    | DeleteError
     | Select
     | Open;

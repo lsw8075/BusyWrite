@@ -31,6 +31,9 @@ export class EditBoardComponent implements OnInit, OnDestroy {
         private _boardService: BoardService,
         private _eventBubbleService: EventBubbleService) {
         this.editBubbles$ = this._store.select(fromDocument.getEditBubbles);
+        this._store.select(fromDocument.getEditBubbles).subscribe((editBubbles) => {
+            console.log(editBubbles);
+        });
 
   }
 

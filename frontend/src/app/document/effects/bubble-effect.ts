@@ -24,7 +24,8 @@ import * as EditBoardAction from '../actions/edit-board-action';
 import * as fromDocument from '../reducers/reducer';
 import { Bubble, BubbleType, InternalBubble, LeafBubble, SuggestBubble } from '../models/bubble';
 import { MenuType } from '../services/event/event-bubble.service';
-import { ViewBoardMenuType} from '../reducers/bubble-reducer';
+import { ViewBoardMenuType } from '../reducers/bubble-reducer';
+
 
 import { BubbleService } from '../services/bubble.service';
 import {
@@ -100,10 +101,7 @@ export class BubbleEffects {
     editRequestSuccess$: Observable<Action> = this.action$.ofType<BubbleAction.EditRequestSuccess>(BubbleAction.EDIT_REQUEST_SUCCESS)
         .withLatestFrom(this._store).mergeMap(([action, state]) => {
             console.log(state);
-            const bubbleState = (state as any).document.bubble;
-            const bubble = getBubbleById(bubbleState.bubbleList, action.payload) as LeafBubble;
-            bubble.editLock = true;
-            return Observable.of(new EditBoardAction.Open(bubble));
+            return Observable.of(new BubbleAction.EditBubblePending(null));
         });
 
     @Effect()

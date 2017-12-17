@@ -3,6 +3,7 @@ import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { BubbleReducer, BubbleState } from './bubble-reducer';
 import { BoardReducer, BoardState } from './board-reducer';
 import { SangjunBubbleReducer, SangjunBubbleState } from './sangjun-bubble-reducer';
+import { UserState } from '../../user/reducers/user-reducer';
 
 import * as fromRoot from '../../shared/reducer';
 import { Board, BoardType, BoardLocation } from '../models/board';
@@ -53,6 +54,9 @@ export const getSangjunBubble = createSelector(getSangjunBoardState, (state: San
 
 
 // edit board
+export const getUserState = createFeatureSelector<State>('user');
 
-export const getEditBubbles = createSelector
-(getBubbleList, (state: Bubble[]) => state.filter(b => b.type === BubbleType.leafBubble).filter(b => (b as LeafBubble).editLockHoder === 1);
+export const getUserId = createSelector(fromRoot.getUserState, (state: UserState) => state.userId);
+
+export const getEditBubbles = createSelector(getBubbleList, getUserId, (state: Bubble[], userId: number) =>
+    state.filter(b => b.type === BubbleType.leafBubble).filter(b => (b as LeafBubble).editLockHoder === userId));
