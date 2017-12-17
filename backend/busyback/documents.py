@@ -3,6 +3,7 @@ from .users import fetch_user
 from .errors import *
 from .versions import *
 from .utils import create_normal, generate_hash
+from .utils import process_normal, process_suggest, process_comment, process_note
 from django.utils import timezone
 from django.db import transaction
 from django.core.cache import cache
@@ -168,6 +169,11 @@ def do_delete_document(
     else:
         document.save()
 
+def fetch_contributors(document):
+    users = list(document.contributors.all().values())
+    users = [{'id': user['id'], 'username': user['username'], 'email': user['email']} for user in users]
+    return users
+
 @transaction.atomic
 def do_fetch_contributors(
     user_id: int,
@@ -175,9 +181,7 @@ def do_fetch_contributors(
     ):
 
     document = fetch_document_with_lock(user_id, document_id)
-    users = list(document.contributors.all().values())
-    users = [{'id': user['id'], 'username': user['username'], 'email': user['email']} for user in users]
-    return users
+    return fetch_contributors(document)
 
 def key_duser(document_id):
     return 'Duser' + str(document_id)
@@ -250,3 +254,59 @@ def do_change_title_of_document(
     document.title = new_title
     document.save()
     return (0, new_title)
+
+# this function only called at opening document
+# format:
+# result[0] : all normal bubble's list
+# result[1] : all suggest bubble's list
+# result[2] : all comment under normal's list
+# result[3] : all comment under suggest's list
+# result[4] : all the notes
+# result[5] : latest version request-id of document
+# result[6] : all contributors of document
+# result[7] : all connected contributors of document
+
+@transaction.atomic
+def do_fetch_whole_document(user_id, document_id):
+    document = fetch_document_with_lock(user_id, document_id)
+    result = [None] * 8
+
+    user = fetch_user(user_id)
+
+    # 0: all the normals
+    bubbles = document.bubbles.all()
+    if len(bubbles) == 0:
+        raise InternalError('Document has no bubble')
+
+    all_ncomments = []
+    all_scomments = []
+    all_suggests = []
+    for bubble in bubbles:
+        # collect comments
+        ncomments = list(bubble.comments.all())
+        ncomments = [process_comment(c) for c in ncomments]
+        all_ncomments.extend(ncomments)
+        suggests = list(bubble.suggest_bubbles.all())
+        for suggest in suggests:
+            scomments = list(suggest.comments.all())
+            scomments = [process_comment(c) for c in scomments]
+            all_scomments.extend(scomments)
+        suggests = [process_suggest(b) for b in suggests]
+        all_suggests.extend(suggests)
+
+    notes = list(document.notes.filter(owner=user).all())
+    notes = [process_note(n) for n in notes]
+
+    bubbles = list(bubbles)
+    bubbles = [process_normal(b) for b in bubbles]
+
+    result[0] = bubbles
+    result[1] = all_suggests
+    result[2] = all_ncomments
+    result[3] = all_scomments
+    result[4] = notes
+    result[5] = get_latest_version_rid(document.id)
+    result[6] = fetch_contributors(document)
+    result[7] = do_get_connected_users_document(user_id, document_id)
+
+    return result

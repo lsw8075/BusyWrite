@@ -82,4 +82,9 @@ class DocumentTestCase(TestCase):
         self.assertEqual(len(cont), 2)
 
 
+    def test_do_fetch_whole_document(self):
+        result = do_fetch_whole_document(self.user1.id, self.doc1.id)
+        #import json
+        #print(json.dumps(result))
 
+    
