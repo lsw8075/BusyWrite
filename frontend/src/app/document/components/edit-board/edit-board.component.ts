@@ -1,10 +1,19 @@
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { DragulaService } from 'ng2-dragula/ng2-dragula';
 
-import { Note, NoteService, Bubble, BoardService, EditItem } from './service';
+import { Note, NoteService, Bubble, BoardService } from './service';
 import { EventBubbleService } from './service';
 
 import { Board } from '../../models/board';
+
+import { Store } from '@ngrx/store';
+import { Observable } from 'rxjs/Observable';
+
+import * as fromDocument from '../../reducers/reducer';
+import * as fromBubble from '../../reducers/bubble-reducer';
+import * as BubbleAction from '../../actions/bubble-action';
+import * as SangjunBoardAction from '../../actions/sangjun-bubble-action';
+import * as EditBoardAction from '../../actions/edit-board-action';
 
 @Component({
   selector: 'app-edit-board',
@@ -13,70 +22,62 @@ import { Board } from '../../models/board';
 })
 export class EditBoardComponent implements OnInit, OnDestroy {
 
-  notes: Array<Note>;
-  editItems: Array<EditItem>;
+  notes$: Observable<Array<Note>>;
+  editBubbles$: Observable<Array<Bubble>>;
 
   constructor(
-    private _dragulaService: DragulaService,
-    private _noteService: NoteService,
-    private _boardService: BoardService,
-    private _eventBubbleService: EventBubbleService) {
+        private _store: Store<fromDocument.State>,
+        private _noteService: NoteService,
+        private _boardService: BoardService,
+        private _eventBubbleService: EventBubbleService) {
+        this.editBubbles$ = this._store.select(fromDocument.getEditBubbles);
+
   }
 
   ngOnInit() {
-    this._getNotes();
-    this._getBubbles();
-    this._dragulaService.setOptions('note-bag', {
-      moves: function (el, container, handle) {
-        return handle.className === 'handle';
-      }
-    });
-  /*  this._boardService.createBubbleEvent$.subscribe((editItem: EditItem) => {
-      this.createNewEditItem(editItem);
-    });
-    this._boardService.getEditBubbles();*/
   }
 
-  public finishEdit(editItem: EditItem) {
+  public finishEdit(bubble: Bubble) {
 //    this._boardService.finishEdit(editItem.bubble, editItem.content);
-    this.editItems = this.editItems.filter(e => e.id !== editItem.id);
+    // this.editItems = this.editItems.filter(e => e.id !== editItem.id);
   }
 
-  public createNewEditItem(editItem: EditItem) {
-    this.editItems.push(editItem);
-    console.log('new item');
+  public createNewEditItem(bubble: Bubble) {
+    // this.editItems.push(editItem);
+    // console.log('new item');
   }
 
-  public focusEditItem(editItem: EditItem, focused: boolean) {
+  public focusEditItem(bubble: Bubble, focused: boolean) {
     // this._eventBubbleService.edittedBubble = (focused) ? editItem.bubble : null;
   }
 
-  public updateEditItem(editItem: EditItem) {
+  public updateEditItem(bubble: Bubble, updateString: string) {
+      console.log('update bubble event', updateString);
 //    this._boardService.updateEdit(editItem.bubble, editItem.content);
   }
 
   addNote() {
-    this._noteService.addNote()
-      .then(note => {
-        this.notes.push(note);
-      });
+    // this._noteService.addNote()
+    //   .then(note => {
+    //     this.notes.push(note);
+    //   });
   }
 
   deleteNote(note: Note) {
-    this._noteService.deleteNote(note)
-      .then(response => {
-        this.notes = this.notes.filter(n => n.id !== note.id);
-      });
+    // this._noteService.deleteNote(note)
+    //   .then(response => {
+    //     this.notes = this.notes.filter(n => n.id !== note.id);
+    //   });
   }
 
   updateNote(note: Note) {
-    this._noteService.updateNote(note).then(response => {
-      console.log('note changed!');
-    });
+    // this._noteService.updateNote(note).then(response => {
+    //   console.log('note changed!');
+    // });
   }
 
   ngOnDestroy() {
-    this._dragulaService.destroy('note-bag');
+
   }
 
   public toComment(note: Note) {
@@ -87,15 +88,6 @@ export class EditBoardComponent implements OnInit, OnDestroy {
 
   }
 
-  private _getNotes(): void {
-    this._noteService.getNotes(1)
-      .then(notes => {
-        this.notes = notes;
-      });
-  }
-  private _getBubbles(): void {
-    this.editItems = [];
-  }
 
 }
 

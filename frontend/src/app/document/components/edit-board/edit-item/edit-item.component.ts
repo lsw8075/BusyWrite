@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
 import { Bubble} from '../service';
 import { EditItem } from '../service';
+import { LeafBubble } from '../../../models/bubble';
 
 @Component({
   selector: 'app-edit-item',
@@ -10,9 +11,9 @@ import { EditItem } from '../service';
 export class EditItemComponent implements OnInit {
 
 
-  @Input() editItem: EditItem;
+  @Input() editBubble: LeafBubble;
   @Output() focus: EventEmitter<boolean> = new EventEmitter<boolean>();
-  @Output() update: EventEmitter<void> = new EventEmitter<void>();
+  @Output() update: EventEmitter<string> = new EventEmitter<string>();
 
 
   editor;
@@ -33,7 +34,7 @@ export class EditItemComponent implements OnInit {
   constructor() {}
 
   ngOnInit() {
-    // this.editorContent = this.editItem.bubble.getContent();
+    this.editorContent = this.editBubble.content;
   }
 
   onEditorBlured(quill) {
@@ -51,8 +52,7 @@ export class EditItemComponent implements OnInit {
 
   onContentChanged({ quill, html, text }) {
     console.log('quill content is changed!', quill, html, text);
-    this.editItem.content = html;
-    this.update.emit(null);
+    this.update.emit(html);
   }
 
 } /* istanbul ignore next */

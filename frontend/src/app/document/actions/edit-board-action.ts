@@ -8,4 +8,4 @@ export class Open implements Action {
 }
 
 export type Actions =
-    | Open
+    | Open;

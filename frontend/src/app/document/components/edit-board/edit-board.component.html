@@ -5,10 +5,9 @@
                 Edit
             </div>
         </ng-template>
-        <div *ngIf="editItems">
+        <div *ngIf="editBubbles$ | async as editBubbles">
             <accordion>
-                <ng-container class='container' [dragula]='"note-bag"' [dragulaModel]='notes'>
-                <ng-container *ngFor="let editItem of editItems">
+                <ng-container *ngFor="let editBubble of editBubbles">
                     <accordion-group #group>
                         <div accordion-heading>
                         <span class="badge badge-pill badge-info">
@@ -16,16 +15,15 @@
                             +
                             </div>
                         </span>
-                        <span class="summary">{{editItem.bubble.id}}</span>
+                        <span class="summary">{{editBubble.id}}</span>
                         <span class="badge float-right pull-right">
-                            <button (click)="finishEdit(editItem)" type="button" class="btn btn-secondary btn-sm hvr-sweep-to-right">
+                            <button (click)="finishEdit(editBubble)" type="button" class="btn btn-secondary btn-sm hvr-sweep-to-right">
                             <i tooltip="did you finish editting?" class="fa fa-fw fa-check"></i>
                             </button>
                         </span>
                         </div>
-                        <app-edit-item (update)="updateEditItem(editItem)" (focus)="focusEditItem(editItem, $event)" [editItem]="editItem"></app-edit-item>
+                        <app-edit-item (update)="updateEditItem(editBubble, $event)" (focus)="focusEditItem(editBubble, $event)" [editBubble]="editBubble"></app-edit-item>
                     </accordion-group>
-                </ng-container>
                 </ng-container>
             </accordion>
         </div>
@@ -36,9 +34,8 @@
                 Note
             </div>
         </ng-template>
-        <div *ngIf="notes container">
+        <div *ngIf="notes$ | async as notes " class="container">
             <accordion>
-                <div class='container' [dragula]='"note-bag"' [dragulaModel]='notes'>
                 <div *ngFor="let note of notes">
                     <accordion-group #group>
                         <div accordion-heading>
@@ -59,7 +56,6 @@
                         </div>
                         <app-note-view [note]="note" (changed)="updateNote(note, $event)"></app-note-view>
                     </accordion-group>
-                </div>
                 </div>
             </accordion>
         </div>
