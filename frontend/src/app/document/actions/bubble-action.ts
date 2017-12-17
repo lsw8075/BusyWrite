@@ -295,6 +295,7 @@ export const EDIT_BUBBLE_PENDING = '[Bubble] edit pending';
 export const EDIT_REQUEST_SUCCESS = '[Bubble] edit success';
 export const OTHERS_EDIT_REQUEST = '[Bubble] others edit';
 export const EDIT_UPDATE = '[Bubble] edit update';
+export const EDIT_UPDATE_RESUME = '[Bubble] edit update resume';
 export const EDIT_UPDATE_PENDING = '[Bubble] edit update pending';
 export const EDIT_UPDATE_SUCCESS = '[Bubble] edit update success';
 export const OTHERS_EDIT_UPDATE = '[Bubble] others edit update';
@@ -328,6 +329,12 @@ export class OthersEditRequest implements Action {
 }
 export class EditUpdate implements Action {
     readonly type = EDIT_UPDATE;
+    constructor(public payload: {
+            bubbleId: number,
+            content: string}) {}
+}
+export class EditUpdateResume implements Action {
+    readonly type = EDIT_UPDATE_RESUME;
     constructor(public payload: {
             bubbleId: number,
             content: string}) {}
@@ -1133,6 +1140,7 @@ export type Actions =
   | EditRequestSuccess
   | OthersEditRequest
   | EditUpdate
+  | EditUpdateResume
   | EditUpdatePending
   | EditUpdateSuccess
   | OthersEditUpdate
