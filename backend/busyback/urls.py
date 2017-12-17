@@ -9,8 +9,7 @@ urlpatterns = [
     url('^signout$', views.signout, name='signout'),
     url('^token$', views.token, name='token'),
     url('^documentlist$', view_documents.req_document_list, name='req_document_list'),
-    url('^document$', view_documents.req_document_detail, name='req_document_detail'),
-
+    url('^document/(?P<document_id>[0-9]+)/?$', view_documents.req_document_detail, name='req_document_detail')
 ]
 
 channel_routing = [

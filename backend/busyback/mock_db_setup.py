@@ -1,6 +1,13 @@
+from django.test import TestCase, Client
 from .models import *
 from datetime import datetime
 from .utils import create_normal, create_suggest
+
+def user_mockDBsetup(m):
+    m.client = Client()
+    m.user1 = User.objects.create_user(username='testuser1', email='test1@test.com', password='1234')
+    m.user2 = User.objects.create_user(username='testuser2', email='test2@test.com', password='5678')
+    m.user3 = User.objects.create_user(username='testuser3', email='test3@test.com', password='9090')
 
 def mockDBSetup(m):    
     m.user1 = User.objects.create_user(username='testuser1', email='test1@test.com', password='1234')

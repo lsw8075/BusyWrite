@@ -1,11 +1,10 @@
 from django.test import TestCase, Client
 from .models import *
-from .mock_db_setup import mockDBSetup
+from .mock_db_setup import *
 from .errors import *
 from .users import *
-from .utils import http_send
+from .utils import getCSRF, http_send
 import json
-
 
 class UsersTestCase(TestCase):
 
@@ -17,21 +16,13 @@ class UsersTestCase(TestCase):
         with self.assertRaises(UserDoesNotExistError):
             do_fetch_user(100)
 
-
-class HttpRequestTestCase(TestCase):
+class Users2TestCase(TestCase):
 
     def setUp(self):
-        self.client = Client()
-        self.user1 = User.objects.create_user(username='testuser1', email='test1@test.com', password='1234')
-        self.user2 = User.objects.create_user(username='testuser2', email='test2@test.com', password='5678')
-        self.user3 = User.objects.create_user(username='testuser3', email='test3@test.com', password='9090')
-
-    def getCSRF(self):
-        response = self.client.get('/api/token')
-        return response.cookies['csrftoken'].value # Get csrf token from cookie
+        user_mockDBsetup(self)
 
     def send(self, t, url, jd={}, result=False, login=False):
-        return http_send(self, t, url, jd, result, login, self.getCSRF())
+        return http_send(self, t, url, jd, result, login)
 
     def test_token(self):
         self.assertEqual(204, self.send('GET', 'token'))
@@ -39,7 +30,7 @@ class HttpRequestTestCase(TestCase):
         self.assertEqual(405, self.send('DELETE', 'token'))
 
     def test_signup(self):
-        csrftoken = self.getCSRF()
+        csrftoken = getCSRF(self)
 
         response = self.client.post('/api/signup', json.dumps({'username': 'testuser4', 'password': '5678'}), content_type='application/json', HTTP_X_CSRFTOKEN=csrftoken)
         self.assertEqual(response.status_code, 201) # Pass csrf protection
@@ -60,22 +51,4 @@ class HttpRequestTestCase(TestCase):
         self.assertEqual(200, self.send('GET', 'signout'))
 
         self.assertEqual(405, self.send('DELETE', 'signout'))
-
-
-    def test_req_document(self):
-        # create document and check title
-        self.send('POST', 'documentlist', {'title': 'new_document'}, result=True, login=True)
-        doc_id = self.result['id']
-        self.send('GET', 'document', {'document_id': doc_id})
-        doc_title = self.result['title']
-        self.assertEqual(doc_title, 'new_document')
-        self.send('GET', 'documentlist', {'user_id': 1})
-        self.send('DELETE', 'document', {'document_id': doc_id})
-        pass
-
-    def test_req_document_contributors(self):
-        pass
-
-    def test_req_send_invitation(self):
-        pass
 
