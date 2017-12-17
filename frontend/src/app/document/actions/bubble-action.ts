@@ -424,7 +424,9 @@ export class EditSuggestPending implements Action {
 }
 export class EditSuggestComplete implements Action {
     readonly type = EDIT_SUGGEST_COMPLETE;
-    constructor(public payload: number) {}
+    constructor(public payload: {
+            hidedSuggestBubbleId: number,
+            newEdittedSuggestBubble: SuggestBubble}) {}
 }
 export class EditSuggestError implements Action {
     readonly type = EDIT_SUGGEST_ERROR;
@@ -433,7 +435,67 @@ export class EditSuggestError implements Action {
 export class OthersEditSuggest implements Action {
     readonly type = OTHERS_EDIT_SUGGEST;
     constructor(public payload: {
-            suggestBubbleId: number,
+            hidedSuggestBubbleId: number,
+            newEdittedSuggestBubble: SuggestBubble}) {}
+}
+
+export const EDIT_COMMENT_ON_BUBBLE = '[Comment on Bubble] edit';
+export const EDIT_COMMENT_ON_BUBBLE_PENDING = '[Comment on Bubble] edit pending';
+export const EDIT_COMMENT_ON_BUBBLE_COMPLETE = '[Comment on Bubble] edit complete';
+export const EDIT_COMMENT_ON_BUBBLE_ERROR = '[Comment on Bubble] edit discard';
+export const OTHERS_EDIT_COMMENT_ON_BUBBLE = '[Comment on Bubble] others edit suggest';
+export class EditCommentOnBubble implements Action {
+    readonly type = EDIT_COMMENT_ON_BUBBLE;
+    constructor(public payload: number) {}
+}
+export class EditCommentOnBubblePending implements Action {
+    readonly type = EDIT_COMMENT_ON_BUBBLE_PENDING;
+    constructor(public payload: void) {}
+}
+export class EditCommentOnBubbleComplete implements Action {
+    readonly type = EDIT_COMMENT_ON_BUBBLE_COMPLETE;
+    constructor(public payload: {
+            commentId: number,
+            content: string}) {}
+}
+export class EditCommentOnBubbleError implements Action {
+    readonly type = EDIT_COMMENT_ON_BUBBLE_ERROR;
+    constructor(public payload: number) {}
+}
+export class OthersEditCommentOnBubble implements Action {
+    readonly type = OTHERS_EDIT_COMMENT_ON_BUBBLE;
+    constructor(public payload: {
+            commentId: number,
+            content: string}) {}
+}
+
+export const EDIT_COMMENT_ON_SUGGEST = '[Comment on Suggest] edit';
+export const EDIT_COMMENT_ON_SUGGEST_PENDING = '[Comment on Suggest] edit pending';
+export const EDIT_COMMENT_ON_SUGGEST_COMPLETE = '[Comment on Suggest] edit complete';
+export const EDIT_COMMENT_ON_SUGGEST_ERROR = '[Comment on Suggest] edit discard';
+export const OTHERS_EDIT_COMMENT_ON_SUGGEST = '[Comment on Suggest] others edit suggest';
+export class EditCommentOnSuggest implements Action {
+    readonly type = EDIT_COMMENT_ON_SUGGEST;
+    constructor(public payload: number) {}
+}
+export class EditCommentOnSuggestPending implements Action {
+    readonly type = EDIT_COMMENT_ON_SUGGEST_PENDING;
+    constructor(public payload: void) {}
+}
+export class EditCommentOnSuggestComplete implements Action {
+    readonly type = EDIT_COMMENT_ON_SUGGEST_COMPLETE;
+    constructor(public payload: {
+            commentId: number,
+            content: string}) {}
+}
+export class EditCommentOnSuggestError implements Action {
+    readonly type = EDIT_COMMENT_ON_SUGGEST_ERROR;
+    constructor(public payload: number) {}
+}
+export class OthersEditCommentOnSuggest implements Action {
+    readonly type = OTHERS_EDIT_COMMENT_ON_SUGGEST;
+    constructor(public payload: {
+            commentId: number,
             content: string}) {}
 }
 
@@ -887,6 +949,119 @@ export class OthersUnvoteOnSuggest implements Action {
     constructor(public payload: number) {}
 }
 
+export const EXPORT_NOTE_AS_BUBBLE = '[Note] export as bubble';
+export const EXPORT_NOTE_AS_BUBBLE_PENDING = '[Note] export as bubble pending';
+export const EXPORT_NOTE_AS_BUBBLE_COMPLETE = '[Note] export as bubble complete';
+export const EXPORT_NOTE_AS_BUBBLE_ERROR = '[Note] export as bubble error';
+export const OTHERS_EXPORT_NOTE_AS_BUBBLE = '[Note] others export as bubble';
+export class ExportNoteAsBubble implements Action {
+    readonly type = EXPORT_NOTE_AS_BUBBLE;
+    constructor(public payload: {
+        parentId: number,
+        loc : number,
+        noteId: number}) {}
+}
+export class ExportNoteAsBubblePending implements Action {
+    readonly type = EXPORT_NOTE_AS_BUBBLE_PENDING;
+    constructor(public payload: void) {}
+}
+export class ExportNoteAsBubbleComplete implements Action {
+    readonly type = EXPORT_NOTE_AS_BUBBLE_COMPLETE;
+    constructor(public payload: Bubble) {}
+}
+export class ExportNoteAsBubbleError implements Action {
+    readonly type = EXPORT_NOTE_AS_BUBBLE_ERROR;
+    constructor(public payload: string) {}
+}
+export class OthersExportNoteAsBubble implements Action {
+    readonly type = OTHERS_EXPORT_NOTE_AS_BUBBLE;
+    constructor(public payload: Bubble) {}
+}
+
+export const EXPORT_NOTE_AS_SUGGEST = '[Note] export as suggest bubble';
+export const EXPORT_NOTE_AS_SUGGEST_PENDING = '[Note] export as suggest bubble pending';
+export const EXPORT_NOTE_AS_SUGGEST_COMPLETE = '[Note] export as suggest bubble complete';
+export const EXPORT_NOTE_AS_SUGGEST_ERROR = '[Note] export as suggest bubble error';
+export const OTHERS_EXPORT_NOTE_AS_SUGGEST = '[Note] others export as suggest bubble';
+export class ExportNoteAsSuggest implements Action {
+    readonly type = EXPORT_NOTE_AS_SUGGEST;
+    constructor(public payload: {
+        bindedBubbleId: number,
+        noteId: number}) {}
+}
+export class ExportNoteAsSuggestPending implements Action {
+    readonly type = EXPORT_NOTE_AS_SUGGEST_PENDING;
+    constructor(public payload: void) {}
+}
+export class ExportNoteAsSuggestComplete implements Action {
+    readonly type = EXPORT_NOTE_AS_SUGGEST_COMPLETE;
+    constructor(public payload: SuggestBubble) {}
+}
+export class ExportNoteAsSuggestError implements Action {
+    readonly type = EXPORT_NOTE_AS_SUGGEST_ERROR;
+    constructor(public payload: string) {}
+}
+export class OthersExportNoteAsSuggest implements Action {
+    readonly type = OTHERS_EXPORT_NOTE_AS_SUGGEST;
+    constructor(public payload: SuggestBubble) {}
+}
+
+export const EXPORT_NOTE_AS_COMMENT_ON_BUBBLE = '[Note] export as comment on bubble';
+export const EXPORT_NOTE_AS_COMMENT_ON_BUBBLE_PENDING = '[Note] export as comment on bubble pending';
+export const EXPORT_NOTE_AS_COMMENT_ON_BUBBLE_COMPLETE = '[Note] export as comment on bubble complete';
+export const EXPORT_NOTE_AS_COMMENT_ON_BUBBLE_ERROR = '[Note] export as comment on bubble error';
+export const OTHERS_EXPORT_NOTE_AS_COMMENT_ON_BUBBLE = '[Note] others export as comment on bubble';
+export class ExportNoteAsCommentOnBubble implements Action {
+    readonly type = EXPORT_NOTE_AS_COMMENT_ON_BUBBLE;
+    constructor(public payload: {
+        bindedBubbleId: number,
+        noteId: number}) {}
+}
+export class ExportNoteAsCommentOnBubblePending implements Action {
+    readonly type = EXPORT_NOTE_AS_COMMENT_ON_BUBBLE_PENDING;
+    constructor(public payload: void) {}
+}
+export class ExportNoteAsCommentOnBubbleComplete implements Action {
+    readonly type = EXPORT_NOTE_AS_COMMENT_ON_BUBBLE_COMPLETE;
+    constructor(public payload: Comment) {}
+}
+export class ExportNoteAsCommentOnBubbleError implements Action {
+    readonly type = EXPORT_NOTE_AS_COMMENT_ON_BUBBLE_ERROR;
+    constructor(public payload: string) {}
+}
+export class OthersExportNoteAsCommentOnBubble implements Action {
+    readonly type = OTHERS_EXPORT_NOTE_AS_COMMENT_ON_BUBBLE;
+    constructor(public payload: Comment) {}
+}
+
+export const EXPORT_NOTE_AS_COMMENT_ON_SUGGEST = '[Note] export as comment on suggest';
+export const EXPORT_NOTE_AS_COMMENT_ON_SUGGEST_PENDING = '[Note] export as comment on suggest pending';
+export const EXPORT_NOTE_AS_COMMENT_ON_SUGGEST_COMPLETE = '[Note] export as comment on suggest complete';
+export const EXPORT_NOTE_AS_COMMENT_ON_SUGGEST_ERROR = '[Note] export as comment on suggest error';
+export const OTHERS_EXPORT_NOTE_AS_COMMENT_ON_SUGGEST = '[Note] others export as comment on suggest';
+export class ExportNoteAsCommentOnSuggest implements Action {
+    readonly type = EXPORT_NOTE_AS_COMMENT_ON_SUGGEST;
+    constructor(public payload: {
+        bindedSuggestBubbleId: number,
+        noteId: number}) {}
+}
+export class ExportNoteAsCommentOnSuggestPending implements Action {
+    readonly type = EXPORT_NOTE_AS_COMMENT_ON_SUGGEST_PENDING;
+    constructor(public payload: void) {}
+}
+export class ExportNoteAsCommentOnSuggestComplete implements Action {
+    readonly type = EXPORT_NOTE_AS_COMMENT_ON_SUGGEST_COMPLETE;
+    constructor(public payload: Comment) {}
+}
+export class ExportNoteAsCommentOnSuggestError implements Action {
+    readonly type = EXPORT_NOTE_AS_COMMENT_ON_SUGGEST_ERROR;
+    constructor(public payload: string) {}
+}
+export class OthersExportNoteAsCommentOnSuggest implements Action {
+    readonly type = OTHERS_EXPORT_NOTE_AS_COMMENT_ON_SUGGEST;
+    constructor(public payload: Comment) {}
+}
+
 export const REFRESH = '[Bubble] refresh';
 export class Refresh implements Action {
   readonly type = REFRESH;
@@ -978,6 +1153,16 @@ export type Actions =
   | EditSuggestComplete
   | EditSuggestError
   | OthersEditSuggest
+  | EditCommentOnBubble
+  | EditCommentOnBubblePending
+  | EditCommentOnBubbleComplete
+  | EditCommentOnBubbleError
+  | OthersEditCommentOnBubble
+  | EditCommentOnSuggest
+  | EditCommentOnSuggestPending
+  | EditCommentOnSuggestComplete
+  | EditCommentOnSuggestError
+  | OthersEditCommentOnSuggest
   | DeleteBubble
   | DeleteBubblePending
   | DeleteBubbleComplete
@@ -1058,5 +1243,25 @@ export type Actions =
   | UnvoteOnSuggestComplete
   | UnvoteOnSuggestError
   | OthersUnvoteOnSuggest
+  | ExportNoteAsBubble
+  | ExportNoteAsBubblePending
+  | ExportNoteAsBubbleComplete
+  | ExportNoteAsBubbleError
+  | OthersExportNoteAsBubble
+  | ExportNoteAsSuggest
+  | ExportNoteAsSuggestPending
+  | ExportNoteAsSuggestComplete
+  | ExportNoteAsSuggestError
+  | OthersExportNoteAsSuggest
+  | ExportNoteAsCommentOnBubble
+  | ExportNoteAsCommentOnBubblePending
+  | ExportNoteAsCommentOnBubbleComplete
+  | ExportNoteAsCommentOnBubbleError
+  | OthersExportNoteAsCommentOnBubble
+  | ExportNoteAsCommentOnSuggest
+  | ExportNoteAsCommentOnSuggestPending
+  | ExportNoteAsCommentOnSuggestComplete
+  | ExportNoteAsCommentOnSuggestError
+  | OthersExportNoteAsCommentOnSuggest
   | Refresh
   | ClearError;

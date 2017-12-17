@@ -14,6 +14,7 @@ def fetch_note(note_id):
     return note
 
 @normal_operation
+@update_doc
 def do_export_note_to_normal(
     rversion: int,
     user_id: int,
@@ -47,6 +48,7 @@ def do_export_note_to_normal(
     return (Operation.EXPORT_NOTE_TO_NORMAL, process_normal(new_bubble))
 
 @normal_operation
+@update_doc
 def do_export_note_to_suggest(
     rversion: int,
     user_id: int,
@@ -72,6 +74,7 @@ def do_export_note_to_suggest(
     return (Operation.EXPORT_NOTE_TO_SUGGEST, process_suggest(new_suggest))
 
 @normal_operation   
+@update_doc
 def do_export_note_to_comment_under_normal(
     rversion: int,
     user_id: int,
@@ -100,6 +103,7 @@ def do_export_note_to_comment_under_normal(
     return (Operation.EXPORT_NOTE_TO_NCOMMENT, process_comment(new_comment))
 
 @suggest_operation
+@update_doc
 def do_export_note_to_comment_under_suggest(
     rversion: int,
     user_id: int,

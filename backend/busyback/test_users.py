@@ -3,30 +3,9 @@ from .models import *
 from .mock_db_setup import mockDBSetup
 from .errors import *
 from .users import *
-
+from .utils import http_send
 import json
 
-def http_send(s, t, url, jd={}, result=False, login=False, csrf=None):
-    if login:
-        s.client.login(username='testuser2', password='5678')
-    response = None
-    url = '/api/' + url
-    if t != 'GET':
-        csrf = s.getCSRF()
-    if t == 'GET':
-        if jd != {}:
-            response = s.client.get(url, jd)
-        else:
-            response = s.client.get(url)
-    elif t == 'POST':
-        response = s.client.post(url, json.dumps(jd), content_type='application/json', HTTP_X_CSRFTOKEN=csrf)
-    elif t == 'PUT':
-        response = s.client.put(url, json.dumps(jd), content_type='application/json', HTTP_X_CSRFTOKEN=csrf)
-    elif t == 'DELETE':
-        response = s.client.delete(url, HTTP_X_CSRFTOKEN=csrf)
-    if result:
-        s.result = json.loads(response.content.decode())
-    return response.status_code
 
 class UsersTestCase(TestCase):
 
@@ -91,7 +70,7 @@ class HttpRequestTestCase(TestCase):
         doc_title = self.result['title']
         self.assertEqual(doc_title, 'new_document')
         self.send('GET', 'documentlist', {'user_id': 1})
-
+        self.send('DELETE', 'document', {'document_id': doc_id})
         pass
 
     def test_req_document_contributors(self):
