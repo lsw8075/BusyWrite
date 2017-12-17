@@ -23,7 +23,7 @@ export class Bubble {
 export class LeafBubble implements Bubble {
   id: number;
   type: BubbleType;
-  parentBubbleId: number = -1;
+  parentBubbleId = -1;
   location: number;
   thumbUps: number;
 
@@ -56,12 +56,16 @@ export class LeafBubble implements Bubble {
     this.watchUserIds = watchUserIds;
     this.thumbUps = thumbUps;
   }
+
+  public getEditLock(): boolean {
+      return this.editLock;
+  }
 } /* istanbul ignore next */
 
 export class InternalBubble implements Bubble {
   id: number;
   type: BubbleType;
-  parentBubbleId: number = -1;
+  parentBubbleId = -1;
   location: number;
   thumbUps: number;
 

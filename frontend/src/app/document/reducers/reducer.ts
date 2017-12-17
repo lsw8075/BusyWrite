@@ -6,7 +6,7 @@ import { SangjunBubbleReducer, SangjunBubbleState } from './sangjun-bubble-reduc
 
 import * as fromRoot from '../../shared/reducer';
 import { Board, BoardType, BoardLocation } from '../models/board';
-import { Bubble, InternalBubble, BubbleType } from '../models/bubble';
+import { Bubble, InternalBubble, BubbleType, LeafBubble } from '../models/bubble';
 
 
 export interface State extends fromRoot.State {
@@ -54,4 +54,5 @@ export const getSangjunBubble = createSelector(getSangjunBoardState, (state: San
 
 // edit board
 
-export const getEditBubbles = createSelector(getBubbleList, (state: Bubble[]) => state.filter(b => b.type === BubbleType.leafBubble));
+export const getEditBubbles = createSelector
+(getBubbleList, (state: Bubble[]) => state.filter(b => b.type === BubbleType.leafBubble).filter(b => (b as LeafBubble).getEditLock()));
