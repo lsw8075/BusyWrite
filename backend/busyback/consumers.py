@@ -646,7 +646,7 @@ def ws_receive(message):
 
         Group('document_detail-'+document_id, channel_layer=message.channel_layer).send({"text":
                 json.dumps({'header': command, 'request_id': request_id, 'accept': 'True',
-                'body': {'who': message.user.id, 'bubble_id': body['bubble_id']}})})
+                'body': {'who': message.user.id, 'bubble_id': body['bubble_id'], 'content': result['content']}})})
         return
 
 
@@ -690,7 +690,7 @@ def ws_receive(message):
 
         Group('document_detail-'+document_id, channel_layer=message.channel_layer).send({"text":
                 json.dumps({'header': command, 'request_id': request_id, 'accept': 'True',
-                'body': {'who': message.user.id, 'bubble_id': body['bubble_id']}})})
+                'body': {'who': message.user.id, 'bubble_id': body['bubble_id'], 'content': result['content']}})})
         return
 
 
