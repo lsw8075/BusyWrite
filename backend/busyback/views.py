@@ -17,7 +17,8 @@ def signup(request):
         req_data = json.loads(request.body.decode())
         username = req_data['username']
         password = req_data['password']
-        User.objects.create_user(username=username, password=password)
+        email = req_data['email']
+        User.objects.create_user(username=username, password=password, email=email)
         return HttpResponse(status=201)
     else:
         return HttpResponseNotAllowed(['POST'])
@@ -26,6 +27,7 @@ def signin(request):
     if request.method == 'POST':
         request_data = json.loads(request.body.decode())
         username = request_data['username']
+        password = request_data['password']
         password = request_data['password']
         user = authenticate(request, username = username, password = password)
         if user is None:

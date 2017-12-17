@@ -2,11 +2,12 @@ from .models import *
 from .users import fetch_user
 from .errors import *
 from .versions import *
-from .utils import create_normal
+from .utils import create_normal, generate_hash
 from django.utils import timezone
 from django.db import transaction
 from django.core.cache import cache
 from django.forms.models import model_to_dict
+from django.core.mail import send_mail
 import json
 
 def process_document(document):
@@ -93,20 +94,49 @@ def do_create_document(
     return res
 
 @transaction.atomic
-def do_add_contributor(
+def do_send_invitation_email(
     user_id: int,
     document_id: int,
-    hash_value
+    who_id: int
     ):
     try:
         document = Document.objects.get(id=document_id)
     except Document.DoesNotExist:
         raise DocumentDoesNotExistError(document_id)
     
-    if not document.contributors.filter(id=user_id).exists():
-        document.contributors.add(fetch_user(user_id))
+    if document.contributors.filter(id=user_id).exists():
+        raise InvalidInvitationError()
+    
+    user = fetch_user(user_id)
+    who_to_send = fetch_user(who_id)
+    salt = generate_hash()
+    InvitationHash.objects.create(salt=new_hash, document=document, receiver=who)
+    mail_title = '[Busywrite] %s invited you to document \'%s\'' % (user.name, document.title)
+    invite_route = 'invitation'
+    invite_addr = 'http://busywrite.ribosome.kr/%s?salt=%s' % (invite_route, salt)
+    mail_body = '<h2>Busywrite invitation</h2> <p> click <a href=\"%s\">this link</a> to accept invitation </p>' % invite_addr
+    # for debug.. please remove below code at practice!
+    debug_addr = 'http://localhost:4200/%s?salt=%s' % (invite_route, salt)
+    mail_body = mail_body + '<p> invitation at debug: <a href=\"%s\">this link</a> to accept invitation </p>' % debug_addr
+    # for debug.. please remove above code at practice!
+    send_mail(mail_title, mail_body, 'no-reply@busywrite.ribosome.kr', who_to_send.email)
+    return
+
+@transaction.atomic
+def do_add_contributor(salt_value):    
+    try:
+        invitation = InvitationHash.objects.get(salt=salt_value)
+        document = invitation.document
+        who = invitation.receiver
+        invitation.delete()
+    except InvitationHash.DoesNotExist:
+        raise InvalidInvitaionError()
+
+    if not document.contributors.filter(id=who.id).exists():
+        document.contributors.add(who)
     else:
         raise InvalidInvitationError()
+        
     document.save()
     
 @transaction.atomic

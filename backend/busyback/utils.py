@@ -1,6 +1,7 @@
 from .models import *
 import sys, traceback
 import json
+import hashlib, random
 
 def create_normal(doc, content='', parent=None, location=0):
     return NormalBubble.objects.create(content=content, document=doc, location=location, parent_bubble=parent)
@@ -42,3 +43,6 @@ def see_error(e):
     print(str(e))
     print('****************************************')
     del tb
+
+def generate_hash():
+   return hashlib.sha224(str(random.random()).encode()).hexdigest() 

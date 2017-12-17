@@ -27,8 +27,9 @@ class DocumentTestCase(TestCase):
        
     def test_do_create_delete_document(self):
         new_doc = do_create_document(self.user1.id, 'Create Document')
-        do_add_contributor(self.user2.id, new_doc['id'], 'asdf')
-        do_add_contributor(self.user3.id, new_doc['id'], 'asdf')
+        new_doc.contributors.add(self.user2.id)
+        new_doc.contributors.add(self.user3.id)
+        new_doc.save()
         cont = do_fetch_contributors(self.user1.id, new_doc['id'])
         self.assertEqual(len(cont), 3)
         do_delete_document(self.user1.id, new_doc['id'])
