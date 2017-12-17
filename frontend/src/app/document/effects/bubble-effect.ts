@@ -150,8 +150,6 @@ export class BubbleEffects {
             const mergeBubbleList = bubbleState.selectedBubbleList.map(b => b.id);
             return Observable.of(this.bubbleService.mergeBubble(mergeBubbleList))
                 .map(() => new BubbleAction.MergeBubblePending(null));
-                // .map((newBubble) => new BubbleAction.MergeBubbleComplete({bubbleIdList: mergeBubbleList, mergedBubble: newBubble}))
-                // .catch(err => of(new BubbleAction.MergeBubbleError(err)));
         });
 
     @Effect()
@@ -179,8 +177,6 @@ export class BubbleEffects {
         .map(action => action.payload).mergeMap(query => {
             return Observable.of(this.bubbleService.splitLeafBubble(query.bubbleId, query.contentList))
                 .map(() => new BubbleAction.SplitLeafPending(null));
-                // .map((splitBubbleList) => new BubbleAction.SplitComplete({bubbleId: query.bubbleId, splitBubbleList: splitBubbleList}))
-                // .catch(err => of(new BubbleAction.SplitError(err)));
         });
 
     @Effect()
@@ -188,8 +184,6 @@ export class BubbleEffects {
         .map(action => action.payload).mergeMap(query => {
             return Observable.of(this.bubbleService.flattenBubble(query))
                 .map(() => new BubbleAction.FlattenBubblePending(null));
-                // .map((newBubble) => new BubbleAction.FlattenComplete({bubbleId: query, newBubble: newBubble}))
-                // .catch(err => of(new BubbleAction.FlattenError(err)));
         });
 
     @Effect()
@@ -211,8 +205,7 @@ export class BubbleEffects {
             if (! action.payload.isAbove) {
                 location++;
             }
-            console.log(bubble.id, parentBubble.id, location);
-            return Observable.of(this.bubbleService.moveBubble(bubble.id, parentBubble.id, location))
+            return Observable.of(this.bubbleService.moveBubble(bubble.id, destParentBubble.id, location))
                 .map(() => new BubbleAction.MoveBubblePending(null));
         });
 

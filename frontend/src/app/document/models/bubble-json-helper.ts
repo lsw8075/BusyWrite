@@ -15,6 +15,7 @@ export namespace BubbleJsonHelper {
             const leafBubble = new LeafBubble(jsonObject.id, jsonObject.content);
             leafBubble.parentBubbleId = jsonObject.parent_bubble;
             leafBubble.location = jsonObject.location;
+            leafBubble.editLockHoder = jsonObject.edit_lock_holder;
             return leafBubble;
         }
     }
