@@ -49,11 +49,11 @@ export class ViewBoardComponent implements OnInit {
     private _loadingService: TdLoadingService) {
         this._store.select(fromDocument.isLoading).subscribe(loading => {
             if (this.board) {
-                if (loading) {
-                    this._loadingService.register(this.getBoardId());
-                } else {
-                    this._loadingService.resolve(this.getBoardId());
-                }
+                // if (loading) {
+                //     this._loadingService.register(this.getBoardId());
+                // } else {
+                //     this._loadingService.resolve(this.getBoardId());
+                // }
             }
         });
     }
