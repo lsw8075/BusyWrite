@@ -112,3 +112,7 @@ class InvalidUpdateError(Error):
 
 class OutdatedRequestError(Error):
     pass
+
+class InvalidInvitationError(Error):
+    pass
+
