@@ -71,7 +71,8 @@ export function BubbleReducer(state: BubbleState = initialState, action: fromBub
         case fromBubble.POP_BUBBLE: case fromBubble.POP_BUBBLE_COMPLETE: case fromBubble.POP_BUBBLE_ERROR:
         case fromBubble.DELETE_BUBBLE: case fromBubble.DELETE_BUBBLE_COMPLETE: case fromBubble.DELETE_BUBBLE_ERROR:
         case fromBubble.CREATE_BUBBLE: case fromBubble.CREATE_BUBBLE_COMPLETE: case fromBubble.CREATE_BUBBLE_ERROR:
-        case fromBubble.EDIT_BUBBLE: case fromBubble.EDIT_REQUEST_SUCCESS: case fromBubble.EDIT_BUBBLE_ERROR: case fromBubble.DELETE_BUBBLE_ERROR:
+        case fromBubble.EDIT_BUBBLE: case fromBubble.EDIT_REQUEST_SUCCESS: case fromBubble.EDIT_BUBBLE_ERROR:
+        case fromBubble.EDIT_UPDATE_SUCCESS:
         case fromBubble.FLATTEN_BUBBLE: case fromBubble.FLATTEN_BUBBLE_COMPLETE: case fromBubble.FLATTEN_BUBBLE_ERROR:
         case fromBubble.WRAP_START: case fromBubble.WRAP_BUBBLE: case fromBubble.WRAP_BUBBLE_COMPLETE: case fromBubble.WRAP_BUBBLE_ERROR:
         case fromBubble.MERGE_START: case fromBubble.MERGE_BUBBLE:
@@ -144,7 +145,6 @@ function UIReducer(state: BubbleState, action: fromBubble.Actions) {
 
 function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) {
     switch (action.type) {
-
         case fromBubble.POP_BUBBLE:
             return {...state, loading: true, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
         case fromBubble.POP_BUBBLE_COMPLETE: {
@@ -190,7 +190,16 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
         }
         case fromBubble.EDIT_BUBBLE_ERROR:
             return {...state, loading: false, error: action.payload, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
-
+        case fromBubble.EDIT_UPDATE_SUCCESS:
+            console.log(action.payload);
+            const bubbleId = action.payload.bubbleId;
+            const content = action.payload.content;
+            console.log(bubbleId, content);
+        //    const bubble = getBubbleById(state.bubbleList, bubbleId) as LeafBubble;
+    //        bubble.content = content;
+    //        const newBubbleList = _.cloneDeep(state.bubbleList);
+    //        return {...state, bubbleList: newBubbleList, loading: false};
+           return {...state, loading: false};
         case fromBubble.FLATTEN_BUBBLE:
             return {...state, loading: true, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
         case fromBubble.FLATTEN_BUBBLE_COMPLETE: {

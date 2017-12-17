@@ -338,7 +338,9 @@ export class EditUpdatePending implements Action {
 }
 export class EditUpdateSuccess implements Action {
     readonly type = EDIT_UPDATE_SUCCESS;
-    constructor(public payload: number) {}
+    constructor(public payload: {
+            bubbleId: number,
+            content: string}) {}
 }
 export class OthersEditUpdate implements Action {
     readonly type = OTHERS_EDIT_UPDATE;

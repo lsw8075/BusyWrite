@@ -56,7 +56,7 @@ export class EditBoardComponent implements OnInit, OnDestroy {
 
   public updateEditItem(bubble: Bubble, updateString: string) {
       console.log('update bubble event', updateString);
-      this._store.dispatch(new BubbleAction.EditUpdate({bubbleId: bubble.id, content: updateString}));
+//      this._store.dispatch(new BubbleAction.EditUpdate({bubbleId: bubble.id, content: updateString}));
 //    this._boardService.updateEdit(editItem.bubble, editItem.content);
   }
 

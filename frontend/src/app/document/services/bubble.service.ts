@@ -227,7 +227,7 @@ export class BubbleService implements OnDestroy {
             if (accept === 'True') {
                 console.log('received update_content_of_editting_bubble success');
                 if (body.who === this.userId) {
-                    this._store.dispatch(new BubbleAction.EditUpdateSuccess(Number(body.bubble_id)));
+                    this._store.dispatch(new BubbleAction.EditUpdateSuccess({bubbleId: Number(body.bubble_id), content: body.content}));
                 } else {
                     this._store.dispatch(new BubbleAction.OthersEditUpdate(
                                 {bubbleId: Number(body.bubble_id), content: body.content}));
@@ -324,7 +324,7 @@ export class BubbleService implements OnDestroy {
                 console.log('received edit_comment_on_suggest_bubble fail');
                 this._store.dispatch(new BubbleAction.EditCommentOnSuggestError(body));
             }
-        
+
         } else if (command === 'delete_bubble') {
             if (accept == 'True') {
                 console.log('received delete_bubble success');
@@ -866,9 +866,9 @@ export class BubbleService implements OnDestroy {
             'body': {'binded_suggest_bubble_id': bindedSuggestBubbleId, 'note_id': noteId}};
         this._socket.send(m);
     }
-    
-    
-    
+
+
+
     // these are legacy codes
 
     public splitBubble(bubbleId: number, contentList: Array<string>) {

@@ -64,17 +64,20 @@ export class FileEffects {
                         return new fromFile.CreateError(jsonData);
                     }
                 }));
-                });
+            });
 
     @Effect()
     delete$: Observable<Action> = this.action$.ofType<fromFile.Delete>(fromFile.DELETE)
         .map(action => action.payload).mergeMap(query => {
             const documentUrl = `/api/document/${query}`;
-            return this._http.delete(documentUrl).map(res => {
-                console.log(res);
-                const status = res.status;
-                return new fromFile.DeleteComplete(query);
-            });
+            const headers = new Headers({'Content-Type': 'application/json'});
+            return this._http.get(this.tokenUrl).toPromise().then(() => headers.append('X-CSRFToken', this.getCookie('csrftoken')))
+                .then(() => this._http.delete(documentUrl, {headers: headers})
+                .toPromise().then(res => {
+                    console.log(res);
+                    const status = res.status;
+                    return new fromFile.DeleteComplete(query);
+                }));
         });
                     // if (status === 200) {
                     //     const jsonData = JSON.parse(res.text());
