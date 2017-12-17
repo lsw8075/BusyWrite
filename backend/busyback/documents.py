@@ -196,7 +196,8 @@ def do_user_connect_document(
         connected_users = cache.get_or_set(key_doc, '[]')
         cache.persist("key_doc")
         connected_users = json.loads(connected_users)
-        connected_users.append(user_id)
+        if not user_id in connected_users:
+            connected_users.append(user_id)
         connected_users = json.dumps(connected_users)
 
         cache.set(key_doc, connected_users, timeout=None)
