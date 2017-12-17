@@ -48,3 +48,5 @@ class DocumentTestCase(TestCase):
         self.assertEqual(len(con), 0)
 
         
+    def do_change_title_of_document(self):
+        do_change_title_of_document(0, self.user1.id, self.doc1.id, 'Hello world')
