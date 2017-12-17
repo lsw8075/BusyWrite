@@ -51,11 +51,11 @@ export class BubbleMenuComponent implements OnInit {
         this._store.dispatch(new SangjunBoardAction.Open(this.bubble));
     }
 
-    public splitBubble(bubble: Bubble) {
-        if (bubble.type === BubbleType.leafBubble) {
+    public splitBubble() {
+        if (this.bubble.type === BubbleType.leafBubble) {
             this._store.dispatch(new BubbleAction.SplitLeafStart(this.bubble));
-        } else if (bubble.type === BubbleType.internalBubble) {
-            this._store.dispatch(new BubbleAction.SplitInternalStart(this.bubble));
+        } else if (this.bubble.type === BubbleType.internalBubble) {
+            // this._store.dispatch(new BubbleAction.SplitInternalStart(this.bubble));
         }
 
        this.bsModalRef = this._modalService.show(SplitBubbleComponent);

@@ -2,7 +2,7 @@
   <div class="modal-title pull-left wrap-text" >
     <div *ngIf="bubble">
       <p (mousedown)="mouseDown=true;" (mouseup)="showSelectedText()">
-        {{bubble.getContent()}}
+        {{bubble.content}}
       </p>
     </div>
   </div>

@@ -1,7 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-import { Bubble, BubbleService, EventBubbleService } from '../service';
+import { Bubble, BubbleService, EventBubbleService, BubbleType } from '../service';
 
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
+
+import { Store } from '@ngrx/store';
+import { Observable } from 'rxjs/Observable';
+
+import * as fromDocument from '../../../reducers/reducer';
+import * as fromBubble from '../../../reducers/bubble-reducer';
+import * as BubbleAction from '../../../actions/bubble-action';
+import { LeafBubble } from '../../../models/bubble';
 
 @Component({
   selector: 'app-split-bubble',
@@ -19,6 +27,7 @@ export class SplitBubbleComponent implements OnInit {
   highlightOffset = 0;
 
   constructor(
+    private _store: Store<fromDocument.State>,
     public bsModalRef: BsModalRef,
     private _bubbleService: BubbleService,
     private _eventBubbleService: EventBubbleService) {}
@@ -27,7 +36,15 @@ export class SplitBubbleComponent implements OnInit {
   }
 
   public split() {
-    if (this.highlightedText || (this.afterText && this.beforeText)) {    }
+    if (this.highlightedText || (this.afterText && this.beforeText)) {
+        if (this.bubble.type === BubbleType.leafBubble) {
+            this._store.dispatch(new BubbleAction.SplitLeaf({
+                bubbleId: this.bubble.id,
+                contentList: [this.beforeText, this.highlightedText, this.afterText]
+            }));
+        }
+
+    }
   }
 
   private showSelectedText() {
@@ -46,7 +63,7 @@ export class SplitBubbleComponent implements OnInit {
       this.highlightedText = text;
       this.highlightOffset = startOffset - 9;
 
-      const content = '';
+      const content = (this.bubble as LeafBubble ).content;
       this.beforeText = content.substring(0, this.highlightOffset);
       this.afterText = content.substring(this.highlightOffset + text.length, content.length);
       this.mouseDown = false;
