@@ -1,4 +1,4 @@
-import { Bubble, LeafBubble, SuggestBubble, InternalBubble } from './bubble';
+import { Bubble, LeafBubble, SuggestBubble, InternalBubble, BubbleType } from './bubble';
 import { User } from '../../user/models/user';
 import { Comment } from './comment';
 
@@ -8,11 +8,13 @@ export namespace BubbleJsonHelper {
         if (jsonObject.child_bubbles.length > 0) {
             const childBubbleIds = jsonObject.child_bubbles;
             const internalBubble = new InternalBubble(jsonObject.id, childBubbleIds);
+            internalBubble.type = BubbleType.internalBubble;
             internalBubble.parentBubbleId = jsonObject.parent_bubble;
             internalBubble.location = jsonObject.location;
             return internalBubble;
         } else {
             const leafBubble = new LeafBubble(jsonObject.id, jsonObject.content);
+            leafBubble.type = BubbleType.leafBubble;
             leafBubble.parentBubbleId = jsonObject.parent_bubble;
             leafBubble.location = jsonObject.location;
             leafBubble.editLockHoder = jsonObject.edit_lock_holder;

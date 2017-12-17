@@ -421,7 +421,7 @@ export class BubbleService implements OnDestroy {
         } else if (command === 'split_leaf_bubble') {
             if (accept == 'True') {
                 console.log('received split_leaf_bubble success');
-                const splitBubbleObjectList = BubbleJsonHelper.getBubbleArrayObject(body.split_bubble_object_list);
+                const splitBubbleObjectList = BubbleJsonHelper.getBubbleArrayObject(JSON.stringify(body.split_bubble_object_list));
                 if (body.who === this.userId) {
                     this._store.dispatch(new BubbleAction.SplitLeafComplete(
                                 {bubbleId: Number(body.bubble_id), splitBubbleObjectList: splitBubbleObjectList}));

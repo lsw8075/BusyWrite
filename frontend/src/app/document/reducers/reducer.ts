@@ -55,4 +55,4 @@ export const getSangjunBubble = createSelector(getSangjunBoardState, (state: San
 // edit board
 
 export const getEditBubbles = createSelector
-(getBubbleList, (state: Bubble[]) => state.filter(b => b.type === BubbleType.leafBubble).filter(b => (b as LeafBubble).getEditLock()));
+(getBubbleList, (state: Bubble[]) => state.filter(b => b.type === BubbleType.leafBubble).filter(b => (b as LeafBubble).editLockHoder === 1);
