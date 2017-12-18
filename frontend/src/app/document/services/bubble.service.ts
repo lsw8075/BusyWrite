@@ -74,12 +74,13 @@ export class BubbleService implements OnDestroy {
                 const cons = [];
                 for (const connectorId of connectorIdList) {
                     for (const contributor of doc.contributors) {
-                        if (contributor.id === Number(connectorId))
+                        if (contributor.id === Number(connectorId)) {
                             cons.push({
                                     id: Number(connectorId),
                                     username: contributor.username,
                                     email: contributor.email,
                                     });
+                                }
                     }
                 }
                 this._store.dispatch(new BubbleAction.OpenComplete({documentObject: doc, connectors: cons}));

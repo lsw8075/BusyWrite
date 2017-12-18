@@ -5,6 +5,7 @@ import { Bubble, InternalBubble, LeafBubble, BubbleType } from '../../../models/
 import { EventBubbleService, BoardService } from '../service';
 
 import { Board } from '../../../models/board';
+import { User } from '../../../../user/models/user';
 
 import { getBubbleById } from '../../../reducers/bubble-operation';
 
@@ -33,6 +34,7 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
     @Input() selectedBubbleList: Array<Bubble>;
     @Input() hoverBubbleList: Array<Bubble>;
     @Input() selectedMenu: MenuType;
+    @Input() contributers: Array<User>;
 
     constructor(
         private _store: Store<fromDocument.State>,
@@ -106,6 +108,24 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
     public isBubbleBeingEditted(bubble: LeafBubble): boolean {
         return (bubble.editLockHolder !== -1);
     }
+
+    private _iAmEditting(bubble: LeafBubble): boolean {
+        return bubble.editLockHolder === this.userId;
+    }
+
+    public getEditColor(bubble: LeafBubble): string {
+        return (this._iAmEditting(bubble)) ? 'blue' : 'green';
+    }
+
+    public getContributerName(id: number): string {
+        for (const user of this.contributers) {
+            if (user.id === id) {
+                return user.username;
+            }
+        }
+        return 'unknown';
+    }
+
     ngOnDestroy() {
     }
 

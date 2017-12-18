@@ -48,7 +48,7 @@ export const CLOSE_COMPLETE = '[Document] close complete';
 export const CLOSE_ERROR = '[Document] close error';
 export class Close implements Action {
     readonly type = CLOSE;
-    constructor(public payload: void) {}
+    constructor(public payload: string) {}
 }
 export class ClosePending implements Action {
     readonly type = CLOSE_PENDING;

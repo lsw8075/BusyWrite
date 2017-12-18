@@ -20,6 +20,7 @@ export class InternalBubbleDirective implements OnInit {
     @Input() bubbleList: Array<Bubble>;
     @Input() isSelected: boolean;
     @Input() isHover: boolean;
+    @Input() userId: number;
 
     private lineWidth = 3;
     private space = 10;
@@ -45,7 +46,9 @@ export class InternalBubbleDirective implements OnInit {
 
     @HostBinding('style.border-left-color')
     public get borderLeftColor(): string {
-        if (this._isBeingEditted(this.appInternalBubble)) {
+        if (this._iAmEditting(this.appInternalBubble)) {
+            return 'blue';
+        } else if (this._isBeingEditted(this.appInternalBubble)) {
             return `green`;
         } else if (this._isParentRoot(this.appInternalBubble)) {
             return this.selectedColor;
@@ -56,7 +59,9 @@ export class InternalBubbleDirective implements OnInit {
 
     @HostBinding('style.border-right-color')
     public get borderRightColor(): string {
-        if (this._isBeingEditted(this.appInternalBubble)) {
+        if (this._iAmEditting(this.appInternalBubble)) {
+            return 'blue';
+        } else if (this._isBeingEditted(this.appInternalBubble)) {
             return `green`;
         } else if (this._isParentRoot(this.appInternalBubble)) {
             return this.selectedColor;
@@ -108,6 +113,14 @@ export class InternalBubbleDirective implements OnInit {
         }
         return (bubble as InternalBubble).childBubbleIds
             .reduce((prev, curr) => prev || this._isBeingEditted(getBubbleById(this.bubbleList, curr)), false);
+    }
+
+    private _iAmEditting(bubble: Bubble): boolean {
+        if (bubble.type === BubbleType.leafBubble) {
+            return (bubble as LeafBubble).editLockHolder === this.userId;
+        }
+        return (bubble as InternalBubble).childBubbleIds
+            .reduce((prev, curr) => prev || this._iAmEditting(getBubbleById(this.bubbleList, curr)), false);
     }
 
     private _isParentRoot(bubble: Bubble): boolean {

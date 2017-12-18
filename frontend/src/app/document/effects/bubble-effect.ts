@@ -22,6 +22,8 @@ import 'rxjs/add/operator/withLatestFrom';
 
 import * as BubbleAction from '../actions/bubble-action';
 import * as EditBoardAction from '../actions/edit-board-action';
+import * as RouteAction from '../../shared/route/route-action';
+
 import * as fromDocument from '../reducers/reducer';
 import { Bubble, BubbleType, InternalBubble, LeafBubble, SuggestBubble } from '../models/bubble';
 import { Comment } from '../models/comment';
@@ -67,6 +69,14 @@ export class BubbleEffects {
             const documentId = bubbleState.documentId;
             return Observable.of(this.bubbleService.closeDocument(documentId))
                 .map(() => new BubbleAction.ClosePending(null));
+        });
+
+    @Effect()
+    closeComplete$: Observable<Action> = this.action$.ofType<BubbleAction.CloseComplete>(BubbleAction.CLOSE_COMPLETE)
+        .withLatestFrom(this._store).mergeMap(([action, state]) => {
+            const bubbleState = (state as any).document.bubble;
+            const route = bubbleState.routeAfterClose;
+            return Observable.of(new RouteAction.GoByUrl(route));
         });
 
     @Effect()
