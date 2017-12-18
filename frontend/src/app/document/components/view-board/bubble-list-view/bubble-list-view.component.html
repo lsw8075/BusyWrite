@@ -1,32 +1,3 @@
-<!--
-<table class="table table-striped" *ngIf="bubbleList">
-    <tr>
-        <th>id</th>
-        <th>type</th>
-        <th>content</th>
-        <th>parentBubbleId</th>
-        <th>childBubbleIds</th>
-        <th>location</th>
-    </tr>
-    <tr *ngFor="let bubble of bubbleList">
-        <td>{{bubble.id}}</td>
-        <td>{{bubble.type}}</td>
-        <td>
-            <div *ngIf="bubble.content">
-                {{bubble.content.substr(0,50)}}
-            </div>
-        </td>
-        <td>{{bubble.parentBubbleId}}</td>
-        <td>{{bubble.childBubbleIds}}</td>
-        <td>{{bubble.location}}</td>
-    </tr>
-</table>
--->
-
-<!--<div class="ml-5 my-2">
-    <app-bubble-menu [bubble]="rootBubble" [menu]="menuType.topMenu"></app-bubble-menu>
-</div>-->
-
 <div class="mx-4 list-group-item">
     <div (appClickOutside)="clearState($event)" *ngIf="rootBubble">
         <ng-container *ngTemplateOutlet="bubbleUnit; context: { $implicit: rootBubble }"></ng-container>
@@ -84,7 +55,7 @@
         <app-bubble-menu *ngIf="isMenuOpen(bubble, menuType.leafMenu)" class="action"  [bubble]="bubble" [menu]="menuType.leafMenu" [bubbleList]="bubbleList" ></app-bubble-menu>
 
         <!-- is someone editting it? -->
-        <ng-container *ngIf="isBubbleContentShown(bubble); then show else edit"></ng-container>
+        <ng-container *ngIf="isBubbleBeingEditted(bubble); then edit else show"></ng-container>
 
         <ng-template #show>
             <div class="bubble-show" [appLeafBubble]="bubble" [isSelected]="isSelected(bubble)" innerHtml="{{bubble.content}}"></div>
@@ -93,7 +64,7 @@
             <div class="text-center">
                 <span [style.color]="'green'">
                 <i class="fa fa-fw fa-pencil"></i>
-                This bubble is being editted by {{bubble.ownerId}}
+                This bubble is being editted by {{bubble.editLockHolder}}
                 </span>
             </div>
             <div class="bubble-show editting" [appLeafBubble]="bubble" [isSelected]="isSelected(bubble)"  innerHtml="{{bubble.content}}"></div>

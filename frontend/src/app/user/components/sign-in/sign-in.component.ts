@@ -8,6 +8,8 @@ import { Observable } from 'rxjs/Observable';
 import * as fromUser from '../../reducers/reducer';
 import * as UserAction from '../../actions/user-action';
 
+import { MatSnackBar } from '@angular/material';
+
 @Component({
   selector: 'app-sign-in',
   templateUrl: './sign-in.component.html',
@@ -15,7 +17,16 @@ import * as UserAction from '../../actions/user-action';
 })
 export class SignInComponent implements OnInit {
 
-  constructor(private _store: Store<fromUser.State>) { }
+  constructor(
+      private _store: Store<fromUser.State>,
+      public _snackBar: MatSnackBar) {
+        this._store.select(fromUser.getUserError).subscribe(err => {
+            if (err) {
+                this.showErrorMsg(err);
+                this._store.dispatch(new UserAction.ClearError());
+            }
+        });
+    }
 
   ngOnInit() {}
 
@@ -30,5 +41,11 @@ export class SignInComponent implements OnInit {
   public signup(): void {
     this._store.dispatch(new UserAction.RedirectSignUp());
   }
+
+  showErrorMsg(err: string): void {
+    this._snackBar.open('Error!' , err, {
+        duration: 2000
+    });
+}
 
 } /* istanbul ignore next */

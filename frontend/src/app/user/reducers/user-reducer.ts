@@ -12,8 +12,7 @@ export const initialState: UserState = {
     signedIn: false,
     loading: false,
     error: '',
-//    userId: 7,
-  userId: -1,
+   userId: -1,
 };
 
 
@@ -28,7 +27,15 @@ export function UserReducer(state = initialState, action: any): UserState {
     case fromUser.SIGNIN_FAIL:
         return {...state, loading: false, error: action.payload};
     case fromUser.SIGNOUT:
-        return {...state, loading: false, signedIn: false};
+        return {...state, loading: false, signedIn: false, userId: -1};
+    case fromUser.SIGNUP:
+        return {...state, loading: true};
+    case fromUser.SIGNUP_SUCCESS:
+        return {...state, loading: false};
+    case fromUser.SIGNUP_FAIL:
+        return {...state, loading: false, error: action.payload};
+    case fromUser.CLEAR_ERROR:
+        return {...state, error: ''};
     default:
         return state;
   }

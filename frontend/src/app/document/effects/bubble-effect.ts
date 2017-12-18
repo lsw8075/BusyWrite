@@ -109,7 +109,7 @@ export class BubbleEffects {
     @Effect()
     createComplete$: Observable<Action> = this.action$.ofType<BubbleAction.CreateBubbleComplete>(BubbleAction.CREATE_BUBBLE_COMPLETE)
         .map(action => action.payload).mergeMap(query => {
-            return Observable.of(new BubbleAction.EditRequestSuccess({bubbleId: query.id, userId: (query as LeafBubble).editLockHoder}));
+            return Observable.of(new BubbleAction.EditRequestSuccess({bubbleId: query.id, userId: (query as LeafBubble).editLockHolder}));
         });
 
     @Effect()
@@ -260,7 +260,8 @@ export class BubbleEffects {
         });
 
     @Effect()
-    addContributerRequest$: Observable<Action> = this.action$.ofType<BubbleAction.AddContributerRequest>(BubbleAction.ADD_CONTRIBUTER_REQUEST)
+    addContributerRequest$: Observable<Action> =
+    this.action$.ofType<BubbleAction.AddContributerRequest>(BubbleAction.ADD_CONTRIBUTER_REQUEST)
         .withLatestFrom(this._store).mergeMap(([action, state]) => {
             const headers = new Headers({'Content-Type': 'application/json'});
             const username = action.payload;

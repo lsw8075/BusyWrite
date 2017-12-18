@@ -13,3 +13,5 @@ export const getUserState = createFeatureSelector<UserState>('user');
 
 export const getSignedIn = createSelector(getUserState, (state: UserState) => state.signedIn);
 export const getUserId = createSelector(getUserState, (state: UserState) => state.userId);
+export const getUserError = createSelector(getUserState, (state: UserState) => state.error);
+

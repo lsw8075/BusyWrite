@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Document } from '../models/document';
+import { Document } from '../../file/models/document';
 
 @Injectable()
 export class DocumentService {

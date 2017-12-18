@@ -48,6 +48,11 @@ import { CovalentLayoutModule, CovalentExpansionPanelModule, CovalentChipsModule
 
 import { MatListModule, MatIconModule, MatInputModule, MatSnackBarModule } from '@angular/material';
 
+// pipe
+
+import { BubbleSummaryPipe } from './pipe/bubble-summary.pipe';
+import { ContributorIconPipe } from './pipe/contributer-icon.pipe';
+
 const routes: Routes = [
     {path: '', component: DocumentDetailPageComponent},
 ];
@@ -75,6 +80,9 @@ const routes: Routes = [
     StopClickPropagationDirective,
     StopHoverPropagationDirective,
     BoardFocusDirective,
+
+    BubbleSummaryPipe,
+    ContributorIconPipe
   ],
   imports: [
     FormsModule,

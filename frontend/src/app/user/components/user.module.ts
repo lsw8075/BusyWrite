@@ -8,6 +8,8 @@ import { SignUpComponent } from './sign-up/sign-up.component';
 
 import { RouterModule, Routes } from '@angular/router';
 
+import { MatSnackBarModule } from '@angular/material';
+
 export const COMPONENTS = [
     SignInComponent,
     SignUpComponent,
@@ -24,6 +26,7 @@ const routes: Routes = [
     FormsModule,
     ReactiveFormsModule,
     RouterModule.forChild(routes),
+    MatSnackBarModule
   ],
   declarations: COMPONENTS
 })

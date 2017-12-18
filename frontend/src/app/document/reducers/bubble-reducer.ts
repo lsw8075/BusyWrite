@@ -28,6 +28,7 @@ export enum ViewBoardMenuType {
 export interface BubbleState {
     documentObject: Document;
     connectors: User[];
+
     bubbleList: Bubble[];
     suggestBubbleList: SuggestBubble[];
     commentList: Comment[];
@@ -55,6 +56,7 @@ export interface BubbleState {
 const initialState: BubbleState = {
     documentObject: null,
     connectors: [],
+
     bubbleList: [],
     suggestBubbleList: [],
     commentList: [],
@@ -83,6 +85,7 @@ export function BubbleReducer(state: BubbleState = initialState, action: fromBub
     switch (action.type) {
         case fromBubble.SELECT: case fromBubble.SELECT_CLEAR:
         case fromBubble.MOUSE_OVER: case fromBubble.MOUSE_OUT:
+        case fromBubble.EDIT_BUBBLE_OPEN: case fromBubble.EDIT_BUBBLE_CLOSE:
             return UIReducer(state, action);
 
         case fromBubble.OPEN: case fromBubble.OPEN_COMPLETE: case fromBubble.OPEN_ERROR: case fromBubble.OTHERS_OPEN_DOCUMENT:
@@ -130,37 +133,37 @@ function UIReducer(state: BubbleState, action: fromBubble.Actions) {
     const newBubbleList = _.cloneDeep(state);
     switch (action.type) {
         case fromBubble.SELECT:
-        if (state.loading) {
-            return {...state, error: 'please wait'};
-        }
-        const selectedBubble = action.payload.bubble;
-        const selectedMenu = action.payload.menu;
-
-        if (state.viewBoardMenuType === ViewBoardMenuType.none) {
-            if (isBubbleInList(state.selectedBubbleList, selectedBubble.id)) {
-                return {...state, selectedBubbleList: [], selectedMenu: null };
-            } else {
-                const newSelectedBubbleList = [selectedBubble];
-                return {...state, selectedBubbleList: newSelectedBubbleList, selectedMenu: selectedMenu };
+            if (state.loading) {
+                return {...state, msg: 'loading...'};
             }
-        } else if ((state.viewBoardMenuType === ViewBoardMenuType.wrap || state.viewBoardMenuType === ViewBoardMenuType.merge ) &&
-                   (selectedMenu === MenuType.internalMenu || selectedMenu === MenuType.leafMenu) &&
-                   (state.selectedBubbleList[0].parentBubbleId === selectedBubble.parentBubbleId)) {
+            const selectedBubble = action.payload.bubble;
+            const selectedMenu = action.payload.menu;
 
-                console.log('add new wrap bubble');
-            let newSelectedBubbleList = [...state.selectedBubbleList];
-            if (isBubbleInList(newSelectedBubbleList, selectedBubble.id)) {
-                newSelectedBubbleList = newSelectedBubbleList.filter(b => b.id !== selectedBubble.id);
-                if (newSelectedBubbleList.length === 0) {
-                    return {...state, selectedBubbleList: [], viewBoardMenuType: ViewBoardMenuType.none, selectedMenu: null };
+            if (state.viewBoardMenuType === ViewBoardMenuType.none) {
+                if (isBubbleInList(state.selectedBubbleList, selectedBubble.id)) {
+                    return {...state, selectedBubbleList: [], selectedMenu: null };
+                } else {
+                    const newSelectedBubbleList = [selectedBubble];
+                    return {...state, selectedBubbleList: newSelectedBubbleList, selectedMenu: selectedMenu };
                 }
+            } else if ((state.viewBoardMenuType === ViewBoardMenuType.wrap || state.viewBoardMenuType === ViewBoardMenuType.merge ) &&
+                    (selectedMenu === MenuType.internalMenu || selectedMenu === MenuType.leafMenu) &&
+                    (state.selectedBubbleList[0].parentBubbleId === selectedBubble.parentBubbleId)) {
+
+                    console.log('add new wrap bubble');
+                let newSelectedBubbleList = [...state.selectedBubbleList];
+                if (isBubbleInList(newSelectedBubbleList, selectedBubble.id)) {
+                    newSelectedBubbleList = newSelectedBubbleList.filter(b => b.id !== selectedBubble.id);
+                    if (newSelectedBubbleList.length === 0) {
+                        return {...state, selectedBubbleList: [], viewBoardMenuType: ViewBoardMenuType.none, selectedMenu: null };
+                    }
+                } else {
+                    newSelectedBubbleList.push(selectedBubble);
+                }
+                return {...state, selectedBubbleList: newSelectedBubbleList };
             } else {
-                newSelectedBubbleList.push(selectedBubble);
+                return {...state};
             }
-            return {...state, selectedBubbleList: newSelectedBubbleList };
-        } else {
-            return {...state};
-        }
 
         case fromBubble.SELECT_CLEAR:
             return {...state, selectedBubbleList: [], selectedMenu: null, viewBoardMenuType: ViewBoardMenuType.none};
@@ -172,6 +175,19 @@ function UIReducer(state: BubbleState, action: fromBubble.Actions) {
 
         case fromBubble.MOUSE_OUT:
             return {...state, hoverBubbleList: []};
+
+        case fromBubble.EDIT_BUBBLE_OPEN: {
+            const newActiveEditBubbleList = state.editActiveBubbleIds;
+            newActiveEditBubbleList.push(action.payload.id);
+            return {...state, editActiveBubbleIds: [...newActiveEditBubbleList]};
+        }
+
+        case fromBubble.EDIT_BUBBLE_CLOSE: {
+            let newActiveEditBubbleList = state.editActiveBubbleIds;
+            const closeBubbleId = action.payload.id;
+            newActiveEditBubbleList = newActiveEditBubbleList.filter(b => b !== closeBubbleId);
+            return {...state, editActiveBubbleIds: [...newActiveEditBubbleList]};
+        }
 
         default:
             console.log('this should not be called', state, action);
@@ -190,7 +206,7 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
             return {...initialState, loading: true};
         case fromBubble.OPEN_COMPLETE:
             return {...state, loading: false, documentObject: action.payload.documentObject,
-                connectors: action.payload.connectors}
+                connectors: action.payload.connectors };
         case fromBubble.OPEN_ERROR:
             return {...state, loading: false, error: action.payload, documentObject: null};
         case fromBubble.OTHERS_OPEN_DOCUMENT:
@@ -255,8 +271,6 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
         case fromBubble.LOAD:
             return {...state, loading: true, documentId: action.payload};
         case fromBubble.LOAD_COMPLETE: {
-        //    state.editSuggests.push({bindBubbleId: 879, content: "this is binded with 879 bubble", isBindSuggest: false});
-        //    state.editSuggests.push({bindBubbleId: 959, content: "this is binded with 959 suggest bubble", isBindSuggest: true});
             return {...state, bubbleList: [...action.payload.bubbleList],
                 suggestBubbleList: [...action.payload.suggestBubbleList], commentList: [...action.payload.commentList],
                 noteList: [...action.payload.noteList],
@@ -264,7 +278,7 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
                 loading: false};
         }
         case fromBubble.LOAD_ERROR:
-            return {...state, error: action.payload, loading:false, documentId: -1};
+            return {...state, error: action.payload, loading: false, documentId: -1};
 
         /**********/
         /* CREATE */
@@ -293,7 +307,7 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
             const userId = action.payload.userId;
             console.log(bubbleId, userId);
             const bubble = getBubbleById(state.bubbleList, bubbleId) as LeafBubble;
-            bubble.editLockHoder = userId;
+            bubble.editLockHolder = userId;
             const newBubbleList = _.cloneDeep(state.bubbleList);
             return {...state, bubbleList: newBubbleList, loading: false};
         }
@@ -302,7 +316,7 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
             const userId = action.payload.userId;
             console.log(bubbleId, userId);
             const bubble = getBubbleById(state.bubbleList, bubbleId) as LeafBubble;
-            bubble.editLockHoder = userId;
+            bubble.editLockHolder = userId;
             const newBubbleList = _.cloneDeep(state.bubbleList);
             return {...state, bubbleList: newBubbleList};
         }
@@ -343,7 +357,7 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
             console.log(bubbleId, content);
             const bubble = getBubbleById(state.bubbleList, bubbleId) as LeafBubble;
             bubble.content = content;
-            bubble.editLockHoder = null;
+            bubble.editLockHolder = null;
             const newBubbleList = _.cloneDeep(state.bubbleList);
             return {...state, bubbleList: newBubbleList, loading: false, editBubbleId: -1, editBubbleString: ""};
         }
@@ -353,7 +367,7 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
             console.log(bubbleId, content);
             const bubble = getBubbleById(state.bubbleList, bubbleId) as LeafBubble;
             bubble.content = content;
-            bubble.editLockHoder = null;
+            bubble.editLockHolder = null;
             const newBubbleList = _.cloneDeep(state.bubbleList);
             return {...state, bubbleList: newBubbleList};
 
@@ -364,7 +378,7 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
             const content = action.payload.content;
             const bubble = getBubbleById(state.bubbleList, bubbleId) as LeafBubble;
             bubble.content = content;
-            bubble.editLockHoder = null;
+            bubble.editLockHolder = null;
             const newBubbleList = _.cloneDeep(state.bubbleList);
             return {...state, bubbleList: newBubbleList, loading: false, editBubbleId: -1, editBubbleString: ""};
         }
@@ -374,7 +388,7 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
             const content = (action.payload as any).content;
             const bubble = getBubbleById(state.bubbleList, bubbleId) as LeafBubble;
             bubble.content = content;
-            bubble.editLockHoder = null;
+            bubble.editLockHolder = null;
             const newBubbleList = _.cloneDeep(state.bubbleList);
             return {...state, bubbleList: newBubbleList};
         }

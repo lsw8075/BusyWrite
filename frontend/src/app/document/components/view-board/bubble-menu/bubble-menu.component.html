@@ -1,12 +1,12 @@
 <div [ngSwitch]="menu">
     <div *ngSwitchCase="menuType.borderTopMenu">
-        <button type="button" class="btn btn-primary btn-sm hvr-icon-bob" (click)="createBubble()">
+        <button type="button" class="btn btn-primary btn-sm hvr-icon-bob" (click)="createBubble()" appStopClickPropagation>
             Create
         </button>
     </div>
 
     <div *ngSwitchCase="menuType.borderBottomMenu">
-        <button type="button" class="btn btn-primary btn-sm hvr-icon-hang" (click)="createBubble()">
+        <button type="button" class="btn btn-primary btn-sm hvr-icon-hang" (click)="createBubble()" appStopClickPropagation>
             Create
         </button>
     </div>

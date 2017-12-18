@@ -65,7 +65,7 @@ export class SignUpFail implements Action {
 
 export class SignOut implements Action {
     readonly type = SIGNOUT;
-    constructor(public payload ?: void) {}
+    constructor() {}
 }
 
 export class SignOutSuccess implements Action {
@@ -78,6 +78,12 @@ export class SignOutFail implements Action {
     constructor(public payload: string) {}
 }
 
+export const CLEAR_ERROR = '[User] clear error';
+export class ClearError implements Action {
+    readonly type = CLEAR_ERROR;
+    constructor() {}
+}
+
 export type Actions =
     | GetUserInfo
     | SignIn
@@ -88,4 +94,5 @@ export type Actions =
     | SignUpFail
     | SignOut
     | SignOutSuccess
-    | SignOutFail;
+    | SignOutFail
+    | ClearError;

@@ -35,7 +35,9 @@ export class EditBoardComponent implements OnInit, OnDestroy {
     updateId: number;
     loading: boolean;
 
-    isFocused: boolean = false;
+    editActiveBubbleIds: Array<number>;
+
+    isFocused = false;
     focusedId: number;
 
     constructor(
@@ -54,11 +56,24 @@ export class EditBoardComponent implements OnInit, OnDestroy {
             this.editBubbleId = bubbleState.editBubbleId;
             this.editBubbleString = bubbleState.editBubbleString;
             this.loading = bubbleState.loading;
-    //        console.log(this.editSuggests);
+            this.editActiveBubbleIds = bubbleState.editActiveBubbleIds;
         });
     }
 
     ngOnInit() {
+    }
+
+    public isEditBubbleOpen(bubble: Bubble): boolean {
+        return this.editActiveBubbleIds.includes(bubble.id);
+    }
+
+    public toggleEditBubble(bubble: Bubble, event): void {
+        if (this.isEditBubbleOpen(bubble)) {
+            this._store.dispatch(new BubbleAction.EditBubbleClose(bubble));
+        } else {
+            this._store.dispatch(new BubbleAction.EditBubbleOpen(bubble));
+        }
+
     }
 
     public finishEditBubble(bubble: Bubble) {
