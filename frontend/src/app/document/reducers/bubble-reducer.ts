@@ -586,8 +586,8 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
             state.editSuggests.splice(ind, 1);
             const newEditSuggests = _.cloneDeep(state.editSuggests);
             const newSuggestBubbleList = _.cloneDeep(state.suggestBubbleList);
-            state.suggestBubbleList.push(suggestBubble);
-            return {...state, loading: false, editSuggests: newEditSuggests, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
+            newSuggestBubbleList.push(suggestBubble);
+            return {...state, loading: false, suggestBubbleList: newSuggestBubbleList, editSuggests: newEditSuggests, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
         }
         case fromBubble.CREATE_SUGGEST_ERROR:
             return {...state, loading: false, error: action.payload, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
