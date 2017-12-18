@@ -207,7 +207,7 @@ def do_user_connect_document(
         cache.persist("key_doc")
         connected_users = json.loads(connected_users)
         if not str(user_id) in connected_users:
-            connected_users.append(user_id)
+            connected_users.append(str(user_id))
         connected = json.dumps(connected_users)
 
         cache.set(key_doc, connected, timeout=None)
@@ -224,6 +224,7 @@ def do_user_disconnect_document(
     with cache.lock('doclock' + str(document_id)):
         connected_users = cache.get(key_doc)
         connected_users = json.loads(connected_users)
+        print(connected_users)
         connected_users.remove(str(user_id))
         if len(connected_users) > 0:
             connected_users = json.dumps(connected_users)

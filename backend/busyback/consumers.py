@@ -153,7 +153,7 @@ def ws_receive(message):
         try:
             do_user_disconnect_document(message.user.id, int(document_id))
         except Exception as e:
-            message.reply_channle.send({"text":
+            message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": "False", "body": "cannot disconnect this user"})})
 
         Group('document_id-'+str(document_id), channel_layer=message.channel_layer).discard(message.reply_channel)
@@ -1733,7 +1733,8 @@ def ws_disconnect(message):
         try:
             do_user_disconnect_document(message.user.id, int(document_id))
         except Exception as e:
-            message.reply_channle.send({"text":
+            print(str(e))
+            message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": "False", "body": "cannot disconnect this user"})})
 
         Group('document_detail-'+str(document_id), channel_layer=message.channel_layer).discard(message.reply_channel)
