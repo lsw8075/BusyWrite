@@ -53,8 +53,10 @@ import { MatListModule, MatIconModule, MatInputModule, MatSnackBarModule } from 
 import { BubbleSummaryPipe } from './pipe/bubble-summary.pipe';
 import { ContributorIconPipe } from './pipe/contributer-icon.pipe';
 
+import { DocumentGuardService } from '../guards/document-guard.service';
+
 const routes: Routes = [
-    {path: '', component: DocumentDetailPageComponent},
+    {path: '', canActivate: [DocumentGuardService], component: DocumentDetailPageComponent },
 ];
 
 @NgModule({

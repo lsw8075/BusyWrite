@@ -28,6 +28,10 @@ import { DocumentService } from './services/document.service';
 import { WebSocketService } from 'angular2-websocket-service';
 import { ServerSocket } from './services/websocket.service';
 
+// guards
+
+import { DocumentGuardService } from './guards/document-guard.service';
+
 @NgModule({
   imports: [
     CommonModule,
@@ -53,6 +57,7 @@ import { ServerSocket } from './services/websocket.service';
     DocumentService,
     WebSocketService,
     ServerSocket,
+    DocumentGuardService
   ]
 })
 export class DocumentStateModule { }
