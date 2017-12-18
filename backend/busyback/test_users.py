@@ -32,20 +32,24 @@ class Users2TestCase(TestCase):
     def test_signup(self):
         csrftoken = getCSRF(self)
 
-        response = self.client.post('/api/signup', json.dumps({'username': 'testuser4', 'password': '5678', 'email': 'test@test.com'}), content_type='application/json', HTTP_X_CSRFTOKEN=csrftoken)
+        response = self.client.post('/api/signup', json.dumps({'username': 'testuser4', 'password': '5678', 'email': 'test4@test.com'}), content_type='application/json', HTTP_X_CSRFTOKEN=csrftoken)
         self.assertEqual(response.status_code, 201) # Pass csrf protection
 
-        self.assertEqual(405, self.send('PUT', 'signup', {'username': 'testuser4', 'password': '5678', 'email': 'test@test.com'}))
+        self.assertEqual(405, self.send('PUT', 'signup', {'username': 'testuser4', 'password': '5678', 'email': 'test5@test.com'}))
+
+        self.assertEqual(400, self.send('POST', 'signup', {'username': 'testuser4', 'password': '5678', 'email': 'test6.com'}))
+
+        self.assertEqual(400, self.send('POST', 'signup', {'username': 'testuser4', 'password': '5678', 'email': 'test4@test.com'}))
 
     def test_signin(self):
-        response = self.client.post('/api/signin', json.dumps({'username': 'testuser2', 'password': '5678', 'email': 'test@test.com'}), content_type='applicaton/json')
+        response = self.client.post('/api/signin', json.dumps({'username': 'testuser2', 'password': '5678', 'email': 'test2@test.com'}), content_type='applicaton/json')
         
         self.assertEqual(200, response.status_code)
         self.assertEqual(json.loads(response.content.decode())['user_id'], self.user2.id)
 
-        self.assertEqual(401, self.send('POST', 'signin', {'username': 'testuser2', 'password': '1234'}))
+        self.assertEqual(401, self.send('POST', 'signin', {'email': 'test2@test.com', 'password': '1234'}))
 
-        self.assertEqual(405, self.send('PUT', 'signin', {'username': 'testuser2', 'password': '5678'}))
+        self.assertEqual(405, self.send('PUT', 'signin', {'email': 'test2@test.com', 'password': '5678'}))
 
     def test_signout(self):
         self.assertEqual(200, self.send('GET', 'signout'))
