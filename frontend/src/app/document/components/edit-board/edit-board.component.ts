@@ -67,6 +67,14 @@ export class EditBoardComponent implements OnInit, OnDestroy {
         return this.editActiveBubbleIds.includes(bubble.id);
     }
 
+    public toggleIsOpen(bubble: Bubble): void {
+        if (this.isEditBubbleOpen(bubble)) {
+            this._store.dispatch(new BubbleAction.EditBubbleClose(bubble));
+        } else {
+            this._store.dispatch(new BubbleAction.EditBubbleOpen(bubble));
+        }
+    }
+
     public toggleEditBubble(bubble: Bubble, event): void {
         if (this.isEditBubbleOpen(bubble)) {
             this._store.dispatch(new BubbleAction.EditBubbleClose(bubble));

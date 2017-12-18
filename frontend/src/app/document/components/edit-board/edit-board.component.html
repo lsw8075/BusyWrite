@@ -11,24 +11,22 @@
                     <ng-container *ngFor="let editBubble of editBubbles; let i = index">
 
                         <input type="checkbox" [checked]="isEditBubbleOpen(editBubble)" (change)="toggleEditBubble(editBubble, $event)" />
-
-
                         <accordion-group [isOpen]="isEditBubbleOpen(editBubble)" #group>
-                            <div accordion-heading>
-                            <span class="badge badge-pill badge-info">
-                                <div class="handle" tooltip="click me to drag notes around!" (click)="$event.stopPropagation()">
-                                +
-                                </div>
-                            </span>
-                            <span class="summary">Bubble</span>
-                            <span class="badge float-right pull-right">
-                                <button (click)="finishEditBubble(editBubble)" type="button" class="btn btn-secondary btn-sm hvr-sweep-to-right">
-                                    <i tooltip="Did you finish editting?" class="fa fa-fw fa-check"></i>
-                                </button>
-                                <button (click)="discardEditBubble(editBubble)" type="button" class="btn btn-secondary btn-sm hvr-sweep-to-right">
-                                    <i tooltip="Do you want to discard changes?" class="fa fa-fw fa-times"></i>
-                                </button>
-                            </span>
+                            <div accordion-heading (click)="toggleIsOpen(editBubble)">
+                                <span class="badge badge-pill badge-info">
+                                    <div class="handle" tooltip="click me to drag notes around!" (click)="$event.stopPropagation()">
+                                    +
+                                    </div>
+                                </span>
+                                <span class="summary">Bubble</span>
+                                <span class="badge float-right pull-right">
+                                    <button (click)="finishEditBubble(editBubble)" type="button" class="btn btn-secondary btn-sm hvr-sweep-to-right">
+                                        <i tooltip="Did you finish editting?" class="fa fa-fw fa-check"></i>
+                                    </button>
+                                    <button (click)="discardEditBubble(editBubble)" type="button" class="btn btn-secondary btn-sm hvr-sweep-to-right">
+                                        <i tooltip="Do you want to discard changes?" class="fa fa-fw fa-times"></i>
+                                    </button>
+                                </span>
                             </div>
                             <app-edit-item (update)="updateEditBubble(editBubble, $event)" (focus)="focusEditBubble(editBubble, $event)" [editBubble]="editBubble"></app-edit-item>
                         </accordion-group>
@@ -38,7 +36,7 @@
             <div *ngIf="editSuggests">
                 <accordion>
                     <ng-container *ngFor="let editSuggest of editSuggests">
-                        <accordion-group is-open="true" #group>
+                        <accordion-group #group>
                             <div accordion-heading>
                                 <span class="badge badge-pill badge-info">
                                     <div class="handle" tooltip="click me to drag notes around!" (click)="$event.stopPropagation()">

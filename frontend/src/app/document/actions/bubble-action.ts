@@ -152,6 +152,12 @@ export class OthersCreateBubble implements Action {
   constructor(public payload: Bubble) {}
 }
 
+export const CREATE_SUGGEST_START = '[Suggest Bubble] create start';
+export class CreateSuggestStart implements Action {
+    readonly type = CREATE_SUGGEST_START;
+    constructor(public payload: Suggest) {}
+}
+
 export const CREATE_SUGGEST = '[Suggest Bubble] create';
 export const CREATE_SUGGEST_PENDING = '[Suggest Bubble] create Pending';
 export const CREATE_SUGGEST_COMPLETE = '[Suggest Bubble] create Complete';
@@ -395,7 +401,7 @@ export class EditSuggestDiscard implements Action {
 }
 export class EditSuggestDiscardComplete implements Action {
     readonly type = EDIT_SUGGEST_DISCARD_COMPLETE;
-    constructor(public payload: void) {}
+    constructor(public payload: Suggest) {}
 }
 
 export const EDIT_SUGGEST = '[Suggest Bubble] edit';
@@ -1124,6 +1130,7 @@ export type Actions =
   | CreateBubbleComplete
   | CreateBubbleError
   | OthersCreateBubble
+  | CreateSuggestStart
   | CreateSuggest
   | CreateSuggestPending
   | CreateSuggestComplete

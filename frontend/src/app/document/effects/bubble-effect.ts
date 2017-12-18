@@ -179,13 +179,13 @@ export class BubbleEffects {
     @Effect()
     editSuggestDiscard$: Observable<Action> = this.action$.ofType<BubbleAction.EditSuggestDiscard>(BubbleAction.EDIT_SUGGEST_DISCARD)
         .map(action => action.payload).mergeMap(query => {
-            return Observable.of(new BubbleAction.EditSuggestDiscardComplete(null));
+            return Observable.of(new BubbleAction.EditSuggestDiscardComplete(query));
         });
 
     @Effect({dispatch: false})
     editSuggestDiscardComplete$: Observable<Action> = this.action$.ofType<BubbleAction.EditSuggestDiscardComplete>(BubbleAction.EDIT_SUGGEST_DISCARD_COMPLETE)
         .map(action => action.payload).mergeMap(query => {
-            return null;
+            return Observable.of();
         });
 
     @Effect()
@@ -203,9 +203,6 @@ export class BubbleEffects {
             const wrapBubbleList = bubbleState.selectedBubbleList.map(b => b.id);
             return Observable.of(this.bubbleService.wrapBubble(wrapBubbleList))
                 .map(() => new BubbleAction.WrapBubblePending(null));
-                // .map((newInternalBubble) => new BubbleAction.WrapBubbleComplete(
-                //     {wrapBubbleIdList: wrapBubbleList, newWrappedBubble: newInternalBubble}))
-                // .catch(err => of(new BubbleAction.WrapBubbleError(err)));
         });
 
     @Effect()
