@@ -130,37 +130,37 @@ function UIReducer(state: BubbleState, action: fromBubble.Actions) {
     const newBubbleList = _.cloneDeep(state);
     switch (action.type) {
         case fromBubble.SELECT:
-        if (state.loading) {
-            return {...state, error: 'please wait'};
-        }
-        const selectedBubble = action.payload.bubble;
-        const selectedMenu = action.payload.menu;
-
-        if (state.viewBoardMenuType === ViewBoardMenuType.none) {
-            if (isBubbleInList(state.selectedBubbleList, selectedBubble.id)) {
-                return {...state, selectedBubbleList: [], selectedMenu: null };
-            } else {
-                const newSelectedBubbleList = [selectedBubble];
-                return {...state, selectedBubbleList: newSelectedBubbleList, selectedMenu: selectedMenu };
+            if (state.loading) {
+                return {...state, msg: 'loading...'};
             }
-        } else if ((state.viewBoardMenuType === ViewBoardMenuType.wrap || state.viewBoardMenuType === ViewBoardMenuType.merge ) &&
-                   (selectedMenu === MenuType.internalMenu || selectedMenu === MenuType.leafMenu) &&
-                   (state.selectedBubbleList[0].parentBubbleId === selectedBubble.parentBubbleId)) {
+            const selectedBubble = action.payload.bubble;
+            const selectedMenu = action.payload.menu;
 
-                console.log('add new wrap bubble');
-            let newSelectedBubbleList = [...state.selectedBubbleList];
-            if (isBubbleInList(newSelectedBubbleList, selectedBubble.id)) {
-                newSelectedBubbleList = newSelectedBubbleList.filter(b => b.id !== selectedBubble.id);
-                if (newSelectedBubbleList.length === 0) {
-                    return {...state, selectedBubbleList: [], viewBoardMenuType: ViewBoardMenuType.none, selectedMenu: null };
+            if (state.viewBoardMenuType === ViewBoardMenuType.none) {
+                if (isBubbleInList(state.selectedBubbleList, selectedBubble.id)) {
+                    return {...state, selectedBubbleList: [], selectedMenu: null };
+                } else {
+                    const newSelectedBubbleList = [selectedBubble];
+                    return {...state, selectedBubbleList: newSelectedBubbleList, selectedMenu: selectedMenu };
                 }
+            } else if ((state.viewBoardMenuType === ViewBoardMenuType.wrap || state.viewBoardMenuType === ViewBoardMenuType.merge ) &&
+                    (selectedMenu === MenuType.internalMenu || selectedMenu === MenuType.leafMenu) &&
+                    (state.selectedBubbleList[0].parentBubbleId === selectedBubble.parentBubbleId)) {
+
+                    console.log('add new wrap bubble');
+                let newSelectedBubbleList = [...state.selectedBubbleList];
+                if (isBubbleInList(newSelectedBubbleList, selectedBubble.id)) {
+                    newSelectedBubbleList = newSelectedBubbleList.filter(b => b.id !== selectedBubble.id);
+                    if (newSelectedBubbleList.length === 0) {
+                        return {...state, selectedBubbleList: [], viewBoardMenuType: ViewBoardMenuType.none, selectedMenu: null };
+                    }
+                } else {
+                    newSelectedBubbleList.push(selectedBubble);
+                }
+                return {...state, selectedBubbleList: newSelectedBubbleList };
             } else {
-                newSelectedBubbleList.push(selectedBubble);
+                return {...state};
             }
-            return {...state, selectedBubbleList: newSelectedBubbleList };
-        } else {
-            return {...state};
-        }
 
         case fromBubble.SELECT_CLEAR:
             return {...state, selectedBubbleList: [], selectedMenu: null, viewBoardMenuType: ViewBoardMenuType.none};
@@ -197,7 +197,7 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
             const addConnectors = _.cloneDeep(state.connectors);
             try {
                 for (const contributor of state.documentObject.contributors) {
-                    if (action.payload === contributor.id) {                 
+                    if (action.payload === contributor.id) {
                         addConnectors.push(contributor);
                     }
                     break;
@@ -236,7 +236,7 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
             } catch (err){
             }
             return {...state, connectors: deleteConnectors};
- 
+
 
         /*******************/
         /* ADD CONTRIBUTOR */
@@ -246,7 +246,7 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
             const doc = _.cloneDeep(state.documentObject);
             doc.contributors.push(action.payload);
             return {...state, documentObject: doc};
-       
+
 
         /********/
         /* LOAD */
@@ -285,7 +285,7 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
         /********/
         /* EDIT */
         /********/
- 
+
         case fromBubble.EDIT_BUBBLE:
             return {...state, loading: true, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
         case fromBubble.EDIT_REQUEST_SUCCESS: {
@@ -385,7 +385,7 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
         /*******/
         /* POP */
         /*******/
-                                              
+
         case fromBubble.POP_BUBBLE:
             return {...state, loading: true, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
         case fromBubble.POP_BUBBLE_COMPLETE: {
