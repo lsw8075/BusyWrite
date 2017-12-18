@@ -84,11 +84,11 @@ export class SangjunBoardComponent implements OnInit, OnDestroy {
     }
 
     public createSuggestBubble() {
-        // this._store.dispatch(new BubbleAction.CreateSuggestStart({
-        //     bindBubbleId: this.bubble.id,
-        //     isBindSuggest: false,
-        //     content: this.getContentOfBubble(this.bubble)
-        // }));
+        this._store.dispatch(new BubbleAction.CreateSuggestStart({
+            bindBubbleId: this.bubble.id,
+            isBindSuggest: false,
+            content: this.getContentOfBubble(this.bubble)
+        }));
     }
     public getSuggestBubbleList(): Array<SuggestBubble> {
         return this.suggestBubbles.filter(b => b.bindId === this.bubble.id);

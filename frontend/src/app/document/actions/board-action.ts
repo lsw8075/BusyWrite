@@ -50,6 +50,12 @@ export class Select implements Action {
     constructor(public payload: Board) {}
 }
 
+
+export const SHOW_SANGJUN = '[Board] sangjun show';
+export const SHOW_EDIT = '[Board] edit show';
+export const SHOW_FILTER = '[Board] filter show';
+
+
 export type Actions =
     | Open
     | Add

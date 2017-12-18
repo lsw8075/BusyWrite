@@ -19,7 +19,7 @@ export interface BoardState {
 const initalBoardList = [
     new Board(BoardType.view, BoardLocation.left, 0),
     new Board(BoardType.suggest, BoardLocation.right, 1),
-    new Board(BoardType.edit, BoardLocation.left, 2),
+    new Board(BoardType.edit, BoardLocation.hidden, 2),
     new Board(BoardType.filter, BoardLocation.hidden, 3)
 ];
 
