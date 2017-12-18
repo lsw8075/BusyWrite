@@ -1,4 +1,4 @@
-mport 'rxjs/add/operator/catch';
+import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/switchMap';
 import 'rxjs/add/operator/debounceTime';
@@ -62,7 +62,7 @@ export class NoteEffects {
                             return new NoteAction.CreateError('unknown error');
                         }
                     }));
-            });
+            }));
 
     @Effect()
     edit$: Observable<Action> = this.action$.ofType(NoteAction.EditNote>(NoteAction.EDIT_NOTE)
@@ -82,7 +82,7 @@ export class NoteEffects {
                             return new NoteAction.EditError('unknown error');
                         }
                     }));
-            });
+            }));
 
     @Effect()
     delete$: Observable<Action> = this.action$.ofType(NoteAction.DeleteNote>(NoteAction.DELETE_NOTE)
@@ -102,7 +102,7 @@ export class NoteEffects {
                             return new NoteAction.DeleteError('unknown error');
                         }
                     }));
-            });
+            }));
 
     getCookie(name) {
         const value = ';' + document.cookie;
