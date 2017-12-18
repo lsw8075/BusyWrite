@@ -384,6 +384,7 @@ export class OthersReleaseOwnership implements Action {
 
 export const EDIT_SUGGEST_FINISH = '[Suggest Bubble] edit suggest finish';
 export const EDIT_SUGGEST_DISCARD = '[Suggest Bubble] edit suggest discard';
+export const EDIT_SUGGEST_DISCARD_COMPLETE = '[Suggest Bubble] edit suggest discard complete';
 export class EditSuggestFinish implements Action {
     readonly type = EDIT_SUGGEST_FINISH;
     constructor(public payload: Suggest) {}
@@ -391,6 +392,10 @@ export class EditSuggestFinish implements Action {
 export class EditSuggestDiscard implements Action {
     readonly type = EDIT_SUGGEST_DISCARD;
     constructor(public payload: Suggest) {}
+}
+export class EditSuggestDiscardComplete implements Action {
+    readonly type = EDIT_SUGGEST_DISCARD_COMPLETE;
+    constructor(public payload: void) {}
 }
 
 export const EDIT_SUGGEST = '[Suggest Bubble] edit';
@@ -1159,6 +1164,7 @@ export type Actions =
   | OthersReleaseOwnership
   | EditSuggestFinish
   | EditSuggestDiscard
+  | EditSuggestDiscardComplete
   | EditSuggest
   | EditSuggestPending
   | EditSuggestComplete

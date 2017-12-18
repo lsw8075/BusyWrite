@@ -179,7 +179,13 @@ export class BubbleEffects {
     @Effect()
     editSuggestDiscard$: Observable<Action> = this.action$.ofType<BubbleAction.EditSuggestDiscard>(BubbleAction.EDIT_SUGGEST_DISCARD)
         .map(action => action.payload).mergeMap(query => {
-            return Observable.of(new BubbleAction.EditSuggestPending(null));
+            return Observable.of(new BubbleAction.EditSuggestDiscardComplete(null));
+        });
+
+    @Effect({dispatch: false})
+    editSuggestDiscardComplete$: Observable<Action> = this.action$.ofType<BubbleAction.EditSuggestDiscardComplete>(BubbleAction.EDIT_SUGGEST_DISCARD_COMPLETE)
+        .map(action => action.payload).mergeMap(query => {
+            return null;
         });
 
     @Effect()

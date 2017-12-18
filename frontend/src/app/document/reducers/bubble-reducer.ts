@@ -256,7 +256,8 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
             return {...state, loading: true, documentId: action.payload};
         case fromBubble.LOAD_COMPLETE: {
             state.editSuggests = [];
-            state.editSuggests.push({isBindSuggest: false, bindBubbleId: 1750, content: 'hello'});
+            // state.editSuggests.push({isBindSuggest: false, bindBubbleId: 1750, content: "hello"});
+            // state.editSuggests.push({isBindSuggest: true, bindBubbleId: 1765, content: "hello1"});
             return {...state, bubbleList: [...action.payload.bubbleList],
                 suggestBubbleList: [...action.payload.suggestBubbleList], commentList: [...action.payload.commentList],
                 noteList: [...action.payload.noteList],
@@ -496,12 +497,26 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
             console.log('CREATE_SUGGEST_COMPLETE', action.payload);
             const suggestBubble = action.payload.suggestBubble;
             const suggest = action.payload.suggest;
+            const ind = state.editSuggests.findIndex(s => (s.bindBubbleId === suggest.bindBubbleId && s.isBindSuggest === suggest.isBindSuggest && s.content === suggest.content));
+            state.editSuggests.splice(ind, 1);
+            const newEditSuggests = _.cloneDeep(state.editSuggests);
             const newSuggestBubbleList = _.cloneDeep(state.suggestBubbleList);
             state.suggestBubbleList.push(suggestBubble);
-            return {...state, loading: false, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
+            return {...state, loading: false, editSuggests: newEditSuggests, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
         }
         case fromBubble.CREATE_SUGGEST_ERROR:
             return {...state, loading: false, error: action.payload, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
+
+        case fromBubble.EDIT_SUGGEST_DISCARD: {
+            const suggest = action.payload;
+            const ind = state.editSuggests.findIndex(s => (s.bindBubbleId === suggest.bindBubbleId && s.isBindSuggest === suggest.isBindSuggest && s.content === suggest.content));
+            state.editSuggests.splice(ind, 1);
+            const newEditSuggests = _.cloneDeep(state.editSuggests);
+            return {...state, loading: true, editSuggests: newEditSuggests, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
+        }
+        case fromBubble.EDIT_SUGGEST_DISCARD_COMPLETE: {
+            return {...state, loading: false, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
+        }
         case fromBubble.EDIT_SUGGEST:
             return {...state, loading: true, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
         case fromBubble.EDIT_SUGGEST_COMPLETE: {
@@ -509,7 +524,12 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
             const suggest = action.payload.suggest;
             const hidedSuggestBubbleId = action.payload.hidedSuggestBubbleId;
             const newEdittedSuggestBubble = action.payload.newEdittedSuggestBubble;
-            return {...state, loading: false, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
+            const ind = state.editSuggests.findIndex(s => (s.bindBubbleId === suggest.bindBubbleId && s.isBindSuggest === suggest.isBindSuggest && s.content === suggest.content));
+            state.editSuggests.splice(ind, 1);
+            const newEditSuggests = _.cloneDeep(state.editSuggests);
+            const newSuggestBubbleList = _.cloneDeep(state.suggestBubbleList);
+            state.suggestBubbleList.push(newEdittedSuggestBubble);
+            return {...state, loading: false, editSuggests: newEditSuggests, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
         }
         case fromBubble.EDIT_SUGGEST_ERROR:
             return {...state, loading: false, error: action.payload, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};

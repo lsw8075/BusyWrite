@@ -607,7 +607,7 @@ export class BubbleService implements OnDestroy {
 
     public closeDocument(documentId: number) {
         const m = {'header': 'close_document',
-            'previous_request': this.previousRequestId,
+            'previous_request': 0,
             'body': {'document_id': documentId}};
         this._socket.send(m);
     }

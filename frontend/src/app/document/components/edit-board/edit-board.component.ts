@@ -123,9 +123,7 @@ export class EditBoardComponent implements OnInit, OnDestroy {
     }
 
     public discardEditSuggest(suggest: Suggest) {
-        console.log('discardEditSuggest');
-        // this.isEditting = false;
-        // this._store.dispatch(new BubbleAction.EditDiscard(bubble.id));
+        this._store.dispatch(new BubbleAction.EditSuggestDiscard(suggest));
     }
 
     public focusEditSuggest(suggest: Suggest, focused: boolean) {
