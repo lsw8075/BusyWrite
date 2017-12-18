@@ -349,13 +349,42 @@ export function splitBubble(bubbleList: Array<Bubble>, id: number, splitBubbleLi
     }
 }
 
-export function switchBubble(bubbleList: Array<Bubble>, suggestBubbleList: Array<SuggestBubble>, suggestBubbleId: number) {
+export function switchBubble(bubbleList: Array<Bubble>, suggestBubbleList: Array<SuggestBubble>, commentList: Array<Comment>, suggestBubbleId: number) {
     try {
         console.log('[before switch]');
         console.log(bubbleList);
         console.log(suggestBubbleList);
+        console.log(commentList);
         console.log(suggestBubbleId);
+        const origSuggestBubble = getSuggestBubbleById(suggestBubbleList, suggestBubbleId);
+        const bindedBubbleId = origSuggestBubble.bindId;
+        const origBindedBubble = getBubbleById(bubbleList, bindedBubbleId);
+        const newBindedBubble = _.cloneDeep(bindedBubble);
+        const newSuggeestBubble = _.cloneDeep(suggestBubble);
+        // exchange content
+        const newBindedBubble.content = origSuggestBubble.content;
+        const newSuggestBubble.content = origBindedBubble.content;
+        // exchange thumbUps
+        const newBindedBubble.thumbUps = origSuggestBubble.thumbUps;
+        const newSuggestBubble.thumbUps = origBindedBubble.thumbUps;
+        // exchange comments
+        const newCommentList = [];
+        for (comment for commentList) {
+            const newComment = _.cloneDeep(comment);
+            if (comment.bubbleId === origSuggestBubble.id) {
+                newComment.bubbleId = origBindedBubble.id;
+            } else if (comment.bubbleId === origBindedBubble.id) {
+                const newComment = _.cloneDeep(comment);
+                newComment.bubbleId = origSuggestBubble.id;
+            }
+            newCommentList.push(newComment);
+        }
+        commentList = _.cloneDeep.newCommentList;
         console.log('[after switch]');
+        console.log(bubbleList);
+        console.log(suggestBubbleList);
+        console.log(commentList);
+        console.log(suggestBubbleId);
     } catch (err) {
         console.log(err);
     }
