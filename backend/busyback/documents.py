@@ -119,7 +119,7 @@ def do_send_invitation_email(
 
     # generate mail body
     mail_subject = '[Busywrite] %s invited you to document \'%s\'' % (user.username, document.title)
-    invite_route = 'invitation'
+    invite_route = 'invitation/invite'
     invite_addr = 'http://busywrite.ribosome.kr/%s?salt=%s' % (invite_route, salt)
     mail_body = '<h2>Busywrite invitation</h2> <p> click <a href=\"%s\">this link</a> to accept invitation </p>' % invite_addr
     # for debug.. please remove below code at practice!
@@ -186,12 +186,17 @@ def do_fetch_contributors(
 def key_duser(document_id):
     return 'Duser' + str(document_id)
 
+@transaction.atomic
 def do_user_connect_document(
     user_id: int,
     document_id: int
     ):
     key_doc = key_duser(document_id)
     
+    document = fetch_document_with_lock(user_id, document_id)
+    title = document.title
+    contributors = fetch_contributors(document)
+
     with cache.lock('doclock' + str(document_id)):
         connected_users = cache.get_or_set(key_doc, '[]')
         cache.persist("key_doc")
@@ -202,7 +207,9 @@ def do_user_connect_document(
 
         cache.set(key_doc, connected_users, timeout=None)
 
-    return get_latest_version_rid(document_id)
+
+    return (get_latest_version_rid(document_id), title,
+                contributors, connected_users)
 
 def do_user_disconnect_document(
     user_id: int,
@@ -231,7 +238,7 @@ def do_get_connected_users_document(
             return []
         connected_users = json.loads(connected_users)
         connected_users.sort()
-        return connected_users
+    return conntecd_users    
 
 def do_clear_connected_users_document(
     user_id: int,
@@ -306,8 +313,5 @@ def do_fetch_whole_document(user_id, document_id):
     result[2] = all_ncomments
     result[3] = all_scomments
     result[4] = notes
-    result[5] = get_latest_version_rid(document.id)
-    result[6] = fetch_contributors(document)
-    result[7] = do_get_connected_users_document(user_id, document_id)
 
     return result
