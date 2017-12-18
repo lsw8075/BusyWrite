@@ -269,8 +269,8 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
         case fromBubble.LOAD:
             return {...state, loading: true, documentId: action.payload};
         case fromBubble.LOAD_COMPLETE: {
-            state.editSuggests.push({bindBubbleId: 879, content: "this is binded with 879 bubble", isBindSuggest: false});
-            state.editSuggests.push({bindBubbleId: 959, content: "this is binded with 959 suggest bubble", isBindSuggest: true});
+            // state.editSuggests.push({bindBubbleId: 879, content: "this is binded with 879 bubble", isBindSuggest: false});
+            // state.editSuggests.push({bindBubbleId: 959, content: "this is binded with 959 suggest bubble", isBindSuggest: true});
             return {...state, bubbleList: [...action.payload.bubbleList],
                 suggestBubbleList: [...action.payload.suggestBubbleList], commentList: [...action.payload.commentList],
                 noteList: [...action.payload.noteList],
@@ -278,7 +278,7 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
                 loading: false};
         }
         case fromBubble.LOAD_ERROR:
-            return {...state, error: action.payload, loading:false, documentId: -1};
+            return {...state, error: action.payload, loading: false, documentId: -1};
 
         /**********/
         /* CREATE */
@@ -307,7 +307,7 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
             const userId = action.payload.userId;
             console.log(bubbleId, userId);
             const bubble = getBubbleById(state.bubbleList, bubbleId) as LeafBubble;
-            bubble.editLockHoder = userId;
+            bubble.editLockHolder = userId;
             const newBubbleList = _.cloneDeep(state.bubbleList);
             return {...state, bubbleList: newBubbleList, loading: false};
         }
@@ -316,7 +316,7 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
             const userId = action.payload.userId;
             console.log(bubbleId, userId);
             const bubble = getBubbleById(state.bubbleList, bubbleId) as LeafBubble;
-            bubble.editLockHoder = userId;
+            bubble.editLockHolder = userId;
             const newBubbleList = _.cloneDeep(state.bubbleList);
             return {...state, bubbleList: newBubbleList};
         }
@@ -357,7 +357,7 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
             console.log(bubbleId, content);
             const bubble = getBubbleById(state.bubbleList, bubbleId) as LeafBubble;
             bubble.content = content;
-            bubble.editLockHoder = null;
+            bubble.editLockHolder = null;
             const newBubbleList = _.cloneDeep(state.bubbleList);
             return {...state, bubbleList: newBubbleList, loading: false, editBubbleId: -1, editBubbleString: ""};
         }
@@ -367,7 +367,7 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
             console.log(bubbleId, content);
             const bubble = getBubbleById(state.bubbleList, bubbleId) as LeafBubble;
             bubble.content = content;
-            bubble.editLockHoder = null;
+            bubble.editLockHolder = null;
             const newBubbleList = _.cloneDeep(state.bubbleList);
             return {...state, bubbleList: newBubbleList};
 
@@ -378,7 +378,7 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
             const content = action.payload.content;
             const bubble = getBubbleById(state.bubbleList, bubbleId) as LeafBubble;
             bubble.content = content;
-            bubble.editLockHoder = null;
+            bubble.editLockHolder = null;
             const newBubbleList = _.cloneDeep(state.bubbleList);
             return {...state, bubbleList: newBubbleList, loading: false, editBubbleId: -1, editBubbleString: ""};
         }
@@ -388,7 +388,7 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
             const content = (action.payload as any).content;
             const bubble = getBubbleById(state.bubbleList, bubbleId) as LeafBubble;
             bubble.content = content;
-            bubble.editLockHoder = null;
+            bubble.editLockHolder = null;
             const newBubbleList = _.cloneDeep(state.bubbleList);
             return {...state, bubbleList: newBubbleList};
         }

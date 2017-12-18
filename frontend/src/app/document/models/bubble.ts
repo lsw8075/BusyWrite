@@ -32,7 +32,7 @@ export class LeafBubble implements Bubble {
   watchUserIds: Array<number> = [];
 
   editLock: boolean;
-  editLockHoder: number;
+  editLockHolder: number;
   ownerId: number;
   content: string;
 
@@ -44,7 +44,7 @@ export class LeafBubble implements Bubble {
     commentIds: Array<number> = [],
     watchUserIds: Array<number> = [],
     thumbUps: number = 0,
-    editLockHoder: number = 0) {
+    editLockHolder: number = 0) {
 
     this.id = id;
     this.type = BubbleType.leafBubble;
@@ -56,7 +56,7 @@ export class LeafBubble implements Bubble {
     this.commentIds = commentIds;
     this.watchUserIds = watchUserIds;
     this.thumbUps = thumbUps;
-    this.editLockHoder = editLockHoder;
+    this.editLockHolder = editLockHolder;
   }
 
   public getEditLock(): boolean {

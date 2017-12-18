@@ -8,10 +8,10 @@ export namespace BubbleJsonHelper {
     export function getDocumentObject(jsonString: string): Document {
         const jsonObject = JSON.parse(jsonString);
         const contributors = this.getUserArrayObject(JSON.stringify(jsonObject.contributors));
-        const doc = new Document(jsonObject.document_id, jsonObject.title, contributors); 
+        const doc = new Document(jsonObject.document_id, jsonObject.title, contributors);
         return doc;
     }
-        
+
     export function getBubbleObject(jsonString: string): Bubble {
         const jsonObject = JSON.parse(jsonString);
         if (jsonObject.child_bubbles.length > 0) {
@@ -26,7 +26,7 @@ export namespace BubbleJsonHelper {
             leafBubble.type = BubbleType.leafBubble;
             leafBubble.parentBubbleId = jsonObject.parent_bubble;
             leafBubble.location = jsonObject.location;
-            leafBubble.editLockHoder = jsonObject.edit_lock_holder;
+            leafBubble.editLockHolder = jsonObject.edit_lock_holder;
             return leafBubble;
         }
     }

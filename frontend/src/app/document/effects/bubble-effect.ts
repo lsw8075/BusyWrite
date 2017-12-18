@@ -109,7 +109,7 @@ export class BubbleEffects {
     @Effect()
     createComplete$: Observable<Action> = this.action$.ofType<BubbleAction.CreateBubbleComplete>(BubbleAction.CREATE_BUBBLE_COMPLETE)
         .map(action => action.payload).mergeMap(query => {
-            return Observable.of(new BubbleAction.EditRequestSuccess({bubbleId: query.id, userId: (query as LeafBubble).editLockHoder}));
+            return Observable.of(new BubbleAction.EditRequestSuccess({bubbleId: query.id, userId: (query as LeafBubble).editLockHolder}));
         });
 
     @Effect()

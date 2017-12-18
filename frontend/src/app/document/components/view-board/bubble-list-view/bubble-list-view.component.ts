@@ -103,9 +103,8 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
         this._store.dispatch(new BubbleAction.SelectClear());
     }
 
-  public isBubbleContentShown(bubble: LeafBubble): boolean {
-        return (bubble.ownerId === -1) ||
-            (bubble.ownerId === 1);
+    public isBubbleBeingEditted(bubble: LeafBubble): boolean {
+        return (bubble.editLockHolder !== null);
     }
     ngOnDestroy() {
     }

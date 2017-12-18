@@ -47,7 +47,7 @@ export class LeafBubbleDirective implements OnInit {
     }
 
     private _isBeingEditted(): boolean {
-        return this.appLeafBubble.ownerId !== -1;
+        return this.appLeafBubble.editLockHolder !== null;
     }
 
 }
