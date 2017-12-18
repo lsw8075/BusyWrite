@@ -97,7 +97,7 @@ def ws_receive(message):
         # contributors and connectors would include herself! Be careful when using.
         message.reply_channel.send({"text":
                 json.dumps({"header": command, "accept": 'True',
-                        "body": {"document_id": document_id, "title": title, "previous_request_id": result,
+                        "body": {"document_id": document_id, "title": title, "previous_request_id": previous_request_id,
                         "contributors": contributors, "connectors": connectors}})})
 
         Group('document_detail-'+str(document_id), channel_layer=message.channel_layer).add(message.reply_channel)
