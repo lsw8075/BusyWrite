@@ -312,7 +312,7 @@ export class BubbleEffects {
     exportNoteAsBubble$: Observable<Action> =
     this.action$.ofType<BubbleAction.ExportNoteAsBubble>(BubbleAction.EXPORT_NOTE_AS_BUBBLE)
         .map(action => action.payload).mergeMap(query => {
-            return Observable.of(this.bubbleService.exportNoteAsBubble(query.parentId, query.loc, query.noteId))
+            return Observable.of(this.bubbleService.exportNoteAsBubble(query.parentId, query.loc, query.content))
                 .map(() => new BubbleAction.ExportNoteAsBubblePending(null));
         });
 
@@ -320,7 +320,7 @@ export class BubbleEffects {
     exportNoteAsSuggest$: Observable<Action> =
     this.action$.ofType<BubbleAction.ExportNoteAsSuggest>(BubbleAction.EXPORT_NOTE_AS_SUGGEST)
         .map(action => action.payload).mergeMap(query => {
-            return Observable.of(this.bubbleService.exportNoteAsSuggestBubble(query.bindBubbleId, query.noteId))
+            return Observable.of(this.bubbleService.exportNoteAsSuggestBubble(query.bindBubbleId, query.content))
                 .map(() => new BubbleAction.ExportNoteAsSuggestPending(null));
         });
 
@@ -328,7 +328,7 @@ export class BubbleEffects {
     exportNoteAsCommentOnBubble$: Observable<Action> =
     this.action$.ofType<BubbleAction.ExportNoteAsCommentOnBubble>(BubbleAction.EXPORT_NOTE_AS_COMMENT_ON_BUBBLE)
         .map(action => action.payload).mergeMap(query => {
-            return Observable.of(this.bubbleService.exportNoteAsCommentOnBubble(query.bindBubbleId, query.noteId))
+            return Observable.of(this.bubbleService.exportNoteAsCommentOnBubble(query.bindBubbleId, query.content))
                 .map(() => new BubbleAction.ExportNoteAsCommentOnBubblePending(null));
         });
 
@@ -336,7 +336,7 @@ export class BubbleEffects {
     exportNoteAsCommentOnSuggest$: Observable<Action> =
     this.action$.ofType<BubbleAction.ExportNoteAsCommentOnSuggest>(BubbleAction.EXPORT_NOTE_AS_COMMENT_ON_SUGGEST)
         .map(action => action.payload).mergeMap(query => {
-            return Observable.of(this.bubbleService.exportNoteAsCommentOnSuggestBubble(query.bindSuggestBubbleId, query.noteId))
+            return Observable.of(this.bubbleService.exportNoteAsCommentOnSuggestBubble(query.bindSuggestBubbleId, query.content))
                 .map(() => new BubbleAction.ExportNoteAsCommentOnSuggestPending(null));
         });
 

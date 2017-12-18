@@ -987,7 +987,7 @@ export class ExportNoteAsBubble implements Action {
     constructor(public payload: {
         parentId: number,
         loc: number,
-        noteId: number}) {}
+        content: string}) {}
 }
 export class ExportNoteAsBubblePending implements Action {
     readonly type = EXPORT_NOTE_AS_BUBBLE_PENDING;
@@ -1015,7 +1015,7 @@ export class ExportNoteAsSuggest implements Action {
     readonly type = EXPORT_NOTE_AS_SUGGEST;
     constructor(public payload: {
         bindBubbleId: number,
-        noteId: number}) {}
+        content: string}) {}
 }
 export class ExportNoteAsSuggestPending implements Action {
     readonly type = EXPORT_NOTE_AS_SUGGEST_PENDING;
@@ -1043,7 +1043,7 @@ export class ExportNoteAsCommentOnBubble implements Action {
     readonly type = EXPORT_NOTE_AS_COMMENT_ON_BUBBLE;
     constructor(public payload: {
         bindBubbleId: number,
-        noteId: number}) {}
+        content: string}) {}
 }
 export class ExportNoteAsCommentOnBubblePending implements Action {
     readonly type = EXPORT_NOTE_AS_COMMENT_ON_BUBBLE_PENDING;
@@ -1071,7 +1071,7 @@ export class ExportNoteAsCommentOnSuggest implements Action {
     readonly type = EXPORT_NOTE_AS_COMMENT_ON_SUGGEST;
     constructor(public payload: {
         bindSuggestBubbleId: number,
-        noteId: number}) {}
+        content: string}) {}
 }
 export class ExportNoteAsCommentOnSuggestPending implements Action {
     readonly type = EXPORT_NOTE_AS_COMMENT_ON_SUGGEST_PENDING;
