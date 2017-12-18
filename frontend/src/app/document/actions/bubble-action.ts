@@ -11,6 +11,7 @@ export const CHANGE_TITLE_PENDING = '[Document] change title pending';
 export const CHANGE_TITLE_COMPLETE = '[Document] change title complete';
 export const CHANGE_TITLE_ERROR = '[Document] change title error';
 export const OTHERS_CHANGE_TITLE = '[Document] others change title';
+export const TITLE_RESET = '[Document] title reset';
 export class ChangeTitle implements Action {
     readonly type = CHANGE_TITLE;
     constructor(public payload: string) {}
@@ -30,6 +31,10 @@ export class ChangeTitleError implements Action {
 export class OthersChangeTitle implements Action {
     readonly type = OTHERS_CHANGE_TITLE;
     constructor(public payload: string) {}
+}
+export class TitleReset implements Action {
+    readonly type = TITLE_RESET;
+    constructor() {}
 }
 
 
@@ -1131,6 +1136,7 @@ export type Actions =
   | ChangeTitleComplete
   | ChangeTitleError
   | OthersChangeTitle
+  | TitleReset
   | Open
   | OpenPending
   | OpenComplete

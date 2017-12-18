@@ -208,16 +208,20 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
         case fromBubble.CHANGE_TITLE:
             return {...state, loading: true};
         case fromBubble.CHANGE_TITLE_COMPLETE: {
-            const newDoc = state.documentObject;
+            const newDoc = {...state.documentObject};
             newDoc.title = action.payload;
             return {...state, loading: false, documentObject: newDoc};
         }
-        case fromBubble.CHANGE_TITLE_ERROR:
-            return {...state, loading: false, error: action.payload};
+        case fromBubble.CHANGE_TITLE_ERROR: {
+            return {...state, loading: false, error: action.payload, documentObject: {...state.documentObject} };
+        }
         case fromBubble.OTHERS_CHANGE_TITLE: {
-            const newDoc = state.documentObject;
+            const newDoc = {...state.documentObject};
             newDoc.title = action.payload;
             return {...state, documentObject: newDoc};
+        }
+        case fromBubble.TITLE_RESET: {
+            return {...state, loading: false, documentObject: {...state.documentObject}, error: 'title cannot be empty' };
         }
 
 

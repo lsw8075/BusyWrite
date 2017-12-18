@@ -593,7 +593,7 @@ export class BubbleService implements OnDestroy {
                 console.log('someone added as contributor fail. this cannot happen');
             }
         } else if (command === 'change_title_of_document') {
-            if (accept == 'True') {
+            if (accept === 'True') {
                 console.log('received change_title_of_document success');
                 if (body.who === this.userId) {
                     this._store.dispatch(new BubbleAction.ChangeTitleComplete(body.new_title));

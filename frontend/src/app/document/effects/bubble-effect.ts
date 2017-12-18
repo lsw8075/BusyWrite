@@ -50,6 +50,7 @@ export class BubbleEffects {
     @Effect()
     changeTitle$: Observable<Action> = this.action$.ofType<BubbleAction.ChangeTitle>(BubbleAction.CHANGE_TITLE)
         .map(action => action.payload).mergeMap(query => {
+            this.bubbleService.changeTitle(query);
             return Observable.of(new BubbleAction.ChangeTitlePending(null));
         });
 

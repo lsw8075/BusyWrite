@@ -133,6 +133,7 @@ export class DocumentDetailPageComponent implements OnInit {
 
     public titleEditDone() {
         this.changeTitle = false;
+        this._store.dispatch(new BubbleAction.ChangeTitle(this.documentTitle));
     }
 
     public titleEditStart() {
