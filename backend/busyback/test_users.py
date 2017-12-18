@@ -32,13 +32,13 @@ class Users2TestCase(TestCase):
     def test_signup(self):
         csrftoken = getCSRF(self)
 
-        response = self.client.post('/api/signup', json.dumps({'username': 'testuser4', 'password': '5678'}), content_type='application/json', HTTP_X_CSRFTOKEN=csrftoken)
+        response = self.client.post('/api/signup', json.dumps({'username': 'testuser4', 'password': '5678', 'email': 'test@test.com'}), content_type='application/json', HTTP_X_CSRFTOKEN=csrftoken)
         self.assertEqual(response.status_code, 201) # Pass csrf protection
 
-        self.assertEqual(405, self.send('PUT', 'signup', {'username': 'testuser4', 'password': '5678'}))
+        self.assertEqual(405, self.send('PUT', 'signup', {'username': 'testuser4', 'password': '5678', 'email': 'test@test.com'}))
 
     def test_signin(self):
-        response = self.client.post('/api/signin', json.dumps({'username': 'testuser2', 'password': '5678'}), content_type='applicaton/json')
+        response = self.client.post('/api/signin', json.dumps({'username': 'testuser2', 'password': '5678', 'email': 'test@test.com'}), content_type='applicaton/json')
         
         self.assertEqual(200, response.status_code)
         self.assertEqual(json.loads(response.content.decode())['user_id'], self.user2.id)

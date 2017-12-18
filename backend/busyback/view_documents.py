@@ -61,16 +61,37 @@ def req_document_detail(request, document_id):
     else:
         return HttpResponseNotAllowed(['GET', 'DELETE'])
 
-def req_document_contributors(request):
+def req_document_contributors(request, document_id):
     (user_id, method, data) = parse_request(request)
-
     if method == 'GET':
         try:
             conusers = do_get_connected_users_document(user_id, document_id)
         except Exception as e:
             see_error(e)
-            return HttpResponse(status=404)
+            return HttpResponse(status=400)
         return conusers # list of users
+    elif method == 'POST':
+        try:
+            user_to_add = data['user_to_add']
+            do_send_invitation_email(user_id, document_id, who_id)
+        except Exception as e:
+            see_error(e)
+            return HttpResponse(status=400)
+        return HttpResponse(status=201)
+    else:
+        return HttpResponseNotAllowed(['GET', 'POST'])
+
+def req_document_accept_invitation(request):
+    (user_id, method, data) = parse_request(request)
+    if method == 'GET':
+        try:
+            salt = request.GET['salt']
+            if len(salt) < 56:
+                return HttpResponse(status=400)
+            do_add_contributor(salt_value)
+        except Exception as e:
+            see_error(e)
+            return HttpResponse(status=400)
+        return HttpResponse(status=204)
     else:
         return HttpResponseNotAllowed(['GET'])
-

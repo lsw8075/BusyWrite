@@ -290,6 +290,21 @@ class VersionDelta(models.Model):
         )
     args = models.TextField()
 
+class InvitationHash(models.Model):
+    salt = models.CharField(primary_key=True, max_length=56)
+    document = models.ForeignKey(
+    	'Document',
+    	related_name='invitation_hashs',
+    	null=False,
+        on_delete=models.CASCADE
+    )
+    receiver = models.ForeignKey(
+    	User,
+    	related_name='invitation_hashs',
+    	null=False,
+        on_delete=models.CASCADE
+    )
+
 class News(models.Model):
     receiver = models.ForeignKey(
     	User,

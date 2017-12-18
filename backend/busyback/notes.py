@@ -3,8 +3,9 @@ from .bubbles import process_normal, process_suggest, normal_operation, suggest_
 from .comments import process_comment
 from .versions import update_doc
 from .operation_no import Operation
-from .utils import create_normal, create_suggest
+from .utils import create_normal, create_suggest, process_note
 from .users import fetch_user
+from django.forms.models import model_to_dict
 
 def fetch_note(note_id):
     try:

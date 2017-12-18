@@ -26,7 +26,7 @@ export class GetUserInfo implements Action {
 export class SignIn implements Action {
     readonly type = SIGNIN;
     constructor(public payload: {
-        username: string,
+        email: string,
         password: string
     }) {}
 }
@@ -49,7 +49,7 @@ export class RedirectSignUp implements Action {
 export class SignUp implements Action {
     readonly type = SIGNUP;
     constructor(public payload: {
-        username: string,
+        email: string,
         password: string}) {}
 }
 

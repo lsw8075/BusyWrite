@@ -75,6 +75,7 @@ export class BubbleService implements OnDestroy {
                             if (contributor.id === connectorId)
                                 cons.push({
                                         'id': connectorId,
+                                        'username': contributor.username
                                         'email': contributor.email
                                         });
                         }
@@ -91,9 +92,8 @@ export class BubbleService implements OnDestroy {
         } else if (command === 'someone_open_document_detail') {
             if (accept === 'True') {
                 console.log('received someone_open_document_detail');
-                const connector = BubbleJsonHelper.getUserObject(JSON.stringify(body));
-                if (connector.id !== this.userId) {
-                    this._store.dispatch(new BubbleAction.OthersOpenDocument(connector));
+                if (body.connector_id !== this.userId) {
+                    this._store.dispatch(new BubbleAction.OthersOpenDocument(body.connector_id));
                 }
             } else {
                 // this cannot happen
@@ -112,47 +112,24 @@ export class BubbleService implements OnDestroy {
         } else if (command === 'someone_close_document_detail') {
             if (accept === 'True') {
                 console.log('received someone_close_document_detail');
-                const disconnector = BubbleJsonHelper.getUserObject(JSON.stringify(body));
-                this._store.dispatch(new BubbleAction.OthersCloseDocument(disconnector));
+                this._store.dispatch(new BubbleAction.OthersCloseDocument(body.disconnector_id));
             } else {
                 // this cannot happen
             }
-        } else if (command === 'get_bubble_list') {
+        } else if (command === 'get_whole_document') {
             if (accept === 'True') {
-                console.log('received get_bubble_list success');
+                console.log('received get_whole_document success');
                 console.log(body);
-                const bubbleArray = BubbleJsonHelper.getBubbleArrayObject(JSON.stringify(body));
-                this._store.dispatch(new BubbleAction.LoadComplete(bubbleArray));
+                const bubbleList = BubbleJsonHelper.getBubbleArrayObject(JSON.stringify(body.bubble_list));
+                const suggestBubbleList = BubbleJsonHelper.getSuggestBubbleArrayObject(JSON.stringify(body.suggest_bubble_list));
+                const commentList = BubbleJsonHelper.getCommentArrayObject(JSON.stringify(body.comment_list));
+                const noteList = BubbleJsonHelper.getNoteArrayObject(JSON.stringify(body.note_list));
+                this._store.dispatch(new BubbleAction.LoadComplete(
+                            {bubbleList: bubbleList, suggestBubbleList: suggestBubbleList,
+                            commentList: commentList, noteList: noteList}));
             } else {
-                console.log('received get_bubble_list fail');
+                console.log('received get_whole_document fail');
                 this._store.dispatch(new BubbleAction.LoadError(body));
-            }
-        } else if (command === 'get_suggest_bubble_list') {
-            if (accept === 'True') {
-                console.log('received get_suggest_bubble_list success');
-                const suggestBubbleArray = BubbleJsonHelper.getSuggestBubbleArrayObject(JSON.stringify(body));
-                this._store.dispatch(new BubbleAction.LoadSuggestComplete(suggestBubbleArray));
-            } else {
-                console.log('received get_suggest_bubble_list fail');
-                this._store.dispatch(new BubbleAction.LoadSuggestError(body));
-            }
-        } else if (command === 'get_comment_list_for_bubble') {
-            if (accept === 'True') {
-                console.log('received get_comment_list_for_bubble success');
-                const commentArray = BubbleJsonHelper.getCommentArrayObject(body);
-                this._store.dispatch(new BubbleAction.LoadCommentOnBubbleComplete(commentArray));
-            } else {
-                console.log('received get_comment_list_for_bubble fail');
-                this._store.dispatch(new BubbleAction.LoadCommentOnBubbleError(body));
-            }
-        } else if (command === 'get_comment_list_for_suggest_bubble') {
-            if (accept === 'True') {
-                console.log('received get_comment_list_for_suggest_bubble success');
-                const commentArray = BubbleJsonHelper.getCommentArrayObject(body);
-                this._store.dispatch(new BubbleAction.LoadCommentOnSuggestComplete(commentArray));
-            } else {
-                console.log('received get_comment_list_for_suggest_bubble fail');
-                this._store.dispatch(new BubbleAction.LoadCommentOnSuggestError(body));
             }
         } else if (command === 'create_bubble') {
             if (accept === 'True') {
@@ -227,7 +204,8 @@ export class BubbleService implements OnDestroy {
             if (accept === 'True') {
                 console.log('received update_content_of_editting_bubble success');
                 if (body.who === this.userId) {
-                    this._store.dispatch(new BubbleAction.EditUpdateSuccess({bubbleId: Number(body.bubble_id), content: body.content}));
+                    this._store.dispatch(new BubbleAction.EditUpdateSuccess(
+                                {bubbleId: Number(body.bubble_id), content: body.content}));
                 } else {
                     this._store.dispatch(new BubbleAction.OthersEditUpdate(
                                 {bubbleId: Number(body.bubble_id), content: body.content}));
@@ -241,9 +219,13 @@ export class BubbleService implements OnDestroy {
             if (accept === 'True') {
                 console.log('received finish_editting_bubble success');
                 if (body.who === this.userId) {
-                    this._store.dispatch(new BubbleAction.EditCompleteSuccess(Number(body.bubble_id)));
+                    this._store.dispatch(new BubbleAction.EditCompleteSuccess(
+                                {bubbleId: Number(body.bubble_id),
+                                content: String(body.content)}));
                 } else {
-                    this._store.dispatch(new BubbleAction.OthersEditComplete(Number(body.bubble_id)));
+                    this._store.dispatch(new BubbleAction.OthersEditComplete(
+                                {bubbleId: Number(body.bubble_id),
+                                content: String(body.content)}));
                 }
                 this.previousRequestId = data.request_id;
             } else {
@@ -254,9 +236,11 @@ export class BubbleService implements OnDestroy {
             if (accept === 'True') {
                 console.log('received discard_editting_bubble success');
                 if (body.who === this.userId) {
-                    this._store.dispatch(new BubbleAction.EditDiscardSuccess({ bubbleId: Number(body.bubble_id), content: body.content }));
+                    this._store.dispatch(new BubbleAction.EditDiscardSuccess(
+                                {bubbleId: Number(body.bubble_id), content: body.content}));
                 } else {
-                    this._store.dispatch(new BubbleAction.OthersEditDiscard(Number(body.bubble_id)));
+                    this._store.dispatch(new BubbleAction.OthersEditDiscard(
+                                {bubbleId: Number(body.bubble_id), content: body.content}));
                 }
                 this.previousRequestId = data.request_id;
             } else {
@@ -611,8 +595,8 @@ export class BubbleService implements OnDestroy {
         this._socket.send(m);
     }
 
-    public getBubbleList() {
-        const m = {'header': 'get_bubble_list',
+    public getWholeDocument() {
+        const m = {'header': 'get_whole_document',
             'previous_request': this.previousRequestId,
             'body': {'empty': 'empty'}};
         this._socket.send(m);
@@ -687,10 +671,10 @@ export class BubbleService implements OnDestroy {
         this._socket.send(m);
     }
 
-    public finishEdittingBubble(bubbleId: number) {
+    public finishEdittingBubble(bubbleId: number, content: string) {
         const m = {'header': 'finish_editting_bubble',
             'previous_request': this.previousRequestId,
-            'body': {'bubble_id': bubbleId}};
+            'body': {'bubble_id': bubbleId, 'content': content}};
         this._socket.send(m);
     }
 
