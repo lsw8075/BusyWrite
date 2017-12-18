@@ -625,13 +625,15 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
             console.log('EDIT_SUGGEST_COMPLETE', action.payload);
             const suggest = action.payload.suggest;
             const hidedSuggestBubbleId = action.payload.hidedSuggestBubbleId;
+            const hidedSuggestBubble = getSuggestBubbleById(state.suggestBubbleList, hidedSuggestBubbleId);
+            hidedSuggestBubble.hidden = true;
             const newEdittedSuggestBubble = action.payload.newEdittedSuggestBubble;
             const ind = state.editSuggests.findIndex(s => (s.bindBubbleId === suggest.bindBubbleId && s.isBindSuggest === suggest.isBindSuggest && s.content === suggest.content));
             state.editSuggests.splice(ind, 1);
             const newEditSuggests = _.cloneDeep(state.editSuggests);
             const newSuggestBubbleList = _.cloneDeep(state.suggestBubbleList);
-            state.suggestBubbleList.push(newEdittedSuggestBubble);
-            return {...state, loading: false, suggestBubbleList: newSuggestBubbleList, editSuggests: newEditSuggests, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
+            newSuggestBubbleList.push(newEdittedSuggestBubble);
+            return {...state, loading: false, selectedSB: newEdittedSuggestBubble, suggestBubbleList: newSuggestBubbleList, editSuggests: newEditSuggests, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
         }
         case fromBubble.EDIT_SUGGEST_ERROR:
             return {...state, loading: false, error: action.payload, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};

@@ -93,6 +93,13 @@ export class BubbleEffects {
                 .map(() => new BubbleAction.LoadPending(null));
         });
 
+    // @Effect()
+    // loadComplete$: Observable<Action> = this.action$.ofType<BubbleAction.LoadComplete>(BubbleAction.LOAD_COMPLETE)
+    //     .map(action => action.payload).mergeMap(query => {
+    //         return Observable.of(this.bubbleService.createCommentOnSuggestBubble(2115, "eiruiw" ))
+    //             .map(() => new BubbleAction.LoadPending(null));
+    //     });
+
     @Effect()
     pop$: Observable<Action> = this.action$.ofType<BubbleAction.PopBubble>(BubbleAction.POP_BUBBLE)
         .map(action => action.payload).mergeMap(query => {

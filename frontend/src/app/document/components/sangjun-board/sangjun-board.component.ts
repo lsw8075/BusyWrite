@@ -104,7 +104,7 @@ export class SangjunBoardComponent implements OnInit, OnDestroy {
     }
 
     clickSBThumbsUp(suggestBubble: SuggestBubble) {
-        this._eventSangjunBoardService.clickThumbsUp(suggestBubble);
+        suggestBubble.thumbUps++;
     }
 
     clickBubbleThumbsUp() {

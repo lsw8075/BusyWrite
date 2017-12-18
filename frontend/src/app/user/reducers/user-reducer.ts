@@ -9,7 +9,7 @@ export interface UserState {
 }
 
 export const initialState: UserState = {
-    signedIn: false,
+    signedIn: true,
     loading: false,
     error: '',
     userId: 7,

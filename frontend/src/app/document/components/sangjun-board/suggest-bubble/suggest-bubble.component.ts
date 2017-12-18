@@ -42,6 +42,12 @@ export class SuggestBubbleComponent implements OnInit {
     }
 
     clickEdit() {
+        this._store.dispatch(new BoardAction.ShowEdit());
+        this._store.dispatch(new BubbleAction.CreateSuggestStart({
+            bindBubbleId: this.selectedSB.id,
+            isBindSuggest: true,
+            content: this.selectedSB.content
+        }));
     }
 
     clickDelete() {
@@ -50,6 +56,7 @@ export class SuggestBubbleComponent implements OnInit {
     }
 
     clickThumbsUp() {
+        this.selectedSB.thumbUps++;
     }
 
 }
