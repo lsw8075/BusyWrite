@@ -83,6 +83,7 @@ export function BubbleReducer(state: BubbleState = initialState, action: fromBub
     switch (action.type) {
         case fromBubble.SELECT: case fromBubble.SELECT_CLEAR:
         case fromBubble.MOUSE_OVER: case fromBubble.MOUSE_OUT:
+        case fromBubble.EDIT_BUBBLE_OPEN: case fromBubble.EDIT_BUBBLE_CLOSE:
             return UIReducer(state, action);
 
         case fromBubble.OPEN: case fromBubble.OPEN_COMPLETE: case fromBubble.OPEN_ERROR: case fromBubble.OTHERS_OPEN_DOCUMENT:
@@ -172,6 +173,19 @@ function UIReducer(state: BubbleState, action: fromBubble.Actions) {
 
         case fromBubble.MOUSE_OUT:
             return {...state, hoverBubbleList: []};
+
+        case fromBubble.EDIT_BUBBLE_OPEN: {
+            const newActiveEditBubbleList = state.editActiveBubbleIds;
+            newActiveEditBubbleList.push(action.payload.id);
+            return {...state, editActiveBubbleIds: [...newActiveEditBubbleList]};
+        }
+
+        case fromBubble.EDIT_BUBBLE_CLOSE: {
+            let newActiveEditBubbleList = state.editActiveBubbleIds;
+            const closeBubbleId = action.payload.id;
+            newActiveEditBubbleList = newActiveEditBubbleList.filter(b => b !== closeBubbleId);
+            return {...state, editActiveBubbleIds: [...newActiveEditBubbleList]};
+        }
 
         default:
             console.log('this should not be called', state, action);

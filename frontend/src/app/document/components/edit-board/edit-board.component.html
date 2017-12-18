@@ -1,93 +1,96 @@
-<tabset [justified]="true" type="pills">
-    <tab>
-        <ng-template tabHeading>
-            <div class="tab">
-                Edit
-            </div>
-        </ng-template>
-        <div *ngIf="editBubbles">
-            <accordion>
-                <ng-container *ngFor="let editBubble of editBubbles">
-                    <accordion-group is-open="true" #group>
-                        <div accordion-heading>
-                        <span class="badge badge-pill badge-info">
-                            <div class="handle" tooltip="click me to drag notes around!" (click)="$event.stopPropagation()">
-                            +
-                            </div>
-                        </span>
-                        <span class="summary">Bubble #{{editBubble.id}}</span>
-                        <span class="badge float-right pull-right">
-                            <button (click)="finishEditBubble(editBubble)" type="button" class="btn btn-secondary btn-sm hvr-sweep-to-right">
-                                <i tooltip="Did you finish editting?" class="fa fa-fw fa-check"></i>
-                            </button>
-                            <button (click)="discardEditBubble(editBubble)" type="button" class="btn btn-secondary btn-sm hvr-sweep-to-right">
-                                <i tooltip="Do you want to discard changes?" class="fa fa-fw fa-times"></i>
-                            </button>
-                        </span>
-                        </div>
-                        <app-edit-item (update)="updateEditBubble(editBubble, $event)" (focus)="focusEditBubble(editBubble, $event)" [editBubble]="editBubble"></app-edit-item>
-                    </accordion-group>
-                </ng-container>
-            </accordion>
-        </div>
-        <div *ngIf="editSuggests">
-            <accordion>
-                <ng-container *ngFor="let editSuggest of editSuggests">
-                    <accordion-group is-open="true" #group>
-                        <div accordion-heading>
+<div class="container">
+    <tabset [justified]="true" type="pills">
+        <tab>
+            <ng-template tabHeading>
+                <div class="tab">
+                    Edit
+                </div>
+            </ng-template>
+            <div *ngIf="editBubbles">
+                <accordion>
+                    <ng-container *ngFor="let editBubble of editBubbles; let i = index">
+                        <input type="checkbox" [checked]="isEditBubbleOpen(editBubble)" (change)="toggleEditBubble(editBubble, $event)" />
+                        <accordion-group [isOpen]="isEditBubbleOpen(editBubble)" #group>
+                            <div accordion-heading>
                             <span class="badge badge-pill badge-info">
                                 <div class="handle" tooltip="click me to drag notes around!" (click)="$event.stopPropagation()">
                                 +
                                 </div>
                             </span>
-
-                            <span *ngIf="editSuggest.isBindSuggest" class="summary">Suggest of SB #{{editSuggest.bindBubbleId}}</span>
-                            <span *ngIf="! editSuggest.isBindSuggest" class="summary">Suggest of Bubble #{{editSuggest.bindBubbleId}}</span>
+                            <span class="summary">Bubble #{{editBubble.id}}</span>
                             <span class="badge float-right pull-right">
-                                <button (click)="finishEditSuggest(editSuggest)" type="button" class="btn btn-secondary btn-sm hvr-sweep-to-right">
+                                <button (click)="finishEditBubble(editBubble)" type="button" class="btn btn-secondary btn-sm hvr-sweep-to-right">
                                     <i tooltip="Did you finish editting?" class="fa fa-fw fa-check"></i>
                                 </button>
-                                <button (click)="discardEditSuggest(editSuggest)" type="button" class="btn btn-secondary btn-sm hvr-sweep-to-right">
+                                <button (click)="discardEditBubble(editBubble)" type="button" class="btn btn-secondary btn-sm hvr-sweep-to-right">
                                     <i tooltip="Do you want to discard changes?" class="fa fa-fw fa-times"></i>
                                 </button>
                             </span>
-                        </div>
-                        <app-edit-item (update)="updateEditSuggest(editSuggest, $event)" (focus)="focusEditSuggest(editSuggest, $event)" [editSuggest]="editSuggest"></app-edit-item>
-                    </accordion-group>
-                </ng-container>
-            </accordion>
-        </div>
-    </tab>
-    <tab>
-        <ng-template tabHeading>
-            <div class="tab">
-                Note
-            </div>
-        </ng-template>
-        <div *ngIf="notes$ | async as notes " class="container">
-            <accordion>
-                <div *ngFor="let note of notes">
-                    <accordion-group #group>
-                        <div accordion-heading>
-                        <span class="badge badge-pill badge-info">
-                            <div class="handle" tooltip="click me to drag notes around!" (click)="$event.stopPropagation()">
-                            +
                             </div>
-                        </span>
-                        <span class="summary">{{note.getSummary()}}</span>
-                        <span class="badge float-right pull-right">
-                            <button (click)="deleteNote(note)" type="button" class="btn btn-secondary btn-sm hvr-sweep-to-right">
-                            <i tooltip="delete note" class="fa fa-fw fa-times"></i>
-                            </button>
-                            <button (click)="toBubble(note)" type="button" class="btn btn-secondary btn-sm hvr-sweep-to-right">
-                            <i tooltip="send to edit board" class="fa fa-fw fa-pencil"></i>
-                            </button>
-                        </span>
-                        </div>
-                        <app-note-view [note]="note" (changed)="updateNote(note, $event)"></app-note-view>
-                    </accordion-group>
+                            <app-edit-item (update)="updateEditBubble(editBubble, $event)" (focus)="focusEditBubble(editBubble, $event)" [editBubble]="editBubble"></app-edit-item>
+                        </accordion-group>
+                    </ng-container>
+                </accordion>
+            </div>
+            <div *ngIf="editSuggests">
+                <accordion>
+                    <ng-container *ngFor="let editSuggest of editSuggests">
+                        <accordion-group is-open="true" #group>
+                            <div accordion-heading>
+                                <span class="badge badge-pill badge-info">
+                                    <div class="handle" tooltip="click me to drag notes around!" (click)="$event.stopPropagation()">
+                                    +
+                                    </div>
+                                </span>
+
+                                <span *ngIf="editSuggest.isBindSuggest" class="summary">Suggest of SB #{{editSuggest.bindBubbleId}}</span>
+                                <span *ngIf="! editSuggest.isBindSuggest" class="summary">Suggest of Bubble #{{editSuggest.bindBubbleId}}</span>
+                                <span class="badge float-right pull-right">
+                                    <button (click)="finishEditSuggest(editSuggest)" type="button" class="btn btn-secondary btn-sm hvr-sweep-to-right">
+                                        <i tooltip="Did you finish editting?" class="fa fa-fw fa-check"></i>
+                                    </button>
+                                    <button (click)="discardEditSuggest(editSuggest)" type="button" class="btn btn-secondary btn-sm hvr-sweep-to-right">
+                                        <i tooltip="Do you want to discard changes?" class="fa fa-fw fa-times"></i>
+                                    </button>
+                                </span>
+                            </div>
+                            <app-edit-item (update)="updateEditSuggest(editSuggest, $event)" (focus)="focusEditSuggest(editSuggest, $event)" [editSuggest]="editSuggest"></app-edit-item>
+                        </accordion-group>
+                    </ng-container>
+                </accordion>
+            </div>
+        </tab>
+        <tab>
+            <ng-template tabHeading>
+                <div class="tab">
+                    Note
                 </div>
-            </accordion>
-        </div>
-    </tab>
-</tabset>
+            </ng-template>
+            <div *ngIf="notes$ | async as notes " class="container">
+                <accordion>
+                    <div *ngFor="let note of notes">
+                        <accordion-group #group>
+                            <div accordion-heading>
+                            <span class="badge badge-pill badge-info">
+                                <div class="handle" tooltip="click me to drag notes around!" (click)="$event.stopPropagation()">
+                                +
+                                </div>
+                            </span>
+                            <span class="summary">{{note.getSummary()}}</span>
+                            <span class="badge float-right pull-right">
+                                <button (click)="deleteNote(note)" type="button" class="btn btn-secondary btn-sm hvr-sweep-to-right">
+                                <i tooltip="delete note" class="fa fa-fw fa-times"></i>
+                                </button>
+                                <button (click)="toBubble(note)" type="button" class="btn btn-secondary btn-sm hvr-sweep-to-right">
+                                <i tooltip="send to edit board" class="fa fa-fw fa-pencil"></i>
+                                </button>
+                            </span>
+                            </div>
+                            <app-note-view [note]="note" (changed)="updateNote(note, $event)"></app-note-view>
+                        </accordion-group>
+                    </div>
+                </accordion>
+            </div>
+        </tab>
+    </tabset>
+</div>

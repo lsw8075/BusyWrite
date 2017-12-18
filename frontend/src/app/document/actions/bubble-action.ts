@@ -1073,6 +1073,17 @@ export class ClearMsg implements Action {
     constructor() {}
 }
 
+export const EDIT_BUBBLE_OPEN = '[Edit Bubble] Open';
+export const EDIT_BUBBLE_CLOSE = '[Edit Bubble] Close';
+export class EditBubbleOpen implements Action {
+    readonly type = EDIT_BUBBLE_OPEN;
+    constructor(public payload: Bubble) {}
+}
+export class EditBubbleClose implements Action {
+    readonly type = EDIT_BUBBLE_CLOSE;
+    constructor(public payload: Bubble) {}
+}
+
 export type Actions =
   | Open
   | OpenPending
@@ -1257,4 +1268,9 @@ export type Actions =
   | ClearMsg
   | AddContributerRequest
   | AddContributerRequestSuccess
-  | AddContributerRequestFail;
+  | AddContributerRequestFail
+
+
+  // UI
+  | EditBubbleOpen
+  | EditBubbleClose;
