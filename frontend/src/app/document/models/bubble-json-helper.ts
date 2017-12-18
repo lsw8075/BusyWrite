@@ -7,7 +7,7 @@ import { Document } from '../../file/models/document';
 export namespace BubbleJsonHelper {
     export function getDocumentObject(jsonString: string): Document {
         const jsonObject = JSON.parse(jsonString);
-        const contributors = getUserArrayObject(JSON.stringify(jsonObject.contributors));
+        const contributors = this.getUserArrayObject(JSON.stringify(jsonObject.contributors));
         const doc = new Document(jsonObject.document_id, jsonObject.title, contributors); 
         return doc;
     }
