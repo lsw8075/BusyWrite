@@ -1,18 +1,17 @@
 import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
-import { Bubble} from '../service';
+import { Bubble } from '../service';
 import { EditItem } from '../service';
-import { LeafBubble } from '../../../models/bubble';
+import { LeafBubble, Suggest } from '../../../models/bubble';
 
 @Component({
   selector: 'app-edit-item',
   templateUrl: './edit-item.component.html',
   styleUrls: ['./edit-item.component.css']
 })
+
 export class EditItemComponent implements OnInit {
-
-
     @Input() editBubble: LeafBubble;
-    @Input() editSuggest: {isBindSuggest: boolean, bindBubbleId: number, content: string};
+    @Input() editSuggest: Suggest;
     @Output() focus: EventEmitter<boolean> = new EventEmitter<boolean>();
     @Output() update: EventEmitter<string> = new EventEmitter<string>();
 

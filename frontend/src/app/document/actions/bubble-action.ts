@@ -1,5 +1,5 @@
 import { Action } from '@ngrx/store';
-import { Bubble, InternalBubble, LeafBubble, SuggestBubble } from '../models/bubble';
+import { Bubble, InternalBubble, LeafBubble, SuggestBubble, Suggest } from '../models/bubble';
 import { Comment } from '../models/comment';
 import { Note } from '../models/note';
 import { User } from '../../user/models/user';
@@ -159,10 +159,7 @@ export const CREATE_SUGGEST_ERROR = '[Suggest Bubble] create Error';
 export const OTHERS_CREATE_SUGGEST = '[Suggest Bubble] others create';
 export class CreateSuggest implements Action {
     readonly type = CREATE_SUGGEST;
-    constructor(public payload: {
-        bindBubbleId: number,
-        content: string
-    }) {}
+    constructor(public payload: Suggest) {}
 }
 export class CreateSuggestPending implements Action {
     readonly type = CREATE_SUGGEST_PENDING;
@@ -170,7 +167,9 @@ export class CreateSuggestPending implements Action {
 }
 export class CreateSuggestComplete implements Action {
     readonly type = CREATE_SUGGEST_COMPLETE;
-    constructor(public payload: SuggestBubble) {}
+    constructor(public payload: {
+        suggest: Suggest,
+        suggestBubble: SuggestBubble) {}
 }
 export class CreateSuggestError implements Action {
     readonly type = CREATE_SUGGEST_ERROR;
@@ -382,6 +381,17 @@ export class OthersReleaseOwnership implements Action {
     constructor(public payload: number) {}
 }
 
+export const EDIT_SUGGEST_FINISH = '[Suggest Bubble] edit suggest finish';
+export const EDIT_SUGGEST_DISCARD = '[Suggest Bubble] edit suggest discard';
+export class EditSuggestFinish implements Action {
+    readonly type = EDIT_SUGGEST_FINISH;
+    constructor(public payload: Suggest) {}
+}
+export class EditSuggestDiscard implements Action {
+    readonly type = EDIT_SUGGEST_DISCARD;
+    constructor(public payload: Suggest) {}
+}
+
 export const EDIT_SUGGEST = '[Suggest Bubble] edit';
 export const EDIT_SUGGEST_PENDING = '[Suggest Bubble] edit pending';
 export const EDIT_SUGGEST_COMPLETE = '[Suggest Bubble] edit complete';
@@ -389,10 +399,7 @@ export const EDIT_SUGGEST_ERROR = '[Suggest Bubble] edit discard';
 export const OTHERS_EDIT_SUGGEST = '[Suggest Bubble] others edit suggest';
 export class EditSuggest implements Action {
     readonly type = EDIT_SUGGEST;
-    constructor(public payload: {
-        bindSuggestBubbleId: number,
-        content: string,
-    }) {}
+    constructor(public payload: Suggest) {}
 }
 export class EditSuggestPending implements Action {
     readonly type = EDIT_SUGGEST_PENDING;
@@ -401,6 +408,7 @@ export class EditSuggestPending implements Action {
 export class EditSuggestComplete implements Action {
     readonly type = EDIT_SUGGEST_COMPLETE;
     constructor(public payload: {
+            suggest: Suggest,
             hidedSuggestBubbleId: number,
             newEdittedSuggestBubble: SuggestBubble}) {}
 }
@@ -1038,8 +1046,6 @@ export class OthersExportNoteAsCommentOnSuggest implements Action {
     constructor(public payload: Comment) {}
 }
 
-
-
 export const ADD_CONTRIBUTER_REQUEST = '[contributer] http request';
 export const ADD_CONTRIBUTER_REQUEST_SUCCESS = '[contributer] add http request success';
 export const ADD_CONTRIBUTER_REQUEST_FAIL = '[contributer] add http request fail';
@@ -1150,6 +1156,8 @@ export type Actions =
   | ReleaseOwnershipComplete
   | ReleaseOwnershipError
   | OthersReleaseOwnership
+  | EditSuggestFinish
+  | EditSuggestDiscard
   | EditSuggest
   | EditSuggestPending
   | EditSuggestComplete

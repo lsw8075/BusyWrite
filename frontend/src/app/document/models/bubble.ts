@@ -8,6 +8,12 @@ export enum BubbleType {
   suggestBubble
 } /* istanbul ignore next */
 
+export class Suggest {
+    isBindSuggest: boolean;
+    bindBubbleId: number;
+    content: string;
+}
+
 export class Bubble {
   id: number;
   type: BubbleType;

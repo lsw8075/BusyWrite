@@ -2,8 +2,7 @@ from .models import *
 from .users import fetch_user
 from .errors import *
 from .versions import *
-from .utils import create_normal, generate_hash
-from .utils import process_normal, process_suggest, process_comment, process_note
+from .utils import *
 from django.utils import timezone
 from django.db import transaction
 from django.core.cache import cache
@@ -100,14 +99,14 @@ def do_send_invitation_email(
     document_id: int,
     who_id: int
     ):
-
+    print('called do_send_invitation_email...')
     try:
         document = Document.objects.get(id=document_id)
     except Document.DoesNotExist:
         raise DocumentDoesNotExistError(document_id)
     
     if not document.is_contributed_by(user_id):
-        raise UserIsNotContributorError(user_id, doc_id)
+        raise UserIsNotContributorError(user_id, document_id)
 
     if document.contributors.filter(id=who_id).exists():
         raise InvalidInvitationError()
@@ -121,16 +120,21 @@ def do_send_invitation_email(
     mail_subject = '[Busywrite] %s invited you to document \'%s\'' % (user.username, document.title)
     invite_route = 'invitation'
     invite_addr = 'http://busywrite.ribosome.kr/%s/%s' % (invite_route, salt)
-    mail_body = '<h2>Busywrite invitation</h2> <p> click <a href=\"%s\">this link</a> to accept invitation </p>' % invite_addr
+    mail_body = 'click this link to accept invitation:\n %s\n' % invite_addr
     # for debug.. please remove below code at practice!
     debug_addr = 'http://localhost:4200/%s/%s' % (invite_route, salt)
-    mail_body = mail_body + '<p> invitation at debug: <a href=\"%s\">this link</a> to accept invitation </p>' % debug_addr
+    mail_body = mail_body + '\n ' + debug_addr
     # for debug.. please remove above code at practice!
     
+    print('sending email to %s' % who_to_send.email)
+    print("subject:" + mail_subject)
     # send invitation mail
-    email = EmailMessage(mail_subject, mail_body, 'no-reply@busywrite.ribosome.kr', to=[who_to_send.email])
-    email.send(fail_silently=True)
-    
+    email = EmailMessage(mail_subject, mail_body, 'snubusywrite@naver.com', to=[who_to_send.email])
+    try:
+        email.send()
+    except Exception as e:
+        see_error(e)
+        raise
     # this return is only for testing. http does not use the value
     return salt
 
@@ -142,7 +146,7 @@ def do_add_contributor(salt_value):
         who = invitation.receiver
         invitation.delete()
     except InvitationHash.DoesNotExist:
-        raise InvalidInvitaionError()
+        raise InvalidInvitationError()
 
     if not document.contributors.filter(id=who.id).exists():
         document.contributors.add(who)

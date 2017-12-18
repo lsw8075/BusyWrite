@@ -12,7 +12,6 @@ export const initialState: UserState = {
     signedIn: false,
     loading: false,
     error: '',
-    // userId: 4,
    userId: -1,
 };
 
