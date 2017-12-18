@@ -28,12 +28,12 @@ export class SangjunBoardComponent implements OnInit, OnDestroy {
     @Input() bubbleList: Array<Bubble>;
     @Input() suggestBubbles: Array<SuggestBubble>;
     @Input() comments: Array<Comment>;
+    @Input() selectedSB: SuggestBubble;
 
     isOBChecked = true;
     isSBChecked = true;
     isCommentChecked = true;
     isWatching = false;
-    selectedSB: SuggestBubble;
 
     constructor(
         private _store: Store<fromDocument.State>,
@@ -91,7 +91,7 @@ export class SangjunBoardComponent implements OnInit, OnDestroy {
         }));
     }
     public getSuggestBubbleList(): Array<SuggestBubble> {
-        return this.suggestBubbles.filter(b => b.bindId === this.bubble.id);
+        return this.suggestBubbles.filter(b => (! b.hidden) && (b.bindId === this.bubble.id));
     }
 
     public getContentOfBubble(bubble: Bubble) {
@@ -99,7 +99,7 @@ export class SangjunBoardComponent implements OnInit, OnDestroy {
     }
 
     clickSuggestBubble(suggestBubble: SuggestBubble) {
-        this.selectedSB = suggestBubble;
+        this._store.dispatch(new BubbleAction.SelectSuggestBubble(suggestBubble));
     }
 
     clickSBThumbsUp(suggestBubble: SuggestBubble) {

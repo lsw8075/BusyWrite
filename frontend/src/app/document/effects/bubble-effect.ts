@@ -308,6 +308,13 @@ export class BubbleEffects {
             });
         });
 
+    @Effect()
+    hideSuggest$: Observable<Action> = this.action$.ofType<BubbleAction.HideSuggest>(BubbleAction.HIDE_SUGGEST)
+        .map(action => action.payload).mergeMap(query => {
+            return Observable.of(this.bubbleService.hideSuggestBubble(query))
+                .map(() => new BubbleAction.HideSuggestPending(null));
+        });
+
     getCookie(name) {
             const value = ';' + document.cookie;
             const parts = value.split(';' + name + '=');

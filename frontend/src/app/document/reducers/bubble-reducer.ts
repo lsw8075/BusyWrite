@@ -12,10 +12,11 @@ import * as _ from 'lodash';
 
 import {
     getBubbleById,
+    getSuggestBubbleById,
     isBubbleInList,
     mouseOverBubble,
     deleteBubble, popBubble, getContent, flattenBubble, createBubble,
-    editBubble, mergeBubble, wrapBubble, moveBubble, splitBubble} from './bubble-operation';
+    editBubble, mergeBubble, wrapBubble, moveBubble, splitBubble, switchBubble} from './bubble-operation';
 
 export enum ViewBoardMenuType {
     none = 1,
@@ -34,6 +35,7 @@ export interface BubbleState {
     commentList: Comment[];
     noteList: Note[];
 
+    selectedSB: SuggestBubble;
     selectedBubbleList: Bubble[];
     hoverBubbleList: Bubble[];
     selectedMenu: MenuType;
@@ -63,6 +65,7 @@ const initialState: BubbleState = {
     commentList: [],
     noteList: [],
 
+    selectedSB: null,
     selectedBubbleList: [],
     hoverBubbleList: [],
     selectedMenu: null,
@@ -85,6 +88,7 @@ const initialState: BubbleState = {
 
 export function BubbleReducer(state: BubbleState = initialState, action: fromBubble.Actions) {
     switch (action.type) {
+        case fromBubble.SELECT_SUGGEST_BUBBLE: case fromBubble.SELECT_SUGGEST_BUBBLE_CLEAR:
         case fromBubble.SELECT: case fromBubble.SELECT_CLEAR:
         case fromBubble.MOUSE_OVER: case fromBubble.MOUSE_OUT:
         case fromBubble.EDIT_BUBBLE_OPEN: case fromBubble.EDIT_BUBBLE_CLOSE:
@@ -111,6 +115,8 @@ export function BubbleReducer(state: BubbleState = initialState, action: fromBub
         case fromBubble.CREATE_SUGGEST: case fromBubble.CREATE_SUGGEST_COMPLETE: case fromBubble.CREATE_SUGGEST_ERROR:
         case fromBubble.EDIT_SUGGEST: case fromBubble.EDIT_SUGGEST_COMPLETE: case fromBubble.EDIT_SUGGEST_ERROR:
         case fromBubble.EDIT_SUGGEST_DISCARD: case fromBubble.EDIT_SUGGEST_DISCARD_COMPLETE:
+        case fromBubble.SWITCH_BUBBLE: case fromBubble.SWITCH_BUBBLE_COMPLETE: case fromBubble.SWITCH_BUBBLE_ERROR: case fromBubble.OTHERS_SWITCH_BUBBLE:
+        case fromBubble.HIDE_SUGGEST: case fromBubble.HIDE_SUGGEST_COMPLETE: case fromBubble.HIDE_SUGGEST_ERROR: case fromBubble.OTHERS_HIDE_SUGGEST:
             return BubbleOperationReducer(state, action);
 
         case fromBubble.CLEAR_ERROR:
@@ -135,6 +141,15 @@ export function BubbleReducer(state: BubbleState = initialState, action: fromBub
 function UIReducer(state: BubbleState, action: fromBubble.Actions) {
     const newBubbleList = _.cloneDeep(state);
     switch (action.type) {
+        case fromBubble.SELECT_SUGGEST_BUBBLE: {
+            const suggestBubble = action.payload;
+            console.log('selectedSB', suggestBubble);
+            return {...state, selectedSB: suggestBubble};
+        }
+        case fromBubble.SELECT_SUGGEST_BUBBLE_CLEAR: {
+            console.log('selectedSB clear');
+            return {...state, selectedSB: null};
+        }
         case fromBubble.SELECT:
             if (state.loading) {
                 return {...state, msg: 'loading...'};
@@ -616,12 +631,38 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
             const newEditSuggests = _.cloneDeep(state.editSuggests);
             const newSuggestBubbleList = _.cloneDeep(state.suggestBubbleList);
             state.suggestBubbleList.push(newEdittedSuggestBubble);
-            return {...state, loading: false, editSuggests: newEditSuggests, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
+            return {...state, loading: false, suggestBubbleList: newSuggestBubbleList, editSuggests: newEditSuggests, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
         }
         case fromBubble.EDIT_SUGGEST_ERROR:
             return {...state, loading: false, error: action.payload, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
+        case fromBubble.SWITCH_BUBBLE:
+            return {...state, loading: true, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
+        case fromBubble.SWITCH_BUBBLE_COMPLETE: {
+            const suggestBubbleId = action.payload;
+            const newBubbleList = _.cloneDeep(state.bubbleList);
+            const newSuggestBubbleList = _.cloneDeep(state.suggestBubbleList);
+            switchBubble(newBubbleList, newSuggestBubbleList, suggestBubbleId);
+            return {...state, loading: false, bubbleList: newBubbleList, suggestBubbleList: newSuggestBubbleList, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
+
+        }
+        case fromBubble.SWITCH_BUBBLE_ERROR:
+        case fromBubble.OTHERS_SWITCH_BUBBLE:
+
+        case fromBubble.HIDE_SUGGEST:
+            return {...state, loading: true, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
+        case fromBubble.HIDE_SUGGEST_COMPLETE:  {
+            const suggestBubbleId = action.payload;
+            const newSuggestBubbleList = _.cloneDeep(state.suggestBubbleList);
+            const suggestBubble = getSuggestBubbleById(newSuggestBubbleList, suggestBubbleId);
+            suggestBubble.hidden = true;
+            return {...state, loading: false, selectedSB: null, suggestBubbleList: newSuggestBubbleList, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
+        }
+        case fromBubble.HIDE_SUGGEST_ERROR:
+        case fromBubble.OTHERS_HIDE_SUGGEST:
         default:
             console.log('this should not be called', state, action);
             return state;
+
+
     }
 }

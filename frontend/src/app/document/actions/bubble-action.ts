@@ -132,6 +132,17 @@ export class LoadError implements Action {
   constructor(public payload: string) {}
 }
 
+export const SELECT_SUGGEST_BUBBLE = '[Suggest Bubble] select suggest bubble';
+export const SELECT_SUGGEST_BUBBLE_CLEAR = '[Suggest Bubble] select suggest bubble clear';
+export class SelectSuggestBubble implements Action {
+    readonly type = SELECT_SUGGEST_BUBBLE;
+    constructor(public payload: SuggestBubble) {}
+}
+export class SelectSuggestBubbleClear implements Action {
+    readonly type = SELECT_SUGGEST_BUBBLE_CLEAR;
+    constructor(public payload: void) {}
+}
+
 export const SELECT = '[Bubble] Select';
 export const SELECT_CLEAR = '[Bubble] Select Clear';
 export const MOUSE_OVER = '[Bubble] Mouse Over';
@@ -1159,6 +1170,8 @@ export type Actions =
   | LoadPending
   | LoadComplete
   | LoadError
+  | SelectSuggestBubble
+  | SelectSuggestBubbleClear
   | Select
   | SelectClear
   | MouseOver
