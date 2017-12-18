@@ -70,7 +70,7 @@ export class OthersCloseDocument implements Action {
 }
 
 export const OTHERS_ADDED_AS_CONTRIBUTOR = '[Document] contributor added';
-export class OthersAddedAsContributors implements Action {
+export class OthersAddedAsContributor implements Action {
     readonly type = OTHERS_ADDED_AS_CONTRIBUTOR;
     constructor(public payload: User) {}
 }
@@ -1085,6 +1085,7 @@ export type Actions =
   | CloseComplete
   | CloseError
   | OthersCloseDocument
+  | OthersAddedAsContributor
   | Load
   | LoadPending
   | LoadComplete

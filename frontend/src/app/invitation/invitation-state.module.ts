@@ -9,7 +9,7 @@ import { EffectsModule } from '@ngrx/effects';
 import { InvitationReducer } from './reducers/reducer';
 
 // Effects
-import { InvitationEffects } from './effects/Invitation-effect';
+import { InvitationEffects } from './effects/invitation-effect';
 
 // Service
 

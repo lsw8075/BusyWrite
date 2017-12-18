@@ -112,6 +112,13 @@ export class BubbleEffects {
             return Observable.of(new BubbleAction.EditRequestSuccess({bubbleId: query.id, userId: (query as LeafBubble).editLockHoder}));
         });
 
+    @Effect()
+    createSuggest$: Observable<Action> = this.action$.ofType<BubbleAction.CreateSuggest>(BubbleAction.CREATE_SUGGEST)
+        .map(action => action.payload).mergeMap(query => {
+            return Observable.of(this.bubbleService.createSuggestBubble(query.bindBubbleId, query.content))
+                .map(() => new BubbleAction.CreateSuggestPending(null));
+        });
+
     @Effect({dispatch: false})
     editRequestSuccess$: Observable<Action> = this.action$.ofType<BubbleAction.EditRequestSuccess>(BubbleAction.EDIT_REQUEST_SUCCESS)
         .withLatestFrom(this._store).mergeMap(([action, state]) => {
@@ -150,7 +157,7 @@ export class BubbleEffects {
     @Effect()
     editSuggest$: Observable<Action> = this.action$.ofType<BubbleAction.EditSuggest>(BubbleAction.EDIT_SUGGEST)
         .map(action => action.payload).mergeMap(query => {
-            return Observable.of(this.bubbleService.editSuggestBubble(query.suggestBubbleId, query.content))
+            return Observable.of(this.bubbleService.editSuggestBubble(query.bindSuggestBubbleId, query.content))
                 .map(() => new BubbleAction.EditSuggestPending(null));
         });
 
@@ -232,20 +239,6 @@ export class BubbleEffects {
             }
             return Observable.of(this.bubbleService.moveBubble(bubble.id, destParentBubble.id, location))
                 .map(() => new BubbleAction.MoveBubblePending(null));
-        });
-
-    @Effect()
-    editSuggest$: Observable<Action> = this.action$.ofType<BubbleAction.EditSuggest>(BubbleAction.EDIT_SUGGEST)
-        .map(action => action.payload).mergeMap(query => {
-            return Observable.of(this.bubbleService.editSuggestBubble(query.bindSuggestBubbleId, query.content))
-                .map(() => new BubbleAction.EditSuggestPending(null));
-        });
-
-    @Effect()
-    createSuggest$: Observable<Action> = this.action$.ofType<BubbleAction.CreateSuggest>(BubbleAction.CREATE_SUGGEST)
-        .map(action => action.payload).mergeMap(query => {
-            return Observable.of(this.bubbleService.createSuggestBubble(query.bindBubbleId, query.content))
-                .map(() => new BubbleAction.CreateSuggestPending(null));
         });
 
     @Effect()

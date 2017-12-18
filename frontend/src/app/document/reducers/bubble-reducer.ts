@@ -87,7 +87,7 @@ export function BubbleReducer(state: BubbleState = initialState, action: fromBub
 
         case fromBubble.OPEN: case fromBubble.OPEN_COMPLETE: case fromBubble.OPEN_ERROR: case fromBubble.OTHERS_OPEN_DOCUMENT:
         case fromBubble.CLOSE: case fromBubble.CLOSE_COMPLETE: case fromBubble.CLOSE_ERROR: case fromBubble.OTHERS_CLOSE_DOCUMENT:
-        case fromBubble.OTHERS_ADDED_AS_CONTRIBUTOR;
+        case fromBubble.OTHERS_ADDED_AS_CONTRIBUTOR:
         case fromBubble.LOAD: case fromBubble.LOAD_COMPLETE: case fromBubble.LOAD_ERROR:
         case fromBubble.POP_BUBBLE: case fromBubble.POP_BUBBLE_COMPLETE: case fromBubble.POP_BUBBLE_ERROR:
         case fromBubble.DELETE_BUBBLE: case fromBubble.DELETE_BUBBLE_COMPLETE: case fromBubble.DELETE_BUBBLE_ERROR:

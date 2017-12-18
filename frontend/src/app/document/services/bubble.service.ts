@@ -580,8 +580,8 @@ export class BubbleService implements OnDestroy {
             }
         } else if (command === 'someone_added_as_contributor') {
             if (accept == 'True') {
-                const user = BubbleJsonHelper.getUserObjects(JSON.stringify(body));
-                if (user.who === this.userId) {
+                const user = BubbleJsonHelper.getUserObject(JSON.stringify(body));
+                if (user.id === this.userId) {
                     // this cannot happen
                     console.log('someone added as contributor error: i am added');
                 } else {
