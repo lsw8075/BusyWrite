@@ -23,7 +23,7 @@ export class BoardFocusDirective {
   @HostListener('document:click', ['$event'])
   clickin(event) {
     if (this._elementRef.nativeElement.contains(event.target)) {
-        console.log(this.appBoardFocus, 'clicked inside');
+    //    console.log(this.appBoardFocus, 'clicked inside');
         this._store.dispatch(new BoardAction.Select(this.appBoardFocus));
     }
   }

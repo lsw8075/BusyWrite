@@ -50,6 +50,7 @@ export namespace BubbleJsonHelper {
 
     export function getSuggestBubbleObject(jsonString: string): SuggestBubble {
         const jsonObject = JSON.parse(jsonString);
+        console.log(jsonObject);
         const suggestBubble = new SuggestBubble(jsonObject.id, jsonObject.content);
         suggestBubble.thumbUps = jsonObject.voters.length;
         return suggestBubble;
@@ -90,7 +91,7 @@ export namespace BubbleJsonHelper {
         }
         return commentList;
     }
-    
+
     export function getNoteObject(jsonString: string): Note {
         const jsonObject = JSON.parse(jsonString);
         const note = new Note(jsonObject.id, jsonObject.document_id,
@@ -105,5 +106,5 @@ export namespace BubbleJsonHelper {
         }
         return noteList;
     }
- 
+
 }

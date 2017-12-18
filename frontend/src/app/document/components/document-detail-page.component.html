@@ -17,7 +17,7 @@
 
                 </div>
                 <div class="btn-group ml-2" role="group">
-                    <button type="button" [tooltip]="'add member'" placement="bottom" class="btn btn-sm btn-outline-secondary">
+                    <button type="button" [tooltip]="'add member'" (click)="addContributeropenModal(template)" placement="bottom" class="btn btn-sm btn-outline-secondary">
                         <i class="fa fa-fw fa-address-book"></i>
                     </button>
                     <button type="button" [tooltip]="'see all members'" placement="bottom" class="btn btn-sm btn-outline-secondary">
@@ -139,5 +139,27 @@
                 Create Note
             </button>
         </div>
+    </div>
+</ng-template>
+
+<ng-template #template>
+    <div class="modal-header">
+        <h4 class="modal-title pull-left container">
+            Add new member to your team!
+        </h4>
+        <button type="button" class="close pull-right" aria-label="Close" (click)="addContributerModalRef.hide()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form class="form-group" #f="ngForm" (ngSubmit)="addContributer(f)" novalidate>
+            <div class="form-group">
+                <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-address-book fa-fw"></i></span>
+                <input type="text" name="username" class="form-control input-lg" placeholder="Member username" required ngModel />
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-lg btn-block btn-shadow" (click)="addContributerModalRef.hide()">Invite</button>
+        </form>
     </div>
 </ng-template>

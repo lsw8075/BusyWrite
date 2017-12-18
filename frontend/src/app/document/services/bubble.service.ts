@@ -77,7 +77,7 @@ export class BubbleService implements OnDestroy {
                                 cons.push({
                                         'id': connectorId,
                                         'username': contributor.username,
-                                        'email': contributor.email
+                                        'email': contributor.email,
                                         });
                         }
                     }
@@ -149,7 +149,7 @@ export class BubbleService implements OnDestroy {
         } else if (command === 'create_suggest_bubble') {
             if (accept === 'True') {
                 console.log('received create_suggest_bubble success');
-                const suggestBubble = BubbleJsonHelper.getSuggestBubbleObject(JSON.stringify(body.content));
+                const suggestBubble = BubbleJsonHelper.getSuggestBubbleObject(JSON.stringify(body));
                 if (body.who === this.userId) {
                     this._store.dispatch(new BubbleAction.CreateSuggestComplete(suggestBubble));
                 } else {

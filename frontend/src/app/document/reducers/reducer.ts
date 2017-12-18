@@ -43,6 +43,7 @@ export const getSelectedMenu = createSelector(getBubbleState, (state: BubbleStat
 export const getSelectedBubbleList = createSelector(getBubbleState, (state: BubbleState) => state.selectedBubbleList);
 export const getHoverBubbleList = createSelector(getBubbleState, (state: BubbleState) => state.hoverBubbleList);
 export const getBubbleStateError = createSelector(getBubbleState, (state: BubbleState) => state.error);
+export const getBubbleStateMsg = createSelector(getBubbleState, (state: BubbleState) => state.msg);
 
 export const getViewBoardMenuState = createSelector(getBubbleState, (state: BubbleState) => state.viewBoardMenuType);
 

@@ -160,8 +160,9 @@ export const OTHERS_CREATE_SUGGEST = '[Suggest Bubble] others create';
 export class CreateSuggest implements Action {
     readonly type = CREATE_SUGGEST;
     constructor(public payload: {
-        bindedBubbleId: number,
-        content: string}) {}
+        bindBubbleId: number,
+        content: string
+    }) {}
 }
 export class CreateSuggestPending implements Action {
     readonly type = CREATE_SUGGEST_PENDING;
@@ -189,7 +190,7 @@ export const OTHERS_CREATE_COMMENT_ON_BUBBLE = '[Comment on Bubble] others creat
 export class CreateCommentOnBubble implements Action {
     readonly type = CREATE_COMMENT_ON_BUBBLE;
     constructor(public payload: {
-            bindedBubbleId: number,
+            bindBubbleId: number,
             content: string
             }) {}
 }
@@ -218,7 +219,7 @@ export const OTHERS_CREATE_COMMENT_ON_SUGGEST = '[Comment on Suggest] others cre
 export class CreateCommentOnSuggest implements Action {
     readonly type = CREATE_COMMENT_ON_SUGGEST;
     constructor(public payload: {
-            bindedSuggestBubbleId: number,
+            bindSuggestBubbleId: number,
             content: string
             }) {}
 }
@@ -389,8 +390,9 @@ export const OTHERS_EDIT_SUGGEST = '[Suggest Bubble] others edit suggest';
 export class EditSuggest implements Action {
     readonly type = EDIT_SUGGEST;
     constructor(public payload: {
-            suggestBubbleId: number,
-            content: string}) {}
+        bindSuggestBubbleId: number,
+        content: string,
+    }) {}
 }
 export class EditSuggestPending implements Action {
     readonly type = EDIT_SUGGEST_PENDING;
@@ -932,7 +934,7 @@ export class ExportNoteAsBubble implements Action {
     readonly type = EXPORT_NOTE_AS_BUBBLE;
     constructor(public payload: {
         parentId: number,
-        loc : number,
+        loc: number,
         noteId: number}) {}
 }
 export class ExportNoteAsBubblePending implements Action {
@@ -960,7 +962,7 @@ export const OTHERS_EXPORT_NOTE_AS_SUGGEST = '[Note] others export as suggest bu
 export class ExportNoteAsSuggest implements Action {
     readonly type = EXPORT_NOTE_AS_SUGGEST;
     constructor(public payload: {
-        bindedBubbleId: number,
+        bindBubbleId: number,
         noteId: number}) {}
 }
 export class ExportNoteAsSuggestPending implements Action {
@@ -988,7 +990,7 @@ export const OTHERS_EXPORT_NOTE_AS_COMMENT_ON_BUBBLE = '[Note] others export as 
 export class ExportNoteAsCommentOnBubble implements Action {
     readonly type = EXPORT_NOTE_AS_COMMENT_ON_BUBBLE;
     constructor(public payload: {
-        bindedBubbleId: number,
+        bindBubbleId: number,
         noteId: number}) {}
 }
 export class ExportNoteAsCommentOnBubblePending implements Action {
@@ -1016,7 +1018,7 @@ export const OTHERS_EXPORT_NOTE_AS_COMMENT_ON_SUGGEST = '[Note] others export as
 export class ExportNoteAsCommentOnSuggest implements Action {
     readonly type = EXPORT_NOTE_AS_COMMENT_ON_SUGGEST;
     constructor(public payload: {
-        bindedSuggestBubbleId: number,
+        bindSuggestBubbleId: number,
         noteId: number}) {}
 }
 export class ExportNoteAsCommentOnSuggestPending implements Action {
@@ -1036,6 +1038,24 @@ export class OthersExportNoteAsCommentOnSuggest implements Action {
     constructor(public payload: Comment) {}
 }
 
+
+
+export const ADD_CONTRIBUTER_REQUEST = '[contributer] http request';
+export const ADD_CONTRIBUTER_REQUEST_SUCCESS = '[contributer] add http request success';
+export const ADD_CONTRIBUTER_REQUEST_FAIL = '[contributer] add http request fail';
+export class AddContributerRequest implements Action {
+    readonly type = ADD_CONTRIBUTER_REQUEST;
+    constructor(public payload: string) {}
+}
+export class AddContributerRequestSuccess implements Action {
+    readonly type = ADD_CONTRIBUTER_REQUEST_SUCCESS;
+    constructor(public payload: string) {}
+}
+export class AddContributerRequestFail implements Action {
+    readonly type = ADD_CONTRIBUTER_REQUEST_FAIL;
+    constructor(public payload: string) {}
+}
+
 export const REFRESH = '[Bubble] refresh';
 export class Refresh implements Action {
   readonly type = REFRESH;
@@ -1043,9 +1063,14 @@ export class Refresh implements Action {
 }
 
 export const CLEAR_ERROR = '[Board] clear error';
+export const CLEAR_MSG = '[message] clear';
 export class ClearError implements Action {
     readonly type = CLEAR_ERROR;
     constructor(public payload ?: void) {}
+}
+export class ClearMsg implements Action {
+    readonly type = CLEAR_MSG;
+    constructor() {}
 }
 
 export type Actions =
@@ -1227,4 +1252,8 @@ export type Actions =
   | ExportNoteAsCommentOnSuggestError
   | OthersExportNoteAsCommentOnSuggest
   | Refresh
-  | ClearError;
+  | ClearError
+  | ClearMsg
+  | AddContributerRequest
+  | AddContributerRequestSuccess
+  | AddContributerRequestFail;

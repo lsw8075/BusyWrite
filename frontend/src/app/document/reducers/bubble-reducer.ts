@@ -39,12 +39,15 @@ export interface BubbleState {
 
     viewBoardMenuType: ViewBoardMenuType;
 
+    editSuggests: Array<{isBindSuggest: boolean, bindBubbleId: number, content: string}>
+
     editBubbleId: number;
     editBubbleString: string;
     editActiveBubbleIds: Array<number>;
 
     loading: boolean;
     error: string;
+    msg: string;
 
     request: number;
 }
@@ -63,12 +66,15 @@ const initialState: BubbleState = {
 
     viewBoardMenuType: ViewBoardMenuType.none,
 
+    editSuggests: [],
+
     editBubbleId: -1,
-    editBubbleString: "",
+    editBubbleString: '',
     editActiveBubbleIds: [],
 
     loading: false,
     error: '',
+    msg: '',
 
     request: -1,
 };
@@ -97,10 +103,23 @@ export function BubbleReducer(state: BubbleState = initialState, action: fromBub
         case fromBubble.SPLIT_LEAF_START: case fromBubble.SPLIT_LEAF: case fromBubble.SPLIT_LEAF_COMPLETE: case fromBubble.SPLIT_LEAF_ERROR:
         case fromBubble.MOVE_BUBBLE_START: case fromBubble.MOVE_BUBBLE: 
         case fromBubble.MOVE_BUBBLE_COMPLETE: case fromBubble.MOVE_BUBBLE_ERROR:
+        case fromBubble.CREATE_SUGGEST: case fromBubble.CREATE_SUGGEST_COMPLETE: case fromBubble.CREATE_SUGGEST_ERROR:
+        case fromBubble.EDIT_SUGGEST: case fromBubble.EDIT_SUGGEST_COMPLETE: case fromBubble.EDIT_SUGGEST_ERROR:
             return BubbleOperationReducer(state, action);
 
         case fromBubble.CLEAR_ERROR:
-            return {...state, error: ''};
+            return {...state, error: '' };
+
+        case fromBubble.CLEAR_MSG:
+            return {...state, msg: '' };
+
+        // invitation
+        case fromBubble.ADD_CONTRIBUTER_REQUEST:
+            return {...state};
+        case fromBubble.ADD_CONTRIBUTER_REQUEST_SUCCESS:
+            return {...state, msg: action.payload };
+        case fromBubble.ADD_CONTRIBUTER_REQUEST_FAIL:
+            return {...state, error: action.payload };
 
         default:
             return state;
@@ -168,7 +187,7 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
         /********/
 
         case fromBubble.OPEN:
-            return {...initialState, loading: true}
+            return {...initialState, loading: true};
         case fromBubble.OPEN_COMPLETE:
             return {...state, loading: false, documentObject: action.payload.documentObject,
                 connectors: action.payload.connectors}
@@ -194,11 +213,11 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
         /*********/
 
         case fromBubble.CLOSE:
-            return {...state, loading: true}
+            return {...state, loading: true };
         case fromBubble.CLOSE_COMPLETE:
             return {...state, loading: false, documentId: -1};
         case fromBubble.CLOSE_ERROR:
-            return {...state, loading: false, error: action.payload}
+            return {...state, loading: false, error: action.payload };
         case fromBubble.OTHERS_CLOSE_DOCUMENT:
             const deleteConnectors = _.cloneDeep(state.connectors);
             try {
@@ -214,7 +233,7 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
                     }
                 }
                 throw new Error('cannot find delete connector in connectors')
-            } catch (err){ 
+            } catch (err){
             }
             return {...state, connectors: deleteConnectors};
  
@@ -236,14 +255,24 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
         case fromBubble.LOAD:
             return {...state, loading: true, documentId: action.payload};
         case fromBubble.LOAD_COMPLETE: {
-            console.log(action.payload);
-            return {...state, bubbleList: [...action.payload.bubbleList],
-                suggestBubbleList: [action.payload.suggestBubbleList], commentLIst: [action.payload.commentList],
-                noteList: [action.payload.noteList], loading: false};
+            // const suggestBubble = new SuggestBubble(999, "<p>This is a new suggestBubble</p>");
+            const newBubbleList = _.cloneDeep(action.payload.bubbleList);
+            const newSuggestBubbleList = _.cloneDeep(action.payload.suggestBubbleList);
+            // newSuggestBubbleList.push(suggestBubble);
+            // const bubble = getBubbleById(newBubbleList, 879);
+            // bubble.suggestBubbleIds.push(999);
+            // state.editSuggests.push({bindBubbleId: 879, content: "this is binded with 879 bubble", isBindSuggest: false});
+            // state.editSuggests.push({bindBubbleId: 999, content: "this is binded with 999 suggest bubble", isBindSuggest: true});
+            console.log(newBubbleList);
+            console.log(newSuggestBubbleList);
+            return {...state, bubbleList: [...newBubbleList],
+                suggestBubbleList: [...newSuggestBubbleList], commentList: [...action.payload.commentList],
+                noteList: [...action.payload.noteList],
+                editSuggests: [...state.editSuggests],
+                loading: false};
         }
         case fromBubble.LOAD_ERROR:
             return {...state, error: action.payload, loading:false, documentId: -1};
-        
 
         /**********/
         /* CREATE */
@@ -315,13 +344,26 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
         }
 
         case fromBubble.EDIT_COMPLETE:
-            console.log('EDIT_COMPLETE');
             return {...state, loading: true, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
-        case fromBubble.EDIT_COMPLETE_SUCCESS:
-            return {...state, loading: false};
+        case fromBubble.EDIT_COMPLETE_SUCCESS: {
+            const bubbleId = action.payload.bubbleId;
+            const content = action.payload.content;
+            console.log(bubbleId, content);
+            const bubble = getBubbleById(state.bubbleList, bubbleId) as LeafBubble;
+            bubble.content = content;
+            bubble.editLockHoder = null;
+            const newBubbleList = _.cloneDeep(state.bubbleList);
+            return {...state, bubbleList: newBubbleList, loading: false, editBubbleId: -1, editBubbleString: ""};
+        }
         case fromBubble.OTHERS_EDIT_COMPLETE:
-            // TODO: edit this
-            return {...state, };
+            const bubbleId = action.payload.bubbleId;
+            const content = action.payload.content;
+            console.log(bubbleId, content);
+            const bubble = getBubbleById(state.bubbleList, bubbleId) as LeafBubble;
+            bubble.content = content;
+            bubble.editLockHoder = null;
+            const newBubbleList = _.cloneDeep(state.bubbleList);
+            return {...state, bubbleList: newBubbleList};
 
         case fromBubble.EDIT_DISCARD:
             return {...state, loading: true, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
@@ -346,10 +388,7 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
         }
         case fromBubble.EDIT_BUBBLE_ERROR:
             return {...state, loading: false, error: action.payload, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
- 
-        case fromBubble.EDIT_SUGGEST:
-            //TODO
-            return {...state, loading: true};
+
 
         /*******/
         /* POP */
@@ -458,6 +497,22 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
         case fromBubble.MOVE_BUBBLE_ERROR:
             return {...state, loading: false, error: action.payload, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
 
+        case fromBubble.CREATE_SUGGEST:
+            return {...state, loading: true, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
+        case fromBubble.CREATE_SUGGEST_COMPLETE: {
+            console.log('CREATE_SUGGEST_COMPLETE', action.payload);
+            return {...state, loading: false, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
+        }
+        case fromBubble.CREATE_SUGGEST_ERROR:
+            return {...state, loading: false, error: action.payload, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
+        case fromBubble.EDIT_SUGGEST:
+            return {...state, loading: true, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
+        case fromBubble.EDIT_SUGGEST_COMPLETE: {
+            console.log('EDIT_SUGGEST_COMPLETE', action.payload);
+            return {...state, loading: false, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
+        }
+        case fromBubble.EDIT_SUGGEST_ERROR:
+            return {...state, loading: false, error: action.payload, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
         default:
             console.log('this should not be called', state, action);
             return state;
