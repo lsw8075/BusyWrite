@@ -70,6 +70,8 @@ export const getDocumentConnectors = createSelector(getBubbleState, (state: Bubb
 // suggest bubble
 export const getSangjunBoardState = createSelector(getDocumentState, (state: State) => state.sangjun);
 export const getSangjunBubble = createSelector(getSangjunBoardState, (state: SangjunBubbleState) => state.bubble);
+export const getSuggestBubbles = createSelector(getBubbleState, (state: BubbleState) => state.suggestBubbleList);
+export const getComments = createSelector(getBubbleState, (state: BubbleState) => state.commentList);
 
 // edit board
 export const getUserState = createFeatureSelector<State>('user');

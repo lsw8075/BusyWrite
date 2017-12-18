@@ -122,16 +122,20 @@ export class SuggestBubble {
   isMouseOver: boolean;
   isSelected: boolean;
 
+  bindId: number;
+
   constructor(
     id: number,
     content: string,
+    bindId: number,
     commentIds: Array<number> = [],
-    thumbUps: number = 0
+    thumbUps: number = 0,
   ) {
     // must initialize all attributes
     this.type = BubbleType.suggestBubble;
     this.id = id;
     this.content = content;
+    this.bindId = bindId;
     this.commentIds = commentIds;
     this.thumbUps = thumbUps;
   }

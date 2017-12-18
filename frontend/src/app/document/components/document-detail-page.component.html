@@ -98,6 +98,9 @@
                 <div *ngSwitchCase="boardType.suggest">
                     <app-sangjun-board
                         [bubble]="sangjunBubble$ | async"
+                        [bubbleList]="bubbleList$ | async"
+                        [suggestBubbles]="suggestBubbles$ | async"
+                        [comments]="comments$ | async"
                     ></app-sangjun-board>
                 </div>
                 <div *ngSwitchCase="boardType.filter">
@@ -142,6 +145,15 @@
                 Create Note
             </button>
         </div>
+     <!--   <div *ngSwitchCase="boardType.suggest">
+            <button type="button" [tooltip]="'create new suggest bubble'" placement="bottom" class="btn btn-sm btn-info">
+                <span class="fa-stack fa-fw">
+                    <i class="fa fa-fw fa-comment-o fa-stack-2x"></i>
+                    <i class="fa fa-fw fa-plus fa-stack-1x"></i>
+                </span>
+                Create New Suggest Bubble
+            </button>
+        </div>-->
     </div>
 </ng-template>
 
