@@ -73,7 +73,8 @@ def req_document_contributors(request, document_id):
     elif method == 'POST':
         try:
             user_to_add = data['user_to_add']
-            do_send_invitation_email(user_id, document_id, who_id)
+            who = User.objects.get(username=user_to_add) 
+            do_send_invitation_email(user_id, document_id, who.id)
         except Exception as e:
             see_error(e)
             return HttpResponse(status=400)

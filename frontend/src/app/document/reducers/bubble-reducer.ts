@@ -46,6 +46,7 @@ export interface BubbleState {
 
     loading: boolean;
     error: string;
+    msg: string;
 
     request: number;
 }
@@ -72,6 +73,7 @@ const initialState: BubbleState = {
 
     loading: false,
     error: '',
+    msg: '',
 
     request: -1,
 };
@@ -104,7 +106,18 @@ export function BubbleReducer(state: BubbleState = initialState, action: fromBub
             return BubbleOperationReducer(state, action);
 
         case fromBubble.CLEAR_ERROR:
-            return {...state, error: ''};
+            return {...state, error: '' };
+
+        case fromBubble.CLEAR_MSG:
+            return {...state, msg: '' };
+
+        // invitation
+        case fromBubble.ADD_CONTRIBUTER_REQUEST:
+            return {...state};
+        case fromBubble.ADD_CONTRIBUTER_REQUEST_SUCCESS:
+            return {...state, msg: action.payload };
+        case fromBubble.ADD_CONTRIBUTER_REQUEST_FAIL:
+            return {...state, error: action.payload };
 
         default:
             return state;
@@ -183,16 +196,16 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
                 //     }
                 //     break;
                 // }
-                throw new Error('cannot find new connector in contributors')
+                throw new Error('cannot find new connector in contributors');
             } catch {
             }
-            return {...state, connectors: addConnectors}
+            return {...state, connectors: addConnectors };
         case fromBubble.CLOSE:
-            return {...state, loading: true}
+            return {...state, loading: true };
         case fromBubble.CLOSE_COMPLETE:
             return {...state, loading: false, documentId: -1};
         case fromBubble.CLOSE_ERROR:
-            return {...state, loading: false, error: action.payload}
+            return {...state, loading: false, error: action.payload };
         case fromBubble.OTHERS_CLOSE_DOCUMENT:
             const deleteConnectors = _.cloneDeep(state.connectors);
             try {
@@ -231,7 +244,7 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
                 loading: false};
         }
         case fromBubble.LOAD_ERROR:
-            return {...state, error: action.payload, loading:false, documentId: -1};
+            return {...state, error: action.payload, loading: false, documentId: -1};
         case fromBubble.POP_BUBBLE:
             return {...state, loading: true, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
         case fromBubble.POP_BUBBLE_COMPLETE: {

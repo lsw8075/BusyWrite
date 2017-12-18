@@ -1032,8 +1032,18 @@ export class OthersExportNoteAsCommentOnSuggest implements Action {
 
 
 export const ADD_CONTRIBUTER_REQUEST = '[contributer] http request';
+export const ADD_CONTRIBUTER_REQUEST_SUCCESS = '[contributer] add http request success';
+export const ADD_CONTRIBUTER_REQUEST_FAIL = '[contributer] add http request fail';
 export class AddContributerRequest implements Action {
     readonly type = ADD_CONTRIBUTER_REQUEST;
+    constructor(public payload: string) {}
+}
+export class AddContributerRequestSuccess implements Action {
+    readonly type = ADD_CONTRIBUTER_REQUEST_SUCCESS;
+    constructor(public payload: string) {}
+}
+export class AddContributerRequestFail implements Action {
+    readonly type = ADD_CONTRIBUTER_REQUEST_FAIL;
     constructor(public payload: string) {}
 }
 
@@ -1044,9 +1054,14 @@ export class Refresh implements Action {
 }
 
 export const CLEAR_ERROR = '[Board] clear error';
+export const CLEAR_MSG = '[message] clear';
 export class ClearError implements Action {
     readonly type = CLEAR_ERROR;
     constructor(public payload ?: void) {}
+}
+export class ClearMsg implements Action {
+    readonly type = CLEAR_MSG;
+    constructor() {}
 }
 
 export type Actions =
@@ -1229,4 +1244,7 @@ export type Actions =
   | OthersExportNoteAsCommentOnSuggest
   | Refresh
   | ClearError
-  | AddContributerRequest;
+  | ClearMsg
+  | AddContributerRequest
+  | AddContributerRequestSuccess
+  | AddContributerRequestFail;

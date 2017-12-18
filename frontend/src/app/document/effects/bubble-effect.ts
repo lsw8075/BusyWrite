@@ -1,3 +1,12 @@
+import { Injectable, InjectionToken, Optional, Inject } from '@angular/core';
+import { Http, Headers } from '@angular/http';
+import { Effect, Actions } from '@ngrx/effects';
+import { Action, Store } from '@ngrx/store';
+import { Observable } from 'rxjs/Observable';
+import { Scheduler } from 'rxjs/Scheduler';
+import { async } from 'rxjs/scheduler/async';
+import { empty } from 'rxjs/observable/empty';
+import { of } from 'rxjs/observable/of';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/switchMap';
@@ -6,14 +15,6 @@ import 'rxjs/add/operator/skip';
 import 'rxjs/add/operator/takeUntil';
 import 'rxjs/add/operator/toPromise';
 import 'rxjs/add/operator/mergeMap';
-import { Injectable, InjectionToken, Optional, Inject } from '@angular/core';
-import { Effect, Actions } from '@ngrx/effects';
-import { Action, Store } from '@ngrx/store';
-import { Observable } from 'rxjs/Observable';
-import { Scheduler } from 'rxjs/Scheduler';
-import { async } from 'rxjs/scheduler/async';
-import { empty } from 'rxjs/observable/empty';
-import { of } from 'rxjs/observable/of';
 import 'rxjs/add/observable/of';
 import 'rxjs/observable/of';
 import 'rxjs/add/observable/fromPromise';
@@ -41,6 +42,8 @@ import {
 
 @Injectable()
 export class BubbleEffects {
+
+    private tokenUrl = '/api/token';
 
     @Effect({dispatch: true})
     open$: Observable<Action> = this.action$.ofType<BubbleAction.Open>(BubbleAction.OPEN)
@@ -99,7 +102,7 @@ export class BubbleEffects {
             if (! action.payload.isAbove) {
                 loc++;
             }
-            return Observable.of(this.bubbleService.createBubble(parentBubble.id, loc, "new empty"))
+            return Observable.of(this.bubbleService.createBubble(parentBubble.id, loc, 'new empty'))
                 .map(() => new BubbleAction.CreateBubblePending(null));
         });
 
@@ -238,9 +241,46 @@ export class BubbleEffects {
                 .map(() => new BubbleAction.CreateSuggestPending(null));
         });
 
+    @Effect()
+    addContributer$: Observable<Action> = this.action$.ofType<BubbleAction.AddContributerRequest>(BubbleAction.ADD_CONTRIBUTER_REQUEST)
+        .withLatestFrom(this._store).mergeMap(([action, state]) => {
+            const headers = new Headers({'Content-Type': 'application/json'});
+            const username = action.payload;
+            const routerState = (state as any).router.state;
+            const documentId = routerState.params.id;
+            return this._http.get(this.tokenUrl).toPromise().then(() => headers.append('X-CSRFToken', this.getCookie('csrftoken')))
+            .then(() => this._http.post(
+                `/api/document/contributors/${documentId}`,
+                JSON.stringify({'user_to_add': username}),
+                {headers: headers})
+            .toPromise().then(res => {
+                const status = res.status;
+                if (status === 201) {
+                    return new BubbleAction.AddContributerRequestSuccess('invitation sent');
+                } else {
+                    return new BubbleAction.AddContributerRequestFail('something got wrong >< please restart service');
+                }
+            })).catch((res) => {
+                if (res.status === 400) {
+                    return new BubbleAction.AddContributerRequestFail('your invitation was not sent');
+                } else {
+                    return new BubbleAction.AddContributerRequestFail('something got wrong >< please restart service');
+                }
+            });
+        });
+
+    getCookie(name) {
+            const value = ';' + document.cookie;
+            const parts = value.split(';' + name + '=');
+            if (parts.length === 2) {
+                return parts.pop().split(';').shift();
+            }
+        }
+
     constructor(
         private action$: Actions,
         private _store: Store<fromDocument.State>,
-        private bubbleService: BubbleService
+        private bubbleService: BubbleService,
+        private _http: Http
     ) {}
 }
