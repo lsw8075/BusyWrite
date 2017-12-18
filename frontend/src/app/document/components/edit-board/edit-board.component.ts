@@ -5,7 +5,7 @@ import { Note, NoteService, BoardService } from './service';
 import { EventBubbleService } from './service';
 
 import { Board } from '../../models/board';
-import { LeafBubble, Bubble, BubbleType } from '../../models/bubble';
+import { LeafBubble, Bubble, BubbleType, SuggestBubble } from '../../models/bubble';
 
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
@@ -25,7 +25,7 @@ import * as _ from 'lodash';
 export class EditBoardComponent implements OnInit, OnDestroy {
 
     notes$: Observable<Array<Note>>;
-    editBubbles$: Observable<Array<Bubble>>;
+    editSuggests: Array<{isBindSuggest: boolean, bindBubbleId: number, content: string}>;
     editBubbles: Array<Bubble>;
     editBubbleId: number;
     editBubbleString: string;
@@ -38,7 +38,6 @@ export class EditBoardComponent implements OnInit, OnDestroy {
         private _noteService: NoteService,
         private _boardService: BoardService,
         private _eventBubbleService: EventBubbleService) {
-        this.editBubbles$ = this._store.select(fromDocument.getEditBubbles);
         this._store.select(fromDocument.getEditBubbles).subscribe((editBubbles) => {
             if (! this.isEditting) {
                 this.editBubbles = _.cloneDeep(editBubbles);
@@ -46,6 +45,7 @@ export class EditBoardComponent implements OnInit, OnDestroy {
             }
         });
         this._store.select(fromDocument.getBubbleState).subscribe((bubbleState) => {
+            this.editSuggests = editSuggests;
             this.editBubbleId = bubbleState.editBubbleId;
             this.editBubbleString = bubbleState.editBubbleString;
             this.loading = bubbleState.loading;
@@ -75,17 +75,17 @@ export class EditBoardComponent implements OnInit, OnDestroy {
     // console.log('new item');
   }
 
-  public focusEditItem(bubble: Bubble, focused: boolean) {
-      console.log(bubble.id, focused);
-      if (focused) {
-          this.isEditting = true;
-          const content = (bubble as LeafBubble).content;
-          this._store.dispatch(new BubbleAction.EditUpdateResume({bubbleId: bubble.id, content: content}));
-      } else {
-          this.isEditting = false;
-      }
+    public focusEditItem(bubble: Bubble, focused: boolean) {
+        console.log(bubble.id, focused);
+        if (focused) {
+            this.isEditting = true;
+            const content = (bubble as LeafBubble).content;
+            this._store.dispatch(new BubbleAction.EditUpdateResume({bubbleId: bubble.id, content: content}));
+        } else {
+            this.isEditting = false;
+        }
     // this._eventBubbleService.edittedBubble = (focused) ? editItem.bubble : null;
-  }
+    }
 
   public updateEditItem(bubble: Bubble, updateString: string) {
       this.updateString = updateString;

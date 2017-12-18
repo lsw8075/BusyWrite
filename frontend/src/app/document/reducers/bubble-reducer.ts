@@ -38,6 +38,8 @@ export interface BubbleState {
 
     viewBoardMenuType: ViewBoardMenuType;
 
+    editSuggests: Array<{isBindSuggest: boolean, bindBubbleId: number, content: string}>
+
     editBubbleId: number;
     editBubbleString: string;
     editActiveBubbleIds: Array<number>;
@@ -61,6 +63,8 @@ const initialState: BubbleState = {
     selectedMenu: null,
 
     viewBoardMenuType: ViewBoardMenuType.none,
+
+    editSuggests: [],
 
     editBubbleId: -1,
     editBubbleString: "",
@@ -172,7 +176,7 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
             const addConnectors = _.cloneDeep(state.connectors);
             try {
                 for (const contributor of state.contributors) {
-                    if (action.payload === contributor.id) {                 
+                    if (action.payload === contributor.id) {
                         addConnectors.push(contributor);
                     }
                     break;
@@ -202,16 +206,23 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
                     }
                 }
                 throw new Error('cannot find delete connector in connectors')
-            } catch (err){ 
+            } catch (err){
             }
             return {...state, connectors: deleteConnectors};
         case fromBubble.LOAD:
             return {...state, loading: true, documentId: action.payload};
         case fromBubble.LOAD_COMPLETE: {
-            console.log(action.payload);
-            return {...state, bubbleList: [...action.payload.bubbleList],
-                suggestBubbleList: [action.payload.suggestBubbleList], commentLIst: [action.payload.commentList],
-                noteList: [action.payload.noteList], loading: false};
+            const suggestBubble = new SuggestBubble(999, "<p>This is a new suggestBubble</p>");
+            const newBubbleList = _.cloneDeep(action.payload.bubbleList);
+            const newSuggestBubbleList = _.cloneDeep(action.payload.suggestBubbleList);
+            newSuggestBubbleList.push(suggestBubble);
+            const bubble = getBubbleById(newBubbleList, 879);
+            bubble.suggestBubbleIds.push(999);
+            console.log(newBubbleList);
+            console.log(newSuggestBubbleList);
+            return {...state, bubbleList: [...newBubbleList],
+                suggestBubbleList: [...newSuggestBubbleList], commentList: [...action.payload.commentList],
+                noteList: [...action.payload.noteList], loading: false};
         }
         case fromBubble.LOAD_ERROR:
             return {...state, error: action.payload, loading:false, documentId: -1};
@@ -279,10 +290,17 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
             return {...state, bubbleList: newBubbleList, loading: false, editBubbleId: bubbleId, editBubbleString: content};
     //        return {...state, loading: false};
         case fromBubble.EDIT_COMPLETE:
-            console.log('EDIT_COMPLETE');
             return {...state, loading: true, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
-        case fromBubble.EDIT_COMPLETE_SUCCESS:
-            return {...state, loading: false};
+        case fromBubble.EDIT_COMPLETE_SUCCESS: {
+            const bubbleId = action.payload.bubbleId;
+            const content = action.payload.content;
+            console.log(bubbleId, content);
+            const bubble = getBubbleById(state.bubbleList, bubbleId) as LeafBubble;
+            bubble.content = content;
+            bubble.editLockHoder = null;
+            const newBubbleList = _.cloneDeep(state.bubbleList);
+            return {...state, bubbleList: newBubbleList, loading: false, editBubbleId: -1, editBubbleString: ""};
+        }
         case fromBubble.EDIT_DISCARD:
             return {...state, loading: true, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
         case fromBubble.EDIT_DISCARD_SUCCESS: {

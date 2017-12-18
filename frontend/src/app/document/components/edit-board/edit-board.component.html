@@ -5,7 +5,7 @@
                 Edit
             </div>
         </ng-template>
-        <div *ngIf="editBubbles$ | async as editBubbles1">
+        <div *ngIf="editBubbles">
             <accordion>
                 <ng-container *ngFor="let editBubble of editBubbles">
                     <accordion-group is-open="true" #group>
