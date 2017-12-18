@@ -122,12 +122,15 @@ export class SuggestBubble {
   isMouseOver: boolean;
   isSelected: boolean;
 
+  hidden: boolean;
+
   bindId: number;
 
   constructor(
     id: number,
     content: string,
     bindId: number,
+    hidden: boolean = false,
     commentIds: Array<number> = [],
     thumbUps: number = 0,
   ) {
@@ -136,6 +139,7 @@ export class SuggestBubble {
     this.id = id;
     this.content = content;
     this.bindId = bindId;
+    this.hidden = hidden;
     this.commentIds = commentIds;
     this.thumbUps = thumbUps;
   }

@@ -1,13 +1,13 @@
-<div *ngIf=suggestBubble>
+<div *ngIf=selectedSB>
   <button type="button" class="btn btn-primary btn-sm" (click)="clickBackButton()">
     <i class="fa fa-angle-left"></i>
     Back
   </button>
 
   <div>
-    <h3>Suggest Bubble {{suggestBubble.id}}'s Details</h3>
+    <h3>Suggest Bubble {{selectedSB.id}}'s Details</h3>
 
-    <p class="content">{{suggestBubble.content}}</p>
+    <p class="content" [innerHTML]="selectedSB.content"></p>
 
     <button type="button" class="btn btn-primary btn-sm" (click)="clickSwitch()">
       <i class="fa fa-retweet fa-fw"></i>
@@ -25,7 +25,7 @@
       <i class="fa fa-thumbs-up fa-fw"></i>
       Thumbs up
     </button>
-    {{suggestBubble.thumbUps}}
+    {{selectedSB.thumbUps}}
   </div>
   <br>
 

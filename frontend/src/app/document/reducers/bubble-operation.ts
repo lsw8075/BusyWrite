@@ -1,6 +1,14 @@
 // space for only! pure functions
-import { Bubble, BubbleType, InternalBubble, LeafBubble } from '../models/bubble';
+import { Bubble, BubbleType, InternalBubble, LeafBubble, SuggestBubble } from '../models/bubble';
 import { MenuType } from '../services/event/event-bubble.service';
+
+export function getSuggestBubbleById(suggestBubbleList: Array<SuggestBubble>, id: number): SuggestBubble {
+    const sbList = suggestBubbleList.filter((sb) => (sb.id === id));
+    if (sbList.length === 0) {
+        throw new Error(`Does not exist with this id: ${id}`);
+    }
+    return sbList[0];
+}
 
 export function getBubbleById(bubbleList: Array<Bubble>, id: number): Bubble {
     const bList = bubbleList.filter((bubble) => (bubble.id === id));
@@ -338,5 +346,17 @@ export function splitBubble(bubbleList: Array<Bubble>, id: number, splitBubbleLi
     } catch (err) {
         console.log(err);
     //    throw err;
+    }
+}
+
+export function switchBubble(bubbleList: Array<Bubble>, suggestBubbleList: Array<SuggestBubble>, suggestBubbleId: number) {
+    try {
+        console.log('[before switch]');
+        console.log(bubbleList);
+        console.log(suggestBubbleList);
+        console.log(suggestBubbleId);
+        console.log('[after switch]');
+    } catch (err) {
+        console.log(err);
     }
 }
