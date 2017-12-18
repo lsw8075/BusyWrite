@@ -45,6 +45,7 @@ export interface BubbleState {
     editBubbleId: number;
     editBubbleString: string;
     editActiveBubbleIds: Array<number>;
+    createEditBubbleIds: Array<number>;
 
     loading: boolean;
     error: string;
@@ -74,6 +75,7 @@ const initialState: BubbleState = {
     editBubbleId: -1,
     editBubbleString: '',
     editActiveBubbleIds: [],
+    createEditBubbleIds: [],
 
     loading: false,
     error: '',
@@ -304,7 +306,9 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
             const newBubble = action.payload;
             const newBubbleList = _.cloneDeep(state.bubbleList);
             createBubble(newBubbleList, newBubble);
-            return {...state, bubbleList: newBubbleList, loading: false };
+            const createIds = _.cloneDeep(state.createEditBubbleIds);
+            createIds.push(action.payload.id);
+            return {...state, bubbleList: newBubbleList, createEditBubbleIds: createIds, loading: false };
         }
         case fromBubble.CREATE_BUBBLE_ERROR:
             return {...state, loading: false, error: action.payload, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
@@ -379,7 +383,12 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
             bubble.content = content;
             bubble.editLockHolder = -1;
             const newBubbleList = _.cloneDeep(state.bubbleList);
-            return {...state, bubbleList: newBubbleList, loading: false, editBubbleId: -1, editBubbleString: ""};
+            const createIds = _.cloneDeep(state.createEditBubbleIds);
+            const index = createIds.indexOf(bubbleId);
+            if (createIds.indexOf(bubbleId) > -1) {
+                createIds.splice(index, 1);        
+            }
+            return {...state, bubbleList: newBubbleList, createEditBubbleIds: createIds, loading: false, editBubbleId: -1, editBubbleString: ""};
         }
         case fromBubble.OTHERS_EDIT_COMPLETE:
             const bubbleId = action.payload.bubbleId;
@@ -395,12 +404,22 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
             return {...state, loading: true, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
         case fromBubble.EDIT_DISCARD_SUCCESS: {
             const bubbleId = action.payload.bubbleId;
-            const content = action.payload.content;
-            const bubble = getBubbleById(state.bubbleList, bubbleId) as LeafBubble;
-            bubble.content = content;
-            bubble.editLockHolder = -1;
-            const newBubbleList = _.cloneDeep(state.bubbleList);
-            return {...state, bubbleList: newBubbleList, loading: false, editBubbleId: -1, editBubbleString: ""};
+            const createIds = _.cloneDeep(state.createEditBubbleIds);
+            const index = createIds.indexOf(bubbleId);
+            if (index > -1) {
+                // delete bubble
+                const newBubbleList = _.cloneDeep(state.bubbleList);
+                deleteBubble(newBubbleList, bubbleId);
+                createIds.splice(index, 1);        
+                return {...state, bubbleList: newBubbleList, createEditBubbleIds: createIds, loading: false, editBubbleId: -1, editBubbleString: ""};
+            } else {
+                const content = action.payload.content;
+                const bubble = getBubbleById(state.bubbleList, bubbleId) as LeafBubble;
+                bubble.content = content;
+                bubble.editLockHolder = -1;
+                const newBubbleList = _.cloneDeep(state.bubbleList);
+                return {...state, bubbleList: newBubbleList, loading: false, editBubbleId: -1, editBubbleString: ""};
+            }
         }
         case fromBubble.OTHERS_EDIT_DISCARD: {
             const bubbleId = action.payload.bubbleId;
