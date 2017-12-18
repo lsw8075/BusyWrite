@@ -19,7 +19,7 @@ export interface BoardState {
 const initalBoardList = [
     new Board(BoardType.view, BoardLocation.left, 0),
     new Board(BoardType.suggest, BoardLocation.right, 1),
-    new Board(BoardType.edit, BoardLocation.left, 2),
+    new Board(BoardType.edit, BoardLocation.hidden, 2),
     new Board(BoardType.filter, BoardLocation.hidden, 3)
 ];
 
@@ -36,12 +36,28 @@ export function BoardReducer(state: BoardState = initialState, action: fromBoard
     let newBoardList = _.cloneDeep(state.boardList);
     switch (action.type) {
         case fromBoard.ADD:
-            if (state.boardList.length === maxBoardCnt) {
-                return {...state, error: 'maximum board reached!'};
-            } else if (action.payload === BoardType.edit) {
+            if (action.payload === BoardType.edit) {
                 for (const board of newBoardList) {
                     if (board.type === BoardType.edit) {
-                        return {...state, error: 'one edit board will be enough'};
+                        return {...state, error: 'There already exist edit board'};
+                    }
+                }
+            } else if (action.payload === BoardType.view) {
+                for (const board of newBoardList) {
+                    if (board.type === BoardType.view) {
+                        return {...state, error: 'There already exist view board'};
+                    }
+                }
+            } else if (action.payload === BoardType.filter) {
+                for (const board of newBoardList) {
+                    if (board.type === BoardType.filter) {
+                        return {...state, error: 'There already exist filter board'};
+                    }
+                }
+            } else {
+                for (const board of newBoardList) {
+                    if (board.type === BoardType.suggest) {
+                        return {...state, error: 'There already exist suggest board'};
                     }
                 }
             }
@@ -93,6 +109,69 @@ export function BoardReducer(state: BoardState = initialState, action: fromBoard
 
         case fromBoard.SELECT:
             return {...state, activeBoard: {...action.payload}};
+
+        case fromBoard.SHOW_EDIT: {
+            const activeBoard = state.activeBoard;
+            if (activeBoard.location === BoardLocation.right) {
+                const openEditBoard = getBoardByType(newBoardList, BoardType.edit);
+                if (openEditBoard == null) {
+                    newBoardList.push(new Board(BoardType.edit, BoardLocation.left, state.newId));
+                    return {...state, boardList: newBoardList, newId: (state.newId + 1) };
+                }
+                for (const b of newBoardList) {
+                    if (b.location === BoardLocation.left) {
+                        b.location = BoardLocation.hidden;
+                        openEditBoard.location = BoardLocation.left;
+                        return {...state, boardList: newBoardList };
+                    }
+                }
+            } else if (activeBoard.location === BoardLocation.left) {
+                const openEditBoard = getBoardByType(newBoardList, BoardType.edit);
+                if (openEditBoard == null) {
+                    newBoardList.push(new Board(BoardType.edit, BoardLocation.right, state.newId));
+                    return {...state, boardList: newBoardList, newId: (state.newId + 1) };
+                }
+                for (const b of newBoardList) {
+                    if (b.location === BoardLocation.right) {
+                        b.location = BoardLocation.hidden;
+                        openEditBoard.location = BoardLocation.right;
+                        return {...state, boardList: newBoardList };
+                    }
+                }
+            }
+            return {...state, boardList: newBoardList};
+        }
+        case fromBoard.SHOW_SANGJUN: {
+            const activeBoard = state.activeBoard;
+            if (activeBoard.location === BoardLocation.right) {
+                const openEditBoard = getBoardByType(newBoardList, BoardType.suggest);
+                if (openEditBoard == null) {
+                    newBoardList.push(new Board(BoardType.suggest, BoardLocation.left, state.newId));
+                    return {...state, boardList: newBoardList, newId: (state.newId + 1) };
+                }
+                for (const b of newBoardList) {
+                    if (b.location === BoardLocation.left) {
+                        b.location = BoardLocation.hidden;
+                        openEditBoard.location = BoardLocation.left;
+                        return {...state, boardList: newBoardList };
+                    }
+                }
+            } else if (activeBoard.location === BoardLocation.left) {
+                const openSuggestBoard = getBoardByType(newBoardList, BoardType.suggest);
+                if (openSuggestBoard == null) {
+                    newBoardList.push(new Board(BoardType.suggest, BoardLocation.right, state.newId));
+                    return {...state, boardList: newBoardList, newId: (state.newId + 1) };
+                }
+                for (const b of newBoardList) {
+                    if (b.location === BoardLocation.right) {
+                        b.location = BoardLocation.hidden;
+                        openSuggestBoard.location = BoardLocation.right;
+                        return {...state, boardList: newBoardList };
+                    }
+                }
+            }
+            return {...state, boardList: newBoardList};
+        }
         default:
             return {...state };
     }
@@ -101,6 +180,15 @@ export function BoardReducer(state: BoardState = initialState, action: fromBoard
 function getBoardById(boardList: Board[], boardId: Number): Board {
     for (const board of boardList) {
         if (board.id === boardId) {
+            return board;
+        }
+    }
+    return null;
+}
+
+function getBoardByType(boardList: Board[], boardType: BoardType): Board {
+    for (const board of boardList) {
+        if (board.type === boardType) {
             return board;
         }
     }

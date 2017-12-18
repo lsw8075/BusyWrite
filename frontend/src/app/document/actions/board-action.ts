@@ -50,6 +50,24 @@ export class Select implements Action {
     constructor(public payload: Board) {}
 }
 
+
+export const SHOW_SANGJUN = '[Board] sangjun show';
+export const SHOW_EDIT = '[Board] edit show';
+export const SHOW_FILTER = '[Board] filter show';
+
+export class ShowSangjun implements Action {
+    readonly type = SHOW_SANGJUN;
+    constructor() {}
+}
+export class ShowEdit implements Action {
+    readonly type = SHOW_EDIT;
+    constructor() {}
+}
+export class ShowFilter implements Action {
+    readonly type = SHOW_FILTER;
+    constructor() {}
+}
+
 export type Actions =
     | Open
     | Add
@@ -59,4 +77,7 @@ export type Actions =
     | ShowLeft
     | ShowRight
     | ClearError
-    | Select;
+    | Select
+    | ShowSangjun
+    | ShowEdit
+    | ShowFilter;
