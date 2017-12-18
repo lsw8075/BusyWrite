@@ -1,13 +1,7 @@
 import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
-import { Bubble} from '../service';
+import { Bubble } from '../service';
 import { EditItem } from '../service';
-import { LeafBubble } from '../../../models/bubble';
-
-export class Suggest {
-    isBindSuggest: boolean;
-    bindBubbleId: number;
-    content: string;
-}
+import { LeafBubble, Suggest } from '../../../models/bubble';
 
 @Component({
   selector: 'app-edit-item',

@@ -47,6 +47,10 @@ export class BubbleService implements OnDestroy {
         this._store.select(fromUser.getUserState).subscribe(userState => {
             this.userId = userState.userId;
         });
+
+        this._store.select(Reducer.getBubbleState).subscribe(bubbleState => {
+            this.userId = userState.userId;
+        });
     }
 
     ngOnDestroy() {
@@ -593,7 +597,7 @@ export class BubbleService implements OnDestroy {
                 // this cannot happen
                 console.log('someone added as contributor fail. this cannot happen');
             }
- 
+
         }
     }
 

@@ -5,8 +5,7 @@ import { Note, NoteService, BoardService } from './service';
 import { EventBubbleService } from './service';
 
 import { Board } from '../../models/board';
-import { LeafBubble, Bubble, BubbleType, SuggestBubble } from '../../models/bubble';
-import { Suggest } from './edit-item/edit-item.component';
+import { LeafBubble, Bubble, BubbleType, SuggestBubble, Suggest } from '../../models/bubble';
 
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
@@ -47,7 +46,7 @@ export class EditBoardComponent implements OnInit, OnDestroy {
         this._store.select(fromDocument.getEditBubbles).subscribe((editBubbles) => {
             if (! this.isFocused) {
                 this.editBubbles = _.cloneDeep(editBubbles);
-                console.log(editBubbles);
+    //            console.log(editBubbles);
             }
         });
         this._store.select(fromDocument.getBubbleState).subscribe((bubbleState) => {
@@ -55,7 +54,7 @@ export class EditBoardComponent implements OnInit, OnDestroy {
             this.editBubbleId = bubbleState.editBubbleId;
             this.editBubbleString = bubbleState.editBubbleString;
             this.loading = bubbleState.loading;
-            console.log(this.editSuggests);
+    //        console.log(this.editSuggests);
         });
     }
 
@@ -103,14 +102,9 @@ export class EditBoardComponent implements OnInit, OnDestroy {
     updateSuggestString: string;
     updateSuggest: Suggest;
     public finishEditSuggest(suggest: Suggest) {
-        const newContent = (suggest === this.updateSuggest) ? this.updateSuggestString : suggest.content;
-        if (suggest.isBindSuggest) {
-            console.log('edit suggest bubble');
-            this._store.dispatch(new BubbleAction.EditSuggest({ bindSuggestBubbleId: suggest.bindBubbleId, content: newContent }));
-        } else {
-            console.log('create suggest bubble');
-            this._store.dispatch(new BubbleAction.CreateSuggest({ bindBubbleId: suggest.bindBubbleId, content: newContent }));
-        }
+        suggest.content = (suggest === this.updateSuggest) ? this.updateSuggestString : suggest.content;
+            console.log(suggest.content);
+        this._store.dispatch(new BubbleAction.EditSuggestFinish(suggest));
     }
 
     public discardEditSuggest(suggest: Suggest) {

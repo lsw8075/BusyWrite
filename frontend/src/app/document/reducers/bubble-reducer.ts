@@ -255,8 +255,8 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
         case fromBubble.LOAD:
             return {...state, loading: true, documentId: action.payload};
         case fromBubble.LOAD_COMPLETE: {
-            // state.editSuggests.push({bindBubbleId: 879, content: "this is binded with 879 bubble", isBindSuggest: false});
-            // state.editSuggests.push({bindBubbleId: 959, content: "this is binded with 959 suggest bubble", isBindSuggest: true});
+        //    state.editSuggests.push({bindBubbleId: 879, content: "this is binded with 879 bubble", isBindSuggest: false});
+        //    state.editSuggests.push({bindBubbleId: 959, content: "this is binded with 959 suggest bubble", isBindSuggest: true});
             return {...state, bubbleList: [...action.payload.bubbleList],
                 suggestBubbleList: [...action.payload.suggestBubbleList], commentList: [...action.payload.commentList],
                 noteList: [...action.payload.noteList],
@@ -458,6 +458,7 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
             const bubbleId = action.payload.bubbleId;
             const splitBubbleList = action.payload.splitBubbleObjectList;
             const newBubbleList = _.cloneDeep(state.bubbleList);
+            console.log('split_leaf_bubble');
             splitBubble(newBubbleList, bubbleId, splitBubbleList);
             return {...state, bubbleList: newBubbleList, loading: false};
         }

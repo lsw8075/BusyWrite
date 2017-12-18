@@ -8,10 +8,10 @@ export namespace BubbleJsonHelper {
     export function getDocumentObject(jsonString: string): Document {
         const jsonObject = JSON.parse(jsonString);
         const contributors = this.getUserArrayObject(JSON.stringify(jsonObject.contributors));
-        const doc = new Document(jsonObject.document_id, jsonObject.title, contributors); 
+        const doc = new Document(jsonObject.document_id, jsonObject.title, contributors);
         return doc;
     }
-        
+
     export function getBubbleObject(jsonString: string): Bubble {
         const jsonObject = JSON.parse(jsonString);
         if (jsonObject.child_bubbles.length > 0) {
@@ -50,7 +50,6 @@ export namespace BubbleJsonHelper {
 
     export function getSuggestBubbleObject(jsonString: string): SuggestBubble {
         const jsonObject = JSON.parse(jsonString);
-        console.log(jsonObject);
         const suggestBubble = new SuggestBubble(jsonObject.id, jsonObject.content);
         suggestBubble.thumbUps = jsonObject.voters.length;
         return suggestBubble;

@@ -155,6 +155,24 @@ export class BubbleEffects {
         });
 
     @Effect()
+    editSuggestFinish$: Observable<Action> = this.action$.ofType<BubbleAction.EditSuggestFinish>(BubbleAction.EDIT_SUGGEST_FINISH)
+        .map(action => action.payload).mergeMap(query => {
+            if (query.isBindSuggest) {
+                console.log('EditSuggest', query);
+                return Observable.of(new BubbleAction.EditSuggest({ bindSuggestBubbleId: query.bindBubbleId, content: query.content }));
+            } else {
+                console.log('CreateSuggest', query);
+                return Observable.of(new BubbleAction.CreateSuggest({ bindBubbleId: query.bindBubbleId, content: query.content }));
+            }
+        });
+
+    @Effect()
+    editSuggestDiscard$: Observable<Action> = this.action$.ofType<BubbleAction.EditSuggestDiscard>(BubbleAction.EDIT_SUGGEST_DISCARD)
+        .map(action => action.payload).mergeMap(query => {
+            return Observable.of(new BubbleAction.EditSuggestPending(null));
+        });
+
+    @Effect()
     editSuggest$: Observable<Action> = this.action$.ofType<BubbleAction.EditSuggest>(BubbleAction.EDIT_SUGGEST)
         .map(action => action.payload).mergeMap(query => {
             return Observable.of(this.bubbleService.editSuggestBubble(query.bindSuggestBubbleId, query.content))

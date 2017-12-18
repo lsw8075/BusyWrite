@@ -316,7 +316,8 @@ export function splitBubble(bubbleList: Array<Bubble>, id: number, splitBubbleLi
             throw new Error('only leaf bubble can be splitted');
         }
 
-        // sort split bubble list by id
+        // sort split bubble list by
+    //    splitBubbleList.sort((a, b) => a.location - b.location);
         const internalBubble = new InternalBubble(id);
         internalBubble.parentBubbleId = prevBubble.parentBubbleId;
         internalBubble.location = prevBubble.location;
