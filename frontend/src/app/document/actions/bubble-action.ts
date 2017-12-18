@@ -921,7 +921,7 @@ export class ExportNoteAsBubble implements Action {
     readonly type = EXPORT_NOTE_AS_BUBBLE;
     constructor(public payload: {
         parentId: number,
-        loc : number,
+        loc: number,
         noteId: number}) {}
 }
 export class ExportNoteAsBubblePending implements Action {
@@ -1023,6 +1023,14 @@ export class ExportNoteAsCommentOnSuggestError implements Action {
 export class OthersExportNoteAsCommentOnSuggest implements Action {
     readonly type = OTHERS_EXPORT_NOTE_AS_COMMENT_ON_SUGGEST;
     constructor(public payload: Comment) {}
+}
+
+
+
+export const ADD_CONTRIBUTER_REQUEST = '[contributer] http request';
+export class AddContributerRequest implements Action {
+    readonly type = ADD_CONTRIBUTER_REQUEST;
+    constructor(public payload: string) {}
 }
 
 export const REFRESH = '[Bubble] refresh';
@@ -1216,4 +1224,5 @@ export type Actions =
   | ExportNoteAsCommentOnSuggestError
   | OthersExportNoteAsCommentOnSuggest
   | Refresh
-  | ClearError;
+  | ClearError
+  | AddContributerRequest;

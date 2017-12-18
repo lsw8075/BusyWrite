@@ -45,7 +45,7 @@ export class EditBoardComponent implements OnInit, OnDestroy {
             }
         });
         this._store.select(fromDocument.getBubbleState).subscribe((bubbleState) => {
-            this.editSuggests = editSuggests;
+            // this.editSuggests = editSuggests;
             this.editBubbleId = bubbleState.editBubbleId;
             this.editBubbleString = bubbleState.editBubbleString;
             this.loading = bubbleState.loading;
