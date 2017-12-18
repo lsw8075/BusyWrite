@@ -30,9 +30,12 @@ export class EditBoardComponent implements OnInit, OnDestroy {
     editBubbles: Array<Bubble>;
     editBubbleId: number;
     editBubbleString: string;
+    updateBubbleId: number;
     updateString: string;
     loading: boolean;
-    isEditting: boolean = false;
+
+    isFocused: boolean = false;
+    focusedId: number;
 
     constructor(
         private _store: Store<fromDocument.State>,
@@ -40,13 +43,13 @@ export class EditBoardComponent implements OnInit, OnDestroy {
         private _boardService: BoardService,
         private _eventBubbleService: EventBubbleService) {
         this._store.select(fromDocument.getEditBubbles).subscribe((editBubbles) => {
-            if (! this.isEditting) {
+            if (! this.isFocused) {
                 this.editBubbles = _.cloneDeep(editBubbles);
                 console.log(editBubbles);
             }
         });
         this._store.select(fromDocument.getBubbleState).subscribe((bubbleState) => {
-            // this.editSuggests = editSuggests;
+            this.editSuggests = bubbleState.editSuggests;
             this.editBubbleId = bubbleState.editBubbleId;
             this.editBubbleString = bubbleState.editBubbleString;
             this.loading = bubbleState.loading;
@@ -57,28 +60,35 @@ export class EditBoardComponent implements OnInit, OnDestroy {
     }
 
     public finishEditBubble(bubble: Bubble) {
-        this.isEditting = false;
-        this._store.dispatch(new BubbleAction.EditComplete({ bubbleId: bubble.id, content: this.updateString }));
+        this.isFocused = false;
+        if (bubble.id === this.updateId) {
+            this._store.dispatch(new BubbleAction.EditComplete({ bubbleId: bubble.id, content: this.updateString }));
+        } else {
+            this._store.dispatch(new BubbleAction.EditComplete({ bubbleId: bubble.id, content: (bubble as LeafBubble).content }));
+        }
     }
 
     public discardEditBubble(bubble: Bubble) {
-        this.isEditting = false;
+        this.isFocused = false;
         this._store.dispatch(new BubbleAction.EditDiscard(bubble.id));
     }
 
     public focusEditBubble(bubble: Bubble, focused: boolean) {
         console.log(bubble.id, focused);
         if (focused) {
-            this.isEditting = true;
+            this.isFocused = true;
+            this.focusedId = bubble.id;
             const content = (bubble as LeafBubble).content;
             this._store.dispatch(new BubbleAction.EditUpdateResume({bubbleId: bubble.id, content: content}));
-        } else {
-            this.isEditting = false;
+        } else if(this.focusedId === bubble.id) {
+            this.isFocused = false;
         }
     }
 
     public updateEditBubble(bubble: Bubble, updateString: string) {
         this.updateString = updateString;
+        this.updateId = bubble.id;
+        (bubble as LeafBubble).content = updateString;
         if (this.loading === false && this.editBubbleId === bubble.id) {
             if (updateString !== this.editBubbleString) {
                 console.log(bubble.id, updateString, this.editBubbleString);
@@ -87,16 +97,17 @@ export class EditBoardComponent implements OnInit, OnDestroy {
         }
     }
 
+
     public finishEditSuggest(suggest: {isBindSuggest: boolean, bindBubbleId: number, content: string}) {
+
+        const newContent = suggest.content;
         if (suggest.isBindSuggest) {
             console.log('edit suggest bubble');
-            this._store.dispatch(new BubbleAction.EditSuggest({ bindSuggestBubbleId: suggest.bindBubbleId, content: suggest.content }));
+            this._store.dispatch(new BubbleAction.EditSuggest({ bindSuggestBubbleId: suggest.bindBubbleId, content: newContent }));
         } else {
             console.log('create suggest bubble');
-            this._store.dispatch(new BubbleAction.CreateSuggest({ bindBubbleId: suggest.bindBubbleId, content: suggest.content }));
+            this._store.dispatch(new BubbleAction.CreateSuggest({ bindBubbleId: suggest.bindBubbleId, content: newContent }));
         }
-        // this.isEditting = false;
-        // this._store.dispatch(new BubbleAction.EditComplete({ bubbleId: bubble.id, content: this.updateString }));
     }
 
     public discardEditSuggest(suggest: {isBindSuggest: boolean, bindBubbleId: number, content: string}) {
@@ -106,20 +117,11 @@ export class EditBoardComponent implements OnInit, OnDestroy {
     }
 
     public focusEditSuggest(suggest: {isBindSuggest: boolean, bindBubbleId: number, content: string}, focused: boolean) {
-        console.log(suggest, focused);
-        // if (focused) {
-        //     this.isEditting = true;
-        //     const content = (bubble as LeafBubble).content;
-        //     this._store.dispatch(new BubbleAction.EditUpdateResume({bubbleId: bubble.id, content: content}));
-        // } else {
-        //     this.isEditting = false;
-        // }
     }
 
     public updateEditSuggest(suggest: {isBindSuggest: boolean, bindBubbleId: number, content: string}, updateString: string) {
-        console.log(suggest, updateString);
-    }
 
+    }
 
     public createNewEditItem(bubble: Bubble) {
     // this.editItems.push(editItem);
