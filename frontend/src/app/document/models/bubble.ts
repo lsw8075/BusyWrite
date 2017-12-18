@@ -12,6 +12,15 @@ export class Suggest {
     isBindSuggest: boolean;
     bindBubbleId: number;
     content: string;
+
+    constructor(
+        isBindSuggest: boolean = false,
+        bindBubbleId: number = -1,
+        content: string = "") {
+        this.isBindSuggest = isBindSuggest;
+        this.bindBubbleId = bindBubbleId;
+        this.content = content;
+    }
 }
 
 export class Bubble {
@@ -50,7 +59,7 @@ export class LeafBubble implements Bubble {
     commentIds: Array<number> = [],
     watchUserIds: Array<number> = [],
     thumbUps: number = 0,
-    editLockHolder: number = 0) {
+    editLockHolder: number = -1) {
 
     this.id = id;
     this.type = BubbleType.leafBubble;

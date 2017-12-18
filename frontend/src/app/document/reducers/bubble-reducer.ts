@@ -1,6 +1,6 @@
 import { Action } from '@ngrx/store';
 
-import { Bubble, BubbleType, InternalBubble, LeafBubble, SuggestBubble } from '../models/bubble';
+import { Bubble, BubbleType, InternalBubble, LeafBubble, SuggestBubble, Suggest } from '../models/bubble';
 import { Comment } from '../models/comment';
 import { Note } from '../models/note';
 import { User } from '../../user/models/user';
@@ -211,17 +211,13 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
             return {...state, loading: false, error: action.payload, documentObject: null};
         case fromBubble.OTHERS_OPEN_DOCUMENT:
             const addConnectors = _.cloneDeep(state.connectors);
-            try {
-                for (const contributor of state.documentObject.contributors) {
-                    if (action.payload === contributor.id) {
-                        addConnectors.push(contributor);
-                    }
-                    break;
+            for (const contributor of state.documentObject.contributors) {
+                if (action.payload === contributor.id) {
+                    addConnectors.push(contributor);
+                    return {...state, connectors: addConnectors};
                 }
-                throw new Error('cannot find new connector in contributors')
-            } catch {
             }
-            return {...state, connectors: addConnectors}
+            return {...state, error: 'cannot find new connector in contributors'};
 
 
         /*********/
@@ -235,22 +231,8 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
         case fromBubble.CLOSE_ERROR:
             return {...state, loading: false, error: action.payload };
         case fromBubble.OTHERS_CLOSE_DOCUMENT:
-            const deleteConnectors = _.cloneDeep(state.connectors);
-            try {
-                for (const connector of state.connectors) {
-                    if (action.payload === connector.id) {
-                        const index = deleteConnectors.indexOf(connector, 0);
-                        if (index > -1) {
-                            deleteConnectors.splice(index, 1);
-                        } else {
-                            throw new Error('connector who closed document is not in connectors list');
-                        }
-                        break;
-                    }
-                }
-                throw new Error('cannot find delete connector in connectors')
-            } catch (err){
-            }
+            let deleteConnectors = _.cloneDeep(state.connectors);
+            deleteConnectors = deleteConnectors.filter(u => u.id !== action.payload);
             return {...state, connectors: deleteConnectors};
 
 
@@ -271,6 +253,8 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
         case fromBubble.LOAD:
             return {...state, loading: true, documentId: action.payload};
         case fromBubble.LOAD_COMPLETE: {
+            state.editSuggests = [];
+            state.editSuggests.push({isBindSuggest: false, bindBubbleId: 1750, content: "hello"});
             return {...state, bubbleList: [...action.payload.bubbleList],
                 suggestBubbleList: [...action.payload.suggestBubbleList], commentList: [...action.payload.commentList],
                 noteList: [...action.payload.noteList],
@@ -509,6 +493,7 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
         case fromBubble.CREATE_SUGGEST_COMPLETE: {
             console.log('CREATE_SUGGEST_COMPLETE', action.payload);
             const suggestBubble = action.payload.suggestBubble;
+            const suggest = action.payload.suggest;
             const newSuggestBubbleList = _.cloneDeep(state.suggestBubbleList);
             state.suggestBubbleList.push(suggestBubble);
             return {...state, loading: false, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
@@ -519,6 +504,7 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
             return {...state, loading: true, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
         case fromBubble.EDIT_SUGGEST_COMPLETE: {
             console.log('EDIT_SUGGEST_COMPLETE', action.payload);
+            const suggest = action.payload.suggest;
             const hidedSuggestBubbleId = action.payload.hidedSuggestBubbleId;
             const newEdittedSuggestBubble = action.payload.newEdittedSuggestBubble;
             return {...state, loading: false, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};

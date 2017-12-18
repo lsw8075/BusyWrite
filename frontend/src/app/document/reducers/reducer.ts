@@ -77,4 +77,4 @@ export const getUserState = createFeatureSelector<State>('user');
 export const getUserId = createSelector(fromRoot.getUserState, (state: UserState) => state.userId);
 
 export const getEditBubbles = createSelector(getBubbleList, getUserId, (state: Bubble[], userId: number) =>
-    state.filter(b => b.type === BubbleType.leafBubble).filter(b => (b as LeafBubble).editLockHolder === userId));
+    state.filter(b => b.type === BubbleType.leafBubble).filter(b => (userId !== -1) && (b as LeafBubble).editLockHolder === userId));

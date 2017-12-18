@@ -168,8 +168,9 @@ export class CreateSuggestPending implements Action {
 export class CreateSuggestComplete implements Action {
     readonly type = CREATE_SUGGEST_COMPLETE;
     constructor(public payload: {
-        suggest: Suggest,
-        suggestBubble: SuggestBubble}) {}
+        suggestBubble: SuggestBubble,
+        suggest: Suggest
+    }) {}
 }
 export class CreateSuggestError implements Action {
     readonly type = CREATE_SUGGEST_ERROR;

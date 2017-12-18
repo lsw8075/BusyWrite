@@ -115,7 +115,7 @@ export class BubbleEffects {
     @Effect()
     createSuggest$: Observable<Action> = this.action$.ofType<BubbleAction.CreateSuggest>(BubbleAction.CREATE_SUGGEST)
         .map(action => action.payload).mergeMap(query => {
-            return Observable.of(this.bubbleService.createSuggestBubble(query.bindBubbleId, query.content))
+            return Observable.of(this.bubbleService.createSuggestBubble(query))
                 .map(() => new BubbleAction.CreateSuggestPending(null));
         });
 
@@ -175,7 +175,7 @@ export class BubbleEffects {
     @Effect()
     editSuggest$: Observable<Action> = this.action$.ofType<BubbleAction.EditSuggest>(BubbleAction.EDIT_SUGGEST)
         .map(action => action.payload).mergeMap(query => {
-            return Observable.of(this.bubbleService.editSuggestBubble(query.bindBubbleId, query.content))
+            return Observable.of(this.bubbleService.editSuggestBubble(query))
                 .map(() => new BubbleAction.EditSuggestPending(null));
         });
 

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { MockBubbleRoot, MockBubbleList } from '../models/bubble.mock';
-import { Bubble, LeafBubble, InternalBubble, SuggestBubble, BubbleType } from '../models/bubble';
+import { Bubble, LeafBubble, InternalBubble, SuggestBubble, BubbleType, Suggest } from '../models/bubble';
 import { Comment } from '../models/comment';
 import { User } from '../../user/models/user';
 import { Document } from '../../file/models/document';
@@ -20,6 +20,7 @@ import * as fromUser from '../../user/reducers/reducer';
 import { BubbleJsonHelper } from '../models/bubble-json-helper';
 import { OnDestroy } from '@angular/core';
 
+let Id = 30; // to be deleted after backend implemented
 const UserId = 1;
 
 @Injectable()
@@ -32,6 +33,7 @@ export class BubbleService implements OnDestroy {
     private user$: Observable<User>;
     private previousRequestId: number;
     private userId: number;
+    private suggest: Suggest;
 
     constructor(
             private _store: Store<Reducer.State>,
@@ -67,25 +69,20 @@ export class BubbleService implements OnDestroy {
                 this.currentDocumentId = Number(body.document_id);
                 this.previousRequestId = Number(body.previous_request_id);
                 const doc: Document = BubbleJsonHelper.getDocumentObject(JSON.stringify(body));
+                console.log(body);
                 const connectorIdList = body.connectors;
                 const cons = [];
-                try {
-                    for (const connectorId of connectorIdList) {
-                        for (const contributor of doc.contributors) {
-                            if (contributor.id === connectorId) {
-                                cons.push({
-                                        'id': connectorId,
-                                        'username': contributor.username,
-                                        'email': contributor.email,
-                                        });
-                                    }
-                        }
+                for (const connectorId of connectorIdList) {
+                    for (const contributor of doc.contributors) {
+                        if (contributor.id === Number(connectorId))
+                            cons.push({
+                                    id: Number(connectorId),
+                                    username: contributor.username,
+                                    email: contributor.email,
+                                    });
                     }
-                    throw new Error('cannot find connector in contributors');
-                } catch {
                 }
-                const connectors = BubbleJsonHelper.getUserArrayObject(JSON.stringify(cons));
-                this._store.dispatch(new BubbleAction.OpenComplete({documentObject: doc, connectors: connectors}));
+                this._store.dispatch(new BubbleAction.OpenComplete({documentObject: doc, connectors: cons}));
             } else {
                 console.log('received open_document fail');
                 this._store.dispatch(new BubbleAction.OpenError(body));
@@ -151,7 +148,7 @@ export class BubbleService implements OnDestroy {
                 console.log('received create_suggest_bubble success');
                 const suggestBubble = BubbleJsonHelper.getSuggestBubbleObject(JSON.stringify(body));
                 if (body.who === this.userId) {
-                    this._store.dispatch(new BubbleAction.CreateSuggestComplete({suggest: null, suggestBubble: suggestBubble}));
+                    this._store.dispatch(new BubbleAction.CreateSuggestComplete({suggestBubble: suggestBubble, suggest: this.suggest }));
                 } else {
                     this._store.dispatch(new BubbleAction.OthersCreateSuggest(suggestBubble));
                 }
@@ -267,9 +264,10 @@ export class BubbleService implements OnDestroy {
                 const suggestBubble = BubbleJsonHelper.getSuggestBubbleObject(JSON.stringify(body.new_editted_suggest_bubble));
                 if (body.who === this.userId) {
                     this._store.dispatch(new BubbleAction.EditSuggestComplete({
-                                suggest: null,
                                 hidedSuggestBubbleId: Number(body.hided_suggest_bubble_id),
-                                newEdittedSuggestBubble: suggestBubble}));
+                                newEdittedSuggestBubble: suggestBubble,
+                                suggest: this.suggest
+                            }));
                 } else {
                     this._store.dispatch(new BubbleAction.OthersEditSuggest(
                                 {hidedSuggestBubbleId: Number(body.hided_suggest_bubble_id),
@@ -312,7 +310,7 @@ export class BubbleService implements OnDestroy {
             }
 
         } else if (command === 'delete_bubble') {
-            if (accept === 'True') {
+            if (accept == 'True') {
                 console.log('received delete_bubble success');
                 if (body.who === this.userId) {
                     this._store.dispatch(new BubbleAction.DeleteBubbleComplete(Number(body.bubble_id)));
@@ -325,7 +323,7 @@ export class BubbleService implements OnDestroy {
                 this._store.dispatch(new BubbleAction.DeleteBubbleError(body));
             }
         } else if (command === 'hide_suggest_bubble') {
-            if (accept === 'True') {
+            if (accept == 'True') {
                 console.log('received hide_suggest_bubble success');
                 if (body.who === this.userId) {
                     this._store.dispatch(new BubbleAction.HideSuggestComplete(Number(body.suggest_bubble_id)));
@@ -338,7 +336,7 @@ export class BubbleService implements OnDestroy {
                 this._store.dispatch(new BubbleAction.HideSuggestError(body));
             }
         } else if (command === 'show_suggest_bubble') {
-            if (accept === 'True') {
+            if (accept == 'True') {
                 console.log('received show_suggest_bubble success');
                 if (body.who === this.userId) {
                     this._store.dispatch(new BubbleAction.ShowSuggestComplete(Number(body.suggest_bubble_id)));
@@ -351,7 +349,7 @@ export class BubbleService implements OnDestroy {
                 this._store.dispatch(new BubbleAction.ShowSuggestError(body));
             }
         } else if (command === 'delete_comment_on_bubble') {
-            if (accept === 'True') {
+            if (accept == 'True') {
                 console.log('received delete_comment_on_bubble success');
                 if (body.who === this.userId) {
                     this._store.dispatch(new BubbleAction.DeleteCommentOnBubbleComplete(Number(body.comment_id)));
@@ -364,7 +362,7 @@ export class BubbleService implements OnDestroy {
                 this._store.dispatch(new BubbleAction.DeleteCommentOnBubbleError(body));
             }
         } else if (command === 'delete_comment_on_suggest_bubble') {
-            if (accept === 'True') {
+            if (accept == 'True') {
                 console.log('received delete_comment_on_suggest_bubble success');
                 if (body.who === this.userId) {
                     this._store.dispatch(new BubbleAction.DeleteCommentOnSuggestComplete(Number(body.comment_id)));
@@ -377,7 +375,7 @@ export class BubbleService implements OnDestroy {
                 this._store.dispatch(new BubbleAction.DeleteCommentOnSuggestError(body));
             }
         } else if (command === 'move_bubble') {
-            if (accept === 'True') {
+            if (accept == 'True') {
                 console.log('received move_bubble success');
                 if (body.who === this.userId) {
                     this._store.dispatch(new BubbleAction.MoveBubbleComplete(
@@ -394,7 +392,7 @@ export class BubbleService implements OnDestroy {
                 this._store.dispatch(new BubbleAction.MoveBubbleError(body));
             }
         } else if (command === 'wrap_bubble') {
-            if (accept === 'True') {
+            if (accept == 'True') {
                 console.log('received wrap_bubble success');
 
                 const newWrappedBubble = BubbleJsonHelper.getBubbleObject(JSON.stringify(body.new_wrapped_bubble));
@@ -411,7 +409,7 @@ export class BubbleService implements OnDestroy {
                 this._store.dispatch(new BubbleAction.WrapBubbleError(body));
             }
         } else if (command === 'pop_bubble') {
-            if (accept === 'True') {
+            if (accept == 'True') {
                 console.log('received pop_bubble success');
                 if (body.who === this.userId) {
                     this._store.dispatch(new BubbleAction.PopBubbleComplete(Number(body.bubble_id)));
@@ -424,7 +422,7 @@ export class BubbleService implements OnDestroy {
                 this._store.dispatch(new BubbleAction.PopBubbleError(body));
             }
         } else if (command === 'split_internal_bubble') {
-            if (accept === 'True') {
+            if (accept == 'True') {
                 console.log('received split_internal_bubble success');
                 const splitBubbleObjectList = BubbleJsonHelper.getBubbleArrayObject(body.split_bubble_object_list);
                 if (body.who === this.userId) {
@@ -440,7 +438,7 @@ export class BubbleService implements OnDestroy {
                 this._store.dispatch(new BubbleAction.SplitInternalError(body));
             }
         } else if (command === 'split_leaf_bubble') {
-            if (accept === 'True') {
+            if (accept == 'True') {
                 console.log('received split_leaf_bubble success');
                 const splitBubbleObjectList = BubbleJsonHelper.getBubbleArrayObject(JSON.stringify(body.split_bubble_object_list));
                 if (body.who === this.userId) {
@@ -456,7 +454,7 @@ export class BubbleService implements OnDestroy {
                 this._store.dispatch(new BubbleAction.SplitLeafError(body));
             }
         } else if (command === 'merge_bubble') {
-            if (accept === 'True') {
+            if (accept == 'True') {
                 console.log('received merge_bubble success');
                 const mergedBubble = BubbleJsonHelper.getBubbleObject(JSON.stringify(body.merged_bubble));
                 if (body.who === this.userId) {
@@ -472,7 +470,7 @@ export class BubbleService implements OnDestroy {
                 this._store.dispatch(new BubbleAction.MergeBubbleError(body));
             }
         } else if (command === 'flatten_bubble') {
-            if (accept === 'True') {
+            if (accept == 'True') {
                 console.log('received flatten_bubble success');
                 if (body.who === this.userId) {
                     this._store.dispatch(new BubbleAction.FlattenBubbleComplete(Number(body.bubble_id)));
@@ -485,7 +483,7 @@ export class BubbleService implements OnDestroy {
                 this._store.dispatch(new BubbleAction.FlattenBubbleError(body));
             }
         } else if (command === 'switch_bubble') {
-            if (accept === 'True') {
+            if (accept == 'True') {
                 console.log('received switch_bubble success');
                 if (body.who === this.userId) {
                     this._store.dispatch(new BubbleAction.SwitchBubbleComplete(Number(body.suggest_bubble_id)));
@@ -498,7 +496,7 @@ export class BubbleService implements OnDestroy {
                 this._store.dispatch(new BubbleAction.SwitchBubbleError(body));
             }
         } else if (command === 'vote_on_suggest_bubble') {
-            if (accept === 'True') {
+            if (accept == 'True') {
                 console.log('received vote_on_suggest_bubble success');
                 if (body.who === this.userId) {
                     this._store.dispatch(new BubbleAction.VoteOnSuggestComplete(Number(body.suggest_bubble_id)));
@@ -511,7 +509,7 @@ export class BubbleService implements OnDestroy {
                 this._store.dispatch(new BubbleAction.VoteOnSuggestError(body));
             }
         } else if (command === 'unvote_on_suggest_bubble') {
-            if (accept === 'True') {
+            if (accept == 'True') {
                 console.log('received unvote_on_suggest_bubble success');
                 if (body.who === this.userId) {
                     this._store.dispatch(new BubbleAction.UnvoteOnSuggestComplete(Number(body.suggest_bubble_id)));
@@ -524,7 +522,7 @@ export class BubbleService implements OnDestroy {
                 this._store.dispatch(new BubbleAction.UnvoteOnSuggestError(body));
             }
         } else if (command === 'export_note_as_bubble') {
-            if (accept === 'True') {
+            if (accept == 'True') {
                 console.log('received export_note_as_bubble success');
                 const bubble = BubbleJsonHelper.getBubbleObject(JSON.stringify(body.new_bubble));
                 if (body.who === this.userId) {
@@ -538,7 +536,7 @@ export class BubbleService implements OnDestroy {
                 this._store.dispatch(new BubbleAction.ExportNoteAsBubbleError(body));
             }
         } else if (command === 'export_note_as_suggest_bubble') {
-            if (accept === 'True') {
+            if (accept == 'True') {
                 console.log('received export_note_as_suggest_bubble success');
                 const suggestBubble = BubbleJsonHelper.getSuggestBubbleObject(JSON.stringify(body.new_suggest_bubble));
                 if (body.who === this.userId) {
@@ -552,7 +550,7 @@ export class BubbleService implements OnDestroy {
                 this._store.dispatch(new BubbleAction.ExportNoteAsSuggestError(body));
             }
         } else if (command === 'export_note_as_comment_under_bubble') {
-            if (accept === 'True') {
+            if (accept == 'True') {
                 console.log('received export_note_as_comment_under_bubble success');
                 const comment = BubbleJsonHelper.getCommentObject(JSON.stringify(body.new_comment));
                 if (body.who === this.userId) {
@@ -566,7 +564,7 @@ export class BubbleService implements OnDestroy {
                 this._store.dispatch(new BubbleAction.ExportNoteAsCommentOnBubbleError(body));
             }
         } else if (command === 'export_note_as_comment_under_suggest_bubble') {
-            if (accept === 'True') {
+            if (accept == 'True') {
                 console.log('received export_note_as_comment_under_suggest_bubble success');
                 const comment = BubbleJsonHelper.getCommentObject(JSON.stringify(body.new_comment));
                 if (body.who === this.userId) {
@@ -580,7 +578,7 @@ export class BubbleService implements OnDestroy {
                 this._store.dispatch(new BubbleAction.ExportNoteAsCommentOnSuggestError(body));
             }
         } else if (command === 'someone_added_as_contributor') {
-            if (accept === 'True') {
+            if (accept == 'True') {
                 const user = BubbleJsonHelper.getUserObject(JSON.stringify(body));
                 if (user.id === this.userId) {
                     // this cannot happen
@@ -650,11 +648,12 @@ export class BubbleService implements OnDestroy {
         this._socket.send(m);
     }
 
-    public createSuggestBubble(bindedBubbleId: number, content: string) {
+    public createSuggestBubble(suggest: Suggest) {
         const m = {'header': 'create_suggest_bubble',
             'previous_request': this.previousRequestId,
-            'body': {'binded_bubble_id': bindedBubbleId,
-                'content': content}};
+            'body': {'binded_bubble_id': suggest.bindBubbleId,
+                'content': suggest.content}};
+        this.suggest = suggest;
         this._socket.send(m);
     }
 
@@ -710,11 +709,12 @@ export class BubbleService implements OnDestroy {
         this._socket.send(m);
     }
 
-    public editSuggestBubble(suggestBubbleId: number, content: string) {
+    public editSuggestBubble(suggest: Suggest) {
         const m = {'header': 'edit_suggest_bubble',
             'previous_request': this.previousRequestId,
-            'body': {'suggest_bubble_id': suggestBubbleId,
-                'content': content}};
+            'body': {'suggest_bubble_id': suggest.bindBubbleId,
+                'content': suggest.content}};
+        this.suggest = suggest;
         this._socket.send(m);
     }
 

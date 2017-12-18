@@ -104,7 +104,7 @@ export class InternalBubbleDirective implements OnInit {
 
     private _isBeingEditted(bubble: Bubble): boolean {
         if (bubble.type === BubbleType.leafBubble) {
-            return (bubble as LeafBubble).editLockHolder !== null;
+            return (bubble as LeafBubble).editLockHolder !== -1;
         }
         return (bubble as InternalBubble).childBubbleIds
             .reduce((prev, curr) => prev || this._isBeingEditted(getBubbleById(this.bubbleList, curr)), false);

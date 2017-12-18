@@ -104,7 +104,7 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
     }
 
     public isBubbleBeingEditted(bubble: LeafBubble): boolean {
-        return (bubble.editLockHolder !== null);
+        return (bubble.editLockHolder !== -1);
     }
     ngOnDestroy() {
     }

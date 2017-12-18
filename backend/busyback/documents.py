@@ -50,9 +50,9 @@ def do_create_document(
     ):
 
     user = fetch_user(user_id)
-    
+
     document = Document.objects.create(title=title)
-    
+
     document.contributors.add(user)
     document.save()
     root_bubble = create_normal(document)
@@ -104,13 +104,13 @@ def do_send_invitation_email(
         document = Document.objects.get(id=document_id)
     except Document.DoesNotExist:
         raise DocumentDoesNotExistError(document_id)
-    
+
     if not document.is_contributed_by(user_id):
         raise UserIsNotContributorError(user_id, document_id)
 
     if document.contributors.filter(id=who_id).exists():
         raise InvalidInvitationError()
-    
+
     user = fetch_user(user_id)
     who_to_send = fetch_user(who_id)
     salt = generate_hash()
@@ -125,7 +125,7 @@ def do_send_invitation_email(
     debug_addr = 'http://localhost:4200/%s/%s' % (invite_route, salt)
     mail_body = mail_body + '\n ' + debug_addr
     # for debug.. please remove above code at practice!
-    
+
     print('sending email to %s' % who_to_send.email)
     print("subject:" + mail_subject)
     # send invitation mail
@@ -139,7 +139,7 @@ def do_send_invitation_email(
     return salt
 
 @transaction.atomic
-def do_add_contributor(salt_value):    
+def do_add_contributor(salt_value):
     try:
         invitation = InvitationHash.objects.get(salt=salt_value)
         document = invitation.document
@@ -152,7 +152,7 @@ def do_add_contributor(salt_value):
         document.contributors.add(who)
     else:
         raise InvalidInvitationError()
-        
+
     document.save()
     return (document.id, who)
 
@@ -197,7 +197,7 @@ def do_user_connect_document(
     document_id: int
     ):
     key_doc = key_duser(document_id)
-    
+
     document = fetch_document_with_lock(user_id, document_id)
     title = document.title
     contributors = fetch_contributors(document)
@@ -206,11 +206,11 @@ def do_user_connect_document(
         connected_users = cache.get_or_set(key_doc, '[]')
         cache.persist("key_doc")
         connected_users = json.loads(connected_users)
-        if not user_id in connected_users:
+        if not str(user_id) in connected_users:
             connected_users.append(user_id)
-        connected_users = json.dumps(connected_users)
+        connected = json.dumps(connected_users)
 
-        cache.set(key_doc, connected_users, timeout=None)
+        cache.set(key_doc, connected, timeout=None)
 
 
     return (get_latest_version_rid(document_id), title,
@@ -224,7 +224,7 @@ def do_user_disconnect_document(
     with cache.lock('doclock' + str(document_id)):
         connected_users = cache.get(key_doc)
         connected_users = json.loads(connected_users)
-        connected_users.remove(user_id)
+        connected_users.remove(str(user_id))
         if len(connected_users) > 0:
             connected_users = json.dumps(connected_users)
             cache.set(key_doc, connected_users, timeout=None)
@@ -242,8 +242,9 @@ def do_get_connected_users_document(
         if connected_users is None:
             return []
         connected_users = json.loads(connected_users)
+        connected_users = [int(c) for c in connected_users]
         connected_users.sort()
-    return connected_users    
+    return connected_users
 
 def do_clear_connected_users_document(
     user_id: int,
