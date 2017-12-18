@@ -308,6 +308,39 @@ export class BubbleEffects {
             });
         });
 
+    @Effect()
+    exportNoteAsBubble$: Observable<Action> =
+    this.action$.ofType<BubbleAction.ExportNoteAsBubble>(BubbleAction.EXPORT_NOTE_AS_BUBBLE)
+        .map(action => action.payload).mergeMap(query => {
+            return Observable.of(this.bubbleService.exportNoteAsBubble(query.parentId, query.loc, query.noteId))
+                .map(() => new BubbleAction.ExportNoteAsBubblePending(null));
+        });
+
+    @Effect()
+    exportNoteAsSuggest$: Observable<Action> =
+    this.action$.ofType<BubbleAction.ExportNoteAsSuggest>(BubbleAction.EXPORT_NOTE_AS_SUGGEST)
+        .map(action => action.payload).mergeMap(query => {
+            return Observable.of(this.bubbleService.exportNoteAsSuggestBubble(query.bindBubbleId, query.noteId))
+                .map(() => new BubbleAction.ExportNoteAsSuggestPending(null));
+        });
+
+    @Effect()
+    exportNoteAsCommentOnBubble$: Observable<Action> =
+    this.action$.ofType<BubbleAction.ExportNoteAsCommentOnBubble>(BubbleAction.EXPORT_NOTE_AS_COMMENT_ON_BUBBLE)
+        .map(action => action.payload).mergeMap(query => {
+            return Observable.of(this.bubbleService.exportNoteAsCommentOnBubble(query.bindBubbleId, query.noteId))
+                .map(() => new BubbleAction.ExportNoteAsCommentOnBubblePending(null));
+        });
+
+    @Effect()
+    exportNoteAsCommentOnSuggest$: Observable<Action> =
+    this.action$.ofType<BubbleAction.ExportNoteAsCommentOnSuggest>(BubbleAction.EXPORT_NOTE_AS_COMMENT_ON_SUGGEST)
+        .map(action => action.payload).mergeMap(query => {
+            return Observable.of(this.bubbleService.exportNoteAsCommentOnSuggestBubble(query.bindSuggestBubbleId, query.noteId))
+                .map(() => new BubbleAction.ExportNoteAsCommentOnSuggestPending(null));
+        });
+
+
     getCookie(name) {
             const value = ';' + document.cookie;
             const parts = value.split(';' + name + '=');

@@ -113,6 +113,10 @@ export function BubbleReducer(state: BubbleState = initialState, action: fromBub
         case fromBubble.CREATE_SUGGEST: case fromBubble.CREATE_SUGGEST_COMPLETE: case fromBubble.CREATE_SUGGEST_ERROR:
         case fromBubble.EDIT_SUGGEST: case fromBubble.EDIT_SUGGEST_COMPLETE: case fromBubble.EDIT_SUGGEST_ERROR:
         case fromBubble.EDIT_SUGGEST_DISCARD: case fromBubble.EDIT_SUGGEST_DISCARD_COMPLETE:
+        case fromBubble.EXPORT_NOTE_AS_BUBBLE: case fromBubble.EXPORT_NOTE_AS_BUBBLE_COMPLETE: case fromBubble.EXPORT_NOTE_AS_BUBBLE_ERROR: case fromBubble.OTHERS_EXPORT_NOTE_AS_BUBBLE:
+        case fromBubble.EXPORT_NOTE_AS_SUGGEST: case fromBubble.EXPORT_NOTE_AS_SUGGEST_COMPLETE: case fromBubble.EXPORT_NOTE_AS_SUGGEST_ERROR: case fromBubble.OTHERS_EXPORT_NOTE_AS_SUGGEST:
+        case fromBubble.EXPORT_NOTE_AS_COMMENT_ON_BUBBLE: case fromBubble.EXPORT_NOTE_AS_COMMENT_ON_BUBBLE_COMPLETE: case fromBubble.EXPORT_NOTE_AS_COMMENT_ON_BUBBLE_ERROR: case fromBubble.OTHERS_EXPORT_NOTE_AS_COMMENT_ON_BUBBLE:
+        case fromBubble.EXPORT_NOTE_AS_COMMENT_ON_SUGGEST: case fromBubble.EXPORT_NOTE_AS_COMMENT_ON_SUGGEST_COMPLETE: case fromBubble.EXPORT_NOTE_AS_COMMENT_ON_SUGGEST_ERROR: case fromBubble.OTHERS_EXPORT_NOTE_AS_COMMENT_ON_SUGGEST:
             return BubbleOperationReducer(state, action);
 
         case fromBubble.CLEAR_ERROR:
@@ -605,7 +609,7 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
             state.editSuggests.splice(ind, 1);
             const newEditSuggests = _.cloneDeep(state.editSuggests);
             const newSuggestBubbleList = _.cloneDeep(state.suggestBubbleList);
-            state.suggestBubbleList.push(suggestBubble);
+            newSuggestBubbleList.push(suggestBubble);
             return {...state, loading: false, editSuggests: newEditSuggests, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
         }
         case fromBubble.CREATE_SUGGEST_ERROR:
@@ -639,6 +643,79 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
         }
         case fromBubble.EDIT_SUGGEST_ERROR:
             return {...state, loading: false, error: action.payload, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
+
+        
+        /***************/
+        /* EXPORT NOTE */
+        /***************/
+        case fromBubble.EXPORT_NOTE_AS_BUBBLE:
+            return {...state, loading: true}
+        case fromBubble.EXPORT_NOTE_AS_BUBBLE_COMPLETE: {
+            const newBubble = action.payload;
+            const newBubbleList = _.cloneDeep(state.bubbleList);
+            createBubble(newBubbleList, newBubble);
+            return {...state, bubbleList: newBubbleList, loading: false};
+        }
+        case fromBubble.EXPORT_NOTE_AS_BUBBLE_ERROR:
+            return {...state, loading: false, error: action.payload};
+        case fromBubble.OTHERS_EXPORT_NOTE_AS_BUBBLE: {
+            const newBubble = action.payload;
+            const newBubbleList = _.cloneDeep(state.bubbleList);
+            createBubble(newBubbleList, newBubble);
+            return {...state, bubbleList: newBubbleList};
+        }
+ 
+        case fromBubble.EXPORT_NOTE_AS_SUGGEST: 
+            return {...state, loading: true}
+        case fromBubble.EXPORT_NOTE_AS_SUGGEST_COMPLETE: {
+            const suggestBubble = action.payload;
+            const newSuggestBubbleList = _.cloneDeep(state.suggestBubbleList);
+            newSuggestBubbleList.push(suggestBubble);
+            return {...state, suggestBubbleList: newSuggestBubbleList, loading: false};
+        }
+        case fromBubble.EXPORT_NOTE_AS_SUGGEST_ERROR:
+            return {...state, loading: false, error: action.payload};
+        case fromBubble.OTHERS_EXPORT_NOTE_AS_SUGGEST: {
+            const suggestBubble = action.payload;
+            const newSuggestBubbleList = _.cloneDeep(state.suggestBubbleList);
+            newSuggestBubbleList.push(suggestBubble);
+            return {...state, suggestBubbleList: newSuggestBubbleList};
+        }
+ 
+        case fromBubble.EXPORT_NOTE_AS_COMMENT_ON_BUBBLE:
+            return {...state, loading: true}
+        case fromBubble.EXPORT_NOTE_AS_COMMENT_ON_BUBBLE_COMPLETE: {
+            const comment = action.payload;
+            const newCommentList = _.cloneDeep(state.commentList);
+            newCommentList.push(comment);
+            return {...state, commentList: newCommentList, loading: false};
+        }
+        case fromBubble.EXPORT_NOTE_AS_COMMENT_ON_BUBBLE_ERROR:
+            return {...state, loading: false, error: action.payload};
+        case fromBubble.OTHERS_EXPORT_NOTE_AS_COMMENT_ON_BUBBLE: {
+            const comment = action.payload;
+            const newCommentList = _.cloneDeep(state.commentList);
+            newCommentList.push(comment);
+            return {...state, commentList: newCommentList};
+        }
+        
+        case fromBubble.EXPORT_NOTE_AS_COMMENT_ON_SUGGEST:
+            return {...state, loading: true}
+        case fromBubble.EXPORT_NOTE_AS_COMMENT_ON_SUGGEST_COMPLETE: {
+            const comment = action.payload;
+            const newCommentList = _.cloneDeep(state.commentList);
+            newCommentList.push(comment);
+            return {...state, commentList: newCommentList, loading: false};
+        }
+        case fromBubble.EXPORT_NOTE_AS_COMMENT_ON_SUGGEST_ERROR:
+            return {...state, loading: false, error: action.payload};
+        case fromBubble.OTHERS_EXPORT_NOTE_AS_COMMENT_ON_SUGGEST: {
+            const comment = action.payload;
+            const newCommentList = _.cloneDeep(state.commentList);
+            newCommentList.push(comment);
+            return {...state, commentList: newCommentList};
+        }
+        
         default:
             console.log('this should not be called', state, action);
             return state;
