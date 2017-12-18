@@ -32,6 +32,7 @@ export class EditBoardComponent implements OnInit, OnDestroy {
     editBubbleString: string;
     updateBubbleId: number;
     updateString: string;
+    updateId: number;
     loading: boolean;
 
     isFocused: boolean = false;
