@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { FileSystemEntity } from '../models/file-system-entity';
+import { Document } from '../models/document';
 @Injectable()
 export class DirectoryService {
 

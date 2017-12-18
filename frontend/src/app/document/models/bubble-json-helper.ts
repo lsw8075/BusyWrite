@@ -2,9 +2,17 @@ import { Bubble, LeafBubble, SuggestBubble, InternalBubble, BubbleType } from '.
 import { User } from '../../user/models/user';
 import { Comment } from './comment';
 import { Note } from './note';
+import { Document } from '../../file/models/document';
 
 export namespace BubbleJsonHelper {
-    export function  getBubbleObject(jsonString: string): Bubble {
+    export function getDocumentObject(jsonString: string): Document {
+        const jsonObject = JSON.parse(jsonString);
+        const contributors = this.getUserArrayObject(JSON.stringify(jsonObject.contributors));
+        const doc = new Document(jsonObject.document_id, jsonObject.title, contributors); 
+        return doc;
+    }
+        
+    export function getBubbleObject(jsonString: string): Bubble {
         const jsonObject = JSON.parse(jsonString);
         if (jsonObject.child_bubbles.length > 0) {
             const childBubbleIds = jsonObject.child_bubbles;

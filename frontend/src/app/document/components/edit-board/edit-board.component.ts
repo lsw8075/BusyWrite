@@ -54,7 +54,6 @@ export class EditBoardComponent implements OnInit, OnDestroy {
             this.editBubbleString = bubbleState.editBubbleString;
             this.loading = bubbleState.loading;
         });
-
     }
 
     ngOnInit() {
@@ -123,7 +122,6 @@ export class EditBoardComponent implements OnInit, OnDestroy {
     public updateEditSuggest(suggest: {isBindSuggest: boolean, bindBubbleId: number, content: string}, updateString: string) {
 
     }
-
 
     public createNewEditItem(bubble: Bubble) {
     // this.editItems.push(editItem);

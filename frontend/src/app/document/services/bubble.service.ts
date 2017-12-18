@@ -3,6 +3,7 @@ import { MockBubbleRoot, MockBubbleList } from '../models/bubble.mock';
 import { Bubble, LeafBubble, InternalBubble, SuggestBubble, BubbleType } from '../models/bubble';
 import { Comment } from '../models/comment';
 import { User } from '../../user/models/user';
+import { Document } from '../../file/models/document';
 import { Subscription } from 'rxjs/Subscription';
 import { ServerSocket } from './websocket.service';
 import { Observable } from 'rxjs/Observable';
@@ -66,17 +67,17 @@ export class BubbleService implements OnDestroy {
                 console.log('received open_document success');
                 this.currentDocumentId = Number(body.document_id);
                 this.previousRequestId = Number(body.previous_request_id);
-                const contributors = BubbleJsonHelper.getUserArrayObject(JSON.stringify(body.contributors));
+                const doc: Document = BubbleJsonHelper.getDocumentObject(JSON.stringify(body));
                 const connectorIdList = body.connectors;
                 const cons = [];
                 try {
                     for (const connectorId of connectorIdList) {
-                        for (const contributor of contributors) {
+                        for (const contributor of doc.contributors) {
                             if (contributor.id === connectorId)
                                 cons.push({
                                         'id': connectorId,
-                                        'username': contributor.username
-                                        'email': contributor.email
+                                        'username': contributor.username,
+                                        'email': contributor.email,
                                         });
                         }
                     }
@@ -84,7 +85,7 @@ export class BubbleService implements OnDestroy {
                 } catch {
                 }
                 const connectors = BubbleJsonHelper.getUserArrayObject(JSON.stringify(cons));
-                this._store.dispatch(new BubbleAction.OpenComplete({documentId: Number(body.document_id), contributors: contributors, connectors: connectors}));
+                this._store.dispatch(new BubbleAction.OpenComplete({documentObject: doc, connectors: connectors}));
             } else {
                 console.log('received open_document fail');
                 this._store.dispatch(new BubbleAction.OpenError(body));
@@ -193,7 +194,7 @@ export class BubbleService implements OnDestroy {
                 if (body.who === this.userId) {
                     this._store.dispatch(new BubbleAction.EditRequestSuccess({userId: this.userId, bubbleId: Number(body.bubble_id)}));
                 } else {
-                    this._store.dispatch(new BubbleAction.OthersEditRequest(Number(body.bubble_id)));
+                    this._store.dispatch(new BubbleAction.OthersEditRequest({userId: body.who, bubbleId: Number(body.bubble_id)}));
                 }
                 this.previousRequestId = data.request_id;
             } else {
@@ -577,6 +578,22 @@ export class BubbleService implements OnDestroy {
                 console.log('received export_note_as_comment_under_suggest_bubble fail');
                 this._store.dispatch(new BubbleAction.ExportNoteAsCommentOnSuggestError(body));
             }
+        } else if (command === 'someone_added_as_contributor') {
+            if (accept == 'True') {
+                const user = BubbleJsonHelper.getUserObject(JSON.stringify(body));
+                if (user.id === this.userId) {
+                    // this cannot happen
+                    console.log('someone added as contributor error: i am added');
+                } else {
+                    console.log('received someone_added_as_contributor success');
+                    this._store.dispatch(new BubbleAction.OthersAddedAsContributor(user));
+                }
+                this.previousRequestId = data.request_id;
+            } else {
+                // this cannot happen
+                console.log('someone added as contributor fail. this cannot happen');
+            }
+ 
         }
     }
 

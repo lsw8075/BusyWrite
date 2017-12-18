@@ -1,1 +1,1 @@
-export { FileSystemEntity } from '../models/file-system-entity';
+export { Document } from '../models/document';

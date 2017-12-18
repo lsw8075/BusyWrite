@@ -3,6 +3,7 @@ import { Bubble, InternalBubble, LeafBubble, SuggestBubble } from '../models/bub
 import { Comment } from '../models/comment';
 import { Note } from '../models/note';
 import { User } from '../../user/models/user';
+import { Document } from '../../file/models/document';
 import { MenuType } from '../services/event/event-bubble.service';
 
 export const OPEN = '[Document] open';
@@ -20,8 +21,7 @@ export class OpenPending implements Action {
 export class OpenComplete implements Action {
   readonly type = OPEN_COMPLETE;
   constructor(public payload: {
-      documentId: number,
-      contributors: Array<User>,
+      documentObject: Document,
       connectors: Array<User>
   }) {}
 }
@@ -68,6 +68,13 @@ export class OthersCloseDocument implements Action {
     readonly type = OTHERS_CLOSE_DOCUMENT;
     constructor(public payload: number) {}
 }
+
+export const OTHERS_ADDED_AS_CONTRIBUTOR = '[Document] contributor added';
+export class OthersAddedAsContributor implements Action {
+    readonly type = OTHERS_ADDED_AS_CONTRIBUTOR;
+    constructor(public payload: User) {}
+}
+
 export const LOAD = '[Bubble] Load';
 export const LOAD_PENDING = '[Bubble] load pending';
 export const LOAD_COMPLETE = '[Bubble] load Complete';
@@ -268,7 +275,9 @@ export class EditRequestSuccess implements Action {
 }
 export class OthersEditRequest implements Action {
     readonly type = OTHERS_EDIT_REQUEST;
-    constructor(public payload: number) {}
+    constructor(public payload: {
+            bubbleId: number
+            userId: number}) {}
 }
 export class EditUpdate implements Action {
     readonly type = EDIT_UPDATE;
@@ -925,7 +934,7 @@ export class ExportNoteAsBubble implements Action {
     readonly type = EXPORT_NOTE_AS_BUBBLE;
     constructor(public payload: {
         parentId: number,
-        loc : number,
+        loc: number,
         noteId: number}) {}
 }
 export class ExportNoteAsBubblePending implements Action {
@@ -1029,6 +1038,24 @@ export class OthersExportNoteAsCommentOnSuggest implements Action {
     constructor(public payload: Comment) {}
 }
 
+
+
+export const ADD_CONTRIBUTER_REQUEST = '[contributer] http request';
+export const ADD_CONTRIBUTER_REQUEST_SUCCESS = '[contributer] add http request success';
+export const ADD_CONTRIBUTER_REQUEST_FAIL = '[contributer] add http request fail';
+export class AddContributerRequest implements Action {
+    readonly type = ADD_CONTRIBUTER_REQUEST;
+    constructor(public payload: string) {}
+}
+export class AddContributerRequestSuccess implements Action {
+    readonly type = ADD_CONTRIBUTER_REQUEST_SUCCESS;
+    constructor(public payload: string) {}
+}
+export class AddContributerRequestFail implements Action {
+    readonly type = ADD_CONTRIBUTER_REQUEST_FAIL;
+    constructor(public payload: string) {}
+}
+
 export const REFRESH = '[Bubble] refresh';
 export class Refresh implements Action {
   readonly type = REFRESH;
@@ -1036,9 +1063,14 @@ export class Refresh implements Action {
 }
 
 export const CLEAR_ERROR = '[Board] clear error';
+export const CLEAR_MSG = '[message] clear';
 export class ClearError implements Action {
     readonly type = CLEAR_ERROR;
     constructor(public payload ?: void) {}
+}
+export class ClearMsg implements Action {
+    readonly type = CLEAR_MSG;
+    constructor() {}
 }
 
 export type Actions =
@@ -1053,6 +1085,7 @@ export type Actions =
   | CloseComplete
   | CloseError
   | OthersCloseDocument
+  | OthersAddedAsContributor
   | Load
   | LoadPending
   | LoadComplete
@@ -1220,4 +1253,8 @@ export type Actions =
   | ExportNoteAsCommentOnSuggestError
   | OthersExportNoteAsCommentOnSuggest
   | Refresh
-  | ClearError;
+  | ClearError
+  | ClearMsg
+  | AddContributerRequest
+  | AddContributerRequestSuccess
+  | AddContributerRequestFail;

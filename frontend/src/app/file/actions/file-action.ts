@@ -1,5 +1,5 @@
 import { Action } from '@ngrx/store';
-import { FileSystemEntity } from '../models/file-system-entity';
+import { Document } from '../models/document';
 
 export const LOAD = '[File] Load';
 export const LOAD_COMPLETE = '[File] load Complete';
@@ -28,7 +28,7 @@ export class Load implements Action {
 
 export class LoadComplete implements Action {
     readonly type = LOAD_COMPLETE;
-    constructor(public payload: FileSystemEntity[]) {}
+    constructor(public payload: Document[]) {}
 }
 
 export class LoadError implements Action {
@@ -38,7 +38,7 @@ export class LoadError implements Action {
 
 export class Select implements Action {
     readonly type = SELECT;
-    constructor(public payload: FileSystemEntity) {}
+    constructor(public payload: Document) {}
 }
 
 export class Create implements Action {
@@ -48,7 +48,7 @@ export class Create implements Action {
 
 export class CreateComplete implements Action {
     readonly type = CREATE_COMPLETE;
-    constructor(public payload: FileSystemEntity) {}
+    constructor(public payload: Document) {}
 }
 
 export class CreateError implements Action {
@@ -58,7 +58,7 @@ export class CreateError implements Action {
 
 export class Open implements Action {
     readonly type = OPEN;
-    constructor(public payload: FileSystemEntity) {}
+    constructor(public payload: Document) {}
 }
 
 export class Delete implements Action {
