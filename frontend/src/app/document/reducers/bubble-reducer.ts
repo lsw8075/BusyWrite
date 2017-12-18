@@ -214,18 +214,10 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
         case fromBubble.LOAD:
             return {...state, loading: true, documentId: action.payload};
         case fromBubble.LOAD_COMPLETE: {
-            // const suggestBubble = new SuggestBubble(999, "<p>This is a new suggestBubble</p>");
-            const newBubbleList = _.cloneDeep(action.payload.bubbleList);
-            const newSuggestBubbleList = _.cloneDeep(action.payload.suggestBubbleList);
-            // newSuggestBubbleList.push(suggestBubble);
-            // const bubble = getBubbleById(newBubbleList, 879);
-            // bubble.suggestBubbleIds.push(999);
-            // state.editSuggests.push({bindBubbleId: 879, content: "this is binded with 879 bubble", isBindSuggest: false});
-            // state.editSuggests.push({bindBubbleId: 999, content: "this is binded with 999 suggest bubble", isBindSuggest: true});
-            console.log(newBubbleList);
-            console.log(newSuggestBubbleList);
-            return {...state, bubbleList: [...newBubbleList],
-                suggestBubbleList: [...newSuggestBubbleList], commentList: [...action.payload.commentList],
+            state.editSuggests.push({bindBubbleId: 879, content: "this is binded with 879 bubble", isBindSuggest: false});
+            state.editSuggests.push({bindBubbleId: 959, content: "this is binded with 959 suggest bubble", isBindSuggest: true});
+            return {...state, bubbleList: [...action.payload.bubbleList],
+                suggestBubbleList: [...action.payload.suggestBubbleList], commentList: [...action.payload.commentList],
                 noteList: [...action.payload.noteList],
                 editSuggests: [...state.editSuggests],
                 loading: false};
@@ -403,6 +395,9 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
             return {...state, loading: true, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
         case fromBubble.CREATE_SUGGEST_COMPLETE: {
             console.log('CREATE_SUGGEST_COMPLETE', action.payload);
+            const suggestBubble = action.payload;
+            const newSuggestBubbleList = _.cloneDeep(state.suggestBubbleList);
+            state.suggestBubbleList.push(suggestBubble);
             return {...state, loading: false, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
         }
         case fromBubble.CREATE_SUGGEST_ERROR:
@@ -411,6 +406,9 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
             return {...state, loading: true, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
         case fromBubble.EDIT_SUGGEST_COMPLETE: {
             console.log('EDIT_SUGGEST_COMPLETE', action.payload);
+            const hidedSuggestBubbleId = action.payload.hidedSuggestBubbleId;
+            const newEdittedSuggestBubble = action.payload.newEdittedSuggestBubble;
+
             return {...state, loading: false, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
         }
         case fromBubble.EDIT_SUGGEST_ERROR:
