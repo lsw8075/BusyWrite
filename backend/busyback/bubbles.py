@@ -41,7 +41,6 @@ def normal_operation(func):
 
             result = func(*args, document=document, bubble=bubble)
             document.save()
-
         return result
     return wrapper
 
@@ -76,7 +75,6 @@ def bubble_operation(func):
     ''' Decorator for functions that not consider 4th arg '''
     @wraps(func)
     def wrapper(*args, **kwargs):
-        print('called ' + func.__name__ + '...')
         with transaction.atomic():
             rid_version = args[0]
             user_id = args[1]
@@ -542,9 +540,11 @@ def do_pop_normal_bubble(
         raise BubbleLockedError(bubble.id)
 
     parent = bubble.parent_bubble
+
     check_updatable_with_siblings(rversion, parent, bubble.location)
 
     parent.pop_child(bubble.location)
+
 
     return (Operation.POP_NORMAL, process_normal(bubble.parent_bubble))
 

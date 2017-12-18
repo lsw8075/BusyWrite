@@ -200,6 +200,7 @@ class NormalBubble(Bubble):
         if new_parent is not None:
             new_parent.adjust_children_location(new_location, splice_count)
         
+        to_be_deleted = []
         # process target childrens
         for child in self.child_bubbles.all():
             if child.location < 0:
@@ -208,13 +209,17 @@ class NormalBubble(Bubble):
                     child.parent_bubble = new_parent
                     child.save()
                 else:
-                    child.delete()
+                    # mark children to be deleted
+                    to_be_deleted.append(child)
 
         # add new bubbles if they exist
         for idx, child in enumerate(splice_list):
             child.location = location + idx
             child.parent_bubble = self
             child.save()
+
+        for child in to_be_deleted:
+            child.delete()
 
         return self
 
@@ -234,7 +239,6 @@ class NormalBubble(Bubble):
     def pop_child(self, location):
         popped = self.fetch_child(location)
         self.splice_children(location, 1, splice_list=popped.child_bubbles.all())
-        popped.deleted = True
         return self
 
         
