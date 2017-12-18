@@ -126,7 +126,7 @@ export class BubbleEffects {
     @Effect()
     editComplete: Observable<Action> = this.action$.ofType<BubbleAction.EditComplete>(BubbleAction.EDIT_COMPLETE)
         .map(action => action.payload).mergeMap(query => {
-            return Observable.of(this.bubbleService.finishEdittingBubble(query))
+            return Observable.of(this.bubbleService.finishEdittingBubble(query.bubbleId, query.content))
                 .map(() => new BubbleAction.EditCompletePending(null));
         });
 

@@ -41,14 +41,14 @@ export class UserEffects {
             .then(res => {
                 const status = res.status;
                 if (status === 403) {
-                    return (new fromUser.SignInFail('username or password is wrong'));
+                    return (new fromUser.SignInFail('email or password is wrong'));
                 } else if (status === 200) {
                     const userId = JSON.parse(res.text()).user_id;
                     return (new fromUser.SignInSuccess(userId));
                 }
             }).catch((error) => {
                 console.log(query);
-                return (new fromUser.SignInFail('username or password is wrong'));
+                return (new fromUser.SignInFail('email or password is wrong'));
             });
         });
 

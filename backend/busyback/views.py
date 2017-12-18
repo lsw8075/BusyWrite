@@ -15,9 +15,9 @@ import json
 def signup(request):
     if request.method == 'POST':
         req_data = json.loads(request.body.decode())
-        username = req_data['username']
         password = req_data['password']
         email = req_data['email']
+        username = email.split('@')[0]
         User.objects.create_user(username=username, password=password, email=email)
         return HttpResponse(status=201)
     else:
@@ -26,9 +26,11 @@ def signup(request):
 def signin(request):
     if request.method == 'POST':
         request_data = json.loads(request.body.decode())
-        username = request_data['username']
+        email = request_data['email']
         password = request_data['password']
-        password = request_data['password']
+        print(email)
+        print(password)
+        username = User.objects.get(email=email).username
         user = authenticate(request, username = username, password = password)
         if user is None:
             return HttpResponse(status=401) # unauthorized

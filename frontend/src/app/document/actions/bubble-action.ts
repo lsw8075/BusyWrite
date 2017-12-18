@@ -33,7 +33,7 @@ export class OpenError implements Action {
 export const OTHERS_OPEN_DOCUMENT = '[Document] other open';
 export class OthersOpenDocument implements Action {
     readonly type = OTHERS_OPEN_DOCUMENT;
-    constructor(public payload: User) {}
+    constructor(public payload: number) {}
 }
 
 export const SELECT_SANGJUN_BOARD = '[SANGJUN BOARD] select bubble';
@@ -66,7 +66,7 @@ export class CloseError implements Action {
 export const OTHERS_CLOSE_DOCUMENT = '[Document] Other Close';
 export class OthersCloseDocument implements Action {
     readonly type = OTHERS_CLOSE_DOCUMENT;
-    constructor(public payload: User) {}
+    constructor(public payload: number) {}
 }
 export const LOAD = '[Bubble] Load';
 export const LOAD_PENDING = '[Bubble] load pending';
@@ -299,7 +299,9 @@ export class OthersEditUpdate implements Action {
 }
 export class EditComplete implements Action {
     readonly type = EDIT_COMPLETE;
-    constructor(public payload: number) {}
+    constructor(public payload: {
+            bubbleId: number,
+            content: string}) {}
 }
 export class EditCompletePending implements Action {
     readonly type = EDIT_COMPLETE_PENDING;
@@ -307,11 +309,15 @@ export class EditCompletePending implements Action {
 }
 export class EditCompleteSuccess implements Action {
     readonly type = EDIT_COMPLETE_SUCCESS;
-    constructor(public payload: number) {}
+    constructor(public payload: {
+            bubbleId: number,
+            content: string}) {}
 }
 export class OthersEditComplete implements Action {
     readonly type = OTHERS_EDIT_COMPLETE;
-    constructor(public payload: number) {}
+    constructor(public payload: {
+            bubbleId: number,
+            content: string}) {}
 }
 export class EditDiscard implements Action {
     readonly type = EDIT_DISCARD;
@@ -330,11 +336,14 @@ export class EditDiscardSuccess implements Action {
 }
 export class OthersEditDiscard implements Action {
     readonly type = OTHERS_EDIT_DISCARD;
-    constructor(public payload: number) {}
+    constructor(public payload: {
+        bubbleId: number,
+        content: string
+    }) {}
 }
 export class EditBubbleError implements Action {
-  readonly type = EDIT_BUBBLE_ERROR;
-  constructor(public payload: string) {}
+    readonly type = EDIT_BUBBLE_ERROR;
+    constructor(public payload: string) {}
 }
 
 export const RELEASE_OWNERSHIP = '[Bubble] release ownership';

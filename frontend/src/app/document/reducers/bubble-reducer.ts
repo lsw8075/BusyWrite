@@ -168,7 +168,16 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
             return {...state, loading: false, error: action.payload, documentId: -1};
         case fromBubble.OTHERS_OPEN_DOCUMENT:
             const addConnectors = _.cloneDeep(state.connectors);
-            addConnectors.push(action.payload)
+            try {
+                for (const contributor of state.contributors) {
+                    if (action.payload === contributor.id) {                 
+                        addConnectors.push(contributor);
+                    }
+                    break;
+                }
+                throw new Error('cannot find new connector in contributors')
+            } catch {
+            }
             return {...state, connectors: addConnectors}
         case fromBubble.CLOSE:
             return {...state, loading: true}
@@ -178,13 +187,19 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
             return {...state, loading: false, error: action.payload}
         case fromBubble.OTHERS_CLOSE_DOCUMENT:
             const deleteConnectors = _.cloneDeep(state.connectors);
-            const index = deleteConnectors.indexOf(action.payload, 0);
             try {
-                if (index > -1) {
-                    deleteConnectors.splice(index, 1);
-                } else {
-                    throw new Error('connector who closed document is not in connectors list');
+                for (const connector of state.connectors) {
+                    if (action.payload === connector.id) {
+                        const index = deleteConnectors.indexOf(action.payload, 0);
+                        if (index > -1) {
+                            deleteConnectors.splice(index, 1);
+                        } else {
+                            throw new Error('connector who closed document is not in connectors list');
+                        }
+                        break;
+                    }
                 }
+                throw new Error('cannot find delete connector in connectors')
             } catch (err){ 
             }
             return {...state, connectors: deleteConnectors};

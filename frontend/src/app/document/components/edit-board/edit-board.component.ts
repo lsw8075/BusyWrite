@@ -24,15 +24,16 @@ import * as _ from 'lodash';
 })
 export class EditBoardComponent implements OnInit, OnDestroy {
 
-  notes$: Observable<Array<Note>>;
-  editBubbles$: Observable<Array<Bubble>>;
-  editBubbles: Array<Bubble>;
-  editBubbleId: number;
-  editBubbleString: string;
-  loading: boolean;
-  isEditting: boolean = false;
+    notes$: Observable<Array<Note>>;
+    editBubbles$: Observable<Array<Bubble>>;
+    editBubbles: Array<Bubble>;
+    editBubbleId: number;
+    editBubbleString: string;
+    updateString: string;
+    loading: boolean;
+    isEditting: boolean = false;
 
-  constructor(
+    constructor(
         private _store: Store<fromDocument.State>,
         private _noteService: NoteService,
         private _boardService: BoardService,
@@ -58,7 +59,8 @@ export class EditBoardComponent implements OnInit, OnDestroy {
   public finishEdit(bubble: Bubble) {
       
       this.isEditting = false;
-      this._store.dispatch(new BubbleAction.EditComplete(bubble.id));
+      this._store.dispatch(new BubbleAction.EditComplete({
+            bubbleId: bubble.id, content: this.updateString}));
 //    this._boardService.finishEdit(editItem.bubble, editItem.content);
     // this.editItems = this.editItems.filter(e => e.id !== editItem.id);
   }
@@ -86,6 +88,7 @@ export class EditBoardComponent implements OnInit, OnDestroy {
   }
 
   public updateEditItem(bubble: Bubble, updateString: string) {
+      this.updateString = updateString;
       if (this.loading === false && this.editBubbleId === bubble.id) {
           if (updateString !== this.editBubbleString) {
               console.log(bubble.id, updateString, this.editBubbleString);

@@ -21,7 +21,7 @@ export class SignInComponent implements OnInit {
 
   public onSubmit(f: NgForm): void {
     if (f.valid) {
-      const inputValue: {'username': string, 'password': string} = f.value;
+      const inputValue: {'email': string, 'password': string} = f.value;
       this._store.dispatch(new UserAction.SignIn(inputValue));
     }
     console.log(f.value);

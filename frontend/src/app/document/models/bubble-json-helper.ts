@@ -57,7 +57,7 @@ export namespace BubbleJsonHelper {
 
     export function getUserObject(jsonString: string): User {
         const jsonObject = JSON.parse(jsonString);
-        const user = new User(jsonObject.id, jsonObject.email);
+        const user = new User(jsonObject.id, jsonObject.username, jsonObject.email);
         return user;
     }
     export function getUserArrayObject(jsonString: string): Array<User> {

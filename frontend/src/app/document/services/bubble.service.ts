@@ -75,6 +75,7 @@ export class BubbleService implements OnDestroy {
                             if (contributor.id === connectorId)
                                 cons.push({
                                         'id': connectorId,
+                                        'username': contributor.username
                                         'email': contributor.email
                                         });
                         }
@@ -91,9 +92,8 @@ export class BubbleService implements OnDestroy {
         } else if (command === 'someone_open_document_detail') {
             if (accept === 'True') {
                 console.log('received someone_open_document_detail');
-                const connector = BubbleJsonHelper.getUserObject(JSON.stringify(body));
-                if (connector.id !== this.userId) {
-                    this._store.dispatch(new BubbleAction.OthersOpenDocument(connector));
+                if (body.connector_id !== this.userId) {
+                    this._store.dispatch(new BubbleAction.OthersOpenDocument(body.connector_id));
                 }
             } else {
                 // this cannot happen
@@ -112,8 +112,7 @@ export class BubbleService implements OnDestroy {
         } else if (command === 'someone_close_document_detail') {
             if (accept === 'True') {
                 console.log('received someone_close_document_detail');
-                const disconnector = BubbleJsonHelper.getUserObject(JSON.stringify(body));
-                this._store.dispatch(new BubbleAction.OthersCloseDocument(disconnector));
+                this._store.dispatch(new BubbleAction.OthersCloseDocument(body.disconnector_id));
             } else {
                 // this cannot happen
             }
@@ -205,7 +204,8 @@ export class BubbleService implements OnDestroy {
             if (accept === 'True') {
                 console.log('received update_content_of_editting_bubble success');
                 if (body.who === this.userId) {
-                    this._store.dispatch(new BubbleAction.EditUpdateSuccess({bubbleId: Number(body.bubble_id), content: body.content}));
+                    this._store.dispatch(new BubbleAction.EditUpdateSuccess(
+                                {bubbleId: Number(body.bubble_id), content: body.content}));
                 } else {
                     this._store.dispatch(new BubbleAction.OthersEditUpdate(
                                 {bubbleId: Number(body.bubble_id), content: body.content}));
@@ -219,9 +219,13 @@ export class BubbleService implements OnDestroy {
             if (accept === 'True') {
                 console.log('received finish_editting_bubble success');
                 if (body.who === this.userId) {
-                    this._store.dispatch(new BubbleAction.EditCompleteSuccess(Number(body.bubble_id)));
+                    this._store.dispatch(new BubbleAction.EditCompleteSuccess(
+                                {bubbleId: Number(body.bubble_id),
+                                content: String(body.content)}));
                 } else {
-                    this._store.dispatch(new BubbleAction.OthersEditComplete(Number(body.bubble_id)));
+                    this._store.dispatch(new BubbleAction.OthersEditComplete(
+                                {bubbleId: Number(body.bubble_id),
+                                content: String(body.content)}));
                 }
                 this.previousRequestId = data.request_id;
             } else {
@@ -232,9 +236,11 @@ export class BubbleService implements OnDestroy {
             if (accept === 'True') {
                 console.log('received discard_editting_bubble success');
                 if (body.who === this.userId) {
-                    this._store.dispatch(new BubbleAction.EditDiscardSuccess({ bubbleId: Number(body.bubble_id), content: body.content }));
+                    this._store.dispatch(new BubbleAction.EditDiscardSuccess(
+                                {bubbleId: Number(body.bubble_id), content: body.content}));
                 } else {
-                    this._store.dispatch(new BubbleAction.OthersEditDiscard(Number(body.bubble_id)));
+                    this._store.dispatch(new BubbleAction.OthersEditDiscard(
+                                {bubbleId: Number(body.bubble_id), content: body.content}));
                 }
                 this.previousRequestId = data.request_id;
             } else {
@@ -665,10 +671,10 @@ export class BubbleService implements OnDestroy {
         this._socket.send(m);
     }
 
-    public finishEdittingBubble(bubbleId: number) {
+    public finishEdittingBubble(bubbleId: number, content: string) {
         const m = {'header': 'finish_editting_bubble',
             'previous_request': this.previousRequestId,
-            'body': {'bubble_id': bubbleId}};
+            'body': {'bubble_id': bubbleId, 'content': content}};
         this._socket.send(m);
     }
 

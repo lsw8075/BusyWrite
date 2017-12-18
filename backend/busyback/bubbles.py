@@ -225,7 +225,7 @@ def do_updating_normal_bubble(
     user_id: int,
     document_id: int,
     bubble_id: int,
-    content,
+    content: str,
     **kw
     ):
 
@@ -242,8 +242,14 @@ def do_update_finish_normal_bubble(
     user_id: int,
     document_id: int,
     bubble_id: int,
+    content: str,
     **kw
     ):
+
+    result = update_bubble_on_cache(user_id, bubble_id, content)
+    if not result:
+        raise InvalidUpdateError(bubble_id)
+
     result = unload_bubble_from_cache(user_id, bubble_id)
     if result is None:
         raise InvalidUpdateError(bubble_id)
