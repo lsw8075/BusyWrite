@@ -75,8 +75,8 @@ export class BubbleService implements OnDestroy {
                             if (contributor.id === connectorId)
                                 cons.push({
                                         'id': connectorId,
-                                        'username': contributor.username
-                                        'email': contributor.email
+                                        'username': contributor.username,
+                                        'email': contributor.email,
                                         });
                         }
                     }

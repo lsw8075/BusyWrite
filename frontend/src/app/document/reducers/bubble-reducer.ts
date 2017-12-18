@@ -67,8 +67,8 @@ const initialState: BubbleState = {
     editSuggests: [],
 
     editBubbleId: -1,
-    editBubbleString: "",
-    editActiveBubbleIds: [];
+    editBubbleString: '',
+    editActiveBubbleIds: [],
 
     loading: false,
     error: '',
@@ -166,7 +166,7 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
     switch (action.type) {
 
         case fromBubble.OPEN:
-            return {...initialState, loading: true}
+            return {...initialState, loading: true};
         case fromBubble.OPEN_COMPLETE:
             // TODO: add contributors info to document object
             return {...state, loading: false, connectors: action.payload.connectors}
@@ -175,12 +175,12 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
         case fromBubble.OTHERS_OPEN_DOCUMENT:
             const addConnectors = _.cloneDeep(state.connectors);
             try {
-                for (const contributor of state.contributors) {
-                    if (action.payload === contributor.id) {
-                        addConnectors.push(contributor);
-                    }
-                    break;
-                }
+                // for (const contributor of state.contributors) {
+                //     if (action.payload === contributor.id) {
+                //         addConnectors.push(contributor);
+                //     }
+                //     break;
+                // }
                 throw new Error('cannot find new connector in contributors')
             } catch {
             }
@@ -196,12 +196,12 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
             try {
                 for (const connector of state.connectors) {
                     if (action.payload === connector.id) {
-                        const index = deleteConnectors.indexOf(action.payload, 0);
-                        if (index > -1) {
-                            deleteConnectors.splice(index, 1);
-                        } else {
-                            throw new Error('connector who closed document is not in connectors list');
-                        }
+                        // const index = deleteConnectors.indexOf(action.payload, 0);
+                        // if (index > -1) {
+                        //     deleteConnectors.splice(index, 1);
+                        // } else {
+                        //     throw new Error('connector who closed document is not in connectors list');
+                        // }
                         break;
                     }
                 }
