@@ -1,7 +1,7 @@
 from .models import *
 
 def print_bubble_tree(bubble, indent): # pragma: no cover
-    print('  ' * indent + str(bubble.location) + ':' + str(bubble.content))
+    print('  ' * indent + str(bubble.location) + ': #' + str(bubble.id) + ' [' + str(bubble.content) + ']')
     for child in bubble.child_bubbles.all():
         print_bubble_tree(child, indent + 1)
 
