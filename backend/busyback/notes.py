@@ -6,6 +6,8 @@ from .operation_no import Operation
 from .utils import create_normal, create_suggest, process_note
 from .users import fetch_user
 from django.forms.models import model_to_dict
+from functools import wraps
+from .documents import fetch_document_with_lock
 
 def fetch_note(note_id):
     try:
@@ -13,6 +15,81 @@ def fetch_note(note_id):
     except Note.DoesNotExist:
         raise NoteDoesNotExistError(note_id)
     return note
+
+def note_operation(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        print('called ' + func.__name__ + '...')
+        with transaction.atomic():
+            user_id = args[0]
+            doc_id = args[1]
+            document = fetch_document_with_lock(user_id, doc_id)
+            result = func(*args, document=document)
+        return result
+    return wrapper
+    
+@note_operation
+def do_create_note(
+    user_id: int,
+    document_id: int,
+    content: int,
+    **kw
+    ):
+    
+    if len(content) == 0:
+        raise ContentEmptyError()
+
+    user = fetch_user(user_id)
+    document = kw['document']
+    note = Notes.objects.create(document=document, owner=user, content=content, order=0)
+    note.order = notes.id
+    note.save()
+    return process_note(note)
+
+@note_operation
+def do_edit_note(
+    user_id: int,
+    document_id: int,
+    note_id: int,
+    content: int,
+    **kw
+    ):
+
+    if len(content) == 0:
+        raise ContentEmptyError()
+
+    document = kw['document']
+    try:
+        note = Notes.objetcts.get(id=note_id)
+    except Exception as e:
+        raise NoteDoesNotExistError(note_id)
+
+    if note.owner.id != user_id:
+        raise UserIsNotNoteOwnerError(user_id, note_id)
+
+    note.content = content
+    note.save()
+
+    return process_note(note)
+
+def do_delete_note(
+    user_id: int,
+    document_id: int,
+    note_id: int,
+    content: int
+    ):
+
+    user = fetch_user(user_id)
+    try:
+        note = Notes.objetcts.get(id=note_id)
+    except Exception as e:
+        raise NoteDoesNotExistError(note_id)
+
+
+    if note.owner.id != user_id:
+        raise UserIsNotNoteOwnerError(user_id, note_id)
+
+    note.delete()
 
 @normal_operation
 @update_doc

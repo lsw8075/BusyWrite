@@ -1,3 +1,4 @@
+from django.http import HttpResponse, HttpResponseNotAllowed
 from .models import *
 from django.forms.models import model_to_dict
 import sys, traceback
@@ -78,3 +79,14 @@ def see_error(e):
 
 def generate_hash():
    return hashlib.sha224(str(random.random()).encode()).hexdigest() 
+
+def parse_request(request):
+    if not request.user.is_authenticated:
+        return HttpResponse(status=401)
+    req_user = request.user.id
+    req_method = request.method
+    if (req_method == 'POST') or (req_method == 'PUT'):
+        req_data = json.loads(request.body.decode())
+    else:
+        req_data = None
+    return (req_user, req_method, req_data)
