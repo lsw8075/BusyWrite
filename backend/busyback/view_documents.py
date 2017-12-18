@@ -1,6 +1,7 @@
 from django.http import HttpResponse, HttpResponseNotAllowed
 from django.http import HttpResponseNotFound, JsonResponse
 from django.forms.models import model_to_dict
+from channels import Channel, Group
 from .documents import *
 from .utils import see_error
 from functools import wraps
@@ -87,10 +88,15 @@ def req_document_accept_invitation(request, salt):
         try:
             if len(salt) < 56:
                 return HttpResponse(status=400)
-            doc_id = do_add_contributor(salt)
+            result = do_add_contributor(salt)
         except Exception as e:
             see_error(e)
             return HttpResponse(status=400)
+        doc_id = result[0]
+        who = result[1]
+        Group('document_detail-'+str(doc_id)).send({"text":
+            json.dumps({"header": "someone_added_as_contributor", "accept": "True",
+                "body": {"id": who.id, "username": who.username, "email": who.email}})});
         return Jsonresponse({'document_id': doc_id}, safe=False)
     else:
         return HttpResponseNotAllowed(['GET'])

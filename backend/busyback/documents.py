@@ -150,7 +150,7 @@ def do_add_contributor(salt_value):
         raise InvalidInvitationError()
         
     document.save()
-    return document.id
+    return (document.id, who)
 
 @transaction.atomic
 def do_delete_document(

@@ -68,6 +68,13 @@ export class OthersCloseDocument implements Action {
     readonly type = OTHERS_CLOSE_DOCUMENT;
     constructor(public payload: number) {}
 }
+
+export const OTHERS_ADDED_AS_CONTRIBUTOR = '[Document] contributor added';
+export class OthersAddedAsContributors implements Action {
+    readonly type = OTHERS_ADDED_AS_CONTRIBUTOR;
+    constructor(public payload: User) {}
+}
+
 export const LOAD = '[Bubble] Load';
 export const LOAD_PENDING = '[Bubble] load pending';
 export const LOAD_COMPLETE = '[Bubble] load Complete';

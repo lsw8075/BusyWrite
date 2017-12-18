@@ -578,6 +578,22 @@ export class BubbleService implements OnDestroy {
                 console.log('received export_note_as_comment_under_suggest_bubble fail');
                 this._store.dispatch(new BubbleAction.ExportNoteAsCommentOnSuggestError(body));
             }
+        } else if (command === 'someone_added_as_contributor') {
+            if (accept == 'True') {
+                const user = BubbleJsonHelper.getUserObjects(JSON.stringify(body));
+                if (user.who === this.userId) {
+                    // this cannot happen
+                    console.log('someone added as contributor error: i am added');
+                } else {
+                    console.log('received someone_added_as_contributor success');
+                    this._store.dispatch(new BubbleAction.OthersAddedAsContributor(user));
+                }
+                this.previousRequestId = data.request_id;
+            } else {
+                // this cannot happen
+                console.log('someone added as contributor fail. this cannot happen');
+            }
+ 
         }
     }
 
