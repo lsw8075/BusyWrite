@@ -8,7 +8,7 @@ import * as fromUser from '../../user/reducers/reducer';
 import * as RouterAction from '../../shared/route/route-action';
 
 @Injectable()
-export class DocumentGuardService implements CanActivate {
+export class FileGuardService implements CanActivate {
 
     constructor(private _store: Store<fromUser.State>) {}
 
