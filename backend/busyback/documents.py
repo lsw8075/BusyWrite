@@ -119,11 +119,11 @@ def do_send_invitation_email(
 
     # generate mail body
     mail_subject = '[Busywrite] %s invited you to document \'%s\'' % (user.username, document.title)
-    invite_route = 'invitation/invite'
-    invite_addr = 'http://busywrite.ribosome.kr/%s?salt=%s' % (invite_route, salt)
+    invite_route = 'invitation'
+    invite_addr = 'http://busywrite.ribosome.kr/%s/%s' % (invite_route, salt)
     mail_body = '<h2>Busywrite invitation</h2> <p> click <a href=\"%s\">this link</a> to accept invitation </p>' % invite_addr
     # for debug.. please remove below code at practice!
-    debug_addr = 'http://localhost:4200/%s?salt=%s' % (invite_route, salt)
+    debug_addr = 'http://localhost:4200/%s/%s' % (invite_route, salt)
     mail_body = mail_body + '<p> invitation at debug: <a href=\"%s\">this link</a> to accept invitation </p>' % debug_addr
     # for debug.. please remove above code at practice!
     
@@ -150,7 +150,8 @@ def do_add_contributor(salt_value):
         raise InvalidInvitationError()
         
     document.save()
-    
+    return document.id
+
 @transaction.atomic
 def do_delete_document(
     user_id: int,

@@ -81,17 +81,16 @@ def req_document_contributors(request, document_id):
     else:
         return HttpResponseNotAllowed(['GET', 'POST'])
 
-def req_document_accept_invitation(request):
+def req_document_accept_invitation(request, salt):
     (user_id, method, data) = parse_request(request)
     if method == 'GET':
         try:
-            salt = request.GET['salt']
             if len(salt) < 56:
                 return HttpResponse(status=400)
-            do_add_contributor(salt_value)
+            doc_id = do_add_contributor(salt)
         except Exception as e:
             see_error(e)
             return HttpResponse(status=400)
-        return HttpResponse(status=204)
+        return Jsonresponse({'document_id': doc_id}, safe=False)
     else:
         return HttpResponseNotAllowed(['GET'])
