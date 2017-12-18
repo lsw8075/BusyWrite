@@ -3,20 +3,9 @@ from django.http import HttpResponseNotFound, JsonResponse
 from django.forms.models import model_to_dict
 from channels import Channel, Group
 from .documents import *
-from .utils import see_error
-from functools import wraps
+from .utils import see_error, parse_request
 import json
 
-def parse_request(request):
-    if not request.user.is_authenticated:
-        return HttpResponse(status=401)
-    req_user = request.user.id
-    req_method = request.method
-    if (req_method == 'POST') or (req_method == 'PUT'):
-        req_data = json.loads(request.body.decode())
-    else:
-        req_data = None
-    return (req_user, req_method, req_data)
 
 def req_document_list(request):
     (user_id, method, data) = parse_request(request)
