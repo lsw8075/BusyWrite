@@ -197,7 +197,7 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
             const addConnectors = _.cloneDeep(state.connectors);
             try {
                 for (const contributor of state.documentObject.contributors) {
-                    if (action.payload === contributor.id) {                 
+                    if (action.payload === contributor.id) {
                         addConnectors.push(contributor);
                     }
                     break;
@@ -236,7 +236,7 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
             } catch (err){
             }
             return {...state, connectors: deleteConnectors};
- 
+
 
         /*******************/
         /* ADD CONTRIBUTOR */
@@ -246,7 +246,7 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
             const doc = _.cloneDeep(state.documentObject);
             doc.contributors.push(action.payload);
             return {...state, documentObject: doc};
-       
+
 
         /********/
         /* LOAD */
@@ -285,7 +285,7 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
         /********/
         /* EDIT */
         /********/
- 
+
         case fromBubble.EDIT_BUBBLE:
             return {...state, loading: true, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
         case fromBubble.EDIT_REQUEST_SUCCESS: {
@@ -385,7 +385,7 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
         /*******/
         /* POP */
         /*******/
-                                              
+
         case fromBubble.POP_BUBBLE:
             return {...state, loading: true, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
         case fromBubble.POP_BUBBLE_COMPLETE: {

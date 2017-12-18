@@ -6,6 +6,7 @@ import { EventBubbleService } from './service';
 
 import { Board } from '../../models/board';
 import { LeafBubble, Bubble, BubbleType, SuggestBubble } from '../../models/bubble';
+import { Suggest } from './edit-item/edit-item.component';
 
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
@@ -26,7 +27,7 @@ import * as _ from 'lodash';
 export class EditBoardComponent implements OnInit, OnDestroy {
 
     notes$: Observable<Array<Note>>;
-    editSuggests: Array<{isBindSuggest: boolean, bindBubbleId: number, content: string}>;
+    editSuggests: Array<Suggest>;
     editBubbles: Array<Bubble>;
     editBubbleId: number;
     editBubbleString: string;
@@ -54,6 +55,7 @@ export class EditBoardComponent implements OnInit, OnDestroy {
             this.editBubbleId = bubbleState.editBubbleId;
             this.editBubbleString = bubbleState.editBubbleString;
             this.loading = bubbleState.loading;
+            console.log(this.editSuggests);
         });
     }
 
@@ -98,10 +100,10 @@ export class EditBoardComponent implements OnInit, OnDestroy {
         }
     }
 
-
-    public finishEditSuggest(suggest: {isBindSuggest: boolean, bindBubbleId: number, content: string}) {
-
-        const newContent = suggest.content;
+    updateSuggestString: string;
+    updateSuggest: Suggest;
+    public finishEditSuggest(suggest: Suggest) {
+        const newContent = (suggest === this.updateSuggest) ? this.updateSuggestString : suggest.content;
         if (suggest.isBindSuggest) {
             console.log('edit suggest bubble');
             this._store.dispatch(new BubbleAction.EditSuggest({ bindSuggestBubbleId: suggest.bindBubbleId, content: newContent }));
@@ -111,16 +113,19 @@ export class EditBoardComponent implements OnInit, OnDestroy {
         }
     }
 
-    public discardEditSuggest(suggest: {isBindSuggest: boolean, bindBubbleId: number, content: string}) {
+    public discardEditSuggest(suggest: Suggest) {
         console.log('discardEditSuggest');
         // this.isEditting = false;
         // this._store.dispatch(new BubbleAction.EditDiscard(bubble.id));
     }
 
-    public focusEditSuggest(suggest: {isBindSuggest: boolean, bindBubbleId: number, content: string}, focused: boolean) {
+    public focusEditSuggest(suggest: Suggest, focused: boolean) {
     }
 
-    public updateEditSuggest(suggest: {isBindSuggest: boolean, bindBubbleId: number, content: string}, updateString: string) {
+    public updateEditSuggest(suggest: Suggest, updateString: string) {
+        this.updateSuggestString = updateString;
+        this.updateSuggest = suggest;
+        suggest.content = this.updateSuggestString;
 
     }
 
