@@ -105,7 +105,7 @@ export class EditBoardComponent implements OnInit, OnDestroy {
             this.focusedId = bubble.id;
             const content = (bubble as LeafBubble).content;
             this._store.dispatch(new BubbleAction.EditUpdateResume({bubbleId: bubble.id, content: content}));
-        } else if(this.focusedId === bubble.id) {
+        } else if (this.focusedId === bubble.id) {
             this.isFocused = false;
         }
     }

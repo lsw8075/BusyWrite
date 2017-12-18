@@ -17,6 +17,8 @@ import { DirectoryService } from './services/directory.service';
 // Module
 import { MainPageModule } from './components/main-page.module';
 
+// guard
+import { FileGuardService } from './guards/file-guard.service';
 
 @NgModule({
   imports: [
@@ -34,7 +36,8 @@ import { MainPageModule } from './components/main-page.module';
     EffectsModule,
   ],
   providers: [
-    DirectoryService
+    DirectoryService,
+    FileGuardService
   ]
 })
 export class FileStateModule { }

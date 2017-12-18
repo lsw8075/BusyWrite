@@ -36,14 +36,22 @@ export class SplitBubbleComponent implements OnInit {
   }
 
   public split() {
-    if (this.highlightedText || (this.afterText && this.beforeText)) {
+    if (this.highlightedText) {
         if (this.bubble.type === BubbleType.leafBubble) {
+            const bubbleId = this.bubble.id;
+            const contentList = [this.beforeText, this.highlightedText, this.afterText];
             this._store.dispatch(new BubbleAction.SplitLeaf({
-                bubbleId: this.bubble.id,
-                contentList: [this.beforeText, this.highlightedText, this.afterText]
+                bubbleId, contentList
             }));
         }
-
+    } else if (this.afterText && this.beforeText) {
+        if (this.bubble.type === BubbleType.leafBubble) {
+            const bubbleId = this.bubble.id;
+            const contentList = [this.beforeText, this.afterText];
+            this._store.dispatch(new BubbleAction.SplitLeaf({
+                bubbleId, contentList
+            }));
+        }
     }
   }
 

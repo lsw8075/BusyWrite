@@ -17,6 +17,7 @@ import { Observable } from 'rxjs/Observable';
 import * as fromDocument from '../../../reducers/reducer';
 import * as fromBubble from '../../../reducers/bubble-reducer';
 import * as BubbleAction from '../../../actions/bubble-action';
+import * as BoardAction from '../../../actions/board-action';
 import * as SangjunBoardAction from '../../../actions/sangjun-bubble-action';
 import * as EditBoardAction from '../../../actions/edit-board-action';
 import * as RouterAction from '../../../../shared/route/route-action';
@@ -47,6 +48,7 @@ export class BubbleMenuComponent implements OnInit {
     }
 
     public openSangjunBoard() {
+        this._store.dispatch(new BoardAction.ShowSangjun());
         this._store.dispatch(new BubbleAction.SelectClear());
         this._store.dispatch(new SangjunBoardAction.Open(this.bubble));
     }
@@ -67,10 +69,12 @@ export class BubbleMenuComponent implements OnInit {
     }
 
     public createBubble() {
+        this._store.dispatch(new BoardAction.ShowEdit());
         this._store.dispatch(new BubbleAction.CreateBubble({bubbleId: this.bubble.id, isAbove: this.menu === MenuType.borderTopMenu}));
     }
 
     public editBubble() {
+        this._store.dispatch(new BoardAction.ShowEdit());
         this._store.dispatch(new BubbleAction.EditBubble(this.bubble.id));
     }
 

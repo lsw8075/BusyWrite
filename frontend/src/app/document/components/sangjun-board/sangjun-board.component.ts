@@ -84,6 +84,7 @@ export class SangjunBoardComponent implements OnInit, OnDestroy {
     }
 
     public createSuggestBubble() {
+        this._store.dispatch(new BoardAction.ShowEdit());
         this._store.dispatch(new BubbleAction.CreateSuggestStart({
             bindBubbleId: this.bubble.id,
             isBindSuggest: false,

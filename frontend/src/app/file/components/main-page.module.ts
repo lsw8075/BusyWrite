@@ -8,6 +8,8 @@ import { SideNavigationComponent } from './side-navigation/side-navigation.compo
 import { BrowserComponent } from './browser/browser.component';
 import { SharePopupComponent } from './share-popup/share-popup.component';
 
+import { FileGuardService } from '../guards/file-guard.service';
+
 export const COMPONENTS = [
     MainPageComponent,
     SideNavigationComponent,
@@ -16,7 +18,7 @@ export const COMPONENTS = [
 ];
 
 const routes: Routes = [
-    {path: '', component: MainPageComponent},
+    {path: '', component: MainPageComponent, canActivate: [FileGuardService]},
 ];
 
 @NgModule({
