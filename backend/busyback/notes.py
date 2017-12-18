@@ -8,6 +8,7 @@ from .users import fetch_user
 from django.forms.models import model_to_dict
 from functools import wraps
 from .documents import fetch_document_with_lock
+from django.db import transaction
 
 def fetch_note(note_id):
     try:
@@ -27,7 +28,37 @@ def note_operation(func):
             result = func(*args, document=document)
         return result
     return wrapper
+
+@note_operation
+def do_fetch_notes(
+    user_id: int,
+    document_id: int,
+    **kw
+    ):
     
+    user = fetch_user(user_id)
+    document = kw['document']
+    notes = document.notes.filter(owner=user).all()
+    return [process_note(n) for n in notes]
+
+@note_operation
+def do_fetch_note(
+    user_id: int,
+    document_id: int,
+    note_id: int,
+    **kw
+    ):
+
+    user = fetch_user(user_id)
+    document = kw['document']
+    try:
+        note = Note.objects.get(id=note_id)
+    except Note.DoesNotExist:
+        raise NoteDoesNotExistError(note_id)
+    
+    return process_note(note)
+
+
 @note_operation
 def do_create_note(
     user_id: int,
@@ -72,11 +103,12 @@ def do_edit_note(
 
     return process_note(note)
 
+@note_operation
 def do_delete_note(
     user_id: int,
     document_id: int,
     note_id: int,
-    content: int
+    **kw
     ):
 
     user = fetch_user(user_id)

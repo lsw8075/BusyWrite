@@ -1,6 +1,7 @@
 from django.conf.urls import url
 from busyback import views
 from busyback import view_documents
+from busyback import view_notes
 from channels.routing import route
 
 urlpatterns = [
@@ -8,8 +9,8 @@ urlpatterns = [
     url('^signin$', views.signin, name='signin'),
     url('^signout$', views.signout, name='signout'),
     url('^token$', views.token, name='token'),
-    url('^notelist/(?P<document_id>[0-9]+)/?$', view_documents.req_note_list, name='req_note_list'),
-    url('^note/(?P<document_id>[0-9]+)/(?P<note_id>[0-9]+)/?$', view_documents.req_note_detail, name='req_note_detail'),
+    url('^notelist/(?P<document_id>[0-9]+)/?$', view_notes.req_note_list, name='req_note_list'),
+    url('^note/(?P<document_id>[0-9]+)/(?P<note_id>[0-9]+)/?$', view_notes.req_note_detail, name='req_note_detail'),
     url('^document/(?P<document_id>[0-9]+)/?$', view_documents.req_document_detail, name='req_document_detail'),
     url('^document/contributors/(?P<document_id>[0-9]+)$', view_documents.req_document_contributors, name='req_document_contributors'),
     url('^document/acceptinvitation/(?P<salt>[a-zA-Z0-9]+)$', view_documents.req_document_accept_invitation, name='req_document_accept_invitation')
