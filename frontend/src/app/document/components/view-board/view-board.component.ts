@@ -1,6 +1,5 @@
 import { Component, OnInit, Output, Input, ChangeDetectionStrategy } from '@angular/core';
 
-
 import { BubbleMenuComponent } from './bubble-menu/bubble-menu.component';
 import { MenuType, ActionType } from './service';
 
@@ -13,6 +12,7 @@ import { EventBubbleService } from '../../services/event/event-bubble.service';
 import { Bubble, BubbleType, InternalBubble, LeafBubble } from '../../models/bubble';
 
 import { Board } from '../../models/board';
+import { User } from '../../../user/models/user';
 
 import { BubbleJsonHelper } from '../../models/bubble-json-helper';
 
@@ -40,6 +40,7 @@ export class ViewBoardComponent implements OnInit {
     @Input() selectedBubbleList: Array<Bubble>;
     @Input() hoverBubbleList: Array<Bubble>;
     @Input() selectedMenu: MenuType;
+    @Input() contributers: Array<User>;
 
   constructor(
     private _boardService: BoardService,

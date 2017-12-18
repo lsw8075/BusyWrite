@@ -146,11 +146,11 @@ export class DocumentDetailPageComponent implements OnInit {
     }
 
     public goBack(): void {
-        this._store.dispatch(new RouterAction.GoByUrl(`/files`));
+        this._store.dispatch(new BubbleAction.Close('files/'));
     }
 
     public signOut(): void {
-        this._store.dispatch(new UserAction.SignOut());
+        this._store.dispatch(new BubbleAction.Close('users/signout'));
     }
 
     public addContributerOpenModal(template: TemplateRef<any>) {

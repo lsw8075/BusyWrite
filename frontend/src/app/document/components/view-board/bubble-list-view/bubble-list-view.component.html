@@ -37,6 +37,7 @@
                     [bubbleList]="bubbleList"
                     [isSelected]="isSelected(child)"
                     [isHover]="isHover(child)"
+                    [userId]="userId"
                     appStopClickPropagation
                     class="internalBubble"
                     (click)="onClickEvent(child, menuType.internalMenu, $event);">
@@ -58,16 +59,17 @@
         <ng-container *ngIf="isBubbleBeingEditted(bubble); then edit else show"></ng-container>
 
         <ng-template #show>
-            <div class="bubble-show" [appLeafBubble]="bubble" [isSelected]="isSelected(bubble)" innerHtml="{{bubble.content}}"></div>
+            <div class="bubble-show" [appLeafBubble]="bubble" [isSelected]="isSelected(bubble)" [userId]="userId" innerHtml="{{bubble.content}}"></div>
         </ng-template>
         <ng-template #edit>
             <div class="text-center">
-                <span [style.color]="'green'">
+                <span [style.color]="getEditColor(bubble)">
                 <i class="fa fa-fw fa-pencil"></i>
-                This bubble is being editted by {{bubble.editLockHolder}}
+                This bubble is being editted by
+                {{getContributerName(bubble.editLockHolder)}}
                 </span>
             </div>
-            <div class="bubble-show editting" [appLeafBubble]="bubble" [isSelected]="isSelected(bubble)"  innerHtml="{{bubble.content}}"></div>
+            <div class="bubble-show editting" [appLeafBubble]="bubble" [isSelected]="isSelected(bubble)" [userId]="userId" innerHtml="{{bubble.content}}"></div>
         </ng-template>
     </div>
 </ng-template>

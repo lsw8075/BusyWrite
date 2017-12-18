@@ -51,6 +51,7 @@ export interface BubbleState {
     msg: string;
 
     request: number;
+    routeAfterClose: string;
 }
 
 const initialState: BubbleState = {
@@ -79,6 +80,7 @@ const initialState: BubbleState = {
     msg: '',
 
     request: -1,
+    routeAfterClose: '',
 };
 
 export function BubbleReducer(state: BubbleState = initialState, action: fromBubble.Actions) {
@@ -225,7 +227,7 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
         /*********/
 
         case fromBubble.CLOSE:
-            return {...state, loading: true };
+            return {...state, loading: true, routeAfterClose: action.payload };
         case fromBubble.CLOSE_COMPLETE:
             return {...state, loading: false, documentId: -1};
         case fromBubble.CLOSE_ERROR:
@@ -254,7 +256,7 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
             return {...state, loading: true, documentId: action.payload};
         case fromBubble.LOAD_COMPLETE: {
             state.editSuggests = [];
-            state.editSuggests.push({isBindSuggest: false, bindBubbleId: 1750, content: "hello"});
+            state.editSuggests.push({isBindSuggest: false, bindBubbleId: 1750, content: 'hello'});
             return {...state, bubbleList: [...action.payload.bubbleList],
                 suggestBubbleList: [...action.payload.suggestBubbleList], commentList: [...action.payload.commentList],
                 noteList: [...action.payload.noteList],

@@ -9,9 +9,11 @@ export class LeafBubbleDirective implements OnInit {
 
     @Input() appLeafBubble: LeafBubble;
     @Input() isSelected: boolean;
+    @Input() userId: number;
 
     private selectedColor = `rgb(157, 172, 255)`;
-    private editColor = `rgb(200, 230, 200)`;
+    private myEditColor = `rgb(200, 200, 230)`;
+    private otherEditColor = `rgb(200, 230, 200)`;
 
     constructor(
         private el: ElementRef,
@@ -23,10 +25,13 @@ export class LeafBubbleDirective implements OnInit {
     @HostBinding('style.background-color')
     public get backgroundColor(): string {
         if (this.isSelected) {
-        return this.selectedColor;
+            return this.selectedColor;
+        }
+        if (this._iAmEditting()) {
+            return this.myEditColor;
         }
         if (this._isBeingEditted()) {
-            return this.editColor;
+            return this.otherEditColor;
         }
     }
 
@@ -39,8 +44,10 @@ export class LeafBubbleDirective implements OnInit {
     onMouseLeave() {
         if (this.isSelected) {
             this.renderer.setStyle(this.el.nativeElement, 'background-color', this.selectedColor);
+        } else if (this._iAmEditting()) {
+            this.renderer.setStyle(this.el.nativeElement, 'background-color', this.myEditColor);
         } else if (this._isBeingEditted()) {
-            this.renderer.setStyle(this.el.nativeElement, 'background-color', this.editColor);
+            this.renderer.setStyle(this.el.nativeElement, 'background-color', this.otherEditColor);
         } else {
             this.renderer.setStyle(this.el.nativeElement, 'background-color', `transparent`);
         }
@@ -48,6 +55,10 @@ export class LeafBubbleDirective implements OnInit {
 
     private _isBeingEditted(): boolean {
         return this.appLeafBubble.editLockHolder !== -1;
+    }
+
+    private _iAmEditting(): boolean {
+        return this.appLeafBubble.editLockHolder === this.userId;
     }
 
 }
