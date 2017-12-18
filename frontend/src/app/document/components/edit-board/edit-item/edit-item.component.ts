@@ -11,14 +11,14 @@ import { LeafBubble } from '../../../models/bubble';
 export class EditItemComponent implements OnInit {
 
 
-  @Input() editBubble: LeafBubble;
-  @Output() focus: EventEmitter<boolean> = new EventEmitter<boolean>();
-  @Output() update: EventEmitter<string> = new EventEmitter<string>();
+    @Input() editBubble: LeafBubble;
+    @Input() editSuggest: {isBindSuggest: boolean, bindBubbleId: number, content: string};
+    @Output() focus: EventEmitter<boolean> = new EventEmitter<boolean>();
+    @Output() update: EventEmitter<string> = new EventEmitter<string>();
 
-
-  editor;
-  editorContent = '';
-  editorOptions = {
+    editor;
+    editorContent = '';
+    editorOptions = {
     placeholder: `Write Notes Freely! You can even drag around notes`,
     scrollingContainer: '.note',
     theme: 'snow',
@@ -29,21 +29,25 @@ export class EditItemComponent implements OnInit {
     //     ['image', 'code-block']
     //   ]
     // },
-  };
+    };
 
-  constructor() {}
+    constructor() {}
 
-  ngOnInit() {
-    this.editorContent = this.editBubble.content;
-  }
+    ngOnInit() {
+        if (this.editBubble) {
+            this.editorContent = this.editBubble.content;
+        } else {
+            this.editorContent = this.editSuggest.content;
+        }
+    }
 
-  onEditorBlured(quill) {
-    this.focus.emit(false);
-  }
+    onEditorBlured(quill) {
+        this.focus.emit(false);
+    }
 
-  onEditorFocused(quill) {
-    this.focus.emit(true);
-  }
+    onEditorFocused(quill) {
+        this.focus.emit(true);
+    }
 
     onEditorCreated(quill) {
         console.log('quill created');
@@ -51,9 +55,9 @@ export class EditItemComponent implements OnInit {
         // console.log('quill is ready! this is current quill instance object', quill);
     }
 
-  onContentChanged({ quill, html, text }) {
-    // console.log('quill content is changed!', quill, html, text);
-    this.update.emit(html);
-  }
+    onContentChanged({ quill, html, text }) {
+        // console.log('quill content is changed!', quill, html, text);
+        this.update.emit(html);
+    }
 
 } /* istanbul ignore next */

@@ -153,8 +153,9 @@ export const OTHERS_CREATE_SUGGEST = '[Suggest Bubble] others create';
 export class CreateSuggest implements Action {
     readonly type = CREATE_SUGGEST;
     constructor(public payload: {
-        bindedBubbleId: number,
-        content: string}) {}
+        bindBubbleId: number,
+        content: string
+    }) {}
 }
 export class CreateSuggestPending implements Action {
     readonly type = CREATE_SUGGEST_PENDING;
@@ -182,7 +183,7 @@ export const OTHERS_CREATE_COMMENT_ON_BUBBLE = '[Comment on Bubble] others creat
 export class CreateCommentOnBubble implements Action {
     readonly type = CREATE_COMMENT_ON_BUBBLE;
     constructor(public payload: {
-            bindedBubbleId: number,
+            bindBubbleId: number,
             content: string
             }) {}
 }
@@ -211,7 +212,7 @@ export const OTHERS_CREATE_COMMENT_ON_SUGGEST = '[Comment on Suggest] others cre
 export class CreateCommentOnSuggest implements Action {
     readonly type = CREATE_COMMENT_ON_SUGGEST;
     constructor(public payload: {
-            bindedSuggestBubbleId: number,
+            bindSuggestBubbleId: number,
             content: string
             }) {}
 }
@@ -379,7 +380,10 @@ export const EDIT_SUGGEST_ERROR = '[Suggest Bubble] edit discard';
 export const OTHERS_EDIT_SUGGEST = '[Suggest Bubble] others edit suggest';
 export class EditSuggest implements Action {
     readonly type = EDIT_SUGGEST;
-    constructor(public payload: number) {}
+    constructor(public payload: {
+        bindSuggestBubbleId: number,
+        content: string,
+    }) {}
 }
 export class EditSuggestPending implements Action {
     readonly type = EDIT_SUGGEST_PENDING;
@@ -949,7 +953,7 @@ export const OTHERS_EXPORT_NOTE_AS_SUGGEST = '[Note] others export as suggest bu
 export class ExportNoteAsSuggest implements Action {
     readonly type = EXPORT_NOTE_AS_SUGGEST;
     constructor(public payload: {
-        bindedBubbleId: number,
+        bindBubbleId: number,
         noteId: number}) {}
 }
 export class ExportNoteAsSuggestPending implements Action {
@@ -977,7 +981,7 @@ export const OTHERS_EXPORT_NOTE_AS_COMMENT_ON_BUBBLE = '[Note] others export as 
 export class ExportNoteAsCommentOnBubble implements Action {
     readonly type = EXPORT_NOTE_AS_COMMENT_ON_BUBBLE;
     constructor(public payload: {
-        bindedBubbleId: number,
+        bindBubbleId: number,
         noteId: number}) {}
 }
 export class ExportNoteAsCommentOnBubblePending implements Action {
@@ -1005,7 +1009,7 @@ export const OTHERS_EXPORT_NOTE_AS_COMMENT_ON_SUGGEST = '[Note] others export as
 export class ExportNoteAsCommentOnSuggest implements Action {
     readonly type = EXPORT_NOTE_AS_COMMENT_ON_SUGGEST;
     constructor(public payload: {
-        bindedSuggestBubbleId: number,
+        bindSuggestBubbleId: number,
         noteId: number}) {}
 }
 export class ExportNoteAsCommentOnSuggestPending implements Action {
