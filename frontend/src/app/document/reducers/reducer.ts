@@ -8,7 +8,8 @@ import { UserState } from '../../user/reducers/user-reducer';
 import * as fromRoot from '../../shared/reducer';
 import { Board, BoardType, BoardLocation } from '../models/board';
 import { Bubble, InternalBubble, BubbleType, LeafBubble } from '../models/bubble';
-
+import { Document } from '../../file/models/document';
+import { User } from '../../user/models/user';
 
 export interface State extends fromRoot.State {
     bubble: BubbleState;
@@ -49,10 +50,26 @@ export const getViewBoardMenuState = createSelector(getBubbleState, (state: Bubb
 
 export const isLoading = createSelector(getBubbleState, (state: BubbleState) => state.loading);
 
+export const getDocumentObject = createSelector(getBubbleState, (state: BubbleState) => state.documentObject);
+export const getDocumentTitle = createSelector(getDocumentObject, (state: Document) => {
+    if (state) {
+        return state.title;
+    } else {
+        return 'title is loading';
+    }
+});
+export const getDocumentContributers = createSelector(getDocumentObject, (state: Document) => {
+    if (state) {
+        return state.contributors;
+    } else {
+        return [];
+    }
+});
+export const getDocumentConnectors = createSelector(getBubbleState, (state: BubbleState) => state.connectors);
+
 // suggest bubble
 export const getSangjunBoardState = createSelector(getDocumentState, (state: State) => state.sangjun);
 export const getSangjunBubble = createSelector(getSangjunBoardState, (state: SangjunBubbleState) => state.bubble);
-
 
 // edit board
 export const getUserState = createFeatureSelector<State>('user');

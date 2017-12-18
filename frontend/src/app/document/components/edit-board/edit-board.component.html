@@ -9,7 +9,10 @@
             <div *ngIf="editBubbles">
                 <accordion>
                     <ng-container *ngFor="let editBubble of editBubbles; let i = index">
+
                         <input type="checkbox" [checked]="isEditBubbleOpen(editBubble)" (change)="toggleEditBubble(editBubble, $event)" />
+
+
                         <accordion-group [isOpen]="isEditBubbleOpen(editBubble)" #group>
                             <div accordion-heading>
                             <span class="badge badge-pill badge-info">
@@ -17,7 +20,7 @@
                                 +
                                 </div>
                             </span>
-                            <span class="summary">Bubble #{{editBubble.id}}</span>
+                            <span class="summary">Bubble</span>
                             <span class="badge float-right pull-right">
                                 <button (click)="finishEditBubble(editBubble)" type="button" class="btn btn-secondary btn-sm hvr-sweep-to-right">
                                     <i tooltip="Did you finish editting?" class="fa fa-fw fa-check"></i>

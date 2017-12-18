@@ -28,6 +28,7 @@ export enum ViewBoardMenuType {
 export interface BubbleState {
     documentObject: Document;
     connectors: User[];
+
     bubbleList: Bubble[];
     suggestBubbleList: SuggestBubble[];
     commentList: Comment[];
@@ -55,6 +56,7 @@ export interface BubbleState {
 const initialState: BubbleState = {
     documentObject: null,
     connectors: [],
+
     bubbleList: [],
     suggestBubbleList: [],
     commentList: [],
@@ -204,7 +206,7 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
             return {...initialState, loading: true};
         case fromBubble.OPEN_COMPLETE:
             return {...state, loading: false, documentObject: action.payload.documentObject,
-                connectors: action.payload.connectors}
+                connectors: action.payload.connectors };
         case fromBubble.OPEN_ERROR:
             return {...state, loading: false, error: action.payload, documentObject: null};
         case fromBubble.OTHERS_OPEN_DOCUMENT:

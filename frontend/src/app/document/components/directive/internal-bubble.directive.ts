@@ -47,7 +47,7 @@ export class InternalBubbleDirective implements OnInit {
     public get borderLeftColor(): string {
         if (this._isBeingEditted(this.appInternalBubble)) {
             return `green`;
-        } else if (this.appInternalBubble.parentBubbleId === 0) {
+        } else if (this._isParentRoot(this.appInternalBubble)) {
             return this.selectedColor;
         } else {
             return (this.isHover) ? this.selectedColor : 'transparent';
@@ -58,7 +58,7 @@ export class InternalBubbleDirective implements OnInit {
     public get borderRightColor(): string {
         if (this._isBeingEditted(this.appInternalBubble)) {
             return `green`;
-        } else if (this.appInternalBubble.parentBubbleId === 0) {
+        } else if (this._isParentRoot(this.appInternalBubble)) {
             return this.selectedColor;
         } else {
             return (this.isHover) ? this.selectedColor : 'transparent';
@@ -108,6 +108,11 @@ export class InternalBubbleDirective implements OnInit {
         }
         return (bubble as InternalBubble).childBubbleIds
             .reduce((prev, curr) => prev || this._isBeingEditted(getBubbleById(this.bubbleList, curr)), false);
+    }
+
+    private _isParentRoot(bubble: Bubble): boolean {
+        const rootBubble = this.bubbleList[0];
+        return bubble.parentBubbleId === rootBubble.id;
     }
 
 }

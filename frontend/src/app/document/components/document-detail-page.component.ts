@@ -10,6 +10,7 @@ import { Observable } from 'rxjs/Observable';
 
 import { Bubble, BubbleType, InternalBubble, LeafBubble } from '../models/bubble';
 import { Board, BoardType, BoardLocation } from '../models/board';
+import { Document } from '../../file/models/document';
 import { User } from '../../user/models/user';
 import { MenuType } from './service';
 
@@ -46,7 +47,6 @@ export class DocumentDetailPageComponent implements OnInit {
 
     activeBoard: Board = null;
 
-
     rootBubble$: Observable<InternalBubble>;
     bubbleList$: Observable<Array<Bubble>>;
     userId$: Observable<Number>;
@@ -58,10 +58,15 @@ export class DocumentDetailPageComponent implements OnInit {
 
     viewBoardMenu$: Observable<ViewBoardMenuType>;
 
-    documentTitle = 'empty title';
+    documentTitle = '';
     changeTitle = false;
 
+    connectors$: Observable<Array<User>>;
+    contributers$: Observable<Array<User>>;
+
+
     addContributerModalRef: BsModalRef;
+    allContributerModalRef: BsModalRef;
 
     constructor(
         private _documentService: DocumentService,
@@ -107,6 +112,13 @@ export class DocumentDetailPageComponent implements OnInit {
                 this._store.dispatch(new BubbleAction.ClearMsg());
             }
         });
+
+        this._store.select(fromDocument.getDocumentTitle).subscribe(title => {
+            this.documentTitle = title;
+        });
+
+        this.contributers$ = this._store.select(fromDocument.getDocumentContributers);
+        this.connectors$ = this._store.select(fromDocument.getDocumentConnectors);
     }
 
     ngOnInit() {
@@ -141,13 +153,33 @@ export class DocumentDetailPageComponent implements OnInit {
         this._store.dispatch(new UserAction.SignOut());
     }
 
-    public addContributeropenModal(template: TemplateRef<any>) {
+    public addContributerOpenModal(template: TemplateRef<any>) {
         this.addContributerModalRef = this._modalService.show(template);
+    }
+
+    public allContributerOpenModal(template: TemplateRef<any>) {
+        this.allContributerModalRef = this._modalService.show(template);
+    }
+    public getUserConnectedColor(user: User, connectors: Array<User>, userId: number): string {
+        if (user.id === userId) {
+            return 'blue';
+        }
+        for (const connector of connectors) {
+            if (user.id === connector.id) {
+                return 'green';
+            }
+        }
+        return '';
     }
 
     public addContributer(f: NgForm) {
         const username = f.value.username;
-        this._store.dispatch(new BubbleAction.AddContributerRequest(username));
+        if (username) {
+            this._store.dispatch(new BubbleAction.AddContributerRequest(username));
+        } else {
+            this._store.dispatch(new BubbleAction.AddContributerRequestFail('username cannot be empty'));
+        }
+
     }
 
     public createNote(): void {

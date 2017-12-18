@@ -242,7 +242,8 @@ export class BubbleEffects {
         });
 
     @Effect()
-    addContributerRequest$: Observable<Action> = this.action$.ofType<BubbleAction.AddContributerRequest>(BubbleAction.ADD_CONTRIBUTER_REQUEST)
+    addContributerRequest$: Observable<Action> =
+    this.action$.ofType<BubbleAction.AddContributerRequest>(BubbleAction.ADD_CONTRIBUTER_REQUEST)
         .withLatestFrom(this._store).mergeMap(([action, state]) => {
             const headers = new Headers({'Content-Type': 'application/json'});
             const username = action.payload;
