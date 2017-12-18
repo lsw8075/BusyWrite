@@ -90,6 +90,7 @@ export function BubbleReducer(state: BubbleState = initialState, action: fromBub
         case fromBubble.EDIT_BUBBLE_OPEN: case fromBubble.EDIT_BUBBLE_CLOSE:
             return UIReducer(state, action);
 
+        case fromBubble.CHANGE_TITLE: case fromBubble.CHANGE_TITLE_COMPLETE: case fromBubble.CHANGE_TITLE_ERROR: case fromBubble.OTHERS_CHANGE_TITLE:
         case fromBubble.OPEN: case fromBubble.OPEN_COMPLETE: case fromBubble.OPEN_ERROR: case fromBubble.OTHERS_OPEN_DOCUMENT:
         case fromBubble.CLOSE: case fromBubble.CLOSE_COMPLETE: case fromBubble.CLOSE_ERROR: case fromBubble.OTHERS_CLOSE_DOCUMENT:
         case fromBubble.OTHERS_ADDED_AS_CONTRIBUTOR:
@@ -199,6 +200,26 @@ function UIReducer(state: BubbleState, action: fromBubble.Actions) {
 
 function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) {
     switch (action.type) {
+
+        /****************/
+        /* CHANGE TITLE */
+        /****************/
+
+        case fromBubble.CHANGE_TITLE:
+            return {...state, loading: true};
+        case fromBubble.CHANGE_TITLE_COMPLETE: {
+            const newDoc = state.documentObject;
+            newDoc.title = action.payload;
+            return {...state, loading: false, documentObject: newDoc};
+        }
+        case fromBubble.CHANGE_TITLE_ERROR:
+            return {...state, loading: false, error: action.payload};
+        case fromBubble.OTHERS_CHANGE_TITLE: {
+            const newDoc = state.documentObject;
+            newDoc.title = action.payload;
+            return {...state, documentObject: newDoc};
+        }
+
 
         /********/
         /* OPEN */
