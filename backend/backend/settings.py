@@ -100,6 +100,8 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 
 DATABASES = {
     'default': {
+#        'ENGINE': 'django.db.backends.sqlite3',
+#        'NAME': os.path.join(BASE_DIR, 'db.sqlite3')
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'busydb',
         'USER': 'busymanager',
@@ -150,8 +152,8 @@ STATIC_URL = '/static/'
 
 # Sending e-mail (for verification)
 EMAIL_USE_TLS = True
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'snu.busywrite@gmail.com'
+EMAIL_HOST = 'smtp.naver.com'
+EMAIL_HOST_USER = 'snubusywrite@naver.com'
 EMAIL_HOST_PASSWORD = '2017snubusywrite'
 EMAIL_PORT = 587
 

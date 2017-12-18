@@ -73,6 +73,7 @@ def req_document_contributors(request, document_id):
         return conusers # list of users
     elif method == 'POST':
         try:
+            print('post arrived')
             user_to_add = data['user_to_add']
             who = User.objects.get(username=user_to_add) 
             do_send_invitation_email(user_id, document_id, who.id)
@@ -97,7 +98,8 @@ def req_document_accept_invitation(request, salt):
         who = result[1]
         Group('document_detail-'+str(doc_id)).send({"text":
             json.dumps({"header": "someone_added_as_contributor", "accept": "True",
-                "body": {"id": who.id, "username": who.username, "email": who.email}})});
-        return Jsonresponse({'document_id': doc_id}, safe=False)
+                "body": {"id": who.id, "username": who.username, "email": who.email}})})
+        print('sended jsonresponse %s' % doc_id)
+        return JsonResponse({'document_id': doc_id}, safe=False)
     else:
         return HttpResponseNotAllowed(['GET'])
