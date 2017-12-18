@@ -54,10 +54,11 @@ export class EditBoardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+      this.isOpen = true;
   }
 
   public finishEdit(bubble: Bubble) {
-      
+
       this.isEditting = false;
       this._store.dispatch(new BubbleAction.EditComplete({
             bubbleId: bubble.id, content: this.updateString}));

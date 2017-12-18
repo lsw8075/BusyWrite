@@ -45,10 +45,11 @@ export class EditItemComponent implements OnInit {
     this.focus.emit(true);
   }
 
-  onEditorCreated(quill) {
-    this.editor = quill;
-    // console.log('quill is ready! this is current quill instance object', quill);
-  }
+    onEditorCreated(quill) {
+        console.log('quill created');
+        this.editor = quill;
+        // console.log('quill is ready! this is current quill instance object', quill);
+    }
 
   onContentChanged({ quill, html, text }) {
     // console.log('quill content is changed!', quill, html, text);

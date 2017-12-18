@@ -99,14 +99,14 @@ export class BubbleEffects {
             if (! action.payload.isAbove) {
                 loc++;
             }
-            return Observable.of(this.bubbleService.createBubble(parentBubble.id, loc, "new bubble"))
+            return Observable.of(this.bubbleService.createBubble(parentBubble.id, loc, "new empty"))
                 .map(() => new BubbleAction.CreateBubblePending(null));
         });
 
     @Effect()
     createComplete$: Observable<Action> = this.action$.ofType<BubbleAction.CreateBubbleComplete>(BubbleAction.CREATE_BUBBLE_COMPLETE)
         .map(action => action.payload).mergeMap(query => {
-            return Observable.of(new BubbleAction.EditUpdate({bubbleId: query.id, content: 'new'}));
+            return Observable.of(new BubbleAction.EditRequestSuccess({bubbleId: query.id, userId: (query as LeafBubble).editLockHoder}));
         });
 
     @Effect({dispatch: false})
