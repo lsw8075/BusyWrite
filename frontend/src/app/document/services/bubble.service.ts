@@ -593,7 +593,19 @@ export class BubbleService implements OnDestroy {
                 // this cannot happen
                 console.log('someone added as contributor fail. this cannot happen');
             }
-
+        } else if (command === 'change_title_of_document') {
+            if (accept == 'True') {
+                console.log('received change_title_of_document success');
+                if (body.who === this.userId) {
+                    this._store.dispatch(new BubbleAction.ChangeTitleComplete(body.new_title));
+                } else {
+                    this._store.dispatch(new BubbleAction.OthersChangeTitle(body.new_title));
+                }
+                this.previousRequestId = data.request_id;
+            } else {
+                console.log('received change_title_of_document fail');
+                this._store.dispatch(new BubbleAction.ChangeTitleError(body));
+            }
         }
     }
 
@@ -870,6 +882,12 @@ export class BubbleService implements OnDestroy {
         this._socket.send(m);
     }
 
+    public changeTitle(newTitle: string) {
+        const m = {'header': 'change_title_of_document',
+            'previous_request': this.previousRequestId,
+            'body': {'new_title': newTitle}};
+        this._socket.send(m);
+    }
 
 
     // these are legacy codes
