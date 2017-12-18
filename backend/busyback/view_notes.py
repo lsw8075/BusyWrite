@@ -4,12 +4,13 @@ from django.forms.models import model_to_dict
 from channels import Channel, Group
 from .documents import *
 from .utils import see_error, parse_request
+from .notes import *
 from functools import wraps
 import json
 
 def req_note_list(request, document_id):
     (user_id, method, data) = parse_request(request)
-
+    print('req note list')
     if method == 'GET':
         try:
             notes = do_fetch_notes(user_id, document_id)
@@ -33,6 +34,7 @@ def req_note_list(request, document_id):
 def req_note_detail(request, document_id, note_id):
     (user_id, method, data) = parse_request(request)
     
+    print('req note detail')
     if method == 'GET':
         try:
             note = do_fetch_note(user_id, document_id, note_id)
