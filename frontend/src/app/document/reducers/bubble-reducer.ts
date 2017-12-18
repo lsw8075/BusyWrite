@@ -33,6 +33,7 @@ export interface BubbleState {
 
     editBubbleId: number;
     editBubbleString: string;
+    editActiveBubbleIds: Array<number>;
 
     loading: boolean;
     error: string;
@@ -52,6 +53,7 @@ const initialState: BubbleState = {
 
     editBubbleId: -1,
     editBubbleString: "",
+    editActiveBubbleIds: [];
 
     loading: false,
     error: '',
@@ -191,6 +193,7 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
         case fromBubble.EDIT_REQUEST_SUCCESS: {
             const bubbleId = action.payload.bubbleId;
             const userId = action.payload.userId;
+            console.log(bubbleId, userId);
             const bubble = getBubbleById(state.bubbleList, bubbleId) as LeafBubble;
             bubble.editLockHoder = userId;
             const newBubbleList = _.cloneDeep(state.bubbleList);

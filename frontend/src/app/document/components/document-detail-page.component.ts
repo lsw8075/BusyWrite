@@ -122,6 +122,11 @@ export class DocumentDetailPageComponent implements OnInit {
         this._store.dispatch(new RouterAction.GoByUrl(`/files`));
     }
 
+    public signOut(): void {
+        console.log('signout');
+        this._store.dispatch(new UserAction.SignOut());
+    }
+
     public createNote(): void {
 
     }
