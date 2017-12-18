@@ -8,9 +8,7 @@
         <div *ngIf="editBubbles$ | async as editBubbles1">
             <accordion>
                 <ng-container *ngFor="let editBubble of editBubbles">
-                    <accordion-group is-open="isOpen">
-                    </accordion-group>
-                    <accordion-group #group>
+                    <accordion-group is-open="true" #group>
                         <div accordion-heading>
                         <span class="badge badge-pill badge-info">
                             <div class="handle" tooltip="click me to drag notes around!" (click)="$event.stopPropagation()">
