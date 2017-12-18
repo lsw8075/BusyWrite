@@ -58,6 +58,7 @@ def mockDBSetup(m):
 
     m.note1 = Note.objects.create(content='Test note1', owner=m.user1, document=m.doc1, order=0)
 
+
 def reload_bubbles(m, reload_list=None): # pragma: no cover
     if reload_list is None:
         reload_list = [1,2,3,4,5,6,7,8]

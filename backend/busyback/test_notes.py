@@ -18,13 +18,13 @@ class NotesTestCase(TestCase):
 
         new_note = do_create_note(self.user1.id, self.doc1.id, 'new_note')
 
-        self.assertEqual(note['content'], 'new_note')
+        self.assertEqual(new_note['content'], 'new_note')
 
         do_edit_note(self.user1.id, self.doc1.id, self.note1.id, 'edit note')
 
         self.note1 = Note.objects.get(id=self.note1.id)
 
-        self.assertEqual(note['content'], 'edit note')
+        self.assertEqual(self.note1.content, 'edit note')
 
         do_delete_note(self.user1.id, self.doc1.id, self.note1.id)
         with self.assertRaises(NoteDoesNotExistError):

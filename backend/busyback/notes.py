@@ -72,8 +72,8 @@ def do_create_note(
 
     user = fetch_user(user_id)
     document = kw['document']
-    note = Notes.objects.create(document=document, owner=user, content=content, order=0)
-    note.order = notes.id
+    note = Note.objects.create(document=document, owner=user, content=content, order=0)
+    note.order = note.id
     note.save()
     return process_note(note)
 
@@ -91,7 +91,7 @@ def do_edit_note(
 
     document = kw['document']
     try:
-        note = Notes.objetcts.get(id=note_id)
+        note = Note.objects.get(id=note_id)
     except Exception as e:
         raise NoteDoesNotExistError(note_id)
 
@@ -113,7 +113,7 @@ def do_delete_note(
 
     user = fetch_user(user_id)
     try:
-        note = Notes.objetcts.get(id=note_id)
+        note = Note.objects.get(id=note_id)
     except Exception as e:
         raise NoteDoesNotExistError(note_id)
 
