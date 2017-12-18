@@ -30,3 +30,4 @@ class HttpTestCase(TestCase):
 
     def test_req_send_invitation(self):
         pass
+
