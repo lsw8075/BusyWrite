@@ -138,7 +138,6 @@ export class DocumentDetailPageComponent implements OnInit {
     }
 
     public signOut(): void {
-        console.log('signout');
         this._store.dispatch(new UserAction.SignOut());
     }
 
