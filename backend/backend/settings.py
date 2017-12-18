@@ -147,3 +147,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# Sending e-mail (for verification)
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'snu.busywrite@gmail.com'
+EMAIL_HOST_PASSWORD = '2017snubusywrite'
+EMAIL_PORT = 587
+

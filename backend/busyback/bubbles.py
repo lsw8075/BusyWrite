@@ -7,10 +7,9 @@ from .bubble_cache import *
 from .versions import update_doc
 from django.utils import timezone
 from django.db import transaction
-from django.forms.models import model_to_dict
 from functools import wraps
 from .operation_no import Operation
-from .utils import create_normal, create_suggest
+from .utils import create_normal, create_suggest, process_normal, process_suggest
 from .versions import *
 
 def delete_normal(bubble):
@@ -105,31 +104,6 @@ def fetch_suggest(bubble_id):
     except SuggestBubble.DoesNotExist:
         raise BubbleDoesNotExistError(bubble_id)
     return bubble
-
-def process_normal(bubble):
-    ''' convert model to dict with proper child info '''
-    result = model_to_dict(bubble)
-    child_count = bubble.child_count()
-
-    if child_count != 0:
-        result['type'] = 'internal'
-    else:
-        result['type'] = 'leaf'
-
-    child_list = []
-    for i in range(0, child_count):
-        child_list.append(0)
-    for child in bubble.child_bubbles.all():
-        child_list[child.location] = child.id
-
-    result['child_bubbles'] = child_list
-
-    del result['type']
-    return result
-
-def process_suggest(bubble):
-    ''' covert model to dict '''
-    return model_to_dict(bubble)
 
 @normal_operation
 def do_fetch_normal_bubble(

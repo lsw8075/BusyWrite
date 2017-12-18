@@ -8,6 +8,7 @@ from django.db import transaction
 from functools import wraps
 from django.forms.models import model_to_dict
 from .operation_no import Operation
+from .utils import process_comment
 
 def commentN_operation(func):
     ''' Decorator for comment under normal functions '''
@@ -59,9 +60,6 @@ def commentS_operation(func):
 
         return result
     return wrapper
-
-def process_comment(comment):
-    return model_to_dict(comment)
 
 @commentN_operation
 def do_fetch_comment_under_normal(
