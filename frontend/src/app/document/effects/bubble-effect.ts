@@ -224,6 +224,19 @@ export class BubbleEffects {
                 .map(() => new BubbleAction.MoveBubblePending(null));
         });
 
+    @Effect()
+    editSuggest$: Observable<Action> = this.action$.ofType<BubbleAction.EditSuggest>(BubbleAction.EDIT_SUGGEST)
+        .map(action => action.payload).mergeMap(query => {
+            return Observable.of(this.bubbleService.editSuggestBubble(query.bindSuggestBubbleId, query.content))
+                .map(() => new BubbleAction.EditSuggestPending(null));
+        });
+
+    @Effect()
+    createSuggest$: Observable<Action> = this.action$.ofType<BubbleAction.CreateSuggest>(BubbleAction.CREATE_SUGGEST)
+        .map(action => action.payload).mergeMap(query => {
+            return Observable.of(this.bubbleService.createSuggestBubble(query.bindBubbleId, query.content))
+                .map(() => new BubbleAction.CreateSuggestPending(null));
+        });
 
     constructor(
         private action$: Actions,

@@ -99,6 +99,8 @@ export function BubbleReducer(state: BubbleState = initialState, action: fromBub
         case fromBubble.SPLIT_LEAF_START: case fromBubble.SPLIT_LEAF: case fromBubble.SPLIT_LEAF_COMPLETE: case fromBubble.SPLIT_LEAF_ERROR:
         case fromBubble.MOVE_BUBBLE_START: case fromBubble.MOVE_BUBBLE: 
         case fromBubble.MOVE_BUBBLE_COMPLETE: case fromBubble.MOVE_BUBBLE_ERROR:
+        case fromBubble.CREATE_SUGGEST: case fromBubble.CREATE_SUGGEST_COMPLETE: case fromBubble.CREATE_SUGGEST_ERROR:
+        case fromBubble.EDIT_SUGGEST: case fromBubble.EDIT_SUGGEST_COMPLETE: case fromBubble.EDIT_SUGGEST_ERROR:
             return BubbleOperationReducer(state, action);
 
         case fromBubble.CLEAR_ERROR:
@@ -212,17 +214,21 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
         case fromBubble.LOAD:
             return {...state, loading: true, documentId: action.payload};
         case fromBubble.LOAD_COMPLETE: {
-            const suggestBubble = new SuggestBubble(999, "<p>This is a new suggestBubble</p>");
+            // const suggestBubble = new SuggestBubble(999, "<p>This is a new suggestBubble</p>");
             const newBubbleList = _.cloneDeep(action.payload.bubbleList);
             const newSuggestBubbleList = _.cloneDeep(action.payload.suggestBubbleList);
-            newSuggestBubbleList.push(suggestBubble);
-            const bubble = getBubbleById(newBubbleList, 879);
-            bubble.suggestBubbleIds.push(999);
+            // newSuggestBubbleList.push(suggestBubble);
+            // const bubble = getBubbleById(newBubbleList, 879);
+            // bubble.suggestBubbleIds.push(999);
+            // state.editSuggests.push({bindBubbleId: 879, content: "this is binded with 879 bubble", isBindSuggest: false});
+            // state.editSuggests.push({bindBubbleId: 999, content: "this is binded with 999 suggest bubble", isBindSuggest: true});
             console.log(newBubbleList);
             console.log(newSuggestBubbleList);
             return {...state, bubbleList: [...newBubbleList],
                 suggestBubbleList: [...newSuggestBubbleList], commentList: [...action.payload.commentList],
-                noteList: [...action.payload.noteList], loading: false};
+                noteList: [...action.payload.noteList],
+                editSuggests: [...state.editSuggests],
+                loading: false};
         }
         case fromBubble.LOAD_ERROR:
             return {...state, error: action.payload, loading:false, documentId: -1};
@@ -393,6 +399,22 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
         case fromBubble.MOVE_BUBBLE_ERROR:
             return {...state, loading: false, error: action.payload, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
 
+        case fromBubble.CREATE_SUGGEST:
+            return {...state, loading: true, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
+        case fromBubble.CREATE_SUGGEST_COMPLETE: {
+            console.log('CREATE_SUGGEST_COMPLETE', action.payload);
+            return {...state, loading: false, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
+        }
+        case fromBubble.CREATE_SUGGEST_ERROR:
+            return {...state, loading: false, error: action.payload, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
+        case fromBubble.EDIT_SUGGEST:
+            return {...state, loading: true, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
+        case fromBubble.EDIT_SUGGEST_COMPLETE: {
+            console.log('EDIT_SUGGEST_COMPLETE', action.payload);
+            return {...state, loading: false, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
+        }
+        case fromBubble.EDIT_SUGGEST_ERROR:
+            return {...state, loading: false, error: action.payload, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
         default:
             console.log('this should not be called', state, action);
             return state;
