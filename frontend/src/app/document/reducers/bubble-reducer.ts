@@ -258,8 +258,8 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
             return {...state, loading: true, documentId: action.payload};
         case fromBubble.LOAD_COMPLETE: {
             state.editSuggests = [];
-            state.editSuggests.push({isBindSuggest: false, bindBubbleId: 1750, content: "hello"});
-            state.editSuggests.push({isBindSuggest: true, bindBubbleId: 1765, content: "hello1"});
+            // state.editSuggests.push({isBindSuggest: false, bindBubbleId: 1750, content: "hello"});
+            // state.editSuggests.push({isBindSuggest: true, bindBubbleId: 1765, content: "hello1"});
             return {...state, bubbleList: [...action.payload.bubbleList],
                 suggestBubbleList: [...action.payload.suggestBubbleList], commentList: [...action.payload.commentList],
                 noteList: [...action.payload.noteList],
@@ -378,9 +378,8 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
             return {...state, bubbleList: newBubbleList, loading: false, editBubbleId: -1, editBubbleString: ""};
         }
         case fromBubble.OTHERS_EDIT_DISCARD: {
-            // TODO: ahnjae
-            const bubbleId = (action.payload as any).bubbleId;
-            const content = (action.payload as any).content;
+            const bubbleId = action.payload.bubbleId;
+            const content = action.payload.content;
             const bubble = getBubbleById(state.bubbleList, bubbleId) as LeafBubble;
             bubble.content = content;
             bubble.editLockHolder = -1;

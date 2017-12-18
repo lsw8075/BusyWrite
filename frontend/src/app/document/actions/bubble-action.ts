@@ -262,7 +262,7 @@ export const OTHERS_EDIT_COMPLETE = '[Bubble] others edit complete';
 export const EDIT_DISCARD = '[Bubble] edit discard';
 export const EDIT_DISCARD_PENDING = '[Bubble] edit discard pending';
 export const EDIT_DISCARD_SUCCESS = '[Bubble] edit discard success';
-export const OTHERS_EDIT_DISCARD = '[Bubble] edit discard';
+export const OTHERS_EDIT_DISCARD = '[Bubble] others edit discard';
 export const EDIT_BUBBLE_ERROR = '[Bubble] edit Error';
 export class EditBubble implements Action {
     readonly type = EDIT_BUBBLE;

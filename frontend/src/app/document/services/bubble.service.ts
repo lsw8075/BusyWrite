@@ -700,6 +700,7 @@ export class BubbleService implements OnDestroy {
         const m = {'header': 'discard_editting_bubble',
             'previous_request': this.previousRequestId,
             'body': {'bubble_id': bubbleId}};
+        console.log('bubbleId',bubbleId);
         this._socket.send(m);
     }
 
