@@ -151,7 +151,7 @@ export class BubbleService implements OnDestroy {
                 console.log('received create_suggest_bubble success');
                 const suggestBubble = BubbleJsonHelper.getSuggestBubbleObject(JSON.stringify(body));
                 if (body.who === this.userId) {
-                    this._store.dispatch(new BubbleAction.CreateSuggestComplete(suggestBubble));
+                    this._store.dispatch(new BubbleAction.CreateSuggestComplete({suggest: null, suggestBubble: suggestBubble}));
                 } else {
                     this._store.dispatch(new BubbleAction.OthersCreateSuggest(suggestBubble));
                 }
@@ -266,8 +266,9 @@ export class BubbleService implements OnDestroy {
                 console.log('received edit_suggest_bubble success');
                 const suggestBubble = BubbleJsonHelper.getSuggestBubbleObject(JSON.stringify(body.new_editted_suggest_bubble));
                 if (body.who === this.userId) {
-                    this._store.dispatch(new BubbleAction.EditSuggestComplete(
-                                {hidedSuggestBubbleId: Number(body.hided_suggest_bubble_id),
+                    this._store.dispatch(new BubbleAction.EditSuggestComplete({
+                                suggest: null,
+                                hidedSuggestBubbleId: Number(body.hided_suggest_bubble_id),
                                 newEdittedSuggestBubble: suggestBubble}));
                 } else {
                     this._store.dispatch(new BubbleAction.OthersEditSuggest(

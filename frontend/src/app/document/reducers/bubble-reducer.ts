@@ -508,7 +508,7 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
             return {...state, loading: true, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
         case fromBubble.CREATE_SUGGEST_COMPLETE: {
             console.log('CREATE_SUGGEST_COMPLETE', action.payload);
-            const suggestBubble = action.payload;
+            const suggestBubble = action.payload.suggestBubble;
             const newSuggestBubbleList = _.cloneDeep(state.suggestBubbleList);
             state.suggestBubbleList.push(suggestBubble);
             return {...state, loading: false, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
