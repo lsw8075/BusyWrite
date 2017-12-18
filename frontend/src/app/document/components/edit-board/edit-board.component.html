@@ -5,7 +5,7 @@
                 Edit
             </div>
         </ng-template>
-        <div *ngIf="editBubbles$ | async as editBubbles">
+        <div *ngIf="editBubbles$ | async as editBubbles1">
             <accordion>
                 <ng-container *ngFor="let editBubble of editBubbles">
                     <accordion-group #group>
@@ -18,7 +18,10 @@
                         <span class="summary">{{editBubble.id}}</span>
                         <span class="badge float-right pull-right">
                             <button (click)="finishEdit(editBubble)" type="button" class="btn btn-secondary btn-sm hvr-sweep-to-right">
-                            <i tooltip="did you finish editting?" class="fa fa-fw fa-check"></i>
+                                <i tooltip="Did you finish editting?" class="fa fa-fw fa-check"></i>
+                            </button>
+                            <button (click)="discardEdit(editBubble)" type="button" class="btn btn-secondary btn-sm hvr-sweep-to-right">
+                                <i tooltip="Do you want to discard changes?" class="fa fa-fw fa-times"></i>
                             </button>
                         </span>
                         </div>

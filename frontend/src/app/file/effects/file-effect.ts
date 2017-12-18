@@ -73,21 +73,18 @@ export class FileEffects {
             const headers = new Headers({'Content-Type': 'application/json'});
             return this._http.get(this.tokenUrl).toPromise().then(() => headers.append('X-CSRFToken', this.getCookie('csrftoken')))
                 .then(() => this._http.delete(documentUrl, {headers: headers})
-                .toPromise().then(res => {
-                    console.log(res);
-                    const status = res.status;
-                    return new fromFile.DeleteComplete(query);
-                }));
-        });
-                    // if (status === 200) {
-                    //     const jsonData = JSON.parse(res.text());
-                    //     console.log(jsonData);
-                    //     return new fromFile.LoadComplete(JSON.parse(res.text()));
-                    // } else if (status === 404) {
-                    //     return new fromFile.LoadError(res.json());
-                    // } else {
-                    //     return new fromFile.LoadError('unknown error');
-                    // }
+                    .toPromise().then(res => {
+                        console.log(res);
+                        const status = res.status;
+                        if (status === 204) {
+                            return new fromFile.DeleteComplete(query);
+                        } else if (status === 404) {
+                            return new fromFile.DeleteError(res.json());
+                        } else {
+                            return new fromFile.DeleteError('unknown error');
+                        }
+                    }));
+            });
 
     getCookie(name) {
         const value = ';' + document.cookie;

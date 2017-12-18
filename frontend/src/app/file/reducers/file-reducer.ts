@@ -28,7 +28,7 @@ export function FileReducer(state: FileState = initialState, action: fromFile.Ac
         case fromFile.LOAD_COMPLETE:
             return {...state, fileList: action.payload, loading: false};
         case fromFile.LOAD_ERROR:
-            return {...state, error: action.payload};
+            return {...state, loading: false, error: action.payload};
         case fromFile.CREATE:
             return {...state, loading: true};
         case fromFile.CREATE_COMPLETE:
@@ -38,6 +38,16 @@ export function FileReducer(state: FileState = initialState, action: fromFile.Ac
             return {...state, loading: false, fileList: newFileList};
         case fromFile.CREATE_ERROR:
             return {...state, loading: false, error: action.payload};
+        case fromFile.DELETE:
+            return {...state, loading: true};
+        case fromFile.DELETE_COMPLETE: {
+            const ind = state.fileList.findIndex((file) => file.id === action.payload);
+            state.fileList.splice(ind, 1);
+            const newFileList = _.cloneDeep(state.fileList);
+            return {...state, fileList: newFileList, loading: false};
+        }
+        case fromFile.DELETE_ERROR:
+            return {...state, error: action.payload, loading: false};
         default:
             return state;
     }

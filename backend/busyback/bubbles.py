@@ -20,7 +20,7 @@ def normal_operation(func):
     ''' Decorator for functions whose 4th arg is bubble_id'''
     @wraps(func)
     def wrapper(*args, **kwargs):
-        print('called ' + func.__name__ + '...')
+        #print('called ' + func.__name__ + '...')
         with transaction.atomic():
             rid_version = args[0]
             user_id = args[1]
@@ -270,9 +270,9 @@ def do_update_discard_normal_bubble(
     if result is None:
         raise InvalidUpdateError(bubble_id)
     (del_flag, content) = result
-    
+
     bubble = kw['bubble']
-    check_updatable(rversion, bubble) 
+    check_updatable(rversion, bubble)
     parent = bubble.parent_bubble
     if del_flag == 'True':
         check_updatable_with_siblings(rversion, parent, bubble.location+1)
@@ -304,8 +304,8 @@ def do_edit_normal_bubble(
     if bubble.has_locked_ancestors() or bubble.is_locked():
         raise BubbleLockedError(bubble.id)
 
-    check_updatable(rversion, bubble) 
-    
+    check_updatable(rversion, bubble)
+
     if content != '':
         bubble.change_content(content)
     bubble.lock(user)
@@ -387,7 +387,7 @@ def do_delete_normal_bubble(
     check_updatable_with_siblings(rversion, parent, bubble.location)
 
     cascaded_delete_children(user, bubble)
-    
+
     parent.delete_children(bubble.location, 1)
     delete_normal(bubble)
 
@@ -607,7 +607,7 @@ def do_split_leaf_bubble(
         raise BubbleLockedError(bubble.id)
 
     check_updatable(rversion, bubble)
-    
+
     user = User.objects.get(id=user_id)
     # convert leaf bubble to internal bubble
     # whether bubble is leaf is determined by existence of child
@@ -618,7 +618,7 @@ def do_split_leaf_bubble(
     created = []
     for idx, content in enumerate(split_content_list):
         created.append(create_normal(bubble.document, content, bubble, idx))
-     
+
     return (Operation.SPLIT_LEAF, [process_normal(bubble) for bubble in created])
 
 @normal_operation
@@ -633,7 +633,7 @@ def do_split_internal_bubble(
     ):
 
     split_location = split_location[1:]
-    
+
     if len(split_location) < 1:
         raise InvalidSplitError()
 
@@ -740,7 +740,7 @@ def do_switch_bubble(
     else:
         check_updatable(rversion, binded_bubble)
 
-    
+
     with transaction.atomic():
         # switch content
         switch_content = suggest.content
@@ -819,7 +819,7 @@ def do_merge_normal_bubble(
     bubble_id_list: list,
     **kw
     ):
-    
+
     bubble = wrap_bubble(rversion, user_id, document_id, bubble_id_list, **kw)
 
     check_updatable_with_descendants(rversion, bubble)
@@ -844,4 +844,3 @@ def do_edit_suggest_bubble(
     suggest.hide()
 
     return (Operation.EDIT_SUGGEST, process_suggest(new_suggest))
-    

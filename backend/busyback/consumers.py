@@ -233,7 +233,7 @@ def ws_receive(message):
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False',
                             'body': 'parent bubble is leaf bubble'})})
-            return 
+            return
         except Exception as e:
             message.reply_channel.send({"text":
                     json.dumps({'header': command, 'accept': 'False', 'body': 'create bubble failed'})})
@@ -1534,7 +1534,7 @@ def ws_receive(message):
                     json.dumps({"header": command, "accept": 'False',
                             'body': 'parent bubble is leaf bubble'})})
             return
- 
+
         except Exception as e:
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False', 'body': 'unknown error'})})
@@ -1715,7 +1715,7 @@ def ws_receive(message):
     #########################
     ##   Add Contributor   ##
     #########################
-    
+
     # will be done by http
 
     #########################################
