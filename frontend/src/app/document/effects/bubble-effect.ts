@@ -47,6 +47,13 @@ export class BubbleEffects {
 
     private tokenUrl = '/api/token';
 
+    @Effect()
+    changeTitle$: Observable<Action> = this.action$.ofType<BubbleAction.ChangeTitle>(BubbleAction.CHANGE_TITLE)
+        .map(action => action.payload).mergeMap(query => {
+            this.bubbleService.changeTitle(query);
+            return Observable.of(new BubbleAction.ChangeTitlePending(null));
+        });
+
     @Effect({dispatch: true})
     open$: Observable<Action> = this.action$.ofType<BubbleAction.Open>(BubbleAction.OPEN)
         .withLatestFrom(this._store).mergeMap(([action, state]) => {

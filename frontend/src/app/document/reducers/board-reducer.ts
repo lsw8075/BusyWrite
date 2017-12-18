@@ -18,13 +18,13 @@ export interface BoardState {
 
 const initalBoardList = [
     new Board(BoardType.view, BoardLocation.left, 0),
-    new Board(BoardType.suggest, BoardLocation.hidden, 1),
-    new Board(BoardType.edit, BoardLocation.right, 2),
+    new Board(BoardType.suggest, BoardLocation.right, 1),
+    new Board(BoardType.edit, BoardLocation.left, 2),
     new Board(BoardType.filter, BoardLocation.hidden, 3)
 ];
 
 const initialState: BoardState = {
-    newId: 2,
+    newId: 4,
     boardList: initalBoardList,
     loading: false,
     error: '',
@@ -46,7 +46,7 @@ export function BoardReducer(state: BoardState = initialState, action: fromBoard
                 }
             }
             newBoardList.push(new Board(action.payload, BoardLocation.hidden, state.newId));
-            return {...state, boardList: newBoardList, newId: state.newId + 1 };
+            return {...state, boardList: newBoardList, newId: (state.newId + 1) };
         case fromBoard.DELETE:
             newBoardList = newBoardList.filter(board => board.id !== action.payload.id);
             console.log(newBoardList);

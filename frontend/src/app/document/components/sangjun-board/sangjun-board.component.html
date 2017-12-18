@@ -1,4 +1,4 @@
-<div *ngIf="bubble">
+<div *ngIf="bubble" class="container">
     <div *ngIf="selectedSB">
         <app-suggest-bubble></app-suggest-bubble>
     </div>
@@ -24,7 +24,7 @@
 
         <div *ngIf="isOBChecked">
         <h4>Original Bubble</h4>
-        <p class="ob-content">{{bubble | json}}</p>
+        <p class="ob-content" [innerHTML]="getContentOfBubble(bubble)"></p>
         <div>
             <button *ngIf="!isWatching" type="button" class="btn btn-primary btn-sm" (click)="clickWatch()">
             <i class="fa fa-eye fa-fw"></i>
@@ -44,23 +44,34 @@
         </div>
 
         <div *ngIf="isSBChecked">
-        <h4>Suggest Bubbles</h4>
-        <div *ngFor="let suggestBubble of suggestBubbles">
-            <p class="sb-content" (click)="clickSuggestBubble(suggestBubble)">{{suggestBubble.content}}</p>
-
-            <button type="button" class="btn btn-primary btn-sm" (click)="clickSBThumbsUp(suggestBubble)">
-            <i class="fa fa-thumbs-up fa-fw"></i>
-            Thumbs up
+            <h4>Suggest Bubbles</h4>
+            <button type="button" (click)="createSuggestBubble()" [tooltip]="'create new suggest bubble'" placement="bottom" class="btn btn-sm btn-info">
+                <span class="fa-stack fa-fw">
+                    <i class="fa fa-fw fa-comment-o fa-stack-2x"></i>
+                    <i class="fa fa-fw fa-plus fa-stack-1x"></i>
+                </span>
+                Create New Suggest Bubble
             </button>
-            {{suggestBubble.thumbUps}}
+            <div *ngFor="let suggestBubble of getSuggestBubbleList()">
+                <p class="sb-content" (click)="clickSuggestBubble(suggestBubble)" [innerHTML]="suggestBubble.content"></p>
+                {{suggestBubble | json}}
+                <button type="button" class="btn btn-primary btn-sm" (click)="clickSBThumbsUp(suggestBubble)">
+                <i class="fa fa-thumbs-up fa-fw"></i>
+                Thumbs up
+                </button>
+                {{suggestBubble.thumbUps}}
+                <br>
+            </div>
             <br>
-        </div>
-        <br>
         </div>
 
         <div *ngIf="isCommentChecked">
-        <h4>Comments</h4>
-        <!--<app-comment></app-comment>-->
+            <h4>Comments</h4>
+            <app-comment
+                [bubble]="bubble"
+                [suggestBubble]=""
+                [comments]="comments">
+            </app-comment>
         </div>
     </div>
 </div>

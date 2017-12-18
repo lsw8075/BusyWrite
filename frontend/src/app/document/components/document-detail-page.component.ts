@@ -8,7 +8,8 @@ import { NgForm } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
 
-import { Bubble, BubbleType, InternalBubble, LeafBubble } from '../models/bubble';
+import { Bubble, BubbleType, InternalBubble, LeafBubble, SuggestBubble } from '../models/bubble';
+import { Comment } from '../models/comment';
 import { Board, BoardType, BoardLocation } from '../models/board';
 import { Document } from '../../file/models/document';
 import { User } from '../../user/models/user';
@@ -55,6 +56,8 @@ export class DocumentDetailPageComponent implements OnInit {
     selectedMenu$: Observable<MenuType>;
 
     sangjunBubble$: Observable<Bubble>;
+    suggestBubbles$: Observable<SuggestBubble[]>;
+    comments$: Observable<Comment[]>;
 
     viewBoardMenu$: Observable<ViewBoardMenuType>;
 
@@ -85,6 +88,9 @@ export class DocumentDetailPageComponent implements OnInit {
         this.rightBoard$ = this._store.select(fromDocument.getRightBoard);
 
         this.sangjunBubble$ = this._store.select(fromDocument.getSangjunBubble);
+
+        this.suggestBubbles$ = this._store.select(fromDocument.getSuggestBubbles);
+        this.comments$ = this._store.select(fromDocument.getComments);
 
         this._store.select(fromDocument.getActiveBoard).subscribe(board => {
             this.activeBoard = board;
@@ -127,6 +133,7 @@ export class DocumentDetailPageComponent implements OnInit {
 
     public titleEditDone() {
         this.changeTitle = false;
+        this._store.dispatch(new BubbleAction.ChangeTitle(this.documentTitle));
     }
 
     public titleEditStart() {

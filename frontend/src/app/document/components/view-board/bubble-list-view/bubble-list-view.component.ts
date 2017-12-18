@@ -118,6 +118,9 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
     }
 
     public getContributerName(id: number): string {
+        if (id === this.userId) {
+            return 'me';
+        }
         for (const user of this.contributers) {
             if (user.id === id) {
                 return user.username;
