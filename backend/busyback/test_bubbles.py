@@ -82,7 +82,7 @@ class BubblesTestCase(TestCase):
 
         do_updating_normal_bubble(0, self.user1.id, self.doc1.id, new_bubble.id, 'hello world')
 
-        do_update_finish_normal_bubble(0, self.user1.id, self.doc1.id, new_bubble.id)
+        do_update_finish_normal_bubble(0, self.user1.id, self.doc1.id, new_bubble.id, 'hello world')
 
         new_bubble = NormalBubble.objects.get(id=new_bubble.id)
 

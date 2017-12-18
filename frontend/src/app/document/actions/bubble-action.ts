@@ -6,6 +6,33 @@ import { User } from '../../user/models/user';
 import { Document } from '../../file/models/document';
 import { MenuType } from '../services/event/event-bubble.service';
 
+export const CHANGE_TITLE = '[Document] change title';
+export const CHANGE_TITLE_PENDING = '[Document] change title pending';
+export const CHANGE_TITLE_COMPLETE = '[Document] change title complete';
+export const CHANGE_TITLE_ERROR = '[Document] change title error';
+export const OTHERS_CHANGE_TITLE = '[Document] others change title';
+export class ChangeTitle implements Action {
+    readonly type = CHANGE_TITLE;
+    constructor(public payload: string) {}
+}
+export class ChangeTitlePending implements Action {
+    readonly type = CHANGE_TITLE_PENDING;
+    constructor(public payload: void) {}
+}
+export class ChangeTitleComplete implements Action {
+    readonly type = CHANGE_TITLE_COMPLETE;
+    constructor(public payload: string) {}
+}
+export class ChangeTitleError implements Action {
+    readonly type = CHANGE_TITLE_ERROR;
+    constructor(public payload: string) {}
+}
+export class OthersChangeTitle implements Action {
+    readonly type = OTHERS_CHANGE_TITLE;
+    constructor(public payload: string) {}
+}
+
+
 export const OPEN = '[Document] open';
 export const OPEN_COMPLETE = '[Document] open complete';
 export const OPEN_PENDING = '[Document] open pending';
@@ -1099,6 +1126,11 @@ export class EditBubbleClose implements Action {
 
 
 export type Actions =
+  | ChangeTitle
+  | ChangeTitlePending
+  | ChangeTitleComplete
+  | ChangeTitleError
+  | OthersChangeTitle
   | Open
   | OpenPending
   | OpenComplete
