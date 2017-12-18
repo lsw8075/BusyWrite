@@ -1,13 +1,13 @@
 import { Action } from '@ngrx/store';
 
-import * as FileModel from '../models/file-system-entity';
+import * as FileModel from '../models/document';
 
 import * as fromFile from '../actions/file-action';
 import * as _ from 'lodash';
 
 export interface FileState {
-    fileList: FileModel.FileSystemEntity[];
-    selectedFile: FileModel.FileSystemEntity;
+    fileList: FileModel.Document[];
+    selectedFile: FileModel.Document;
     loading: boolean;
     error: string;
 }

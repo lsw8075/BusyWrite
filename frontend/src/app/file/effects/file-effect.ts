@@ -17,7 +17,7 @@ import { of } from 'rxjs/observable/of';
 import 'rxjs/add/observable/fromPromise';
 import 'rxjs/add/operator/mergeMap';
 
-import * as FileModel from '../models/file-system-entity';
+import * as FileModel from '../models/document';
 import * as fromFile from '../actions/file-action';
 import * as fromRouter from '../../shared/route/route-action';
 import { DirectoryService } from '../services/directory.service';
@@ -58,7 +58,8 @@ export class FileEffects {
                     if (res.status === 200) {
                         return new fromFile.CreateComplete({
                             id: jsonData.id,
-                            title: jsonData.title
+                            title: jsonData.title,
+                            contributors: [],
                         });
                     } else {
                         return new fromFile.CreateError(jsonData);

@@ -3,6 +3,7 @@ import { Bubble, InternalBubble, LeafBubble, SuggestBubble } from '../models/bub
 import { Comment } from '../models/comment';
 import { Note } from '../models/note';
 import { User } from '../../user/models/user';
+import { Document } from '../../file/models/document';
 import { MenuType } from '../services/event/event-bubble.service';
 
 export const OPEN = '[Document] open';
@@ -20,8 +21,7 @@ export class OpenPending implements Action {
 export class OpenComplete implements Action {
   readonly type = OPEN_COMPLETE;
   constructor(public payload: {
-      documentId: number,
-      contributors: Array<User>,
+      documentObject: Document,
       connectors: Array<User>
   }) {}
 }
@@ -267,7 +267,9 @@ export class EditRequestSuccess implements Action {
 }
 export class OthersEditRequest implements Action {
     readonly type = OTHERS_EDIT_REQUEST;
-    constructor(public payload: number) {}
+    constructor(public payload: {
+            bubbleId: number
+            userId: number}) {}
 }
 export class EditUpdate implements Action {
     readonly type = EDIT_UPDATE;
@@ -379,7 +381,9 @@ export const EDIT_SUGGEST_ERROR = '[Suggest Bubble] edit discard';
 export const OTHERS_EDIT_SUGGEST = '[Suggest Bubble] others edit suggest';
 export class EditSuggest implements Action {
     readonly type = EDIT_SUGGEST;
-    constructor(public payload: number) {}
+    constructor(public payload: {
+            suggestBubbleId: number,
+            content: string}) {}
 }
 export class EditSuggestPending implements Action {
     readonly type = EDIT_SUGGEST_PENDING;

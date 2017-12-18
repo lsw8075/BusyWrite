@@ -8,7 +8,7 @@ import * as fromFile from '../reducers/reducer';
 import * as FileAction from '../actions/file-action';
 import * as RouterAction from '../../shared/route/route-action';
 
-import { FileSystemEntity } from '../models/file-system-entity';
+import { Document } from '../models/document';
 
 @Component({
   selector: 'app-main-page',
@@ -17,7 +17,7 @@ import { FileSystemEntity } from '../models/file-system-entity';
 })
 export class MainPageComponent implements OnInit {
 
-    fileList$: Observable<FileSystemEntity[]>;
+    fileList$: Observable<Document[]>;
 
     constructor(private _store: Store<fromFile.State>) {
         this.fileList$ = this._store.select(fromFile.getFileList);
@@ -27,7 +27,7 @@ export class MainPageComponent implements OnInit {
         this._store.dispatch(new FileAction.Load());
     }
 
-    public open(document: FileSystemEntity) {
+    public open(document: Document) {
         this._store.dispatch(new RouterAction.GoByUrl(`/documents/${document.id}`));
     }
 

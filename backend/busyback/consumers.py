@@ -88,20 +88,16 @@ def ws_receive(message):
                     json.dumps({"header": command, "accept": 'False', "body": "adding user failed"})})
             return
 
-        try:
-            contributors = do_fetch_contributors(message.user.id, int(document_id))
-            connectors = do_get_connected_users_document(message.user.id, int(document_id))
-        except Exception as e:
-            message.reply_channel.send({"text":
-                    json.dumps({"header": command, "accept": 'False', "body": "getting contributors failed"})})
-            see_error(e)
-            return
+        previous_request_id = result[0]
+        title = result[1]
+        contributors = result[2]
+        connectors = result[3]
 
         message.channel_session['document_id'] = str(document_id)
         # contributors and connectors would include herself! Be careful when using.
         message.reply_channel.send({"text":
                 json.dumps({"header": command, "accept": 'True',
-                        "body": {"document_id": document_id, "previous_request_id": result,
+                        "body": {"document_id": document_id, "title": title, "previous_request_id": result,
                         "contributors": contributors, "connectors": connectors}})})
 
         Group('document_detail-'+str(document_id), channel_layer=message.channel_layer).add(message.reply_channel)
