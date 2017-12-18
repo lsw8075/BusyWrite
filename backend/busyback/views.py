@@ -18,7 +18,11 @@ def signup(request):
         password = req_data['password']
         email = req_data['email']
         username = email.split('@')[0]
-        User.objects.create_user(username=username, password=password, email=email)
+        try: 
+            User.objects.create_user(username=username, password=password, email=email)
+        except:
+            # TODO: catch already exist email/username error, change error code
+            return HttpResponse(status=400)
         return HttpResponse(status=201)
     else:
         return HttpResponseNotAllowed(['POST'])
@@ -30,7 +34,10 @@ def signin(request):
         password = request_data['password']
         print(email)
         print(password)
-        username = User.objects.get(email=email).username
+        try:
+            username = User.objects.get(email=email).username
+        except User.DoesNotExist:
+            return HttpResponse(status=401) # unauthorized
         user = authenticate(request, username = username, password = password)
         if user is None:
             return HttpResponse(status=401) # unauthorized
