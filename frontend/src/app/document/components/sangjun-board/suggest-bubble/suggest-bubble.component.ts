@@ -42,6 +42,7 @@ export class SuggestBubbleComponent implements OnInit {
     }
 
     clickSwitch() {
+        console.log('switch');
         this._store.dispatch(new BubbleAction.SwitchBubble(this.selectedSB.id));
     }
 

@@ -335,7 +335,14 @@ export class BubbleEffects {
             return Observable.of(this.bubbleService.voteOnSuggestBubble(query))
                 .map(() => new BubbleAction.UnvoteOnSuggestPending(null));
         });
- 
+
+    @Effect()
+    switchBubble$: Observable<Action> = this.action$.ofType<BubbleAction.SwitchBubble>(BubbleAction.SWITCH_BUBBLE)
+        .map(action => action.payload).mergeMap(query => {
+            return Observable.of(this.bubbleService.switchBubble(query))
+                .map(() => new BubbleAction.SwitchBubblePending(null));
+        });
+
     getCookie(name) {
             const value = ';' + document.cookie;
             const parts = value.split(';' + name + '=');
