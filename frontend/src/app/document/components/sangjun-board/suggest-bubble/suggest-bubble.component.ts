@@ -1,6 +1,16 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { SuggestBubble } from '../../../models/bubble';
 import { EventSangjunBoardService } from '../../../services/event/event-sangjun-board.service';
+
+import { Bubble, SuggestBubble, BubbleType } from '../../../models/bubble';
+import { Comment } from '../../../models/comment';
+
+import { Store } from '@ngrx/store';
+import { Observable } from 'rxjs/Observable';
+
+import * as fromDocument from '../../../reducers/reducer';
+import * as BoardAction from '../../../actions/board-action';
+import * as BubbleAction from '../../../actions/bubble-action';
+import * as RouterAction from '../../../../shared/route/route-action';
 
 @Component({
   selector: 'app-suggest-bubble',
@@ -10,32 +20,43 @@ import { EventSangjunBoardService } from '../../../services/event/event-sangjun-
 
 export class SuggestBubbleComponent implements OnInit {
 
-  @Input()
-  suggestBubble: SuggestBubble;
+  @Input() bubble: Bubble;
+  @Input() bubbleList: Array<Bubble>;
+  @Input() suggestBubbles: Array<SuggestBubble>;
+  @Input() comments: Array<Comment>;
+  @Input() selectedSB: SuggestBubble;
 
-  constructor(private _eventSangjunBoardService: EventSangjunBoardService) { }
+  constructor(
+      private _store: Store<fromDocument.State>,
+      private _eventSangjunBoardService: EventSangjunBoardService) { }
 
-  ngOnInit() {
-  }
+    ngOnInit() {
+    }
 
-  clickBackButton() {
-    this._eventSangjunBoardService.clickBackButton();
-  }
+    clickBackButton() {
+        this._store.dispatch(new BubbleAction.SelectSuggestBubbleClear(null));
+    }
 
-  clickSwitch() {
-    this._eventSangjunBoardService.clickSwitch(this.suggestBubble);
-  }
+    clickSwitch() {
+        this._store.dispatch(new BubbleAction.SwitchBubble(this.selectedSB.id));
+    }
 
-  clickEdit() {
-    this._eventSangjunBoardService.clickEdit(this.suggestBubble);
-  }
+    clickEdit() {
+        this._store.dispatch(new BoardAction.ShowEdit());
+        this._store.dispatch(new BubbleAction.CreateSuggestStart({
+            bindBubbleId: this.selectedSB.id,
+            isBindSuggest: true,
+            content: this.selectedSB.content
+        }));
+    }
 
-  clickDelete() {
-    this._eventSangjunBoardService.clickDelete(this.suggestBubble);
-  }
+    clickDelete() {
+        this._store.dispatch(new BubbleAction.HideSuggest(this.selectedSB.id));
 
-  clickThumbsUp() {
-    this._eventSangjunBoardService.clickThumbsUp(this.suggestBubble);
-  }
+    }
+
+    clickThumbsUp() {
+        this.selectedSB.thumbUps++;
+    }
 
 }

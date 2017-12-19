@@ -41,6 +41,7 @@ export const getBubbleList = createSelector(getBubbleState, (state: BubbleState)
 export const getRootBubble = createSelector(getBubbleList, (bubbleList: Bubble[]) => (bubbleList[0] as InternalBubble));
 
 export const getSelectedMenu = createSelector(getBubbleState, (state: BubbleState) => state.selectedMenu);
+export const getSelectedSB = createSelector(getBubbleState, (state: BubbleState) => state.selectedSB);
 export const getSelectedBubbleList = createSelector(getBubbleState, (state: BubbleState) => state.selectedBubbleList);
 export const getHoverBubbleList = createSelector(getBubbleState, (state: BubbleState) => state.hoverBubbleList);
 export const getBubbleStateError = createSelector(getBubbleState, (state: BubbleState) => state.error);

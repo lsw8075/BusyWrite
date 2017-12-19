@@ -93,6 +93,13 @@ export class BubbleEffects {
                 .map(() => new BubbleAction.LoadPending(null));
         });
 
+    // @Effect()
+    // loadComplete$: Observable<Action> = this.action$.ofType<BubbleAction.LoadComplete>(BubbleAction.LOAD_COMPLETE)
+    //     .map(action => action.payload).mergeMap(query => {
+    //         return Observable.of(this.bubbleService.createCommentOnSuggestBubble(2115, "eiruiw" ))
+    //             .map(() => new BubbleAction.LoadPending(null));
+    //     });
+
     @Effect()
     pop$: Observable<Action> = this.action$.ofType<BubbleAction.PopBubble>(BubbleAction.POP_BUBBLE)
         .map(action => action.payload).mergeMap(query => {
@@ -308,6 +315,13 @@ export class BubbleEffects {
             });
         });
 
+    @Effect()
+    hideSuggest$: Observable<Action> = this.action$.ofType<BubbleAction.HideSuggest>(BubbleAction.HIDE_SUGGEST)
+        .map(action => action.payload).mergeMap(query => {
+            return Observable.of(this.bubbleService.hideSuggestBubble(query))
+                .map(() => new BubbleAction.HideSuggestPending(null));
+        });
+
 
     @Effect()
     noteLoad$: Observable<Action> = this.action$.ofType<BubbleAction.NoteLoad>(BubbleAction.NOTE_LOAD)
@@ -433,7 +447,6 @@ export class BubbleEffects {
             return Observable.of(this.bubbleService.exportNoteAsCommentOnSuggestBubble(query.bindSuggestBubbleId, query.content))
                 .map(() => new BubbleAction.ExportNoteAsCommentOnSuggestPending(null));
         });
-
 
     getCookie(name) {
             const value = ';' + document.cookie;

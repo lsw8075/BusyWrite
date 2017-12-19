@@ -54,7 +54,7 @@ export namespace BubbleJsonHelper {
 
     export function getSuggestBubbleObject(jsonString: string): SuggestBubble {
         const jsonObject = JSON.parse(jsonString);
-        const suggestBubble = new SuggestBubble(jsonObject.id, jsonObject.content, jsonObject.normal_bubble);
+        const suggestBubble = new SuggestBubble(jsonObject.id, jsonObject.content, jsonObject.normal_bubble, jsonObject.hidden);
         suggestBubble.thumbUps = jsonObject.voters.length;
         return suggestBubble;
     }

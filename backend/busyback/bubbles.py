@@ -551,12 +551,16 @@ def do_pop_normal_bubble(
 
 def cascaded_flatten_children(user, bubble):
     s = bubble.content
+    childcount = bubble.child_bubbles.count()
+    contentlist = [''] * childcount
     for child in bubble.child_bubbles.all():
         if child.is_locked():
             raise BubbleLockedError(bubble.id)
-        s = s + cascaded_flatten_children(user, child)
+        contentlist[child.location] = cascaded_flatten_children(user, child)
         bubble.delete_children(child.location, 1)
         NormalBubble.delete(child)
+    for content in contentlist:
+        s = s + content
     return s
 
 @normal_operation

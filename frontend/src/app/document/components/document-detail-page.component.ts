@@ -52,6 +52,7 @@ export class DocumentDetailPageComponent implements OnInit {
     rootBubble$: Observable<InternalBubble>;
     bubbleList$: Observable<Array<Bubble>>;
     userId$: Observable<Number>;
+    selectedSB$: Observable<SuggestBubble>;
     selectedBubbleList$: Observable<Bubble[]>;
     hoverBubbleList$: Observable<Bubble[]>;
     selectedMenu$: Observable<MenuType>;
@@ -82,6 +83,7 @@ export class DocumentDetailPageComponent implements OnInit {
         this.rootBubble$ = _store.select(fromDocument.getRootBubble);
         this.bubbleList$ = _store.select(fromDocument.getBubbleList);
         this.userId$ = this._store.select(fromUser.getUserId);
+        this.selectedSB$ = this._store.select(fromDocument.getSelectedSB);
         this.selectedBubbleList$ = this._store.select(fromDocument.getSelectedBubbleList);
         this.hoverBubbleList$ = this._store.select(fromDocument.getHoverBubbleList);
         this.selectedMenu$ = this._store.select(fromDocument.getSelectedMenu);
