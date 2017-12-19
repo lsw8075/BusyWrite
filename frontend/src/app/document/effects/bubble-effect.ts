@@ -322,6 +322,20 @@ export class BubbleEffects {
                 .map(() => new BubbleAction.HideSuggestPending(null));
         });
 
+    @Effect()
+    vote$: Observable<Action> = this.action$.ofType<BubbleAction.VoteOnSuggest>(BubbleAction.VOTE_ON_SUGGEST)
+        .map(action => action.payload).mergeMap(query => {
+            return Observable.of(this.bubbleService.voteOnSuggestBubble(query))
+                .map(() => new BubbleAction.VoteOnSuggestPending(null));
+        });
+
+    @Effect()
+    unvote$: Observable<Action> = this.action$.ofType<BubbleAction.UnoteOnSuggest>(BubbleAction.UNVOTE_ON_SUGGEST)
+        .map(action => action.payload).mergeMap(query => {
+            return Observable.of(this.bubbleService.voteOnSuggestBubble(query))
+                .map(() => new BubbleAction.UnvoteOnSuggestPending(null));
+        });
+ 
     getCookie(name) {
             const value = ';' + document.cookie;
             const parts = value.split(';' + name + '=');
