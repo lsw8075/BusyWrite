@@ -1,19 +1,22 @@
 export class Note {
   id: number;
-  documentId: number;
-  userId: number;
+  document: number;
+  owner: number;
   content: string;
+  order: number;
 
   constructor(
     id: number,
-    documentId: number,
-    userId: number,
+    document: number,
+    owner: number,
     content: string = '',
+    order: number = 1
   ) {
     this.id = id;
-    this.documentId = documentId;
-    this.userId = userId;
+    this.document = document;
+    this.owner = owner;
     this.content = content;
+    this.order = order;
   }
 
   public getSummary() {

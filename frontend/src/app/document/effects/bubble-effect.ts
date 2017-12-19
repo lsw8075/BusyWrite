@@ -308,11 +308,105 @@ export class BubbleEffects {
             });
         });
 
+
+    @Effect()
+    noteLoad$: Observable<Action> = this.action$.ofType<BubbleAction.NoteLoad>(BubbleAction.NOTE_LOAD)
+        .withLatestFrom(this._store).mergeMap(([action, state]) => {
+            const bubbleState = (state as any).document.bubble;
+            const docid = bubbleState.documentObject.id;
+            const documentUrl = `/api/${docid}/notelist`;
+            return this._http.get(documentUrl).map(res => {
+                const status = res.status;
+                if (status === 200) {
+                    const jsonData = JSON.parse(res.text());
+                    console.log(jsonData);
+                    return new BubbleAction.NoteLoadComplete(jsonData)
+                } else {
+                    return new BubbleAction.NoteLoadError('unknown error')
+                }
+            })});
+
+    @Effect()
+    noteCreate$: Observable<Action> = this.action$.ofType<BubbleAction.NoteCreate>(BubbleAction.NOTE_CREATE)
+        .withLatestFrom(this._store).mergeMap(([action, state]) => {
+            const bubbleState = (state as any).document.bubble;
+            const docid = bubbleState.documentObject.id;
+            const documentUrl = `/api/${docid}/notelist`;
+            const headers = new Headers({'Content-Type': 'application/json'});
+            return this._http.get(this.tokenUrl).toPromise().then(() => headers.append('X-CSRFToken', this.getCookie('csrftoken')))
+                .then(() => this._http.post(documentUrl, JSON.stringify({content: 'empty'}), {headers: headers})
+                    .toPromise().then(res => {
+                        console.log(res);
+                        const status = res.status;
+                        if (status === 200) {
+                            const jsonData = JSON.parse(res.text());
+                            console.log('json data', jsonData);
+                            const newNote = new Note(jsonData.id, jsonData.document, jsonData.owner, jsonData.content, jsonData.order);
+                            return new BubbleAction.NoteCreateComplete(newNote);
+                        } else if (status === 400) {
+                            return new BubbleAction.NoteCreateError('content is empty');
+                        } else {
+                            return new BubbleAction.NoteCreateError('unknown error');
+                        }
+                    }));
+        });
+
+
+        @Effect()
+            noteEdit$: Observable<Action> = this.action$.ofType<BubbleAction.NoteEdit>(BubbleAction.NOTE_EDIT)
+                .withLatestFrom(this._store).mergeMap(([action, state]) => {
+                    const bubbleState = (state as any).document.bubble;
+                    const docid = bubbleState.documentObject.id;
+                    console.log(action.payload);
+                    const documentUrl = `/api/${docid}/note/${action.payload.owner}`;
+                    const headers = new Headers({'Content-Type': 'application/json'});
+                    return this._http.get(this.tokenUrl).toPromise().then(() => headers.append('X-CSRFToken', this.getCookie('csrftoken')))
+                        .then(() => this._http.put(documentUrl, JSON.stringify({content: action.payload.content}), {headers: headers})
+                            .toPromise().then(res => {
+                                console.log(res);
+                                const status = res.status;
+                                if (status === 200) {
+                                    return new BubbleAction.NoteEditComplete();
+                                } else if (status === 400) {
+                                    return new BubbleAction.NoteEditError('user is not doc contributor or Bubble owner');
+                                } else {
+                                    return new BubbleAction.NoteEditError('unknown error');
+                                }
+                            }));
+                    });
+        @Effect()
+            noteDelete: Observable<Action> = this.action$.ofType<BubbleAction.NoteDelete>(BubbleAction.NOTE_DELETE)
+                    .withLatestFrom(this._store).mergeMap(([action, state]) => {
+                        const bubbleState = (state as any).document.bubble;
+                        const docid = bubbleState.documentObject.id;
+                        console.log(action.payload);
+                        const documentUrl = `/api/${docid}/note/${action.payload.owner}`;
+                const headers = new Headers({'Content-Type': 'application/json'});
+                return this._http.get(this.tokenUrl).toPromise().then(() => headers.append('X-CSRFToken', this.getCookie('csrftoken')))
+                    .then(() => this._http.delete(documentUrl, {headers: headers})
+                        .toPromise().then(res => {
+                            console.log(res);
+                            const status = res.status;
+                            if (status === 200) {
+                                return new BubbleAction.NoteDeleteComplete();
+                            } else if (status === 400) {
+                                return new BubbleAction.NoteDeleteError('user is not doc contributor or Bubble owner');
+                            } else {
+                                return new BubbleAction.NoteDeleteError('unknown error');
+                            }
+                        }));
+                    })
+
     @Effect()
     exportNoteAsBubble$: Observable<Action> =
     this.action$.ofType<BubbleAction.ExportNoteAsBubble>(BubbleAction.EXPORT_NOTE_AS_BUBBLE)
-        .map(action => action.payload).mergeMap(query => {
-            return Observable.of(this.bubbleService.exportNoteAsBubble(query.parentId, query.loc, query.content))
+        .withLatestFrom(this._store).mergeMap(([action, state]) => {
+            const bubbleState = (state as any).document.bubble;
+            const bubbleList = bubbleState.bubbleList;
+            const rootBubble: InternalBubble = bubbleState.bubbleList[0];
+            console.log(rootBubble);
+            const lastLoc = rootBubble.childBubbleIds.reduce((prev, curr) => Math.max(prev, getBubbleById(bubbleList, curr).location), 0);
+            return Observable.of(this.bubbleService.exportNoteAsBubble(bubbleList[0].id, lastLoc, action.payload.content))
                 .map(() => new BubbleAction.ExportNoteAsBubblePending(null));
         });
 
