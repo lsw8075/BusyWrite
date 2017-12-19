@@ -117,6 +117,7 @@ export function BubbleReducer(state: BubbleState = initialState, action: fromBub
         case fromBubble.EDIT_SUGGEST_DISCARD: case fromBubble.EDIT_SUGGEST_DISCARD_COMPLETE:
         case fromBubble.SWITCH_BUBBLE: case fromBubble.SWITCH_BUBBLE_COMPLETE: case fromBubble.SWITCH_BUBBLE_ERROR: case fromBubble.OTHERS_SWITCH_BUBBLE:
         case fromBubble.HIDE_SUGGEST: case fromBubble.HIDE_SUGGEST_COMPLETE: case fromBubble.HIDE_SUGGEST_ERROR: case fromBubble.OTHERS_HIDE_SUGGEST:
+
         case fromBubble.VOTE_ON_SUGGEST:
         case fromBubble.VOTE_ON_SUGGEST_COMPLETE:
         case fromBubble.VOTE_ON_SUGGEST_ERROR:
@@ -125,7 +126,8 @@ export function BubbleReducer(state: BubbleState = initialState, action: fromBub
         case fromBubble.UNVOTE_ON_SUGGEST_COMPLETE:
         case fromBubble.UNVOTE_ON_SUGGEST_ERROR:
         case fromBubble.OTHERS_UNVOTE_ON_SUGGEST:
-                                        
+        case fromBubble.EDIT_COMMENT_ON_BUBBLE: case fromBubble.EDIT_COMMENT_ON_BUBBLE_COMPLETE: case fromBubble.EDIT_COMMENT_ON_BUBBLE_ERROR:
+
             return BubbleOperationReducer(state, action);
 
         case fromBubble.CLEAR_ERROR:
@@ -671,9 +673,11 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
         }
         case fromBubble.HIDE_SUGGEST_ERROR:
         case fromBubble.OTHERS_HIDE_SUGGEST:
-        default:
-            console.log('this should not be called', state, action);
-            return state;
+        case fromBubble.EDIT_COMMENT_ON_BUBBLE:
+            return {...state, loading: false, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
+        case fromBubble.EDIT_COMMENT_ON_BUBBLE_COMPLETE: {}
+            return {...state, loading: false, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
+        case fromBubble.EDIT_COMMENT_ON_BUBBLE_ERROR:
 
         case fromBubble.VOTE_ON_SUGGEST:
             return {...state, loading: true};
@@ -712,7 +716,10 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
             suggestBubble.thumbUps--;
             return {...state, suggestBubbleList: newSuggestBubbleList};
         }
- 
- 
+        
+        default:
+            console.log('this should not be called', state, action);
+            return state;
+
     }
 }

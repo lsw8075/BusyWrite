@@ -102,6 +102,8 @@
                         [suggestBubbles]="suggestBubbles$ | async"
                         [comments]="comments$ | async"
                         [selectedSB]="selectedSB$ | async"
+                        [contributers]="contributers$ | async"
+                        [userId]="userId$ | async"
                     ></app-sangjun-board>
                 </div>
                 <div *ngSwitchCase="boardType.filter">
