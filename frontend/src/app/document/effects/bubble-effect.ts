@@ -341,6 +341,7 @@ export class BubbleEffects {
         .map(action => action.payload).mergeMap(query => {
             return Observable.of(this.bubbleService.switchBubble(query))
                 .map(() => new BubbleAction.SwitchBubblePending(null));
+        });
 
     @Effect()
     noteLoad$: Observable<Action> = this.action$.ofType<BubbleAction.NoteLoad>(BubbleAction.NOTE_LOAD)

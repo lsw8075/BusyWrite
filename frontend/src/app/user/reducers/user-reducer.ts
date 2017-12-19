@@ -12,7 +12,7 @@ export const initialState: UserState = {
     signedIn: true,
     loading: false,
     error: '',
-    userId: 7,
+    userId: -1,
 };
 
 

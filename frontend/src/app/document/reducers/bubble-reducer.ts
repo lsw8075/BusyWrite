@@ -757,7 +757,7 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
             switchBubble(bList, sbList, cList, suggestBubbleId);
             return {...state, suggestBubbleList: sbList, bubbleList: bList, commentList: cList, loading: false};
         }
-        ase fromBubble.SWITCH_BUBBLE_ERROR:
+        case fromBubble.SWITCH_BUBBLE_ERROR:
             return {...state, loading: false, error: action.payload};
         case fromBubble.OTHERS_SWITCH_BUBBLE:
 
