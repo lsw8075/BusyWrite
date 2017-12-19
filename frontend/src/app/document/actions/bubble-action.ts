@@ -485,7 +485,9 @@ export const EDIT_COMMENT_ON_BUBBLE_ERROR = '[Comment on Bubble] edit discard';
 export const OTHERS_EDIT_COMMENT_ON_BUBBLE = '[Comment on Bubble] others edit suggest';
 export class EditCommentOnBubble implements Action {
     readonly type = EDIT_COMMENT_ON_BUBBLE;
-    constructor(public payload: number) {}
+    constructor(public payload:{
+            commentId: number,
+            content: string}) {}
 }
 export class EditCommentOnBubblePending implements Action {
     readonly type = EDIT_COMMENT_ON_BUBBLE_PENDING;
@@ -1344,6 +1346,10 @@ export type Actions =
   | AddContributerRequest
   | AddContributerRequestSuccess
   | AddContributerRequestFail
+  | EditCommentOnBubble
+  | EditCommentOnBubblePending
+  | EditCommentOnBubbleComplete
+  | EditCommentOnBubbleError
 
 
   // UI

@@ -3,6 +3,7 @@ import { EventSangjunBoardService } from '../../../services/event/event-sangjun-
 
 import { Bubble, SuggestBubble, BubbleType } from '../../../models/bubble';
 import { Comment } from '../../../models/comment';
+import { User } from '../../../../user/models/user';
 
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
@@ -25,6 +26,9 @@ export class SuggestBubbleComponent implements OnInit {
   @Input() suggestBubbles: Array<SuggestBubble>;
   @Input() comments: Array<Comment>;
   @Input() selectedSB: SuggestBubble;
+
+    @Input() contributers: Array<User>;
+    @Input() userId: number;
 
   constructor(
       private _store: Store<fromDocument.State>,

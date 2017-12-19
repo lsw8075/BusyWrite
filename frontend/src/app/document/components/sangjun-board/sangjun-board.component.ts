@@ -4,6 +4,7 @@ import { EventSangjunBoardService } from '../../services/event/event-sangjun-boa
 import { BubbleService } from '../../services/bubble.service';
 import { Bubble, SuggestBubble, BubbleType } from '../../models/bubble';
 import { Comment } from '../../models/comment';
+import { User } from '../../../user/models/user';
 
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
@@ -29,6 +30,8 @@ export class SangjunBoardComponent implements OnInit, OnDestroy {
     @Input() suggestBubbles: Array<SuggestBubble>;
     @Input() comments: Array<Comment>;
     @Input() selectedSB: SuggestBubble;
+    @Input() contributers: Array<User>;
+    @Input() userId: number;
 
     isOBChecked = true;
     isSBChecked = true;
