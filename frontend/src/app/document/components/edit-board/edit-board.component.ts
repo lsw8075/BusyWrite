@@ -162,7 +162,7 @@ export class EditBoardComponent implements OnInit, OnDestroy {
     }
 
     public toBubble(note: Note) {
-
+        this._store.dispatch(new BubbleAction.ExportNoteAsBubble(note));
     }
 
 

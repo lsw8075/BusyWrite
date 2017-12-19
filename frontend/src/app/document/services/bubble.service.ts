@@ -854,31 +854,31 @@ export class BubbleService implements OnDestroy {
         this._socket.send(m);
     }
 
-    public exportNoteAsBubble(parentId: number, loc: number, noteId: number) {
+    public exportNoteAsBubble(parentId: number, loc: number, content: string) {
         const m = {'header': 'export_note_as_bubble',
             'previous_request': this.previousRequestId,
-            'body': {'parent_id': parentId, 'location': loc, 'note_id': noteId}};
+            'body': {'parent_id': parentId, 'location': loc, 'content': content}};
         this._socket.send(m);
     }
 
-    public exportNoteAsSuggestBubble(bindedBubbleId: number, noteId: number) {
+    public exportNoteAsSuggestBubble(bindedBubbleId: number, content: string) {
         const m = {'header': 'export_note_as_suggest_bubble',
             'previous_request': this.previousRequestId,
-            'body': {'binded_bubble_id': bindedBubbleId, 'note_id': noteId}};
+            'body': {'binded_bubble_id': bindedBubbleId, 'content': content}};
         this._socket.send(m);
     }
 
-    public exportNoteAsCommentOnBubble(bindedBubbleId: number, noteId: number) {
+    public exportNoteAsCommentOnBubble(bindedBubbleId: number, content: string) {
         const m = {'header': 'export_note_as_comment_on_bubble',
             'previous_request': this.previousRequestId,
-            'body': {'binded_bubble_id': bindedBubbleId, 'note_id': noteId}};
+            'body': {'binded_bubble_id': bindedBubbleId, 'content': content}};
         this._socket.send(m);
     }
 
-    public exportNoteAsCommentOnSuggestBubble(bindedSuggestBubbleId: number, noteId: number) {
+    public exportNoteAsCommentOnSuggestBubble(bindedSuggestBubbleId: number, content: string) {
         const m = {'header': 'export_note_as_comment_on_suggest_bubble',
             'previous_request': this.previousRequestId,
-            'body': {'binded_suggest_bubble_id': bindedSuggestBubbleId, 'note_id': noteId}};
+            'body': {'binded_suggest_bubble_id': bindedSuggestBubbleId, 'content': content}};
         this._socket.send(m);
     }
 
