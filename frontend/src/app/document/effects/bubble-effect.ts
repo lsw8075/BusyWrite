@@ -330,7 +330,7 @@ export class BubbleEffects {
         });
 
     @Effect()
-    unvote$: Observable<Action> = this.action$.ofType<BubbleAction.UnoteOnSuggest>(BubbleAction.UNVOTE_ON_SUGGEST)
+    unvote$: Observable<Action> = this.action$.ofType<BubbleAction.UnvoteOnSuggest>(BubbleAction.UNVOTE_ON_SUGGEST)
         .map(action => action.payload).mergeMap(query => {
             return Observable.of(this.bubbleService.voteOnSuggestBubble(query))
                 .map(() => new BubbleAction.UnvoteOnSuggestPending(null));

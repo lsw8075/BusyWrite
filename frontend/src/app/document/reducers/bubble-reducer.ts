@@ -652,8 +652,9 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
             const suggestBubbleId = action.payload;
             const newBubbleList = _.cloneDeep(state.bubbleList);
             const newSuggestBubbleList = _.cloneDeep(state.suggestBubbleList);
-            switchBubble(newBubbleList, newSuggestBubbleList, suggestBubbleId);
-            return {...state, loading: false, bubbleList: newBubbleList, suggestBubbleList: newSuggestBubbleList, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
+            const newCommentList = _.cloneDeep(state.commentList);
+            switchBubble(newBubbleList, newSuggestBubbleList, newCommentList, suggestBubbleId);
+            return {...state, loading: false, bubbleList: newBubbleList, suggestBubbleList: newSuggestBubbleList, commentList: newCommentList, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
 
         }
         case fromBubble.SWITCH_BUBBLE_ERROR:

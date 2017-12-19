@@ -1,6 +1,9 @@
 // space for only! pure functions
 import { Bubble, BubbleType, InternalBubble, LeafBubble, SuggestBubble } from '../models/bubble';
+import { Comment } from '../models/comment';
 import { MenuType } from '../services/event/event-bubble.service';
+
+import * as _ from 'lodash';
 
 export function getSuggestBubbleById(suggestBubbleList: Array<SuggestBubble>, id: number): SuggestBubble {
     const sbList = suggestBubbleList.filter((sb) => (sb.id === id));
@@ -356,20 +359,20 @@ export function switchBubble(bubbleList: Array<Bubble>, suggestBubbleList: Array
         console.log(suggestBubbleList);
         console.log(commentList);
         console.log(suggestBubbleId);
-        const origSuggestBubble = getSuggestBubbleById(suggestBubbleList, suggestBubbleId);
+        const origSuggestBubble = getSuggestBubbleById(suggestBubbleList, suggestBubbleId) as SuggestBubble;
         const bindedBubbleId = origSuggestBubble.bindId;
-        const origBindedBubble = getBubbleById(bubbleList, bindedBubbleId);
+        const origBindedBubble = getBubbleById(bubbleList, bindedBubbleId) as LeafBubble;
         // exchange content
         const tempBindedBubbleContent = origBindedBubble.content;
         origBindedBubble.content = origSuggestBubble.content;
         origSuggestBubble.content = tempBindedBubbleContent;
         // exchange thumbUps
         const tempBindedBubbleThumbUps = origBindedBubble.thumbUps;
-        newBindedBubble.thumbUps = origSuggestBubble.thumbUps;
-        newSuggestBubble.thumbUps = tempBindedBubbleThumbUps;
+        origBindedBubble.thumbUps = origSuggestBubble.thumbUps;
+        origSuggestBubble.thumbUps = tempBindedBubbleThumbUps;
         // exchange comments
         const newCommentList = [];
-        for (comment of commentList) {
+        for (const comment of commentList) {
             const newComment = _.cloneDeep(comment);
             if (comment.bubbleId === origSuggestBubble.id) {
                 newComment.bubbleId = origBindedBubble.id;
@@ -379,7 +382,7 @@ export function switchBubble(bubbleList: Array<Bubble>, suggestBubbleList: Array
             }
             newCommentList.push(newComment);
         }
-        commentList = _.cloneDeep.newCommentList;
+        commentList = _.cloneDeep(newCommentList);
         console.log('[after switch]');
         console.log(bubbleList);
         console.log(suggestBubbleList);
