@@ -67,7 +67,7 @@
                     Note
                 </div>
             </ng-template>
-            <div *ngIf="notes$ | async as notes " class="container">
+            <div *ngIf="notes">
                 <accordion>
                     <div *ngFor="let note of notes">
                         <accordion-group #group>
@@ -79,11 +79,11 @@
                             </span>
                             <span class="summary">{{note.getSummary()}}</span>
                             <span class="badge float-right pull-right">
-                                <button (click)="deleteNote(note)" type="button" class="btn btn-secondary btn-sm hvr-sweep-to-right">
+                                <button (click)="deleteNote(note)" type="button" class="btn btn-secondary btn-sm hvr-sweep-to-right" appStopClickPropagation>
                                 <i tooltip="delete note" class="fa fa-fw fa-times"></i>
                                 </button>
-                                <button (click)="toBubble(note)" type="button" class="btn btn-secondary btn-sm hvr-sweep-to-right">
-                                <i tooltip="send to edit board" class="fa fa-fw fa-pencil"></i>
+                                <button (click)="toBubble(note)" type="button" class="btn btn-secondary btn-sm hvr-sweep-to-right" appStopClickPropagation>
+                                    <i tooltip="send to edit board" class="fa fa-fw fa-pencil"></i>
                                 </button>
                             </span>
                             </div>

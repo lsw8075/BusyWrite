@@ -990,6 +990,73 @@ export class OthersUnvoteOnSuggest implements Action {
     constructor(public payload: number) {}
 }
 
+
+export const NOTE_LOAD = '[Note] load';
+export const NOTE_LOAD_COMPLETE = '[Note] load complete';
+export const NOTE_LOAD_ERROR = '[Note] load error';
+
+export const NOTE_CREATE = '[Note] create';
+export const NOTE_CREATE_COMPLETE = '[Note] create complete';
+export const NOTE_CREATE_ERROR = '[Note] create error';
+
+export const NOTE_EDIT = '[Note] edit';
+export const NOTE_EDIT_COMPLETE = '[Note] edit complete';
+export const NOTE_EDIT_ERROR = '[Note] edit error';
+
+export const NOTE_DELETE = '[Note] delete';
+export const NOTE_DELETE_COMPLETE = '[Note] delete complete';
+export const NOTE_DELETE_ERROR = '[Note] delete error';
+
+export class NoteLoad implements Action {
+    readonly type = NOTE_LOAD;
+    constructor() {}
+}
+export class NoteLoadComplete implements Action {
+    readonly type = NOTE_LOAD_COMPLETE;
+    constructor(public payload: Note[]) {}
+}
+export class NoteLoadError implements Action {
+    readonly type = NOTE_LOAD_ERROR;
+    constructor(public payload: string) {}
+}
+export class NoteCreate implements Action {
+    readonly type = NOTE_CREATE;
+    constructor() {}
+}
+export class NoteCreateComplete implements Action {
+    readonly type = NOTE_CREATE_COMPLETE;
+    constructor(public payload: Note) {}
+}
+export class NoteCreateError implements Action {
+    readonly type = NOTE_CREATE_ERROR;
+    constructor(public payload: string) {}
+}
+export class NoteEdit implements Action {
+    readonly type = NOTE_EDIT;
+    constructor(public payload: Note) {}
+}
+export class NoteEditComplete implements Action {
+    readonly type = NOTE_EDIT_COMPLETE;
+    constructor() {}
+}
+export class NoteEditError implements Action {
+    readonly type = NOTE_EDIT_ERROR;
+    constructor(public payload: string) {}
+}
+export class NoteDelete implements Action {
+    readonly type = NOTE_DELETE;
+    constructor(public payload: Note) {}
+}
+export class NoteDeleteComplete implements Action {
+    readonly type = NOTE_DELETE_COMPLETE;
+    constructor() {}
+}
+export class NoteDeleteError implements Action {
+    readonly type = NOTE_DELETE_ERROR;
+    constructor(public payload: string) {}
+}
+
+
 export const EXPORT_NOTE_AS_BUBBLE = '[Note] export as bubble';
 export const EXPORT_NOTE_AS_BUBBLE_PENDING = '[Note] export as bubble pending';
 export const EXPORT_NOTE_AS_BUBBLE_COMPLETE = '[Note] export as bubble complete';
@@ -997,10 +1064,7 @@ export const EXPORT_NOTE_AS_BUBBLE_ERROR = '[Note] export as bubble error';
 export const OTHERS_EXPORT_NOTE_AS_BUBBLE = '[Note] others export as bubble';
 export class ExportNoteAsBubble implements Action {
     readonly type = EXPORT_NOTE_AS_BUBBLE;
-    constructor(public payload: {
-        parentId: number,
-        loc: number,
-        noteId: number}) {}
+    constructor(public payload: Note) {}
 }
 export class ExportNoteAsBubblePending implements Action {
     readonly type = EXPORT_NOTE_AS_BUBBLE_PENDING;
@@ -1028,7 +1092,7 @@ export class ExportNoteAsSuggest implements Action {
     readonly type = EXPORT_NOTE_AS_SUGGEST;
     constructor(public payload: {
         bindBubbleId: number,
-        noteId: number}) {}
+        content: string}) {}
 }
 export class ExportNoteAsSuggestPending implements Action {
     readonly type = EXPORT_NOTE_AS_SUGGEST_PENDING;
@@ -1056,7 +1120,7 @@ export class ExportNoteAsCommentOnBubble implements Action {
     readonly type = EXPORT_NOTE_AS_COMMENT_ON_BUBBLE;
     constructor(public payload: {
         bindBubbleId: number,
-        noteId: number}) {}
+        content: string}) {}
 }
 export class ExportNoteAsCommentOnBubblePending implements Action {
     readonly type = EXPORT_NOTE_AS_COMMENT_ON_BUBBLE_PENDING;
@@ -1084,7 +1148,7 @@ export class ExportNoteAsCommentOnSuggest implements Action {
     readonly type = EXPORT_NOTE_AS_COMMENT_ON_SUGGEST;
     constructor(public payload: {
         bindSuggestBubbleId: number,
-        noteId: number}) {}
+        content: string}) {}
 }
 export class ExportNoteAsCommentOnSuggestPending implements Action {
     readonly type = EXPORT_NOTE_AS_COMMENT_ON_SUGGEST_PENDING;
@@ -1320,6 +1384,18 @@ export type Actions =
   | UnvoteOnSuggestComplete
   | UnvoteOnSuggestError
   | OthersUnvoteOnSuggest
+  | NoteLoad
+  | NoteLoadComplete
+  | NoteLoadError
+  | NoteCreate
+  | NoteCreateComplete
+  | NoteCreateError
+  | NoteEdit
+  | NoteEditComplete
+  | NoteEditError
+  | NoteDelete
+  | NoteDeleteComplete
+  | NoteDeleteError
   | ExportNoteAsBubble
   | ExportNoteAsBubblePending
   | ExportNoteAsBubbleComplete

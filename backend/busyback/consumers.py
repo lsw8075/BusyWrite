@@ -1506,13 +1506,13 @@ def ws_receive(message):
     ####################################
 
     elif command == 'export_note_as_bubble':
-        if set(body.keys()) != set(('parent_id', 'location', 'note_id' )):
+        if set(body.keys()) != set(('parent_id', 'location', 'content' )):
             message.reply_channel.send({"text":
                     json.dumps({'header': command, 'accept': 'False', 'body': 'body does not follow format'})})
             return
         try:
-            get = do_export_note_to_normal(previous_state, message.user.id, int(document_id),
-                    int(body['parent_id']), int(body['location']), int(body['note_id']))
+            get = do_create_normal_bubble(previous_state, message.user.id, int(document_id),
+                    int(body['parent_id']), int(body['location']), False, str(body['content']))
         except BubbleDoesNotExistError:
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False',
@@ -1558,13 +1558,13 @@ def ws_receive(message):
     #######################################
 
     elif command == 'export_note_as_suggest_bubble':
-        if set(body.keys()) != set(('binded_bubble_id', 'note_id' )):
+        if set(body.keys()) != set(('binded_bubble_id', 'content' )):
             message.reply_channel.send({"text":
                     json.dumps({'header': command, 'accept': 'False', 'body': 'body does not follow format'})})
             return
         try:
-            get = do_export_note_to_suggest(previous_state, message.user.id, int(document_id),
-                    int(body['binded_bubble_id']), int(body['note_id']))
+            get = do_create_suggest_bubble(previous_state, message.user.id, int(document_id),
+                    int(body['binded_bubble_id']), str(body['content']))
         except BubbleDoesNotExistError:
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False',
@@ -1600,13 +1600,13 @@ def ws_receive(message):
     #################################################
 
     elif command == 'export_note_as_comment_under_bubble':
-        if set(body.keys()) != set(('binded_bubble_id', 'note_id' )):
+        if set(body.keys()) != set(('binded_bubble_id', 'content' )):
             message.reply_channel.send({"text":
                     json.dumps({'header': command, 'accept': 'False', 'body': 'body does not follow format'})})
             return
         try:
-            get = do_export_note_to_comment_under_normal(previous_state, message.user.id, int(document_id),
-                    int(body['binded_bubble_id']), int(body['note_id']))
+            get = do_create_comment_under_normal(previous_state, message.user.id, int(document_id),
+                    int(body['binded_bubble_id']), str(body['content']))
         except BubbleDoesNotExistError:
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False',
@@ -1638,13 +1638,13 @@ def ws_receive(message):
     ##################################################
 
     elif command == 'export_note_as_comment_under_suggest_bubble':
-        if set(body.keys()) != set(('binded_suggest_bubble_id', 'note_id' )):
+        if set(body.keys()) != set(('binded_suggest_bubble_id', 'comment' )):
             message.reply_channel.send({"text":
                     json.dumps({'header': command, 'accept': 'False', 'body': 'body does not follow format'})})
             return
         try:
-            get = do_export_note_to_comment_under_normal(previous_state, message.user.id, int(document_id),
-                    int(body['binded_suggest_bubble_id']), int(body['note_id']))
+            get = do_create_comment_under_suggest(previous_state, message.user.id, int(document_id),
+                    int(body['binded_suggest_bubble_id']), str(body['content']))
         except BubbleDoesNotExistError:
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False',

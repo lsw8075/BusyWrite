@@ -93,7 +93,9 @@
                     </app-view-board>
                 </div>
                 <div *ngSwitchCase="boardType.edit">
-                    <app-edit-board></app-edit-board>
+                    <app-edit-board
+                        [notes]="notes$ | async"
+                    ></app-edit-board>
                 </div>
                 <div *ngSwitchCase="boardType.suggest">
                     <app-sangjun-board
