@@ -1,6 +1,9 @@
 // space for only! pure functions
 import { Bubble, BubbleType, InternalBubble, LeafBubble, SuggestBubble } from '../models/bubble';
+import { Comment } from '../models/comment';
 import { MenuType } from '../services/event/event-bubble.service';
+
+import * as _ from 'lodash';
 
 export function getSuggestBubbleById(suggestBubbleList: Array<SuggestBubble>, id: number): SuggestBubble {
     const sbList = suggestBubbleList.filter((sb) => (sb.id === id));
@@ -349,13 +352,42 @@ export function splitBubble(bubbleList: Array<Bubble>, id: number, splitBubbleLi
     }
 }
 
-export function switchBubble(bubbleList: Array<Bubble>, suggestBubbleList: Array<SuggestBubble>, suggestBubbleId: number) {
+export function switchBubble(bubbleList: Array<Bubble>, suggestBubbleList: Array<SuggestBubble>, commentList: Array<Comment>, suggestBubbleId: number) {
     try {
         console.log('[before switch]');
         console.log(bubbleList);
         console.log(suggestBubbleList);
+        console.log(commentList);
         console.log(suggestBubbleId);
+        const origSuggestBubble = getSuggestBubbleById(suggestBubbleList, suggestBubbleId) as SuggestBubble;
+        const bindedBubbleId = origSuggestBubble.bindId;
+        const origBindedBubble = getBubbleById(bubbleList, bindedBubbleId) as LeafBubble;
+        // exchange content
+        const tempBindedBubbleContent = origBindedBubble.content;
+        origBindedBubble.content = origSuggestBubble.content;
+        origSuggestBubble.content = tempBindedBubbleContent;
+        // exchange thumbUps
+        const tempBindedBubbleThumbUps = origBindedBubble.thumbUps;
+        origBindedBubble.thumbUps = origSuggestBubble.thumbUps;
+        origSuggestBubble.thumbUps = tempBindedBubbleThumbUps;
+        // exchange comments
+        const newCommentList = [];
+        for (const comment of commentList) {
+            const newComment = _.cloneDeep(comment);
+            if (comment.bubbleId === origSuggestBubble.id) {
+                newComment.bubbleId = origBindedBubble.id;
+            } else if (comment.bubbleId === origBindedBubble.id) {
+                const newComment = _.cloneDeep(comment);
+                newComment.bubbleId = origSuggestBubble.id;
+            }
+            newCommentList.push(newComment);
+        }
+        commentList = _.cloneDeep(newCommentList);
         console.log('[after switch]');
+        console.log(bubbleList);
+        console.log(suggestBubbleList);
+        console.log(commentList);
+        console.log(suggestBubbleId);
     } catch (err) {
         console.log(err);
     }
