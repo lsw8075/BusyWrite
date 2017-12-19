@@ -359,17 +359,17 @@ export function switchBubble(bubbleList: Array<Bubble>, suggestBubbleList: Array
         const origSuggestBubble = getSuggestBubbleById(suggestBubbleList, suggestBubbleId);
         const bindedBubbleId = origSuggestBubble.bindId;
         const origBindedBubble = getBubbleById(bubbleList, bindedBubbleId);
-        const newBindedBubble = _.cloneDeep(bindedBubble);
-        const newSuggeestBubble = _.cloneDeep(suggestBubble);
         // exchange content
-        const newBindedBubble.content = origSuggestBubble.content;
-        const newSuggestBubble.content = origBindedBubble.content;
+        const tempBindedBubbleContent = origBindedBubble.content;
+        origBindedBubble.content = origSuggestBubble.content;
+        origSuggestBubble.content = tempBindedBubbleContent;
         // exchange thumbUps
-        const newBindedBubble.thumbUps = origSuggestBubble.thumbUps;
-        const newSuggestBubble.thumbUps = origBindedBubble.thumbUps;
+        const tempBindedBubbleThumbUps = origBindedBubble.thumbUps;
+        newBindedBubble.thumbUps = origSuggestBubble.thumbUps;
+        newSuggestBubble.thumbUps = tempBindedBubbleThumbUps;
         // exchange comments
         const newCommentList = [];
-        for (comment for commentList) {
+        for (comment of commentList) {
             const newComment = _.cloneDeep(comment);
             if (comment.bubbleId === origSuggestBubble.id) {
                 newComment.bubbleId = origBindedBubble.id;
