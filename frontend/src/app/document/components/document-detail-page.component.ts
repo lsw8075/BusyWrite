@@ -14,6 +14,7 @@ import { Board, BoardType, BoardLocation } from '../models/board';
 import { Document } from '../../file/models/document';
 import { User } from '../../user/models/user';
 import { MenuType } from './service';
+import { Note } from '../models/note';
 
 import * as fromUser from '../../user/reducers/reducer';
 import * as fromDocument from '../reducers/reducer';
@@ -67,6 +68,7 @@ export class DocumentDetailPageComponent implements OnInit {
     connectors$: Observable<Array<User>>;
     contributers$: Observable<Array<User>>;
 
+    notes$: Observable<Array<Note>>;
 
     addContributerModalRef: BsModalRef;
     allContributerModalRef: BsModalRef;
@@ -122,6 +124,8 @@ export class DocumentDetailPageComponent implements OnInit {
         this._store.select(fromDocument.getDocumentTitle).subscribe(title => {
             this.documentTitle = title;
         });
+
+        this.notes$ = this._store.select(fromDocument.getNotes);
 
         this.contributers$ = this._store.select(fromDocument.getDocumentContributers);
         this.connectors$ = this._store.select(fromDocument.getDocumentConnectors);
@@ -190,7 +194,7 @@ export class DocumentDetailPageComponent implements OnInit {
     }
 
     public createNote(): void {
-
+        this._store.dispatch(new BubbleAction.NoteCreate());
     }
 
     public isBoardActive(board: Board): boolean {

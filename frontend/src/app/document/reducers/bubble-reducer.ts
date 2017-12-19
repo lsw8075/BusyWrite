@@ -113,6 +113,10 @@ export function BubbleReducer(state: BubbleState = initialState, action: fromBub
         case fromBubble.CREATE_SUGGEST: case fromBubble.CREATE_SUGGEST_COMPLETE: case fromBubble.CREATE_SUGGEST_ERROR:
         case fromBubble.EDIT_SUGGEST: case fromBubble.EDIT_SUGGEST_COMPLETE: case fromBubble.EDIT_SUGGEST_ERROR:
         case fromBubble.EDIT_SUGGEST_DISCARD: case fromBubble.EDIT_SUGGEST_DISCARD_COMPLETE:
+        case fromBubble.NOTE_LOAD: case fromBubble.NOTE_LOAD_COMPLETE: case fromBubble.NOTE_LOAD_ERROR:
+        case fromBubble.NOTE_CREATE: case fromBubble.NOTE_CREATE_COMPLETE: case fromBubble.NOTE_CREATE_ERROR:
+        case fromBubble.NOTE_EDIT: case fromBubble.NOTE_EDIT_COMPLETE: case fromBubble.NOTE_EDIT_ERROR:
+        case fromBubble.NOTE_DELETE: case fromBubble.NOTE_DELETE_COMPLETE: case fromBubble.NOTE_DELETE_ERROR:
         case fromBubble.EXPORT_NOTE_AS_BUBBLE: case fromBubble.EXPORT_NOTE_AS_BUBBLE_COMPLETE: case fromBubble.EXPORT_NOTE_AS_BUBBLE_ERROR: case fromBubble.OTHERS_EXPORT_NOTE_AS_BUBBLE:
         case fromBubble.EXPORT_NOTE_AS_SUGGEST: case fromBubble.EXPORT_NOTE_AS_SUGGEST_COMPLETE: case fromBubble.EXPORT_NOTE_AS_SUGGEST_ERROR: case fromBubble.OTHERS_EXPORT_NOTE_AS_SUGGEST:
         case fromBubble.EXPORT_NOTE_AS_COMMENT_ON_BUBBLE: case fromBubble.EXPORT_NOTE_AS_COMMENT_ON_BUBBLE_COMPLETE: case fromBubble.EXPORT_NOTE_AS_COMMENT_ON_BUBBLE_ERROR: case fromBubble.OTHERS_EXPORT_NOTE_AS_COMMENT_ON_BUBBLE:
@@ -390,7 +394,7 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
             const createIds = _.cloneDeep(state.createEditBubbleIds);
             const index = createIds.indexOf(bubbleId);
             if (createIds.indexOf(bubbleId) > -1) {
-                createIds.splice(index, 1);        
+                createIds.splice(index, 1);
             }
             return {...state, bubbleList: newBubbleList, createEditBubbleIds: createIds, loading: false, editBubbleId: -1, editBubbleString: ""};
         }
@@ -414,7 +418,7 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
                 // delete bubble
                 const newBubbleList = _.cloneDeep(state.bubbleList);
                 deleteBubble(newBubbleList, bubbleId);
-                createIds.splice(index, 1);        
+                createIds.splice(index, 1);
                 return {...state, bubbleList: newBubbleList, createEditBubbleIds: createIds, loading: false, editBubbleId: -1, editBubbleString: ""};
             } else {
                 const content = action.payload.content;
@@ -644,7 +648,42 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
         case fromBubble.EDIT_SUGGEST_ERROR:
             return {...state, loading: false, error: action.payload, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
 
-        
+
+        /***************/
+        /*     NOTE    */
+        /***************/
+
+        case fromBubble.NOTE_LOAD:
+            return {...state, loading: true};
+        case fromBubble.NOTE_LOAD_COMPLETE:
+            return {...state, noteList: action.payload};
+        case fromBubble.NOTE_CREATE_ERROR:
+            return {...state, error: action.payload};
+        case fromBubble.NOTE_CREATE:
+            return {...state, loading: true};
+        case fromBubble.NOTE_CREATE_COMPLETE: {
+            const newNotes = [...state.noteList];
+            newNotes.push(action.payload);
+            return {...state, loading: false, noteList: newNotes};
+        }
+        case fromBubble.NOTE_CREATE_ERROR:
+            return {...state, error: action.payload};
+        case fromBubble.NOTE_EDIT:
+            return {...state, loading: true};
+        case fromBubble.NOTE_EDIT_COMPLETE:
+            return {...state, loading: false};
+        case fromBubble.NOTE_EDIT_ERROR:
+            return {...state, error: action.payload};
+        // case fromBubble.NOTE_DELETE:{
+        //     const newNotes = [...state.noteList];
+        //     newNotes.filter(n => n.id !== action.payload.id);
+        //     return {...state, loading: false, noteList: newNotes};
+        // }
+        // case fromBubble.NOTE_DELETE_COMPLETE:
+        //     return {...state, loading: false};
+        // case fromBubble.NOTE_DELETE_ERROR:
+        //     return {...state, error: action.payload};
+
         /***************/
         /* EXPORT NOTE */
         /***************/
@@ -664,8 +703,8 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
             createBubble(newBubbleList, newBubble);
             return {...state, bubbleList: newBubbleList};
         }
- 
-        case fromBubble.EXPORT_NOTE_AS_SUGGEST: 
+
+        case fromBubble.EXPORT_NOTE_AS_SUGGEST:
             return {...state, loading: true}
         case fromBubble.EXPORT_NOTE_AS_SUGGEST_COMPLETE: {
             const suggestBubble = action.payload;
@@ -681,7 +720,7 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
             newSuggestBubbleList.push(suggestBubble);
             return {...state, suggestBubbleList: newSuggestBubbleList};
         }
- 
+
         case fromBubble.EXPORT_NOTE_AS_COMMENT_ON_BUBBLE:
             return {...state, loading: true}
         case fromBubble.EXPORT_NOTE_AS_COMMENT_ON_BUBBLE_COMPLETE: {
@@ -698,7 +737,7 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
             newCommentList.push(comment);
             return {...state, commentList: newCommentList};
         }
-        
+
         case fromBubble.EXPORT_NOTE_AS_COMMENT_ON_SUGGEST:
             return {...state, loading: true}
         case fromBubble.EXPORT_NOTE_AS_COMMENT_ON_SUGGEST_COMPLETE: {
@@ -715,7 +754,7 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
             newCommentList.push(comment);
             return {...state, commentList: newCommentList};
         }
-        
+
         default:
             console.log('this should not be called', state, action);
             return state;

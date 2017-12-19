@@ -73,6 +73,9 @@ export const getSangjunBubble = createSelector(getSangjunBoardState, (state: San
 export const getSuggestBubbles = createSelector(getBubbleState, (state: BubbleState) => state.suggestBubbleList);
 export const getComments = createSelector(getBubbleState, (state: BubbleState) => state.commentList);
 
+// notes
+export const getNotes= createSelector(getBubbleState, (state: BubbleState) => state.noteList);
+
 // edit board
 export const getUserState = createFeatureSelector<State>('user');
 
