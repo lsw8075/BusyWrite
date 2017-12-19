@@ -322,6 +322,25 @@ export class BubbleEffects {
                 .map(() => new BubbleAction.HideSuggestPending(null));
         });
 
+    @Effect()
+    vote$: Observable<Action> = this.action$.ofType<BubbleAction.VoteOnSuggest>(BubbleAction.VOTE_ON_SUGGEST)
+        .map(action => action.payload).mergeMap(query => {
+            return Observable.of(this.bubbleService.voteOnSuggestBubble(query))
+                .map(() => new BubbleAction.VoteOnSuggestPending(null));
+        });
+
+    @Effect()
+    unvote$: Observable<Action> = this.action$.ofType<BubbleAction.UnvoteOnSuggest>(BubbleAction.UNVOTE_ON_SUGGEST)
+        .map(action => action.payload).mergeMap(query => {
+            return Observable.of(this.bubbleService.voteOnSuggestBubble(query))
+                .map(() => new BubbleAction.UnvoteOnSuggestPending(null));
+        });
+
+    @Effect()
+    switchBubble$: Observable<Action> = this.action$.ofType<BubbleAction.SwitchBubble>(BubbleAction.SWITCH_BUBBLE)
+        .map(action => action.payload).mergeMap(query => {
+            return Observable.of(this.bubbleService.switchBubble(query))
+                .map(() => new BubbleAction.SwitchBubblePending(null));
 
     @Effect()
     noteLoad$: Observable<Action> = this.action$.ofType<BubbleAction.NoteLoad>(BubbleAction.NOTE_LOAD)

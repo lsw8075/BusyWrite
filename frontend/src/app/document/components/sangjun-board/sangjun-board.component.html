@@ -1,9 +1,15 @@
 <div *ngIf="bubble" class="container">
     <div *ngIf="selectedSB">
-        <app-suggest-bubble [selectedSB]="selectedSB" [bubble]="bubble" [bubbleList]="bubbleList" [suggestBubbles]="suggestBubbles" [comments]="comments"
+        <app-suggest-bubble
+            [selectedSB]="selectedSB"
+            [bubble]="bubble"
+            [bubbleList]="bubbleList"
+            [suggestBubbles]="suggestBubbles"
+            [comments]="comments"
+            [contributers]="contributers"
+            [userId]="userId">
             ></app-suggest-bubble>
     </div>
-
     <div *ngIf="!selectedSB">
         <h3>Bubble {{bubble.id}}'s Details</h3>
 
@@ -69,9 +75,13 @@
             <h4>Comments</h4>
             <app-comment
                 [bubble]="bubble"
-                [suggestBubble]=""
-                [comments]="comments">
-            </app-comment>
+                [selectedSB]=""
+                [comments]="comments"
+                [bubbleList]="bubbleList"
+                [suggestBubbles]="suggestBubbles"
+                [contributers]="contributers"
+                [userId]="userId">
+            ></app-comment>
         </div>
     </div>
 </div>

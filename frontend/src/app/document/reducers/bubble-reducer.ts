@@ -119,6 +119,18 @@ export function BubbleReducer(state: BubbleState = initialState, action: fromBub
         case fromBubble.EDIT_SUGGEST_DISCARD: case fromBubble.EDIT_SUGGEST_DISCARD_COMPLETE:
         case fromBubble.SWITCH_BUBBLE: case fromBubble.SWITCH_BUBBLE_COMPLETE: case fromBubble.SWITCH_BUBBLE_ERROR: case fromBubble.OTHERS_SWITCH_BUBBLE:
         case fromBubble.HIDE_SUGGEST: case fromBubble.HIDE_SUGGEST_COMPLETE: case fromBubble.HIDE_SUGGEST_ERROR: case fromBubble.OTHERS_HIDE_SUGGEST:
+
+        case fromBubble.VOTE_ON_SUGGEST:
+        case fromBubble.VOTE_ON_SUGGEST_COMPLETE:
+        case fromBubble.VOTE_ON_SUGGEST_ERROR:
+        case fromBubble.OTHERS_VOTE_ON_SUGGEST:
+        case fromBubble.UNVOTE_ON_SUGGEST:
+        case fromBubble.UNVOTE_ON_SUGGEST_COMPLETE:
+        case fromBubble.UNVOTE_ON_SUGGEST_ERROR:
+        case fromBubble.OTHERS_UNVOTE_ON_SUGGEST:
+        case fromBubble.EDIT_COMMENT_ON_BUBBLE: case fromBubble.EDIT_COMMENT_ON_BUBBLE_COMPLETE: case fromBubble.EDIT_COMMENT_ON_BUBBLE_ERROR:
+
+
         case fromBubble.NOTE_LOAD: case fromBubble.NOTE_LOAD_COMPLETE: case fromBubble.NOTE_LOAD_ERROR:
         case fromBubble.NOTE_CREATE: case fromBubble.NOTE_CREATE_COMPLETE: case fromBubble.NOTE_CREATE_ERROR:
         case fromBubble.NOTE_EDIT: case fromBubble.NOTE_EDIT_COMPLETE: case fromBubble.NOTE_EDIT_ERROR:
@@ -127,6 +139,7 @@ export function BubbleReducer(state: BubbleState = initialState, action: fromBub
         case fromBubble.EXPORT_NOTE_AS_SUGGEST: case fromBubble.EXPORT_NOTE_AS_SUGGEST_COMPLETE: case fromBubble.EXPORT_NOTE_AS_SUGGEST_ERROR: case fromBubble.OTHERS_EXPORT_NOTE_AS_SUGGEST:
         case fromBubble.EXPORT_NOTE_AS_COMMENT_ON_BUBBLE: case fromBubble.EXPORT_NOTE_AS_COMMENT_ON_BUBBLE_COMPLETE: case fromBubble.EXPORT_NOTE_AS_COMMENT_ON_BUBBLE_ERROR: case fromBubble.OTHERS_EXPORT_NOTE_AS_COMMENT_ON_BUBBLE:
         case fromBubble.EXPORT_NOTE_AS_COMMENT_ON_SUGGEST: case fromBubble.EXPORT_NOTE_AS_COMMENT_ON_SUGGEST_COMPLETE: case fromBubble.EXPORT_NOTE_AS_COMMENT_ON_SUGGEST_ERROR: case fromBubble.OTHERS_EXPORT_NOTE_AS_COMMENT_ON_SUGGEST:
+
             return BubbleOperationReducer(state, action);
 
         case fromBubble.CLEAR_ERROR:
@@ -670,8 +683,9 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
             const suggestBubbleId = action.payload;
             const newBubbleList = _.cloneDeep(state.bubbleList);
             const newSuggestBubbleList = _.cloneDeep(state.suggestBubbleList);
-            switchBubble(newBubbleList, newSuggestBubbleList, suggestBubbleId);
-            return {...state, loading: false, bubbleList: newBubbleList, suggestBubbleList: newSuggestBubbleList, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
+            const newCommentList = _.cloneDeep(state.commentList);
+            switchBubble(newBubbleList, newSuggestBubbleList, newCommentList, suggestBubbleId);
+            return {...state, loading: false, bubbleList: newBubbleList, suggestBubbleList: newSuggestBubbleList, commentList: newCommentList, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
 
         }
         case fromBubble.SWITCH_BUBBLE_ERROR:
@@ -688,6 +702,65 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
         }
         case fromBubble.HIDE_SUGGEST_ERROR:
         case fromBubble.OTHERS_HIDE_SUGGEST:
+
+        case fromBubble.EDIT_COMMENT_ON_BUBBLE:
+            return {...state, loading: false, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
+        case fromBubble.EDIT_COMMENT_ON_BUBBLE_COMPLETE: {}
+            return {...state, loading: false, selectedBubbleList: [], selectedMenu: null, hoverBubbleList: []};
+        case fromBubble.EDIT_COMMENT_ON_BUBBLE_ERROR:
+
+        case fromBubble.VOTE_ON_SUGGEST:
+            return {...state, loading: true};
+        case fromBubble.VOTE_ON_SUGGEST_COMPLETE: {
+            const suggestBubbleId = action.payload;
+            const newSuggestBubbleList = _.cloneDeep(state.suggestBubbleList);
+            const suggestBubble = getSuggestBubbleById(newSuggestBubbleList, suggestBubbleId);
+            suggestBubble.thumbUps++;
+            return {...state, loading: false, suggestBubbleList: newSuggestBubbleList};
+        }
+        case fromBubble.VOTE_ON_SUGGEST_ERROR:
+            return {...state, loading: false, error: action.payload};
+        case fromBubble.OTHERS_VOTE_ON_SUGGEST: {
+            const suggestBubbleId = action.payload;
+            const newSuggestBubbleList = _.cloneDeep(state.suggestBubbleList);
+            const suggestBubble = getSuggestBubbleById(newSuggestBubbleList, suggestBubbleId);
+            suggestBubble.thumbUps++;
+            return {...state, suggestBubbleList: newSuggestBubbleList};
+        }
+
+        case fromBubble.UNVOTE_ON_SUGGEST:
+            return {...state, loading: true};
+        case fromBubble.UNVOTE_ON_SUGGEST_COMPLETE: {
+            const suggestBubbleId = action.payload;
+            const newSuggestBubbleList = _.cloneDeep(state.suggestBubbleList);
+            const suggestBubble = getSuggestBubbleById(newSuggestBubbleList, suggestBubbleId);
+            suggestBubble.thumbUps--;
+            return {...state, loading: false, suggestBubbleList: newSuggestBubbleList};
+        }
+        case fromBubble.UNVOTE_ON_SUGGEST_ERROR:
+            return {...state, loading: false, error: action.payload};
+        case fromBubble.OTHERS_UNVOTE_ON_SUGGEST: {
+            const suggestBubbleId = action.payload;
+            const newSuggestBubbleList = _.cloneDeep(state.suggestBubbleList);
+            const suggestBubble = getSuggestBubbleById(newSuggestBubbleList, suggestBubbleId);
+            suggestBubble.thumbUps--;
+            return {...state, suggestBubbleList: newSuggestBubbleList};
+        }
+
+        case fromBubble.SWITCH_BUBBLE:
+            return {...state, loading: true};
+        case fromBubble.SWITCH_BUBBLE_COMPLETE: {
+            const suggestBubbleId = action.payload;
+            const bList = _.cloneDeep(state.bubbleList);
+            const sbList = _.cloneDeep(state.suggestBubbleList);
+            const cList = _.cloneDeep(state.commentList);
+            switchBubble(bList, sbList, cList, suggestBubbleId);
+            return {...state, suggestBubbleList: sbList, bubbleList: bList, commentList: cList, loading: false};
+        }
+        ase fromBubble.SWITCH_BUBBLE_ERROR:
+            return {...state, loading: false, error: action.payload};
+        case fromBubble.OTHERS_SWITCH_BUBBLE:
+
 
 
         /***************/
@@ -795,10 +868,10 @@ function BubbleOperationReducer(state: BubbleState, action: fromBubble.Actions) 
             newCommentList.push(comment);
             return {...state, commentList: newCommentList};
         }
+
         default:
             console.log('this should not be called', state, action);
             return state;
-
 
     }
 }
