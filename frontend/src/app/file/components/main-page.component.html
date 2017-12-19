@@ -14,7 +14,7 @@
         <div class="col-sm-8">
             <ng-container *ngFor="let document of fileList$ | async">
                 <div class="list-group-item" (click)="open(document)">
-                    #{{document.id}}. {{document.title}}
+                    {{document.title}}
                 </div>
             </ng-container>
             <button type="button" class="btn btn-success" (click)="create()">Create</button>
