@@ -154,7 +154,7 @@ export class EditBoardComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy() {
-        this.notes.forEach(note => this._store.dispatch(new BubbleAction.NoteEdit(note)));
+        // this.notes.forEach(note => this._store.dispatch(new BubbleAction.NoteEdit(note)));
     }
 
     public toComment(note: Note) {

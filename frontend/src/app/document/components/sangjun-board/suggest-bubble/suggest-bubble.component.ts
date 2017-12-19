@@ -61,7 +61,7 @@ export class SuggestBubbleComponent implements OnInit {
     }
 
     clickThumbsUp() {
-        this.selectedSB.thumbUps++;
+        this._store.dispatch(new BubbleAction.VoteOnSuggest(this.selectedSB.id));
     }
 
 }
