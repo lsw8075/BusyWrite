@@ -30,3 +30,18 @@ class HttpTestCase(TestCase):
 
     def test_req_send_invitation(self):
         pass
+    
+    def test_req_note(self):
+        doc = Document.objects.create(title='asdf')
+        doc.contributors.add(self.user2)
+        doc.save()
+        self.send('POST', '1/notelist', {'content': 'new note'}, login=True, result=True)
+        note_id = self.result['id']
+        self.send('GET', '1/note/' + str(note_id), result=True)
+        self.assertEqual(self.result['content'], 'new note')
+        self.send('PUT', '1/note/' + str(note_id), {'content': 'edit note'}, result=True)
+        self.send('GET', '1/note/' + str(note_id), result=True)
+        self.assertEqual(self.result['content'], 'edit note')
+        self.send('DELETE', '1/note/' + str(note_id))
+        self.assertEqual(404, self.send('GET', '1/note/' + str(note_id)))
+

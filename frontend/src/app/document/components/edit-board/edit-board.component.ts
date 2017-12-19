@@ -25,7 +25,7 @@ import * as _ from 'lodash';
 
 export class EditBoardComponent implements OnInit, OnDestroy {
 
-    notes$: Observable<Array<Note>>;
+    @Input() notes: Array<Note>;
     editSuggests: Array<Suggest>;
     editBubbles: Array<Bubble>;
     editBubbleId: number;
@@ -144,33 +144,17 @@ export class EditBoardComponent implements OnInit, OnDestroy {
 
     }
 
-    public createNewEditItem(bubble: Bubble) {
-    // this.editItems.push(editItem);
-    // console.log('new item');
-    }
-
-    addNote() {
-    // this._noteService.addNote()
-    //   .then(note => {
-    //     this.notes.push(note);
-    //   });
-    }
-
     deleteNote(note: Note) {
-    // this._noteService.deleteNote(note)
-    //   .then(response => {
-    //     this.notes = this.notes.filter(n => n.id !== note.id);
-    //   });
+        console.log('delete note', note);
+        // this._store.dispatch(new BubbleAction.NoteDelete(note));
     }
 
     updateNote(note: Note) {
-    // this._noteService.updateNote(note).then(response => {
-    //   console.log('note changed!');
-    // });
+        // this._store.dispatch(new BubbleAction.NoteEdit(note));
     }
 
     ngOnDestroy() {
-
+        this.notes.forEach(note => this._store.dispatch(new BubbleAction.NoteEdit(note)));
     }
 
     public toComment(note: Note) {
@@ -178,7 +162,7 @@ export class EditBoardComponent implements OnInit, OnDestroy {
     }
 
     public toBubble(note: Note) {
-
+        this._store.dispatch(new BubbleAction.ExportNoteAsBubble(note));
     }
 
 
