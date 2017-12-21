@@ -18,11 +18,12 @@ class HttpTestCase(TestCase):
         # create document and check title
         self.send('POST', 'documentlist', {'title': 'new_document'}, result=True, login=True)
         doc_id = self.result['id']
-        self.send('GET', 'document', {'document_id': doc_id})
+        self.send('GET', 'document/' + str(doc_id), {'document_id': doc_id})
         doc_title = self.result['title']
         self.assertEqual(doc_title, 'new_document')
         self.send('GET', 'documentlist', {'user_id': 1})
         self.send('DELETE', 'document/' + str(doc_id))
+        self.assertEqual(404, self.send('GET', 'document/' + str(doc_id), {'document_id': doc_id}))
         pass
 
     def test_req_document_contributors(self):
@@ -34,6 +35,7 @@ class HttpTestCase(TestCase):
         salt = InvitationHash.objects.filter(document=doc).values()[0]['salt']
         self.send('GET', 'document/acceptinvitation/' + str(salt))
         self.send('GET', 'document/contributors/' + str(doc.id), result=True)
+        self.assertEqual(404, self.send('GET', 'document/contributors/100'))
         pass
 
     def test_req_note(self):
