@@ -1,0 +1,220 @@
+<div class="container-fluid">
+    <div class="row navbar navbar-expand-lg navbar-light bg-light mb-2 justify-content-between">
+        <div class="col-sm-7">
+            <ng-container *ngIf="changeTitle; then editTitle else showTitle"></ng-container>
+            <div class="btn-toolbar" role="toolbar">
+                <div class="btn-group ml-2" role="group">
+                    <ng-container *ngIf="changeTitle">
+                        <button type="button" [tooltip]="'edit finished?'" placement="bottom" class="btn btn-sm btn-outline-secondary" (click)="titleEditDone()">
+                            <i class="fa fa-check fa-fw"></i>
+                        </button>
+                    </ng-container>
+                    <ng-container *ngIf="!changeTitle">
+                        <button type="button" [tooltip]="'edit title'"  placement="bottom" class="btn btn-sm btn-outline-secondary" (click)="titleEditStart()" >
+                            <i class="fa fa-pencil fa-fw"></i>
+                        </button>
+                    </ng-container>
+
+                </div>
+                <div class="btn-group ml-2" role="group">
+                    <button type="button" [tooltip]="'add member'" (click)="addContributerOpenModal(addContributerTemplate)" placement="bottom" class="btn btn-sm btn-outline-secondary">
+                        <i class="fa fa-fw fa-address-book"></i>
+                    </button>
+                    <button type="button" [tooltip]="'see all members'" (click)="allContributerOpenModal(allContributerTemplate)" placement="bottom" class="btn btn-sm btn-outline-secondary">
+                        <i class="fa fa-fw fa-users"></i>
+                    </button>
+                </div>
+
+                <div class="btn-group mx-2" role="group">
+                    <ng-container *ngIf="activeBoard">
+                        <ng-container *ngTemplateOutlet="boardMenu; context: { $implicit: activeBoard }"></ng-container>
+                    </ng-container>
+                </div>
+            </div>
+
+            <ng-template #editTitle>
+                <input (keyup.enter)="titleEditDone()" type="text" [(ngModel)]="documentTitle">
+            </ng-template>
+
+            <ng-template #showTitle>
+                <div class="title">
+                    {{documentTitle}}
+                </div>
+            </ng-template>
+
+
+        </div>
+        <div class="col-sm-3">
+            <ng-container *ngFor="let user of connectors$ | async">
+                <span class="badge badge-secondary badge-pill" [tooltip]="user.username" placement="bottom">{{user | ContributorIcon }}</span>
+            </ng-container>
+        </div>
+        <div class="col-sm-2">
+            <button type="button" (click)="goBack()" [tooltip]="'go to main page'" placement="bottom" class="btn btn-sm btn-outline-secondary">
+                <i class="fa fa-fw fa-chevron-circle-left"></i>
+            </button>
+            <button type="button" (click)="signOut()" [tooltip]="'sign out'" placement="bottom" class="btn btn-sm btn-outline-secondary">
+                <i class="fa fa-fw fa-sign-out"></i>
+            </button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <ng-container *ngTemplateOutlet="board; context: { $implicit: leftBoard$ }"></ng-container>
+        </div>
+        <div class="col-sm-6">
+            <ng-container *ngTemplateOutlet="board; context: { $implicit: rightBoard$ }"></ng-container>
+        </div>
+    </div>
+    <div class="row">
+        <app-board-manager>
+            your board manager is Loading!
+        </app-board-manager>
+    </div>
+</div>
+
+<ng-template #board let-board$>
+    <div *ngIf="board$ | async as board">
+        <div class="board list-group-item"
+                [appBoardFocus]="board"
+                [class.activeBoard]="isBoardActive(board)" >
+            <div [ngSwitch]="board.type">
+                <div *ngSwitchCase="boardType.view">
+                    <app-view-board
+                        [board]="board"
+                        [rootBubble]="rootBubble$ | async"
+                        [bubbleList]="bubbleList$ | async"
+                        [userId]="userId$ | async"
+                        [selectedBubbleList]="selectedBubbleList$ | async"
+                        [hoverBubbleList]="hoverBubbleList$ | async"
+                        [selectedMenu]="selectedMenu$ | async"
+                        [contributers]="contributers$ | async">
+                        Your document view board is loading ...
+                    </app-view-board>
+                </div>
+                <div *ngSwitchCase="boardType.edit">
+                    <app-edit-board
+                        [notes]="notes$ | async"
+                    ></app-edit-board>
+                </div>
+                <div *ngSwitchCase="boardType.suggest">
+                    <app-sangjun-board
+                        [bubble]="sangjunBubble$ | async"
+                        [bubbleList]="bubbleList$ | async"
+                        [suggestBubbles]="suggestBubbles$ | async"
+                        [comments]="comments$ | async"
+                        [selectedSB]="selectedSB$ | async"
+                        [contributers]="contributers$ | async"
+                        [userId]="userId$ | async"
+                    ></app-sangjun-board>
+                </div>
+                <div *ngSwitchCase="boardType.filter">
+                    <app-filter-board
+                        [bubbleList]="bubbleList$ | async"
+                    ></app-filter-board>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+
+<ng-template #boardMenu let-board>
+    <div [ngSwitch]="board.type">
+        <div *ngSwitchCase="boardType.view">
+            <div [ngSwitch]="viewBoardMenu$ | async">
+                <div *ngSwitchCase="viewBoardMenuType.wrap">
+                    <button type="button" (click)="wrapBubbles()" [tooltip]="'wrap bubbles'" placement="bottom" class="btn btn-sm btn-success">
+                        <i class="fa fa-fw fa-square"></i>
+                        Wrap Bubbles
+                    </button>
+                </div>
+                <div *ngSwitchCase="viewBoardMenuType.move">
+                    click in-between bubbles to move it
+                </div>
+                <div *ngSwitchCase="viewBoardMenuType.split">
+                    splitting bubbles...
+                </div>
+                <div *ngSwitchCase="viewBoardMenuType.merge">
+                    <button type="button" (click)="mergeBubble()" [tooltip]="'move bubble'" placement="bottom" class="btn btn-sm btn-success">
+                        <i class="fa fa-compress fa-fw"></i>
+                        Merge Bubble
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div *ngSwitchCase="boardType.edit">
+            <button type="button" (click)="createNote()" [tooltip]="'create new note'" placement="bottom" class="btn btn-sm btn-success">
+                <i class="fa fa-fw fa-plus"></i>
+                Create Note
+            </button>
+        </div>
+     <!--   <div *ngSwitchCase="boardType.suggest">
+            <button type="button" [tooltip]="'create new suggest bubble'" placement="bottom" class="btn btn-sm btn-info">
+                <span class="fa-stack fa-fw">
+                    <i class="fa fa-fw fa-comment-o fa-stack-2x"></i>
+                    <i class="fa fa-fw fa-plus fa-stack-1x"></i>
+                </span>
+                Create New Suggest Bubble
+            </button>
+        </div>-->
+    </div>
+</ng-template>
+
+<ng-template #addContributerTemplate>
+    <div class="modal-header">
+        <h4 class="modal-title pull-left container">
+            Add new member to your team!
+        </h4>
+        <button type="button" class="close pull-right" aria-label="Close" (click)="addContributerModalRef.hide()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form class="form-group" #f="ngForm" (ngSubmit)="addContributer(f)" novalidate>
+            <div class="form-group">
+                <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-address-book fa-fw"></i></span>
+                <input type="text" name="username" class="form-control input-lg" placeholder="Member username" required ngModel />
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-lg btn-block btn-shadow" (click)="addContributerModalRef.hide()">Invite</button>
+        </form>
+    </div>
+</ng-template>
+
+<ng-template #allContributerTemplate>
+        <div class="modal-header">
+            <h4 class="modal-title pull-left container">
+                Contributers
+            </h4>
+            <button type="button" class="close pull-right" aria-label="Close" (click)="allContributerModalRef.hide()">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <ng-container *ngFor="let user of contributers$ | async; let i = index">
+                <ng-container *ngIf="connectors$ | async as connectors">
+                    <ng-container *ngIf="userId$ | async as userId">
+                    <div class="list-group-item text-center">
+                        <div class="row">
+                            <div class="col-sm-1">
+                                {{i+1}}
+                            </div>
+                            <div class="col-sm-4">
+                                <i class="fa fa-fw fa-user-circle" [style.color]="getUserConnectedColor(user, connectors, userId)"></i>
+                                {{user.username}}
+                            </div>
+                            <div class="col-sm-1"></div>
+                            <div class="col-sm-4">
+                                <i class="fa fa-fw fa-envelope" [style.color]="getUserConnectedColor(user, connectors, userId)"></i>
+                                {{user.email}}
+                            </div>
+                        </div>
+                    </div>
+                    </ng-container>
+                </ng-container>
+            </ng-container>
+        </div>
+    </ng-template>

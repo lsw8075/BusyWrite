@@ -1,0 +1,29 @@
+<div *ngIf=rootBubble class="jumbotron preview-container">
+    <ng-container *ngTemplateOutlet="internalBubble; context: { $implicit: rootBubble }">
+        Preview is now rendering!
+    </ng-container>
+</div>
+
+<!-- internal bubble -->
+<ng-template #internalBubble let-bubble>
+    <ng-container *ngIf="isInternal(bubble); then internal else leaf"></ng-container>
+
+    <!-- if internal -->
+    <ng-template #internal>
+        <ng-container *ngFor="let childId of bubble.childBubbleIds">
+            <ng-container *ngTemplateOutlet="internalBubble; context: { $implicit: getBubbleById(childId)}"></ng-container>
+        </ng-container>
+    </ng-template>
+
+    <!-- if leaf -->
+    <ng-template #leaf>
+       <ng-container *ngTemplateOutlet="leafBubble; context: { $implicit: bubble }"></ng-container>
+    </ng-template>
+</ng-template>
+
+<!-- leaf bubble -->
+<ng-template #leafBubble let-bubble>
+    <div class="bubble-show" [innerHTML]="bubble.content"></div>
+</ng-template>
+
+

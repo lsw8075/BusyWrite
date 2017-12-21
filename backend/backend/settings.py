@@ -25,7 +25,7 @@ SECRET_KEY = '3eo_an-r@r9$b89k7-=b$t3q7teb$)0+48ir2y^i7@#r7kc5_='
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['ec2-18-216-199-179.us-east-2.compute.amazonaws.com', 'localhost']
 
 
 # Application definition
@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 	'channels',
+    'django_extensions',
 ]
 
 CHANNEL_LAYERS = {
@@ -50,6 +51,18 @@ CHANNEL_LAYERS = {
 		"ROUTING": "busyback.urls.channel_routing",
 	},
 }
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://localhost:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        },
+        "KEY_PREFIX": "busyback"
+    }
+}
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -87,8 +100,14 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#        'ENGINE': 'django.db.backends.sqlite3',
+#        'NAME': os.path.join(BASE_DIR, 'db.sqlite3')
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'busydb',
+        'USER': 'busymanager',
+        'PASSWORD': 'busymanager',
+        'HOST': 'localhost',
+        'PORT': '',
     }
 }
 
@@ -130,3 +149,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# Sending e-mail (for verification)
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.naver.com'
+EMAIL_HOST_USER = 'snubusywrite@naver.com'
+EMAIL_HOST_PASSWORD = '2017snubusywrite'
+EMAIL_PORT = 587
+

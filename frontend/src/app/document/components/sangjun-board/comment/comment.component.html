@@ -1,0 +1,39 @@
+<div *ngIf="!selectedSB">
+    <div>
+        <table>
+            <tr *ngFor="let comment of getBubbleComments(bubble)">
+                <th>{{getUsername(comment.owner)}}</th>
+                <td class="content">
+                    <div *ngIf="editComment !== comment">
+                        {{comment.content}}
+                    </div>
+                    <div *ngIf="editComment === comment">
+                        <input (keyup.enter)="clickCompleteEditComment(comment)" type="text" [(ngModel)]="editContent">
+                    </div>
+                </td>
+                <td>
+                    <div *ngIf="editComment !== comment && userId === comment.owner">
+                        <i (click)="clickStartEditComment(comment)" class="fa fa-pencil fa-fw"></i>
+                        <i (click)="clickDeleteComment(bubble, comment)" class="fa fa-trash fa-fw"></i>
+                    </div>
+                    <div *ngIf="editComment === comment">
+                        <i (click)="clickCompleteEditComment(comment)" *ngIf="editContent" class="fa fa-check fa-fw"></i>
+                    </div>
+                </td>
+            </tr>
+            <tr *ngIf="newComment">
+                <th>{{getUsername(userId)}}</th>
+                <td class="content">
+                    <input (keyup.enter)="clickCreateComment(bubble)" type="text" [(ngModel)]="newComment.content">
+                </td>
+                <td>
+                    <i (click)="clickCreateComment(bubble)" *ngIf="newComment.content" class="fa fa-check fa-fw"></i>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<div *ngIf="selectedSB">
+    this is selectedSB commentList
+</div>

@@ -1,0 +1,50 @@
+.bubble-list {
+  box-sizing: border-box;
+  max-height: 96%;
+  position: absolute;
+  overflow-x: visible;
+  overflow-y: auto;
+}
+
+.internalBubble {
+  border-left-style: solid;
+  border-right-style: solid;
+  border-radius: 10px;
+}
+
+.leafBubble {
+  border-radius: 0px;
+  padding: 0px 2px;
+  margin: 0px 0px;
+}
+
+.placeholder {
+  padding: 5px 0px;
+  margin: none;
+}
+
+.action {
+  display: flex;
+  float: right;
+  position: absolute;
+  z-index: 10;
+  right: 0px;
+}
+
+.placeholder-bottom:hover {
+  border-top-color: blue;
+  border-top-style: solid;
+  border-top-width: 3px;
+}
+
+.placeholder-top:hover {
+  border-bottom-color: blue;
+  border-bottom-style: solid;
+  border-bottom-width: 3px;
+}
+
+.editting {
+  height: 50px;
+  resize: vertical;
+  overflow-y: auto;
+}

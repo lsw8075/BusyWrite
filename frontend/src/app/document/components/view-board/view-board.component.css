@@ -1,0 +1,14 @@
+.erase-style {
+  box-sizing: none !important;
+  line-height: inherit !important;
+  height: inherit !important;
+  outline: inherit !important;
+  overflow-y: none !important;;
+  padding: inherit !important;
+  tab-size: inherit !important;
+  -moz-tab-size: inherit !important;
+  text-align: inherit !important;
+  white-space: inherit !important;
+  word-wrap: inherit !important;
+}
+

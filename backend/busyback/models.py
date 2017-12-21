@@ -1,27 +1,7 @@
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.utils import timezone
 from .errors import *
-
-class Directory(models.Model):
-    name = models.TextField()
-    owner = models.ForeignKey(
-    	User,
-    	related_name='directories',
-    	null=False
-    )
-    parent_directory = models.ForeignKey(
-    	'Directory',
-    	related_name='child_directories',
-    	null=True # root directory has no parent
-    )
-    # need to check if this info matches Document.contributors info
-    # when user is added as contributor, or document is deleted from directory
-    child_documents = models.ManyToManyField(
-    	'Document',
-    	related_name='parent_directory'
-    )
 
 class Document(models.Model):
     title = models.TextField()
@@ -41,62 +21,74 @@ class Note(models.Model):
     owner = models.ForeignKey(
     	User,
     	related_name='notes',
-    	null=False
+    	null=False,
+        on_delete=models.CASCADE
     )
     document = models.ForeignKey(
     	'Document',
     	related_name='notes',
-    	null=False
+    	null=False,
+        on_delete=models.CASCADE
     )
 
 class Bubble(models.Model):
     content = models.TextField()
-    timestamp = models.DateTimeField()
     voters = models.ManyToManyField(
     	User,
     	related_name='voted_bubbles'
     )
+    next_comment_order = models.IntegerField(default=0)
 
     def touch(self):
-        timestamp = timezone.now()
         self.save()
-
-    def has_locked_directs(self):
-        # overrided by NormalBubble
-        return False
 
     def change_content(self, content):
         '''Change bubble's content'''
-        if self.has_locked_directs():
-            raise BubbleLockedError(self)
         self.content = content
         self.touch()
 
+    def is_voted_by(self, user):
+        return self.voters.filter(id=user.id).exists()
+
+    def vote(self, user):
+        if not self.is_voted_by(user):
+            self.voters.add(user)
+        self.save()
+
+    def unvote(self, user):
+        if self.is_voted_by(user):
+            self.voters.remove(user)
+        self.save()
+
 class NormalBubble(Bubble):
     location = models.IntegerField(null=True)
-        
     # need to check if editLockHolder and ownerWithLock are
     # contributors of the document
     edit_lock_holder = models.ForeignKey(
     	User,
     	related_name='editing_bubbles',
-    	null=True
+    	null=True,
+        on_delete=models.SET_NULL
     )
     owner_with_lock = models.ForeignKey(
     	User,
     	related_name='owning_bubbles',
-    	null=True
+    	null=True,
+        on_delete=models.SET_NULL
     )
     parent_bubble = models.ForeignKey(
     	'NormalBubble',
     	related_name='child_bubbles',
-    	null=True
+    	null=True,
+        on_delete=models.CASCADE
     )
 
     document = models.ForeignKey(
     	'Document',
     	related_name='bubbles',
+        on_delete=models.CASCADE
     )
+    deleted = models.BooleanField(default=False)
 
     def touch(self):
         super().touch()
@@ -104,11 +96,12 @@ class NormalBubble(Bubble):
             self.parent_bubble.touch()
 
     def child_count(self):
-        return len(self.child_bubbles.all().values())
+        return self.child_bubbles.count()
 
     def is_leaf(self):
         '''check if self is leaf bubble'''
-        return self.child_count() == 0
+        return (self.parent_bubble is not None and
+                self.child_count() == 0)
 
     def is_root(self):
         '''check if self is root'''
@@ -120,7 +113,7 @@ class NormalBubble(Bubble):
     # lock methods
 
     def has_locked_ancestors(self):
-        '''Check self/any ancestor bubble is locked'''
+        '''Check any ancestor bubble is locked'''
         # check self is root
         if self.is_root():
             return False
@@ -169,10 +162,11 @@ class NormalBubble(Bubble):
     # so in the view you just create with dummy location.
 
     def fetch_child(self, location):
-        return self.child_bubbles.get(location=location)
-
-    def list_children(self):
-        return list(self.child_bubbles.all().values())
+        try:
+            child = self.child_bubbles.get(location=location)
+        except NormalBubble.DoesNotExist:
+            raise InvalidLocationError(self, location)
+        return child
 
     def adjust_children_location(self, start, adjust):
         children = self.child_bubbles.all()
@@ -182,38 +176,50 @@ class NormalBubble(Bubble):
             child.save()
     
     def splice_children(self, location, splice_count=0, new_parent=None, new_location=0, splice_list=[]):
-
+        ''' Method splice_children : Bubble version of JS splice
+            first, detach splice_count children from location of internal bubble self
+            next, if new_parent is not None, insert detached children into new_parent's new_location 
+            else, just delete the children
+            finally, insert bubbles in splice_list to the location
+        '''
         # assert when self == new_parent, splice_list is empty
         if new_parent is not None and self.id == new_parent.id and splice_list != []:
             raise InternalError('invaild use of splice_children')
 
         # mark target childrens to be unaffected by adjusting
+        splice_end = location + splice_count
         for child in self.child_bubbles.all():
             if (location <= child.location and
-                child.location < location + splice_count):
-                child.location = -child.location
+                child.location < splice_end):
+                child.location = -child.location - 1
+                child.save()
 
         # adjust location (order is matter)
-        self.adjust_children_location(location + splice_count, len(splice_list) - splice_count)
+        self.adjust_children_location(splice_end, len(splice_list) - splice_count)
 
         if new_parent is not None:
-            self.adjust_children_location(new_location, splice_count)
+            new_parent.adjust_children_location(new_location, splice_count)
         
+        to_be_deleted = []
         # process target childrens
         for child in self.child_bubbles.all():
             if child.location < 0:
                 if new_parent is not None:
-                    child.location = -child.location - location + new_location
+                    child.location = -1 - child.location - location + new_location
                     child.parent_bubble = new_parent
                     child.save()
                 else:
-                    child.delete()
+                    # mark children to be deleted
+                    to_be_deleted.append(child)
 
         # add new bubbles if they exist
         for idx, child in enumerate(splice_list):
             child.location = location + idx
             child.parent_bubble = self
             child.save()
+
+        for child in to_be_deleted:
+            child.delete()
 
         return self
 
@@ -226,14 +232,13 @@ class NormalBubble(Bubble):
         return self
 
     def wrap_children(self, location, wrap_count):
-        wrapper = NormalBubble.objects.create(document=self.document, content='', timestamp=timezone.now(), location=0)
+        wrapper = NormalBubble.objects.create(document=self.document, content='', location=0)
         self.splice_children(location, wrap_count, wrapper, 0, [wrapper])
         return wrapper
 
     def pop_child(self, location):
         popped = self.fetch_child(location)
         self.splice_children(location, 1, splice_list=popped.child_bubbles.all())
-        popped.delete()
         return self
 
         
@@ -242,7 +247,8 @@ class SuggestBubble(Bubble):
     normal_bubble = models.ForeignKey(
     	'NormalBubble',
     	related_name='suggest_bubbles',
-    	null=False
+    	null=False,
+        on_delete=models.CASCADE
     )
 
     def show(self):
@@ -258,32 +264,71 @@ class Comment(models.Model):
     owner = models.ForeignKey(
     	User,
     	related_name='comments',
-    	null=False
+    	null=True,
+        on_delete=models.SET_NULL
     )
-    timestamp = models.DateTimeField()
+    order = models.IntegerField(default=-1)
+
+class CommentUnderNormal(Comment):
     bubble = models.ForeignKey(
-    	'Bubble',
+    	'NormalBubble',
     	related_name='comments',
-    	null=False
+    	null=False,
+        on_delete=models.CASCADE
+    )
+
+class CommentUnderSuggest(Comment):
+    bubble = models.ForeignKey(
+    	'SuggestBubble',
+    	related_name='comments',
+    	null=False,
+        on_delete=models.CASCADE
+    )
+
+class VersionDelta(models.Model):
+    document = models.ForeignKey(
+        'Document',
+        related_name='versions',
+        null=False,
+        on_delete=models.CASCADE
+        )
+    args = models.TextField()
+
+class InvitationHash(models.Model):
+    salt = models.CharField(primary_key=True, max_length=56)
+    document = models.ForeignKey(
+    	'Document',
+    	related_name='invitation_hashs',
+    	null=False,
+        on_delete=models.CASCADE
+    )
+    receiver = models.ForeignKey(
+    	User,
+    	related_name='invitation_hashs',
+    	null=False,
+        on_delete=models.CASCADE
     )
 
 class News(models.Model):
     receiver = models.ForeignKey(
     	User,
     	related_name='news',
-    	null=False
+    	null=False,
+        on_delete=models.CASCADE
     )
     document = models.ForeignKey(
     	'Document',
     	related_name='news',
-    	null=False
+    	null=False,
+        on_delete=models.CASCADE
     )
 
 class Invitation(News):
     sender = models.ForeignKey(
     	User,
     	related_name='invitations',
-    	null=False
+    	null=False,
+        on_delete=models.CASCADE
     )
 
 # TODO: find out way to generate shareable link and save it
@@ -291,7 +336,8 @@ class SharedLink(News):
     sender = models.ForeignKey(
     	User,
     	related_name='shared_links',
-    	null=False
+    	null=False,
+        on_delete=models.CASCADE
     )
 
 class Notification(News):

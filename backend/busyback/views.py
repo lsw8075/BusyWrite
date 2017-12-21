@@ -8,30 +8,52 @@ from django.http import HttpResponse, HttpResponseNotAllowed
 from django.http import HttpResponseNotFound, JsonResponse
 
 from django.forms.models import model_to_dict
+from .documents import *
+from .utils import *
 
 import json
+import re
 
 def signup(request):
     if request.method == 'POST':
-        req_data = json.loads(request.body.decode())
-        username = req_data['username']
-        password = req_data['password']
-        User.objects.create_user(username=username, password=password)
+        try:
+            req_data = json.loads(request.body.decode())
+            password = req_data['password']
+            email = req_data['email']
+            # validation through email
+            if not re.match(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", email):
+                return HttpResponse(status=400)
+            if User.objects.filter(email=email).exists():
+                return HttpResponse(status=400)
+            username = email.split('@')[0]
+            # check duplicated email
+            User.objects.create_user(username=username, password=password, email=email)
+        except Exception as e:
+            see_error(e)
+            return HttpResponse(status=400)
         return HttpResponse(status=201)
     else:
         return HttpResponseNotAllowed(['POST'])
 
 def signin(request):
     if request.method == 'POST':
-        request_data = json.loads(request.body.decode())
-        username = request_data['username']
-        password = request_data['password']
-        user = authenticate(request, username = username, password = password)
-        if user is None:
-            return HttpResponse(status=401) # unauthorized
-        else:
-            login(request, user)
-            return HttpResponse(status=200)
+        try:
+            request_data = json.loads(request.body.decode())
+            email = request_data['email']
+            password = request_data['password']
+            try:
+                username = User.objects.get(email=email).username
+            except User.DoesNotExist:
+                return HttpResponse(status=401)
+            user = authenticate(request, username = username, password = password)
+            if user is None:
+                return HttpResponse(status=401) # unauthorized
+            else:
+                login(request, user)
+                return JsonResponse({'user_id': user.id})
+        except Exception as e:
+            see_error(e)
+            return HttpResponse(status=400)
     else:
         return HttpResponseNotAllowed(['POST'])
 
@@ -48,3 +70,4 @@ def token(request):
         return HttpResponse(status=204)
     else:
         return HttpResponseNotAllowed(['GET'])
+

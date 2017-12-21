@@ -1,0 +1,15 @@
+
+<nav class="navbar navbar-expand-lg sticky-top navbar-default navbar-light bg-faded">
+    <div class="container-fluid">
+        <span class="navbar-brand">
+        <i class="fa fa-list fa-fw"></i>
+        BusyWrite
+        </span>
+        <div id="logout" class="float-xs-right" *ngIf="isLoggedIn | async">
+        <button id="logout-button" class="btn btn-outline-info my-2" (click)="signout()">
+            <i class="fa fa-sign-out fa-fw"></i>
+            Logout
+        </button>
+        </div>
+    </div>
+</nav>
