@@ -74,7 +74,7 @@ def req_document_contributors(request, document_id):
             do_send_invitation_email(user_id, document_id, who.id)
         except Exception as e:
             see_error(e)
-            return HttpResponse(status=400)
+            return HttpResponse(status=404)
         return HttpResponse(status=201)
     else:
         return HttpResponseNotAllowed(['GET', 'POST'])
