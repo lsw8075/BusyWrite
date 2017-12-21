@@ -9,6 +9,8 @@ import json
 
 def req_document_list(request):
     (user_id, method, data) = parse_request(request)
+    if method is None:
+        return HttpResponse(status=401)
 
     if method == 'GET':
         try:
@@ -22,13 +24,15 @@ def req_document_list(request):
             created = do_create_document(user_id, data['title'])
         except Exception as e:
             see_error(e)
-            return HttpResponse(status=404)
+            return HttpResponse(status=400)
         return JsonResponse(created, safe=False) # id, title, contributors(id), rootbubble_id
     else:
         return HttpResponseNotAllowed(['GET', 'POST'])
 
 def req_document_detail(request, document_id):
     (user_id, method, data) = parse_request(request)
+    if method is None:
+        return HttpResponse(status=401)
 
     if method == 'GET':
         try:
@@ -53,13 +57,14 @@ def req_document_detail(request, document_id):
 
 def req_document_contributors(request, document_id):
     (user_id, method, data) = parse_request(request)
+    if method is None:
+        return HttpResponse(status=401)
     if method == 'GET':
         try:
-            conusers = do_get_connected_users_document(user_id, document_id)
+            conusers = do_fetch_contributors(user_id, document_id)
         except Exception as e:
-            see_error(e)
-            return HttpResponse(status=400)
-        return conusers # list of users
+            return HttpResponse(status=404)
+        return JsonResponse(conusers, safe=False) # list of users
     elif method == 'POST':
         try:
             print('post arrived')
@@ -67,21 +72,21 @@ def req_document_contributors(request, document_id):
             who = User.objects.get(username=user_to_add) 
             do_send_invitation_email(user_id, document_id, who.id)
         except Exception as e:
-            see_error(e)
-            return HttpResponse(status=400)
+            return HttpResponse(status=404)
         return HttpResponse(status=201)
     else:
         return HttpResponseNotAllowed(['GET', 'POST'])
 
 def req_document_accept_invitation(request, salt):
     (user_id, method, data) = parse_request(request)
+    if method is None:
+        return HttpResponse(status=401)
     if method == 'GET':
         try:
             if len(salt) < 56:
                 return HttpResponse(status=400)
             result = do_add_contributor(salt)
         except Exception as e:
-            see_error(e)
             return HttpResponse(status=400)
         doc_id = result[0]
         who = result[1]
