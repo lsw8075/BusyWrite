@@ -63,7 +63,6 @@ def req_document_contributors(request, document_id):
         try:
             conusers = do_fetch_contributors(user_id, document_id)
         except Exception as e:
-            see_error(e)
             return HttpResponse(status=404)
         return JsonResponse(conusers, safe=False) # list of users
     elif method == 'POST':
@@ -73,7 +72,6 @@ def req_document_contributors(request, document_id):
             who = User.objects.get(username=user_to_add) 
             do_send_invitation_email(user_id, document_id, who.id)
         except Exception as e:
-            see_error(e)
             return HttpResponse(status=404)
         return HttpResponse(status=201)
     else:
@@ -89,7 +87,6 @@ def req_document_accept_invitation(request, salt):
                 return HttpResponse(status=400)
             result = do_add_contributor(salt)
         except Exception as e:
-            see_error(e)
             return HttpResponse(status=400)
         doc_id = result[0]
         who = result[1]
