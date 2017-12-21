@@ -4,6 +4,8 @@ matrix:
   include:
     - language: python
       python: 3.6
+      services:
+        - redis-server
       cache:
         pip: true
       install:
@@ -20,7 +22,6 @@ matrix:
         - psql -c 'alter user busymanager createdb;' -U postgres
         - cd backend
         - python3 manage.py migrate
-        - sudo redis-server
       script:
         - coverage run --branch --source="./busyback" manage.py test
       after_success:
