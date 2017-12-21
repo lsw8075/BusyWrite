@@ -23,7 +23,7 @@ import * as RouterAction from '../../../../shared/route/route-action';
   styleUrls: [
     './bubble-list-view.component.css'],
 })
-export class BubbleListViewComponent implements OnInit, OnDestroy {
+export class BubbleListViewComponent {
     menuType = MenuType;
     actionType = ActionType;
 
@@ -41,9 +41,6 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
         private _bubbleService: BubbleService,
         private _eventBubbleService: EventBubbleService,
         private _boardService: BoardService) {}
-
-    ngOnInit() {
-    }
 
     public isInternal(bubble: Bubble): boolean {
         return (bubble.type === BubbleType.internalBubble);
@@ -82,25 +79,6 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
         return false;
     }
 
-  // when user closes
-  // @HostListener('window:unload', [ '$event' ])
-  // unloadHandler(event) {
-  //   alert('before unload');
-  // }
-
-  // @HostListener('window:beforeunload', [ '$event' ])
-  // beforeUnloadHander(event) {
-  //   alert('unload');
-  // }
-
-  // host listener to check if user click outside
-
-  // @HostListener('document:keyup', ['$event'])
-  // onKeyUp(ev: KeyboardEvent) {
-  //   console.log(`The user just pressed ${ev.key}!`);
-  // }
-
-
     public clearState(event): void {
         this._store.dispatch(new BubbleAction.SelectClear());
     }
@@ -129,7 +107,5 @@ export class BubbleListViewComponent implements OnInit, OnDestroy {
         return 'unknown';
     }
 
-    ngOnDestroy() {
-    }
 
 } /* istanbul ignore next */

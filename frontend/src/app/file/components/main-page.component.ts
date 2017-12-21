@@ -40,4 +40,4 @@ export class MainPageComponent implements OnInit {
     }
 
 
-}
+} /* istanbul ignore next */

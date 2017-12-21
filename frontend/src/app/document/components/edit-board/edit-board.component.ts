@@ -23,7 +23,7 @@ import * as _ from 'lodash';
     styleUrls: ['./edit-board.component.css', '../board-style.css']
 })
 
-export class EditBoardComponent implements OnInit, OnDestroy {
+export class EditBoardComponent {
 
     @Input() notes: Array<Note>;
     editSuggests: Array<Suggest>;
@@ -39,6 +39,8 @@ export class EditBoardComponent implements OnInit, OnDestroy {
 
     isFocused = false;
     focusedId: number;
+    updateSuggestString: string;
+    updateSuggest: Suggest;
 
     constructor(
         private _store: Store<fromDocument.State>,
@@ -48,7 +50,6 @@ export class EditBoardComponent implements OnInit, OnDestroy {
         this._store.select(fromDocument.getEditBubbles).subscribe((editBubbles) => {
             if (! this.isFocused) {
                 this.editBubbles = _.cloneDeep(editBubbles);
-    //            console.log(editBubbles);
             }
         });
         this._store.select(fromDocument.getBubbleState).subscribe((bubbleState) => {
@@ -58,9 +59,6 @@ export class EditBoardComponent implements OnInit, OnDestroy {
             this.loading = bubbleState.loading;
             this.editActiveBubbleIds = bubbleState.editActiveBubbleIds;
         });
-    }
-
-    ngOnInit() {
     }
 
     public isEditBubbleOpen(bubble: Bubble): boolean {
@@ -99,7 +97,6 @@ export class EditBoardComponent implements OnInit, OnDestroy {
     }
 
     public focusEditBubble(bubble: Bubble, focused: boolean) {
-        console.log(bubble.id, focused);
         if (focused) {
             this.isFocused = true;
             this.focusedId = bubble.id;
@@ -116,14 +113,11 @@ export class EditBoardComponent implements OnInit, OnDestroy {
         (bubble as LeafBubble).content = updateString;
         if (this.loading === false && this.editBubbleId === bubble.id) {
             if (updateString !== this.editBubbleString) {
-                console.log(bubble.id, updateString, this.editBubbleString);
                 this._store.dispatch(new BubbleAction.EditUpdate({bubbleId: bubble.id, content: updateString}));
             }
         }
     }
 
-    updateSuggestString: string;
-    updateSuggest: Suggest;
     public finishEditSuggest(suggest: Suggest) {
         suggest.content = (suggest === this.updateSuggest) ? this.updateSuggestString : suggest.content;
             console.log(suggest.content);
@@ -153,10 +147,6 @@ export class EditBoardComponent implements OnInit, OnDestroy {
         // this._store.dispatch(new BubbleAction.NoteEdit(note));
     }
 
-    ngOnDestroy() {
-        // this.notes.forEach(note => this._store.dispatch(new BubbleAction.NoteEdit(note)));
-    }
-
     public toComment(note: Note) {
         console.log('tocomment');
     }
@@ -164,8 +154,6 @@ export class EditBoardComponent implements OnInit, OnDestroy {
     public toBubble(note: Note) {
         this._store.dispatch(new BubbleAction.ExportNoteAsBubble(note));
     }
-
-
 }
 
 export { Note };

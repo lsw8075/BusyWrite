@@ -12,8 +12,8 @@ import {
     deleteBubble, popBubble, getContent, flattenBubble, createBubble,
     editBubble, mergeBubble, wrapBubble, moveBubble, splitBubble} from './bubble-operation';
 
-fdescribe('bubble operations (pure functions)', () => {
-    const bubbleList: Array<Bubble>;
+describe('bubble operations (pure functions)', () => {
+    let bubbleList: Array<Bubble>;
 
     beforeEach(() => {
         for (const bubble of MockBubbleList) {
@@ -30,58 +30,58 @@ fdescribe('bubble operations (pure functions)', () => {
     });
 
     // have different describe wrapper for each function test
-    fdescribe('getBubbleById', () => {
-        fit('MockBubbleList should get bubble by id', () => {
+    describe('getBubbleById', () => {
+        it('MockBubbleList should get bubble by id', () => {
             const bubble = getBubbleById(bubbleList, 1);
             expect(bubble.id).toBe(1);
         });
-        fit('empty bubblelist should not get bubble by id', () => {
+        it('empty bubblelist should not get bubble by id', () => {
             expect(function() {getBubbleById([], 1)}).toThrowError();
         });
     });
 
-    fdescribe('isBubbleInList', () => {
-        fit('should return true if it is in list', () => {
+    describe('isBubbleInList', () => {
+        it('should return true if it is in list', () => {
             expect(isBubbleInList(bubbleList, 1)).toBeTruthy();
         });
-        fit('should return false if it is not', () => {
+        it('should return false if it is not', () => {
             expect(isBubbleInList(bubbleList, -1)).toBeFalsy();
         });
     });
 
-    fdescribe('getParentBubble', () => {
-        fit('should get parent bubble', () => {
+    describe('getParentBubble', () => {
+        it('should get parent bubble', () => {
             const bubble = getBubbleById(bubbleList, 4);
             const parentBubble = getParentBubble(bubbleList, bubble);
             expect(parentBubble.id).toBe(0);
         });
-        fit('should throw error when it does not have parent', () => {
+        it('should throw error when it does not have parent', () => {
             expect(function() {getParentBubble(bubbleList, getBubbleById(bubbleList, 0))}).toThrowError();
         });
     });
 
-    fdescribe('deleteBubble', () => {
-        fit('should delete bubble with id', () => {
+    describe('deleteBubble', () => {
+        it('should delete bubble with id', () => {
             deleteBubble(bubbleList, 1);
             expect(bubbleList.length).toBe(15);
         });
     });
 
-    fdescribe('popBubble', () => {
-        fit('should pop child bubble with id', () => {
+    describe('popBubble', () => {
+        it('should pop child bubble with id', () => {
             popBubble(bubbleList, 1);
             expect(bubbleList.length).toBe(17);
         });
     });
 
-    fdescribe('getContent', () => {
-        fit('should get content of internal bubble', () => {
+    describe('getContent', () => {
+        it('should get content of internal bubble', () => {
             expect(getContent(bubbleList, 1)).toBe('<h1 class="ql-align-center">Title</h1> <h3>Subtitle</h3> ');
         });
     });
 
-    fdescribe('flattenBubble', () => {
-        fit('should flatten internal bubble', () => {
+    describe('flattenBubble', () => {
+        it('should flatten internal bubble', () => {
             flattenBubble(bubbleList, 1, new LeafBubble(99));
             expect(bubbleList.length).toBe(16);
         });

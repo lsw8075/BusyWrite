@@ -6,7 +6,7 @@ import { Note } from '../edit-board.component';
   templateUrl: './note-view.component.html',
   styleUrls: ['./note-view.component.css']
 })
-export class NoteViewComponent implements OnInit {
+export class NoteViewComponent {
 
   @Input() note: Note;
   @Output() changed: EventEmitter<void> = new EventEmitter<void>();
@@ -16,19 +16,7 @@ export class NoteViewComponent implements OnInit {
     placeholder: `Write Notes Freely! You can even drag around notes`,
     scrollingContainer: '.note',
     theme: 'snow',
-    // modules: {
-    //   toolbar: [
-    //     [{ header: [1, 2, false] }],
-    //     ['bold', 'italic', 'underline'],
-    //     ['image', 'code-block']
-    //   ]
-    // },
   };
-
-  constructor() {}
-
-  ngOnInit() {
-  }
 
   onEditorBlured(quill) {
     // console.log('editor blur!', quill);
@@ -44,7 +32,6 @@ export class NoteViewComponent implements OnInit {
   }
 
   onContentChanged({ quill, html, text }) {
-    // console.log('quill content is changed!', quill, html, text);
     this.note.content = this.editorContent;
     this.changed.emit();
   }

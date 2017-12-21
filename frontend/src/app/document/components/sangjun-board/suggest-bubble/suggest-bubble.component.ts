@@ -1,5 +1,4 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { EventSangjunBoardService } from '../../../services/event/event-sangjun-board.service';
 
 import { Bubble, SuggestBubble, BubbleType } from '../../../models/bubble';
 import { Comment } from '../../../models/comment';
@@ -19,30 +18,25 @@ import * as RouterAction from '../../../../shared/route/route-action';
   styleUrls: ['./suggest-bubble.component.css']
 })
 
-export class SuggestBubbleComponent implements OnInit {
+export class SuggestBubbleComponent {
 
-  @Input() bubble: Bubble;
-  @Input() bubbleList: Array<Bubble>;
-  @Input() suggestBubbles: Array<SuggestBubble>;
-  @Input() comments: Array<Comment>;
-  @Input() selectedSB: SuggestBubble;
+    @Input() bubble: Bubble;
+    @Input() bubbleList: Array<Bubble>;
+    @Input() suggestBubbles: Array<SuggestBubble>;
+    @Input() comments: Array<Comment>;
+    @Input() selectedSB: SuggestBubble;
 
     @Input() contributers: Array<User>;
     @Input() userId: number;
 
   constructor(
-      private _store: Store<fromDocument.State>,
-      private _eventSangjunBoardService: EventSangjunBoardService) { }
-
-    ngOnInit() {
-    }
+      private _store: Store<fromDocument.State>) { }
 
     clickBackButton() {
         this._store.dispatch(new BubbleAction.SelectSuggestBubbleClear(null));
     }
 
     clickSwitch() {
-        console.log('switch');
         this._store.dispatch(new BubbleAction.SwitchBubble(this.selectedSB.id));
     }
 

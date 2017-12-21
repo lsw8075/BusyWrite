@@ -1,35 +1,43 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { EventBubbleService } from '../../services/event/event-bubble.service';
-import { EventSangjunBoardService } from '../../services/event/event-sangjun-board.service';
 import { BubbleService } from '../../services/bubble.service';
-import { SuggestBubbleTemp } from '../../models/bubble-temp';
+import { Bubble, LeafBubble } from '../../models/bubble';
+import { SuggestBubble } from '../../models/bubble';
 import { SangjunBoardComponent } from './sangjun-board.component';
+
+import { Store, StoreModule } from '@ngrx/store';
+
+import * as fromDocument from '../../reducers/reducer';
+import * as DocumentAction from '../../actions/bubble-action';
+import * as RouterAction from '../../../shared/route/route-action';
+import { reducer } from '../../reducers/reducer';
 
 describe('SangjunBoardComponent', () => {
     let comp: SangjunBoardComponent;
     let fixture: ComponentFixture<SangjunBoardComponent>;
 
     beforeEach(() => {
-        const eventBubbleServiceStub = {
-            sangjunBoardOpenEvent$: {
-                subscribe: () => ({})
-            },
-            clearState: () => ({})
-        };
-        const eventSangjunBoardServiceStub = {
-            clickThumbsUp: () => ({})
-        };
+        const eventBubbleServiceStub = {};
         const bubbleServiceStub = {};
-        const suggestBubbleTempStub = {};
+        const bubbleStub = {
+            id: {}
+        };
+        const suggestBubbleStub = {
+            thumbUps: {}
+        };
+        const storeStub = {
+            dispatch: () => ({})
+        };
         TestBed.configureTestingModule({
             declarations: [ SangjunBoardComponent ],
             schemas: [ NO_ERRORS_SCHEMA ],
             providers: [
                 { provide: EventBubbleService, useValue: eventBubbleServiceStub },
-                { provide: EventSangjunBoardService, useValue: eventSangjunBoardServiceStub },
                 { provide: BubbleService, useValue: bubbleServiceStub },
-                { provide: SuggestBubbleTemp, useValue: suggestBubbleTempStub }
+                { provide: Bubble, useValue: bubbleStub },
+                { provide: SuggestBubble, useValue: suggestBubbleStub },
+                { provide: Store, useValue: storeStub }
             ]
         });
         fixture = TestBed.createComponent(SangjunBoardComponent);
@@ -56,13 +64,25 @@ describe('SangjunBoardComponent', () => {
         expect(comp.isWatching).toEqual(false);
     });
 
-    describe('clickSBThumbsUp', () => {
+    describe('clickSuggestBubble', () => {
         it('makes expected calls', () => {
-            const eventSangjunBoardServiceStub: EventSangjunBoardService = fixture.debugElement.injector.get(EventSangjunBoardService);
-            const suggestBubbleTempStub: SuggestBubbleTemp = fixture.debugElement.injector.get(SuggestBubbleTemp);
-            spyOn(eventSangjunBoardServiceStub, 'clickThumbsUp');
-            comp.clickSBThumbsUp(suggestBubbleTempStub);
-            expect(eventSangjunBoardServiceStub.clickThumbsUp).toHaveBeenCalled();
+            const suggestBubbleStub: SuggestBubble = fixture.debugElement.injector.get(SuggestBubble);
+            const storeStub = fixture.debugElement.injector.get(Store);
+            spyOn(storeStub, 'dispatch');
+            comp.clickSuggestBubble(suggestBubbleStub);
+            expect(storeStub.dispatch).toHaveBeenCalled();
+        });
+    });
+
+    describe('createSuggestBubble', () => {
+        it('makes expected calls', () => {
+            const storeStub = fixture.debugElement.injector.get(Store);
+            comp.bubble = new LeafBubble(1);
+            spyOn(comp, 'getContentOfBubble');
+            spyOn(storeStub, 'dispatch');
+            comp.createSuggestBubble();
+            expect(comp.getContentOfBubble).toHaveBeenCalled();
+            expect(storeStub.dispatch).toHaveBeenCalled();
         });
     });
 

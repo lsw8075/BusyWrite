@@ -64,14 +64,4 @@ describe('InternalBubble', () => {
     expect(children2).toContain(leafBubble4.id, 'internal bubble contains leafbubble4');
     expect(children2).toContain(leafBubble5.id, 'internal bubble contains leafbubble5');
   });
-
-  it('leaf bubbles should have correct location', () => {
-    expect(leafBubble1.location).toBe(0);
-    expect(leafBubble2.location).toBe(1);
-    expect(internalBubble3.location).toBe(2);
-    expect(leafBubble6.location).toBe(3);
-    // internal bubble 3
-    expect(leafBubble4.location).toBe(0);
-    expect(leafBubble5.location).toBe(1);
-  });
 });
