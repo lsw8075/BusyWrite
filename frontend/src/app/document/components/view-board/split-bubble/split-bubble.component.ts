@@ -16,7 +16,7 @@ import { LeafBubble } from '../../../models/bubble';
   templateUrl: './split-bubble.component.html',
   styleUrls: ['./split-bubble.component.css']
 })
-export class SplitBubbleComponent implements OnInit {
+export class SplitBubbleComponent {
 
   bubble: Bubble;
 
@@ -31,9 +31,6 @@ export class SplitBubbleComponent implements OnInit {
     public bsModalRef: BsModalRef,
     private _bubbleService: BubbleService,
     private _eventBubbleService: EventBubbleService) {}
-
-  ngOnInit() {
-  }
 
   public split() {
     if (this.highlightedText) {

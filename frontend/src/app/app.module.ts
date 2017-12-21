@@ -23,7 +23,6 @@ const routes: Routes = [
     { path: 'users', loadChildren: './user/user-state.module#UserStateModule'},
     { path: 'documents/:id', loadChildren: './document/document-state.module#DocumentStateModule' },
     { path: 'files', loadChildren: './file/file-state.module#FileStateModule' },
-    { path: 'alerts', loadChildren: './alert/alert-state.module#AlertStateModule' },
     { path: 'invitation', loadChildren: './invitation/invitation-state.module#InvitationStateModule' },
     { path: '**', redirectTo: 'users/signin' }
 ];

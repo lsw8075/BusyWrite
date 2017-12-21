@@ -23,7 +23,6 @@ import { BubbleService } from './services/bubble.service';
 import { CommentService } from './services/comment.service';
 import { NoteService } from './services/note.service';
 import { EventBubbleService } from './services/event/event-bubble.service';
-import { EventSangjunBoardService } from './services/event/event-sangjun-board.service';
 import { DocumentService } from './services/document.service';
 import { WebSocketService } from 'angular2-websocket-service';
 import { ServerSocket } from './services/websocket.service';
@@ -53,7 +52,6 @@ import { DocumentGuardService } from './guards/document-guard.service';
     CommentService,
     NoteService,
     EventBubbleService,
-    EventSangjunBoardService,
     DocumentService,
     WebSocketService,
     ServerSocket,

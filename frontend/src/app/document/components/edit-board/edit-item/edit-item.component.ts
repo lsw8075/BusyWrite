@@ -18,16 +18,9 @@ export class EditItemComponent implements OnInit {
     editor;
     editorContent = '';
     editorOptions = {
-    placeholder: `Write Notes Freely! You can even drag around notes`,
-    scrollingContainer: '.note',
-    theme: 'snow',
-    // modules: {
-    //   toolbar: [
-    //     [{ header: [1, 2, false] }],
-    //     ['bold', 'italic', 'underline'],
-    //     ['image', 'code-block']
-    //   ]
-    // },
+        placeholder: `Write Notes Freely! You can even drag around notes`,
+        scrollingContainer: '.note',
+        theme: 'snow',
     };
 
     constructor() {}

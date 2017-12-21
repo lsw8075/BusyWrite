@@ -40,7 +40,7 @@ export class CommentComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.newComment = new Comment(-1, "", this.userId, this.bubble.id, this.getBubbleComments(this.bubble).length);
+        this.newComment = new Comment(-1, '', this.userId, this.bubble.id, this.getBubbleComments(this.bubble).length);
     }
 
     getBubbleComments(bubble: Bubble): Array<Comment> {
@@ -60,15 +60,13 @@ export class CommentComponent implements OnInit {
 
     clickCompleteEditComment(comment: Comment) {
         console.log('edit comment');
-
-//        this._store.dispatch(new BubbleAction.EditCommentOnBubble({commentId: comment.id, content: this.editContent}))
         comment.content = this.editContent;
         this.editComment = null;
     }
 
 
     clickDeleteComment(bubble: any, comment: Comment) {
-    //    bubble.deleteComment(comment);
+
     }
 
     clickCreateComment(bubble: any) {

@@ -27,7 +27,7 @@ import * as RouterAction from '../../../../shared/route/route-action';
   templateUrl: './bubble-menu.component.html',
   styleUrls: ['./bubble-menu.component.css']
 })
-export class BubbleMenuComponent implements OnInit {
+export class BubbleMenuComponent {
 
     menuType = MenuType;
     @Input() bubble: Bubble;
@@ -43,10 +43,6 @@ export class BubbleMenuComponent implements OnInit {
         private _modalService: BsModalService) {
     }
 
-    ngOnInit() {
-//        console.log(this.bubble, this.menu);
-    }
-
     public openSangjunBoard() {
         this._store.dispatch(new BoardAction.ShowSangjun());
         this._store.dispatch(new BubbleAction.SelectClear());
@@ -54,11 +50,7 @@ export class BubbleMenuComponent implements OnInit {
     }
 
     public splitBubble() {
-        if (this.bubble.type === BubbleType.leafBubble) {
-            this._store.dispatch(new BubbleAction.SplitLeafStart(this.bubble));
-        } else if (this.bubble.type === BubbleType.internalBubble) {
-            // this._store.dispatch(new BubbleAction.SplitInternalStart(this.bubble));
-        }
+        this._store.dispatch(new BubbleAction.SplitLeafStart(this.bubble));
 
        this.bsModalRef = this._modalService.show(SplitBubbleComponent);
        this.bsModalRef.content.bubble = this.bubble;

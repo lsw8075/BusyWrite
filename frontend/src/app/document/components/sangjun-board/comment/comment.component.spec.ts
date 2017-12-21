@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { Bubble } from '../../../models/bubble';
 import { Store, StoreModule } from '@ngrx/store';
-import { BubbleMenuComponent } from './bubble-menu.component';
+import { CommentComponent } from './comment.component';
 
 import * as fromDocument from '../../../reducers/reducer';
 import * as DocumentAction from '../../../actions/bubble-action';
@@ -12,8 +12,8 @@ import { LeafBubble, SuggestBubble } from '../../../models/bubble';
 import { Comment } from '../../../models/comment';
 
 describe('CommentComponent', () => {
-    let comp: BubbleMenuComponent;
-    let fixture: ComponentFixture<BubbleMenuComponent>;
+    let comp: CommentComponent;
+    let fixture: ComponentFixture<CommentComponent>;
 
     beforeEach(() => {
         const bubbleStub = {
@@ -22,9 +22,12 @@ describe('CommentComponent', () => {
         const commentStub = {};
         const storeStub = {};
         TestBed.configureTestingModule({
-            declarations: [ BubbleMenuComponent ],
+            declarations: [ CommentComponent ],
             schemas: [ NO_ERRORS_SCHEMA ],
             providers: [
+                { provide: Bubble, useValue: bubbleStub },
+                { provide: Comment, useValue: commentStub },
+                { provide: Store, useValue: storeStub }
             ]
             ,
             imports: [
@@ -33,9 +36,23 @@ describe('CommentComponent', () => {
                 }),
             ]
         });
-        fixture = TestBed.createComponent(BubbleMenuComponent);
+        fixture = TestBed.createComponent(CommentComponent);
         comp = fixture.componentInstance;
+        comp.userId = 1;
+        comp.bubbleList = [new LeafBubble(1)];
+        comp.bubble = new LeafBubble(1);
+    });
 
+    it('can load instance', () => {
+        expect(comp).toBeTruthy();
+    });
+
+    describe('ngOnInit', () => {
+        it('makes expected calls', () => {
+            spyOn(comp, 'getBubbleComments').and.returnValue([]);
+            comp.ngOnInit();
+            expect(comp.getBubbleComments).toHaveBeenCalled();
+        });
     });
 
 });

@@ -1,64 +1,58 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { Component } from '@angular/core';
-import { RouterTestingModule } from '@angular/router/testing';
-import { NgForm } from '@angular/forms';
-import { DebugElement } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { NgForm, FormsModule } from '@angular/forms';
+import { StoreModule, Store, combineReducers } from '@ngrx/store';
+import { MatSnackBar } from '@angular/material';
 import { SignInComponent } from './sign-in.component';
 
-@Component({
-  selector: 'app-navigation',
-  template: `<p>app-navigation</p>`
-})
-class MockNavigationComponent {
+import { Component, OnInit } from '@angular/core';
+import * as fromUser from '../../reducers/reducer';
+import { UserReducer } from '../../reducers/reducer';
 
-}
-
-class MockAuthenticationService { // extends UserService ?
-  public userLogin(inputVal: any): void { }
-}
+const matSnackBarStub = {
+    open: () => ({})
+};
 
 describe('SignInComponent', () => {
-  let component: SignInComponent;
-  let fixture: ComponentFixture<SignInComponent>;
-  let button: HTMLButtonElement;
-  let emailInput: HTMLInputElement;
-  let passwordInput: HTMLInputElement;
+    let comp: SignInComponent;
+    let fixture: ComponentFixture<SignInComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ SignInComponent, MockNavigationComponent ],
-      imports: [ FormsModule, RouterTestingModule ]
-    })
-    .compileComponents()
-    .then(() => {
-      fixture = TestBed.createComponent(SignInComponent);
-      component = fixture.componentInstance;
-      button = fixture.debugElement.nativeElement.querySelector('button');
-      emailInput = fixture.debugElement.nativeElement.querySelector('input[type=email]');
-      passwordInput = fixture.debugElement.nativeElement.querySelector('input[type=password]');
+    beforeEach(() => {
+
+        TestBed.configureTestingModule({
+            declarations: [ SignInComponent ],
+            schemas: [ NO_ERRORS_SCHEMA ],
+            providers: [
+                { provide: MatSnackBar, useValue: matSnackBarStub }
+            ],
+            imports: [
+                StoreModule.forRoot({
+                    'user': UserReducer
+                }),
+                FormsModule
+            ]
+        });
+        spyOn(SignInComponent.prototype, 'showErrorMsg');
+        fixture = TestBed.createComponent(SignInComponent);
+        comp = fixture.componentInstance;
     });
-  }));
 
-  it('should be created', () => {
-    expect(component).toBeTruthy();
-  });
-
-  it('input fields should be empty at initalization', () => {
-    expect(emailInput.value).toMatch('');
-    expect(passwordInput.value).toMatch('');
-  });
-
-  it('should invoke onSubmit() method when user clicks login', async() => {
-    fixture.detectChanges();
-    const spy = spyOn(component, 'onSubmit');
-    fixture.whenStable().then(() => {
-      button.click();
+    it('can load instance', () => {
+        expect(comp).toBeTruthy();
     });
-    fixture.whenStable().then(() => {
-      expect(component.onSubmit).toHaveBeenCalled();
+
+    describe('onSubmit', () => {
+
     });
-  });
+
+    describe('constructor', () => {
+        it('makes expected calls', () => {
+
+        });
+    });
+
+    describe('signup', () => {
+
+    });
 
 });

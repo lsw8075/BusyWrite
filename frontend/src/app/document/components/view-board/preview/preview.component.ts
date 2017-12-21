@@ -11,7 +11,7 @@ import { Bubble, InternalBubble, LeafBubble, BubbleType } from '../../../models/
   templateUrl: './preview.component.html',
   styleUrls: ['./preview.component.css'],
 })
-export class PreviewComponent implements OnInit {
+export class PreviewComponent {
 
     @Input() rootBubble: InternalBubble;
     @Input() bubbleList: Array<Bubble>;
@@ -21,7 +21,6 @@ export class PreviewComponent implements OnInit {
         private _bubbleService: BubbleService) {
     }
 
-    ngOnInit() {}
 
     public getBubbleById(id: number): Bubble {
         return getBubbleById(this.bubbleList, id);

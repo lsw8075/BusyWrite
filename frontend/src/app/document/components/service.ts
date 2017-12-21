@@ -4,7 +4,6 @@ export { CommentService } from '../services/comment.service';
 export { DocumentService } from '../services/document.service';
 export { NoteService } from '../services/note.service';
 export { EventBubbleService, MenuType, ActionType } from '../services/event/event-bubble.service';
-export { EventSangjunBoardService } from '../services/event/event-sangjun-board.service';
 
 export { Board } from '../models/board';
 export { Comment } from '../models/comment';

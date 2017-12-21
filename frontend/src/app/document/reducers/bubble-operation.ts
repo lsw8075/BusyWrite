@@ -30,7 +30,7 @@ export function isBubbleInList(bubbleList: Array<Bubble>, id: number): boolean {
     return false;
 }
 
-function removeBubbleById(bubbleList: Array<Bubble>, id: number): void {
+export function removeBubbleById(bubbleList: Array<Bubble>, id: number): void {
     const index = bubbleList.findIndex((bubble) => (bubble.id === id));
     if (index === -1) {
         throw new Error('Does not exist with this id');
@@ -74,7 +74,6 @@ export function deleteChildBubbles(bubbleList: Array<Bubble>, id: number) {
 
 export function deleteBubble(bubbleList: Array<Bubble>, id: number) {
     try {
-        console.log('[before delete]', bubbleList);
         const bubble = getBubbleById(bubbleList, id);
         const parentBubble = getParentBubble(bubbleList, bubble);
 
@@ -86,7 +85,6 @@ export function deleteBubble(bubbleList: Array<Bubble>, id: number) {
             const childBubble = getBubbleById(bubbleList, parentBubble.childBubbleIds[i]);
             childBubble.location = i;
         }
-        console.log('[after delete]', bubbleList);
     } catch (err) {
         console.log(err);
     //  throw err;
@@ -95,7 +93,6 @@ export function deleteBubble(bubbleList: Array<Bubble>, id: number) {
 
 export function popBubble(bubbleList: Array<Bubble>, id: number) {
     try {
-        console.log('[before pop]', bubbleList);
         const bubble = getBubbleById(bubbleList, id);
         if (bubble.type !== BubbleType.internalBubble) {
             throw new Error('Cannot pop leafBubble');
@@ -112,7 +109,6 @@ export function popBubble(bubbleList: Array<Bubble>, id: number) {
             childBubble.parentBubbleId = parentBubble.id;
         }
         removeBubbleById(bubbleList, bubble.id);
-        console.log('[before pop]', bubbleList);
 
     } catch (err) {
         console.log(err);
@@ -144,12 +140,10 @@ export function getContent(bubbleList: Array<Bubble>, id: number): string {
 
 export function flattenBubble(bubbleList: Array<Bubble>, id: number, newBubble: Bubble)  {
     try {
-        console.log('[before flatten]', bubbleList);
         const bubble = getBubbleById(bubbleList, id);
         if (bubble.type !== BubbleType.internalBubble) {
             throw new Error('Cannot flatten leafBubble');
         }
-        console.log(bubbleList);
         const internalBubble = bubble as InternalBubble;
         const parentBubble = getParentBubble(bubbleList, bubble);
         (newBubble as LeafBubble).content = getContent(bubbleList, id);
@@ -158,7 +152,6 @@ export function flattenBubble(bubbleList: Array<Bubble>, id: number, newBubble: 
         parentBubble.childBubbleIds[internalBubble.location] = newBubble.id;
         bubbleList.push(newBubble);
         deleteChildBubbles(bubbleList, id);
-        console.log('[after flatten]', bubbleList);
 
     } catch (err) {
         console.log(err);

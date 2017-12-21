@@ -31,7 +31,7 @@ import { TdLoadingService } from '@covalent/core/loading/services/loading.servic
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 
-export class ViewBoardComponent implements OnInit {
+export class ViewBoardComponent {
 
     @Input() board: Board;
     @Input() rootBubble: InternalBubble;
@@ -48,23 +48,9 @@ export class ViewBoardComponent implements OnInit {
     private _eventBubbleService: EventBubbleService,
     private _store: Store<fromDocument.State>,
     private _loadingService: TdLoadingService) {
-        this._store.select(fromDocument.isLoading).subscribe(loading => {
-            if (this.board) {
-                // if (loading) {
-                //     this._loadingService.register(this.getBoardId());
-                // } else {
-                //     this._loadingService.resolve(this.getBoardId());
-                // }
-            }
-        });
     }
 
     public getBoardId(): string {
         return 'board_' + this.board.id;
     }
-
-    ngOnInit() {
-        console.log('thi', this.board);
-    }
-
 } /* istanbul ignore next */

@@ -68,7 +68,6 @@ export class BubbleService implements OnDestroy {
                 this.currentDocumentId = Number(body.document_id);
                 this.previousRequestId = Number(body.previous_request_id);
                 const doc: Document = BubbleJsonHelper.getDocumentObject(JSON.stringify(body));
-                console.log(body);
                 const connectorIdList = body.connectors;
                 const cons = [];
                 for (const connectorId of connectorIdList) {

@@ -16,7 +16,7 @@ import * as RouterAction from '../../../shared/route/route-action';
   templateUrl: './board-manager.component.html',
   styleUrls: ['./board-manager.component.css']
 })
-export class BoardManagerComponent implements OnInit {
+export class BoardManagerComponent  {
 
     boardType = BoardType;
     boardLocation = BoardLocation;
@@ -38,8 +38,6 @@ export class BoardManagerComponent implements OnInit {
             this.activeBoard = board;
         });
      }
-
-    ngOnInit() {}
 
     public addBoard(boardType: BoardType): void {
         this._store.dispatch(new BoardAction.Add(boardType));

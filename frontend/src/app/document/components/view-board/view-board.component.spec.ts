@@ -1,88 +1,58 @@
-import { ComponentFixture, TestBed, async, fakeAsync, tick } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { ViewBoardComponent } from './view-board.component';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { BubbleService } from './service';
-import { Component } from '@angular/core';
-import { TabViewModule } from 'primeng/primeng';
-import { BubbleMenuComponent } from './bubble-menu/bubble-menu.component';
-import { BoardService } from './service';
-import { DocumentService } from '../../services/document.service';
-import 'rxjs/Rx';
+import { BoardService } from '../../services/board.service';
+import { EventBubbleService } from '../../services/event/event-bubble.service';
+import { Store, StoreModule } from '@ngrx/store';
+import { TdLoadingService } from '@covalent/core/loading/services/loading.service';
+import { ViewBoardComponent } from './view-board.component';
 
-@Component({
-  selector: 'app-bubble-list-view',
-  template: `<p>app-bubble-list-view component</p>`
-})
-class MockBubbleListViewComponent {
+import * as fromDocument from '../../reducers/reducer';
+import * as DocumentAction from '../../actions/bubble-action';
+import * as RouterAction from '../../../shared/route/route-action';
+import { reducer } from '../../reducers/reducer';
 
-}
+import { Board, BoardType, BoardLocation } from '../../models/board';
 
-@Component({
-  selector: 'app-bubble-menu',
-  template: `<p>app-bubble-menu component</p>`
-})
-class MockBubbleMenuComponent {
-  showMenu(item) {}
-}
+const bubbleServiceStub = {};
+const boardServiceStub = {};
+const eventBubbleServiceStub = {};
+const storeStub = {};
+const tdLoadingServiceStub = {};
 
-
-@Component({
-  selector: 'app-preview',
-  template: `<p>app-bubble-menu component</p>`
-})
-class MockPreviewComponent {
-
-}
-
-class MockBubbleService {
-
-}
-
-class MockBoardService {
-  updatePreview() {
-
-  }
-}
 
 describe('ViewBoardComponent', () => {
-  let comp: ViewBoardComponent;
-  let fixture: ComponentFixture<ViewBoardComponent>;
-  let boardService: BoardService;
+    let comp: ViewBoardComponent;
+    let fixture: ComponentFixture<ViewBoardComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [
-        ViewBoardComponent,
-        MockBubbleListViewComponent,
-        MockPreviewComponent,
-        MockBubbleMenuComponent
-      ],
-      imports: [
-        TabViewModule
-      ],
-      providers: [
-        { provide: BubbleService, useClass: MockBubbleService },
-        { provide: BoardService, useClass: MockBoardService }
-      ]
-    }).compileComponents();
-  }));
+    beforeEach(() => {
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(ViewBoardComponent);
-    comp = fixture.componentInstance;
-    boardService = fixture.debugElement.injector.get(BoardService);
-    fixture.detectChanges();
-  });
+        TestBed.configureTestingModule({
+            declarations: [ ViewBoardComponent ],
+            schemas: [ NO_ERRORS_SCHEMA ],
+            providers: [
+                { provide: BubbleService, useValue: bubbleServiceStub },
+                { provide: BoardService, useValue: boardServiceStub },
+                { provide: EventBubbleService, useValue: eventBubbleServiceStub },
+                { provide: TdLoadingService, useValue: tdLoadingServiceStub }
+            ],
+            imports: [
+                StoreModule.forRoot({
+                    'document': reducer
+                }),
+            ]
+        });
+        fixture = TestBed.createComponent(ViewBoardComponent);
+        comp = fixture.componentInstance;
+    });
 
-  it('can instantiate it', () => {
-    expect(comp).not.toBeNull();
-  });
+    it('can load instance', () => {
+        expect(comp).toBeTruthy();
+    });
 
-  it('should create the app', () => {
-    expect(comp).toBeTruthy();
-  });
+    it('can get board', () => {
+        comp.board = new Board(BoardType.edit, BoardLocation.closed, 1);
+        expect(comp.getBoardId()).toBe('board_1');
+    });
 
-  it('should call expected calls on onInit', () => {
-    comp.ngOnInit();
-  });
 });

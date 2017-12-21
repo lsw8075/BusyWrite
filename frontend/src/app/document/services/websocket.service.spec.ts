@@ -1,8 +1,6 @@
 import { ServerSocket } from './websocket.service';
 import { async, TestBed } from '@angular/core/testing';
-import { BubbleService } from './bubble.service';
-
-import { Store, StoreModule } from '@ngrx/store';
+import { WebSocketService } from 'angular2-websocket-service';
 
 describe('ServerSocket', () => {
     let service: ServerSocket;
@@ -13,17 +11,19 @@ describe('ServerSocket', () => {
           ],
           providers: [
             ServerSocket,
-            BubbleService,
-            Store
+            WebSocketService
           ]
         })
         .compileComponents();
       }));
 
     beforeEach(() => {
+        service = new ServerSocket(new WebSocketService());
     });
 
     it('connect', () => {
+        expect(service.connect()).toBeTruthy();
+        expect(service.connect()).toBeTruthy();
     });
 
 });

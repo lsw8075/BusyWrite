@@ -1,87 +1,46 @@
-import { ComponentFixture, TestBed, async, fakeAsync, tick } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { BubbleService, BoardService, EditItem } from '../../service';
-import { Bubble, BubbleType, LeafBubble, InternalBubble } from '../../../models/bubble';
-import { Component } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { BoardService } from '../../../services/board.service';
+import { BubbleService } from '../../../services/bubble.service';
+import { Bubble } from '../../../models/bubble';
 import { PreviewComponent } from './preview.component';
+import { Store, StoreModule } from '@ngrx/store';
 
-import { Subject } from 'rxjs/Subject';
-import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/observable/of';
-
-const mockLeafBubble = {
-  id: 2,
-  type: BubbleType.leafBubble,
-  location: 0,
-  owner: 0,
-  editLock: false,
-  content: 'mock leaf bubble',
-  parentID: 1,
-  parentBubble: null,
-  suggestBubbles: null,
-  comments: null,
-};
-
-const mockInternalBubble = {
-  id: 1,
-  type: BubbleType.internalBubble,
-  location: 0,
-  editLock: false,
-
-  parentID: 0,
-  parentBubble: null,
-  suggestBubbles: null,
-  childBubbles: [2],
-  childBubbleList: [mockLeafBubble],
-  comments: null
-};
-
-class MockBubbleService {
-  getRootBubble() {}
-}
-
-class MockBoardService {
-
-  private previewUpdateEventSource = new Subject<void>();
-  private createBubbleEventSource = new Subject<EditItem>();
-  private finishBubbleEditEventSource = new Subject<Bubble>();
-
-  previewUpdateEvent$ = this.previewUpdateEventSource.asObservable();
-  createBubbleEvent$ = this.createBubbleEventSource.asObservable();
-  finishBubbleEditEvent$ = this.finishBubbleEditEventSource.asObservable();
-
-}
+import * as fromDocument from '../../../reducers/reducer';
+import * as DocumentAction from '../../../actions/bubble-action';
+import * as RouterAction from '../../../../shared/route/route-action';
+import { reducer } from '../../../reducers/reducer';
 
 describe('PreviewComponent', () => {
-  let comp: PreviewComponent;
-  let fixture: ComponentFixture<PreviewComponent>;
-  let bubbleService: BubbleService;
-  let boardService: BoardService;
+    let comp: PreviewComponent;
+    let fixture: ComponentFixture<PreviewComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [
-        PreviewComponent
-      ],
-      providers: [
-        {provide: BubbleService, useClass: MockBubbleService},
-        { provide: BoardService, useClass: MockBoardService },
-      ]
-    }).compileComponents();
-  }));
+    beforeEach(() => {
+        const boardServiceStub = {};
+        const bubbleServiceStub = {};
+        const bubbleStub = {
+            type: {}
+        };
+        TestBed.configureTestingModule({
+            declarations: [ PreviewComponent ],
+            schemas: [ NO_ERRORS_SCHEMA ],
+            providers: [
+                { provide: BoardService, useValue: boardServiceStub },
+                { provide: BubbleService, useValue: bubbleServiceStub },
+                { provide: Bubble, useValue: bubbleStub }
+            ],
+            imports: [
+                StoreModule.forRoot({
+                    'document': reducer
+                }),
+            ]
+        });
+        fixture = TestBed.createComponent(PreviewComponent);
+        comp = fixture.componentInstance;
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(PreviewComponent);
-    comp = fixture.componentInstance;
-    bubbleService = fixture.debugElement.injector.get(BubbleService);
-    boardService = fixture.debugElement.injector.get(BoardService);
-
-    spyOn(boardService, 'previewUpdateEvent$').and.returnValue(Observable.of(null));
-  });
-
-  it('can instantiate it', () => {
-    expect(comp).not.toBeNull();
-  });
-
+    it('can load instance', () => {
+        expect(comp).toBeTruthy();
+    });
 
 });
