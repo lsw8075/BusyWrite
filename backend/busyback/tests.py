@@ -1203,11 +1203,11 @@ class ChannelNoteTestCase(ChannelTestCase):
     def test_note_operations(self):
         # export note as bubble
         message = {'header': 'export_note_as_bubble', "previous_request": 0,
-            'body': {'parent_id': self.rootid, 'location': 1, 'note_id': self.first_note_id}}
+            'body': {'parent_id': self.rootid, 'location': 1, 'content': 'first note'}}
         self.client.send('websocket.receive', content={'order': 0}, text=(message))
         self.client.consume('websocket.receive')
         result = self.client.receive()
-
+        print(result)
         self.assertEqual(result['body']['who'], self.userid)
         self.assertEqual(result['body']['new_bubble']['parent_bubble'], self.rootid)
         self.assertEqual(result['body']['new_bubble']['location'], 1)

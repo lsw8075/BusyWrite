@@ -1512,7 +1512,7 @@ def ws_receive(message):
             return
         try:
             get = do_create_normal_bubble(previous_state, message.user.id, int(document_id),
-                    int(body['parent_id']), int(body['location']), False, str(body['content']))
+                    int(body['parent_id']), int(body['location']), False, str(body['content']), False)
         except BubbleDoesNotExistError:
             message.reply_channel.send({"text":
                     json.dumps({"header": command, "accept": 'False',
