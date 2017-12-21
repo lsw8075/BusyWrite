@@ -4,7 +4,9 @@
 
 # BUSY WRITE
 
+> Writing, finally a teamwork
 > writing is a form of discussion for busy teams
+
 
 check progress results in 
 
