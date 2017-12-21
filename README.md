@@ -37,5 +37,5 @@ up until sprint3(2017.11.20)
 # Coverage
 up until sprint3(2017.11.20)
 ## ![FrontEnd](./images/code-coverage-frontend.png)
-## ![BackEnd](./images/code-coverage-backend.jpg)
+## ![BackEnd](./images/code-coverage-backend.png)
 
