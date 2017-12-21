@@ -26,11 +26,16 @@ class HttpTestCase(TestCase):
         pass
 
     def test_req_document_contributors(self):
+        doc = Document.objects.create(title='test doc')
+        doc.contributors.add(self.user2)
+        doc.save()
+        self.send('POST', 'document/contributors/' + str(doc.id), {'user_to_add': 'testuser1'}, login=True)
+        
+        salt = InvitationHash.objects.filter(document=doc).values()[0]['salt']
+        self.send('GET', 'document/acceptinvitation/' + str(salt))
+        self.send('GET', 'document/contributors/' + str(doc.id), result=True)
         pass
 
-    def test_req_send_invitation(self):
-        pass
-    
     def test_req_note(self):
         doc = Document.objects.create(title='asdf')
         doc.contributors.add(self.user2)

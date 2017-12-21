@@ -82,7 +82,7 @@ def generate_hash():
 
 def parse_request(request):
     if not request.user.is_authenticated:
-        return HttpResponse(status=401)
+        return (0, None, None)
     req_user = request.user.id
     req_method = request.method
     if (req_method == 'POST') or (req_method == 'PUT'):

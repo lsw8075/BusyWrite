@@ -121,10 +121,6 @@ def do_send_invitation_email(
     invite_route = 'invitation'
     invite_addr = 'http://busywrite.ribosome.kr/%s/%s' % (invite_route, salt)
     mail_body = 'click this link to accept invitation:\n %s\n' % invite_addr
-    # for debug.. please remove below code at practice!
-    debug_addr = 'http://localhost:4200/%s/%s' % (invite_route, salt)
-    mail_body = mail_body + '\n ' + debug_addr
-    # for debug.. please remove above code at practice!
 
     print('sending email to %s' % who_to_send.email)
     print("subject:" + mail_subject)
