@@ -184,6 +184,7 @@ def do_create_normal_bubble(
     location: int,
     is_owned: bool,
     content: str,
+    Lock = True,
     **kw
     ):
     '''Create a leaf bubble'''
@@ -206,13 +207,14 @@ def do_create_normal_bubble(
     # create a bubble
     new_bubble = create_normal(parent_bubble.document, content, parent_bubble, location)
 
-    new_bubble.edit_lock_holder = user
-    if is_owned:
-        new_bubble.owner_with_lock = user
+    if Lock:
+        new_bubble.edit_lock_holder = user
+        if is_owned:
+            new_bubble.owner_with_lock = user
 
-    parent_bubble.insert_children(location, [new_bubble])
+        parent_bubble.insert_children(location, [new_bubble])
 
-    load_bubble_to_cache(new_bubble, True)
+        load_bubble_to_cache(new_bubble, True)
 
     return (Operation.CREATE_NORMAL, process_normal(new_bubble))
 
