@@ -20,6 +20,7 @@ matrix:
         - psql -c 'alter user busymanager createdb;' -U postgres
         - cd backend
         - python3 manage.py migrate
+        - sudo redis-server
       script:
         - coverage run --branch --source="./busyback" manage.py test
       after_success:
