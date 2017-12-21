@@ -1734,8 +1734,7 @@ def ws_disconnect(message):
             do_user_disconnect_document(message.user.id, int(document_id))
         except Exception as e:
             print(str(e))
-            message.reply_channel.send({"text":
-                    json.dumps({"header": command, "accept": "False", "body": "cannot disconnect this user"})})
+            message.reply_channel.send({'accept': False})
 
         Group('document_detail-'+str(document_id), channel_layer=message.channel_layer).discard(message.reply_channel)
         message.reply_channel.send({'accept': True})
