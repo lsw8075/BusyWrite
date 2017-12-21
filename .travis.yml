@@ -17,6 +17,7 @@ matrix:
         - psql -c "create user busymanager with password 'busymanager';" -U postgres
         - psql -c 'create database busydb owner busymanager;' -U postgres
         - psql -c 'grant all privileges on database busydb to busymanager;' -U postgres
+        - psql -c 'alter user busymanager createdb;' -U postgres
         - cd backend
         - python3 manage.py migrate
       script:
