@@ -25,7 +25,10 @@ export const reducer = {
 export const getDocumentState = createFeatureSelector<State>('document');
 
 // board
-export const getBoardState = createSelector(getDocumentState, (state: State) => state.board);
+export const getBoardState = createSelector(getDocumentState, (state: State) => {
+    console.log('get board state');
+    return state.board;
+});
 export const getBoardList = createSelector(getBoardState, (state: BoardState) => state.boardList);
 export const getLeftBoard = createSelector(getBoardList,
     (state: Board[]) => state.find(board => board.location === BoardLocation.left));
@@ -75,7 +78,7 @@ export const getSuggestBubbles = createSelector(getBubbleState, (state: BubbleSt
 export const getComments = createSelector(getBubbleState, (state: BubbleState) => state.commentList);
 
 // notes
-export const getNotes= createSelector(getBubbleState, (state: BubbleState) => state.noteList);
+export const getNotes = createSelector(getBubbleState, (state: BubbleState) => state.noteList);
 
 // edit board
 export const getUserState = createFeatureSelector<State>('user');

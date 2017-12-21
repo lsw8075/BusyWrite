@@ -1,5 +1,6 @@
-import { Bubble, BubbleType, InternalBubble, LeafBubble } from '../models/bubble';
+import { Bubble, BubbleType, InternalBubble, LeafBubble, SuggestBubble } from '../models/bubble';
 import { MenuType } from '../services/event/event-bubble.service';
+import { Comment } from '../models/comment';
 
 import { MockBubbleList } from '../models/bubble.mock';
 import * as _ from 'lodash';
@@ -9,8 +10,9 @@ import {
     isBubbleInList,
     getParentBubble, deleteChildBubbles,
     mouseOverBubble,
+    removeBubbleById,
     deleteBubble, popBubble, getContent, flattenBubble, createBubble,
-    editBubble, mergeBubble, wrapBubble, moveBubble, splitBubble} from './bubble-operation';
+    editBubble, mergeBubble, wrapBubble, moveBubble, splitBubble, getSuggestBubbleById, switchBubble} from './bubble-operation';
 
 describe('bubble operations (pure functions)', () => {
     let bubbleList: Array<Bubble>;
@@ -30,6 +32,23 @@ describe('bubble operations (pure functions)', () => {
     });
 
     // have different describe wrapper for each function test
+
+    describe('getSuggestBubbleById', () => {
+
+        it('find suggest bubble', () => {
+            const sblist = [new SuggestBubble(1, 'hi', 1)];
+            expect(getSuggestBubbleById(sblist, 1).content).toBe('hi');
+        });
+
+        it('throw error', () => {
+            const sblist = [new SuggestBubble(1, 'hi', 1)];
+            expect(() => {
+                getSuggestBubbleById(sblist, 2);
+            }).toThrowError('Does not exist with this id: 2');
+        });
+
+    });
+
     describe('getBubbleById', () => {
         it('MockBubbleList should get bubble by id', () => {
             const bubble = getBubbleById(bubbleList, 1);
@@ -70,6 +89,8 @@ describe('bubble operations (pure functions)', () => {
     describe('popBubble', () => {
         it('should pop child bubble with id', () => {
             popBubble(bubbleList, 1);
+            popBubble(bubbleList, 1000);
+            popBubble(bubbleList, 3);
             expect(bubbleList.length).toBe(17);
         });
     });
@@ -86,4 +107,79 @@ describe('bubble operations (pure functions)', () => {
             expect(bubbleList.length).toBe(16);
         });
     });
+
+    describe('remove bubble by id', () => {
+
+        it('remove bubble', () => {
+            const bList = [new LeafBubble(1, 'hi')];
+            removeBubbleById(bList, 1);
+            expect(bList.length).toBe(0);
+        });
+
+        it('throw error', () => {
+            const bList = [new LeafBubble(1, 'hi')];
+            expect(() => {
+                removeBubbleById(bList, 2);
+            }).toThrowError('Does not exist with this id');
+        });
+
+    });
+
+    describe('create bubble', () => {
+        it('create bubble', () => {
+            createBubble(bubbleList, new LeafBubble(1, ''));
+            const b = new LeafBubble(100, '');
+            b.parentBubbleId = 4;
+            createBubble(bubbleList, b);
+            expect(bubbleList.length).toBe(19);
+        });
+    });
+
+    describe('edit bubble', () => {
+        it('edit bubble', () => {
+            editBubble(bubbleList, 3, 'new');
+            editBubble(bubbleList, 4, 'new');
+            expect((getBubbleById(bubbleList, 3) as LeafBubble).content).toBe('new');
+        });
+    });
+
+    describe('merge bubble', () => {
+        it('merge bubble', () => {
+            const b = new LeafBubble(21);
+            b.parentBubbleId = 1;
+            mergeBubble(bubbleList, [2, 3], new LeafBubble(20));
+            mergeBubble(bubbleList, [2, 3], b);
+            expect(bubbleList.length).toBe(17);
+        });
+    });
+
+    describe('wrap bubble', () => {
+        it('wrap bubble', () => {
+            wrapBubble(bubbleList, [2, 3], new InternalBubble(20, [2, 3]));
+
+            expect(bubbleList.length).toBe(19);
+        });
+    });
+
+    describe('move bubble', () => {
+        it('move bubble', () => {
+            moveBubble(bubbleList, 3, 1, 4);
+            expect(getBubbleById(bubbleList, 3).location).toBe(1);
+        });
+    });
+
+    describe('split bubble', () => {
+        it('split bubble', () => {
+            splitBubble(bubbleList, 4, []);
+            splitBubble(bubbleList, 3, [new LeafBubble(3), new LeafBubble(4)]);
+            expect(bubbleList.length).toBe(20);
+        });
+    });
+
+    describe('switch bubble', () => {
+        it('switch bubble', () => {
+            switchBubble(bubbleList, [new SuggestBubble(1, 'hi', 1)], [new Comment(1, '', 1, 1, 1)], 3);
+        });
+    });
+
 });

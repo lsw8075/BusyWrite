@@ -30,7 +30,7 @@ export function isBubbleInList(bubbleList: Array<Bubble>, id: number): boolean {
     return false;
 }
 
-function removeBubbleById(bubbleList: Array<Bubble>, id: number): void {
+export function removeBubbleById(bubbleList: Array<Bubble>, id: number): void {
     const index = bubbleList.findIndex((bubble) => (bubble.id === id));
     if (index === -1) {
         throw new Error('Does not exist with this id');
